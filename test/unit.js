@@ -185,6 +185,17 @@ describe('repeating', function() {
 			<th><td>Hello</td></tr><tr><td>one</td></tr><tr><td>two</td></tr>
 		</tbody></table>`.outerHTML);
 	});
+	it('should repeat array over node in attribute', function() {
+		let node = dom`<div>
+			<img data-src="[arr|repeat|attr]" />
+		</div>`;
+		let copy = matchdom(node, {
+			arr: ['one', 'two']
+		});
+		assert.equal(copy.outerHTML, dom`<div>
+			<img src="one" /><img src="two" />
+		</div>`.outerHTML);
+	});
 
 });
 

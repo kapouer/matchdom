@@ -17,7 +17,7 @@ matchdom.filters = {
 	},
 	magnet: function(value, what, selector) {
 		if (value != null) return;
-		var parent = what.node.parentNode;
+		var parent = what.parent;
 		if (selector) parent = parent.closest(selector);
 		if (parent) parent.remove();
 	},
@@ -26,17 +26,16 @@ matchdom.filters = {
 		if (!bef) bef = '';
 		if (!aft) aft = '';
 		if (!tag) return value.join(bef + aft);
-		var parent = what.node.parentNode;
 		var doc = what.node.ownerDocument;
 		for (var i=0; i < value.length; i++) {
-			parent.insertBefore(doc.createTextNode((i > 0 ? aft : "") + value[i] + bef), what.node);
-			if (i < value.length - 1) parent.insertBefore(doc.createElement(tag), what.node);
+			what.parent.insertBefore(doc.createTextNode((i > 0 ? aft : "") + value[i] + bef), what.node);
+			if (i < value.length - 1) what.parent.insertBefore(doc.createElement(tag), what.node);
 		}
 		return "";
 	},
 	repeat: function(value, what, selector) {
 		var node = what.node;
-		var parent = node.parentNode;
+		var parent = what.parent;
 		if (selector) parent = parent.closest(selector);
 		if (!parent) return null;
 		if (value == null) value = [];
@@ -52,7 +51,11 @@ matchdom.filters = {
 		for (var i=0; i < value.length; i++) {
 			expr.path[expr.path.length - 1] = i;
 			cur = expr.toString();
-			node.nodeValue = node.nodeValue.replace(o + ini + c, o + cur + c);
+			if (what.attr) {
+				node.setAttribute(what.attr, node.getAttribute(what.attr).replace(o + ini + c, o + cur + c));
+			} else {
+				node.nodeValue = node.nodeValue.replace(o + ini + c, o + cur + c);
+			}
 			ini = cur;
 			copy = matchdom(parent.cloneNode(true), what.data, what.filters);
 			parent.parentNode.insertBefore(copy, parent);
@@ -69,6 +72,7 @@ function matchdom(root, data, filters) {
 		var what = {
 			data: data,
 			node: node,
+			parent: attr ? node : node.parentNode,
 			attr: attr,
 			filters: filters
 		};
