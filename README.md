@@ -66,10 +66,16 @@ matchdom(model, {}, {
 The filter always receives the two first arguments where `what` is an object
 with the following properties:
 - data: the initial data object
-- node: the current node
+- node: text node when expression was inside one
+- attr: attribute name when expression was inside an attribute value
+- parent: node containing text node or attribute
 - expr: the parsed expression
-- attr: the name of the attribute being changed (or nothing if it's a text node)
 - filters: the object with custom filters
+
+and the following methods (which are useful to write filters that are
+independent of their position inside a text node or an attribute):
+- set(str): updates node or attr value
+- get(): returns node or attr value
 
 All these properties are *mutable* and changing them have an effect on what's
 being merged.

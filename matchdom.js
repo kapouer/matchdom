@@ -51,11 +51,7 @@ matchdom.filters = {
 		for (var i=0; i < value.length; i++) {
 			expr.path[expr.path.length - 1] = i;
 			cur = expr.toString();
-			if (what.attr) {
-				node.setAttribute(what.attr, node.getAttribute(what.attr).replace(o + ini + c, o + cur + c));
-			} else {
-				node.nodeValue = node.nodeValue.replace(o + ini + c, o + cur + c);
-			}
+			what.set(what.get().replace(o + ini + c, o + cur + c));
 			ini = cur;
 			copy = matchdom(parent.cloneNode(true), what.data, what.filters);
 			parent.parentNode.insertBefore(copy, parent);
@@ -69,25 +65,12 @@ function matchdom(root, data, filters) {
 	if (data == null) data = {};
 	var re = new RegExp('\\' + Symbols.open + '([^\\' + Symbols.open + '\\' + Symbols.close + '<>=""\'\']+)' + Symbols.close, 'g')
 	matchEachDom(root, re, function(node, hits, attr) {
-		var what = {
-			data: data,
-			node: node,
-			parent: attr ? node : node.parentNode,
-			attr: attr,
-			filters: filters
-		};
+		var what = new What(data, filters, node, attr);
 		var strlist = hits.map(function(hit) {
 			if (hit.str) return hit.str;
 			return mutate(what, hit.hits[1]);
 		});
-		var str = strlist.join('');
-		if (!attr) {
-			node.nodeValue = str;
-		} else {
-			if (attr != what.attr) node.removeAttribute(attr);
-			attr = what.attr;
-			if (str.length && attr) node.setAttribute(attr, str);
-		}
+		what.set(strlist.join(''));
 	});
 	return root;
 }
@@ -114,7 +97,7 @@ function matchEachDom(root, re, fn) {
 	while (node = it.nextNode()) {
 		if (node.nodeType == Node.ELEMENT_NODE) {
 			matchAttributes(node, re).forEach(function(atthit) {
-				fn(node, atthit.list, atthit.name);
+				fn(node, atthit.list, atthit.attr);
 			});
 		} else {
 			hits = matchText(node.nodeValue, re);
@@ -133,7 +116,7 @@ function matchAttributes(node, re) {
 		list = matchText(att.value, re);
 		if (!list.length) continue;
 		hits.push({
-			name: att.name,
+			attr: att.name,
 			list: list
 		});
 	}
@@ -152,6 +135,36 @@ function matchText(str, re) {
 	if (index != str.length) list.push({str: str.substring(index)});
 	return list;
 }
+
+function What(data, filters, node, attr) {
+	this.data = data;
+	this.filters = filters;
+	if (attr) {
+		this.initialAttr = attr;
+		this.attr = attr;
+		this.parent = node;
+	} else {
+		this.node = node;
+		this.parent = node.parentNode;
+	}
+}
+What.prototype.get = function() {
+	if (this.node) return this.node.nodeValue;
+	else return this.parent.getAttribute(this.attr);
+};
+What.prototype.set = function(str) {
+	if (this.node) {
+		this.node.nodeValue = str;
+	} else {
+		if (this.attr != this.initialAttr) {
+			this.parent.removeAttribute(this.initialAttr);
+			this.initialAttr = this.attr;
+		}
+		if (str != null) this.parent.setAttribute(this.attr, str);
+		else this.parent.removeAttribute(this.attr);
+	}
+	return str;
+};
 
 function Expression(str, filters) {
 	this.initial = str;
