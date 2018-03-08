@@ -58,7 +58,7 @@ Full control over how fields are replaced is possible using *filters*:
 ```js
 matchdom(model, {}, {
 	magnet: function(value, what) {
-		if (value == null) what.node.parentNode.remove();
+		if (value == null) what.parent.remove();
 	}
 });
 ```
