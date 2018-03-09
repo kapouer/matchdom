@@ -114,6 +114,8 @@ Expressions can be modified by filters !
 
 ## filters
 
+Examples can be found in tests.
+
 ### attr:name
 
 The name parameter is optional for data-* attributes.
@@ -135,6 +137,13 @@ gives:
 	<img src="/my.png" />
 </div>
 ```
+
+### url:name
+
+The name parameter is optional as for attr:name (which is called by this filter).
+
+Merges pathname, query of url to the value of the target attribute.
+
 
 ### magnet:selector
 
