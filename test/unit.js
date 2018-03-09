@@ -235,6 +235,25 @@ describe('repeating', function() {
 			</tr>
 		</table>`.outerHTML);
 	});
+
+	it('should repeat renamed array items', function() {
+		let node = dom`<table>
+			<tr>
+				<td>[cells.txt|repeat:td:cell] [cell.txt]</td>
+			</tr>
+		</table>`;
+		let copy = matchdom(node, {
+			cells: [
+				{txt: 'a'},
+				{txt: 'b'}
+			]
+		});
+		assert.equal(copy.outerHTML, dom`<table>
+			<tr>
+				<td>a a</td><td>b b</td>
+			</tr>
+		</table>`.outerHTML);
+	});
 });
 
 describe('join filter', function() {

@@ -33,35 +33,42 @@ matchdom.filters = {
 		}
 		return "";
 	},
-	repeat: function(value, what, selector) {
+	repeat: function(value, what, selector, alias) {
 		var node = what.node;
 		var parent = what.parent;
 		if (selector) parent = parent.closest(selector);
 		if (!parent) return null;
 		if (value == null) value = [];
 		if (typeof value != "object") value = [value];
-		var expr = what.expr;
-		var copy;
 		var o = matchdom.Symbols.open;
 		var c = matchdom.Symbols.close;
 		var data = what.data;
-		var path = expr.path.slice();
+		var expr = what.expr.clone();
+		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
+		var path = expr.path;
+		var head;
 		while (path.length) {
 			if (typeof data == "object" && data.length) {
 				break;
 			}
-			data = data[path.shift()];
+			head = path.shift();
+			data = data[head];
 			if (data == null) break;
 		}
 		if (data == null) data = [];
-		expr.path = path;
-		expr.removeFilter('repeat'); // this removes the first repeat
+		if (!alias) alias = head;
+		path.unshift(alias);
 		what.set(what.get().replace(o + expr.initial + c, o + expr.toString() + c));
+		var copy, item;
+		var grandParent = parent.parentNode;
 		for (var i=0; i < data.length; i++) {
-			copy = matchdom(parent.cloneNode(true), data[i], what.filters);
-			parent.parentNode.insertBefore(copy, parent);
+			item = {};
+			item[alias] = data[i];
+			copy = matchdom(parent.cloneNode(true), item, what.filters);
+			grandParent.insertBefore(copy, parent);
 		}
 		parent.remove();
+		return null;
 	},
 	url: function(url, what, name) {
 		matchdom.filters.attr(url, what, name);
@@ -95,12 +102,12 @@ function mutate(what, str) {
 		data = data[expr.path[i]];
 		if (data == null) break;
 	}
-	expr.filters.forEach(function(filter) {
-		var params = [data, what].concat(filter.params);
-		var ret = filter.fn.apply(null, params);
+	var filter, ret;
+	while (filter = expr.filters.shift()) {
+		ret = filter.fn.apply(null, [data, what].concat(filter.params));
 		if (ret !== undefined) data = ret;
-	});
-	return data;
+	}
+	return data == null ? "" : data;
 }
 
 function matchEachDom(root, re, fn) {
@@ -138,14 +145,22 @@ function matchAttributes(node, re) {
 
 function matchText(str, re) {
 	var list = [];
-	var hit, index = 0, sli;
+	var hit, index = 0, ok = false;
 	while ((hit = re.exec(str)) != null) {
-		if (index != hit.index) list.push({str:str.substring(index, hit.index)});
+		ok = true;
+		if (index != hit.index) list.push({
+			str:str.substring(index, hit.index)
+		});
 		index = hit.index + hit[0].length;
-		list.push({hits: hit.slice(0)});
+		list.push({
+			hits: hit.slice(0)
+		});
 		re.lastIndex = index;
 	}
-	if (index != str.length) list.push({str: str.substring(index)});
+	if (!ok) return [];
+	if (index != str.length) list.push({
+		str: str.substring(index)
+	});
 	return list;
 }
 
@@ -180,6 +195,12 @@ What.prototype.set = function(str) {
 };
 
 function Expression(str, filters) {
+	if (str instanceof Expression) {
+		this.initial = str.initial;
+		this.path = str.path.slice();
+		this.filters = str.filters.slice();
+		return this;
+	}
 	this.initial = str;
 	var list = str.split(Symbols.append);
 	var path = list.shift();
@@ -198,6 +219,10 @@ function Expression(str, filters) {
 		});
 	}
 }
+
+Expression.prototype.clone = function() {
+	return new Expression(this);
+};
 
 Expression.prototype.toString = function() {
 	var str = this.path.join(Symbols.path);

@@ -96,6 +96,9 @@ multiple times) to the filter name, like this:
 
 Multiple filters can be appended: `[text|prefix:me|postfix:him]`.
 
+A filter can itself change what.expr.filters, typically the `repeat` filter,
+being recursive, empties following filters.
+
 Several default filters are provided, see below.
 
 
@@ -112,7 +115,7 @@ and two methods:
 Expressions can be modified by filters !
 
 
-## filters
+## bundled filters
 
 Examples can be found in tests.
 
