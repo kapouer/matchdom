@@ -220,4 +220,4 @@ Expression.prototype.removeFilter = function(name) {
 	});
 };
 
-})(global);
+})();
