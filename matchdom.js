@@ -137,7 +137,8 @@ function matchdom(parent, data, filters, scope) {
 
 function mutate(what, str) {
 	var expr = what.expr = new Expression(str, what.filters);
-	var val = what.scope && expr.get(what.scope) || expr.get(what.data);
+	var val = what.scope && expr.get(what.scope);
+	if (val === undefined) val = expr.get(what.data);
 	var filter, ret;
 	while (filter = expr.filters.shift()) {
 		ret = filter.fn.apply(null, [val, what].concat(filter.params));

@@ -396,6 +396,14 @@ describe('pad', function() {
 	});
 });
 
+describe('or', function() {
+	it('should set a default value', function() {
+		let node = dom`<p data-class="[yop|attr]" data-test="[vide|or:nothing|attr]">[str|or:empty] - [nul]</p>`;
+		let copy = matchdom(node, {});
+		assert.equal(copy.outerHTML, '<p data-class="[yop|attr]" test="nothing">empty - </p>');
+	});
+});
+
 describe('date filter', function() {
 	it('toLocaleString', function() {
 		let node = dom`<p>[str|date::en]</p>`;
