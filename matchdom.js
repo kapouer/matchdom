@@ -106,11 +106,7 @@ function matchdom(root, data, filters) {
 
 function mutate(what, str) {
 	var expr = what.expr = new Expression(str, what.filters);
-	var data = what.data;
-	for (var i=0; i < expr.path.length; i++) {
-		data = data[expr.path[i]];
-		if (data == null) break;
-	}
+	var data = expr.get(what.data);
 	var filter, ret;
 	while (filter = expr.filters.shift()) {
 		ret = filter.fn.apply(null, [data, what].concat(filter.params));
@@ -241,6 +237,14 @@ Expression.prototype.toString = function() {
 		return expr;
 	}).join(Symbols.append);
 	return str;
+};
+
+Expression.prototype.get = function(data) {
+	for (var i=0; i < this.path.length; i++) {
+		data = data[this.path[i]];
+		if (data == null) break;
+	}
+	return data;
 };
 
 })();

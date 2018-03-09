@@ -111,6 +111,7 @@ A parsed expression has properties:
 and two methods:
 - clone()
 - toString()
+- get(data) returns the data accessed by expr.path
 
 Expressions can be modified by filters. See the repeat filter for the most
 complex code doing that.
