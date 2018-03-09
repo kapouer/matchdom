@@ -239,9 +239,14 @@ Expression.prototype.toString = function() {
 	return str;
 };
 
-Expression.prototype.get = function(data) {
-	for (var i=0; i < this.path.length; i++) {
-		data = data[this.path[i]];
+Expression.prototype.get = function(data, path) {
+	if (path) {
+		if (typeof path == "string") path = path.split(matchdom.Symbols.path);
+	} else {
+		path = this.path;
+	}
+	for (var i=0; i < path.length; i++) {
+		data = data[path[i]];
 		if (data == null) break;
 	}
 	return data;
