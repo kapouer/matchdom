@@ -62,6 +62,14 @@ matchdom.filters = {
 			parent.parentNode.insertBefore(copy, parent);
 		}
 		parent.remove();
+	},
+	url: function(url, what, name) {
+		matchdom.filters.attr(url, what, name);
+		var old = what.get().split('?');
+		var it = url.split('?');
+		if (it[0]) old[0] = it[0];
+		if (it[1]) old[1] = it[1];
+		return old[0] + (old[1] ? '?' + old[1] : '');
 	}
 };
 

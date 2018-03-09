@@ -145,24 +145,6 @@ describe('filters on attributes', function() {
 	});
 });
 
-describe('join filter', function() {
-	it('with space', function() {
-		let node = dom`<p>[arr|join: ]</p>`;
-		let copy = matchdom(node, {
-			arr: ['word1', 'word2']
-		});
-		assert.equal(copy.outerHTML, '<p>word1 word2</p>');
-	});
-
-	it('with <br>', function() {
-		let node = dom`<p>[arr|join::br]</p>`;
-		let copy = matchdom(node, {
-			arr: ['line1', 'line2']
-		});
-		assert.equal(copy.outerHTML, '<p>line1<br>line2</p>');
-	});
-});
-
 describe('repeating', function() {
 	it('should repeat array over node', function() {
 		let node = dom`<div>
@@ -253,6 +235,52 @@ describe('repeating', function() {
 			</tr>
 		</table>`.outerHTML);
 	});
+});
 
+describe('join filter', function() {
+	it('with space', function() {
+		let node = dom`<p>[arr|join: ]</p>`;
+		let copy = matchdom(node, {
+			arr: ['word1', 'word2']
+		});
+		assert.equal(copy.outerHTML, '<p>word1 word2</p>');
+	});
+
+	it('with <br>', function() {
+		let node = dom`<p>[arr|join::br]</p>`;
+		let copy = matchdom(node, {
+			arr: ['line1', 'line2']
+		});
+		assert.equal(copy.outerHTML, '<p>line1<br>line2</p>');
+	});
+});
+
+describe('url filter', function() {
+	it('should merge url query with target pathname', function() {
+		let node = dom`<a href="/test" data-href="[href|url]">[title]</a>`;
+		let copy = matchdom(node, {
+			href: '?arg=1&val=2',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/test?arg=1&amp;val=2">anchor</a>');
+	});
+
+	it('should merge url pathname with target query', function() {
+		let node = dom`<a href="/test?toto=1" data-href="[href|url]">[title]</a>`;
+		let copy = matchdom(node, {
+			href: '/path',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/path?toto=1">anchor</a>');
+	});
+
+	it('should overwrite target with url', function() {
+		let node = dom`<a href="/test?toto=1" data-href="[href|url]">[title]</a>`;
+		let copy = matchdom(node, {
+			href: '/path?a=1&b=2',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/path?a=1&amp;b=2">anchor</a>');
+	});
 });
 
