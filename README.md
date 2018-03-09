@@ -11,6 +11,8 @@ Features:
 
 ## usage
 
+`matchdom(node, data, filters?, scope?) -> node`
+
 Given a DOM and placeholders like this:
 
 ```html
@@ -56,7 +58,7 @@ Full control over how fields are replaced is possible using *filters*:
 ```
 
 ```js
-matchdom(model, {}, {
+matchdom(model, {some: "data"}, {
 	magnet: function(value, what) {
 		if (value == null) what.parent.remove();
 	}
@@ -66,6 +68,8 @@ matchdom(model, {}, {
 The filter always receives the two first arguments where `what` is an object
 with the following properties:
 - data: the initial data object
+- scope: the current data object - typically used with repeat,
+  takes precedence for finding values
 - node: text node when expression was inside one
 - attr: attribute name when expression was inside an attribute value
 - parent: node containing text node or attribute

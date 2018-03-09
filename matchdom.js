@@ -51,7 +51,7 @@ matchdom.filters = {
 		if (typeof value != "object") value = [value];
 		var o = matchdom.Symbols.open;
 		var c = matchdom.Symbols.close;
-		var data = what.data;
+		var data = what.scope || what.data;
 		var expr = what.expr.clone();
 		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
 		var path = expr.path;
@@ -68,12 +68,12 @@ matchdom.filters = {
 		if (!alias) alias = head;
 		path.unshift(alias);
 		what.set(what.get().replace(o + expr.initial + c, o + expr.toString() + c));
-		var copy, item;
+		var copy, scope;
 		var grandParent = parent.parentNode;
 		for (var i=0; i < data.length; i++) {
-			item = {};
-			item[alias] = data[i];
-			copy = matchdom(parent.cloneNode(true), item, what.filters);
+			scope = {};
+			scope[alias] = data[i];
+			copy = matchdom(parent.cloneNode(true), what.data, what.filters, scope);
 			grandParent.insertBefore(copy, parent);
 		}
 		parent.remove();
@@ -102,30 +102,31 @@ matchdom.filters = {
 	}
 };
 
-function matchdom(root, data, filters) {
+function matchdom(parent, data, filters, scope) {
 	filters = Object.assign({}, matchdom.filters, filters);
 	if (data == null) data = {};
-	var re = new RegExp('\\' + Symbols.open + '([^\\' + Symbols.open + '\\' + Symbols.close + '<>=""\'\']*)' + Symbols.close, 'g')
-	matchEachDom(root, re, function(node, hits, attr) {
-		var what = new What(data, filters, node, attr);
+	var re = new RegExp('\\' + Symbols.open + '([^\\' + Symbols.open + '\\' + Symbols.close + '<>=""\'\']*)' + Symbols.close, 'g');
+
+	matchEachDom(parent, re, function(node, hits, attr) {
+		var what = new What(data, filters, node, attr, scope);
 		var strlist = hits.map(function(hit) {
 			if (hit.str) return hit.str;
 			return mutate(what, hit.hits[1]);
 		});
 		what.set(strlist.join(''));
 	});
-	return root;
+	return parent;
 }
 
 function mutate(what, str) {
 	var expr = what.expr = new Expression(str, what.filters);
-	var data = expr.get(what.data);
+	var val = what.scope && expr.get(what.scope) || expr.get(what.data);
 	var filter, ret;
 	while (filter = expr.filters.shift()) {
-		ret = filter.fn.apply(null, [data, what].concat(filter.params));
-		if (ret !== undefined) data = ret;
+		ret = filter.fn.apply(null, [val, what].concat(filter.params));
+		if (ret !== undefined) val = ret;
 	}
-	return data == null ? "" : data;
+	return val == null ? "" : val;
 }
 
 function matchEachDom(root, re, fn) {
@@ -182,8 +183,9 @@ function matchText(str, re) {
 	return list;
 }
 
-function What(data, filters, node, attr) {
+function What(data, filters, node, attr, scope) {
 	this.data = data;
+	if (scope) this.scope = scope;
 	this.filters = filters;
 	if (attr) {
 		this.initialAttr = attr;

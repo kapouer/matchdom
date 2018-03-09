@@ -262,6 +262,30 @@ describe('repeating', function() {
 			</tr>
 		</table>`.outerHTML);
 	});
+
+	it('should repeat array and continue merging recursively, with data outside scope', function() {
+		let node = dom`<table>
+			<tr>
+				<td>[rows.cells.val|repeat:tr|repeat][some.data]</td>
+			</tr>
+		</table>`;
+		let copy = matchdom(node, {
+			rows: [
+				{cells: [{val:'A1'}, {val:'A2'}]},
+				{cells: [{val:'B1'}, {val:'B2'}]}
+			],
+			some: {
+				data: "x"
+			}
+		});
+		assert.equal(copy.outerHTML, dom`<table>
+			<tr>
+				<td>A1x</td><td>A2x</td>
+			</tr><tr>
+				<td>B1x</td><td>B2x</td>
+			</tr>
+		</table>`.outerHTML);
+	});
 });
 
 describe('join filter', function() {
