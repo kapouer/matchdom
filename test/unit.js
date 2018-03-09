@@ -154,13 +154,23 @@ describe('attr filter', function() {
 });
 
 describe('repeating', function() {
-	it('should repeat array over node', function() {
+	it('should repeat array-in-object over node', function() {
 		let node = dom`<div>
 			<span>[arr|repeat]</span>
 		</div>`;
 		let copy = matchdom(node, {
 			arr: ['one', 'two']
 		});
+		assert.equal(copy.outerHTML, dom`<div>
+			<span>one</span><span>two</span>
+		</div>`.outerHTML);
+	});
+
+	it('should repeat direct array over node', function() {
+		let node = dom`<div>
+			<span>[test|repeat]</span>
+		</div>`;
+		let copy = matchdom(node, [{test: 'one'}, {test: 'two'}]);
 		assert.equal(copy.outerHTML, dom`<div>
 			<span>one</span><span>two</span>
 		</div>`.outerHTML);

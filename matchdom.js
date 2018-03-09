@@ -64,13 +64,17 @@ matchdom.filters = {
 		}
 		if (data == null) data = [];
 		if (!alias) alias = head;
-		path.unshift(alias);
+		if (alias) path.unshift(alias);
 		what.set(what.get().replace(o + expr.initial + c, o + expr.toString() + c));
 		var copy, scope;
 		var grandParent = parent.parentNode;
 		for (var i=0; i < data.length; i++) {
-			scope = {};
-			scope[alias] = data[i];
+			if (alias) {
+				scope = {};
+				scope[alias] = data[i];
+			} else {
+				scope = data[i];
+			}
 			copy = matchdom(parent.cloneNode(true), what.data, what.filters, scope);
 			grandParent.insertBefore(copy, parent);
 		}
