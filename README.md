@@ -125,6 +125,13 @@ complex code doing that.
 
 Examples can be found in tests.
 
+### html, text
+
+By default all values are merged as text. Use `[str|html]` to merge as html,
+and use text again to disable it: `[str|html|text]` is the same as `[str]`.
+
+html filter also works well with join filter.
+
 ### attr:name
 
 The name parameter is optional for data-* attributes.

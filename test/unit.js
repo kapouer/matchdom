@@ -330,6 +330,14 @@ describe('join filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<p>line1<br>line2</p>');
 	});
+
+	it('html with <br>', function() {
+		let node = dom`<p>[arr|html|join::br]</p>`;
+		let copy = matchdom(node, {
+			arr: ['<b>line1</b>', '<i>line2</i>']
+		});
+		assert.equal(copy.outerHTML, '<p><b>line1</b><br><i>line2</i></p>');
+	});
 });
 
 describe('pad', function() {
