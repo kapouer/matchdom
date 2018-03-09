@@ -234,15 +234,4 @@ Expression.prototype.toString = function() {
 	return str;
 };
 
-Expression.prototype.removeFilter = function(name) {
-	var found = false;
-	this.filters = this.filters.filter(function(obj) {
-		if (!found && obj.name == name) {
-			found = true;
-			return false;
-		}
-		return true;
-	});
-};
-
 })();

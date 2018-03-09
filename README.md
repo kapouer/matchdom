@@ -109,10 +109,11 @@ A parsed expression has properties:
 - filters (array of {name, fn, params} objects where params is an array)
 
 and two methods:
-- removeFilter(name)
+- clone()
 - toString()
 
-Expressions can be modified by filters !
+Expressions can be modified by filters. See the repeat filter for the most
+complex code doing that.
 
 
 ## bundled filters
