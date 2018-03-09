@@ -42,18 +42,23 @@ matchdom.filters = {
 		if (typeof value != "object") value = [value];
 		var expr = what.expr;
 		var copy;
-		var ini = what.expr.initial;
-		var cur;
 		var o = matchdom.Symbols.open;
 		var c = matchdom.Symbols.close;
-		expr.removeFilter('repeat');
-		expr.path.push(-1);
-		for (var i=0; i < value.length; i++) {
-			expr.path[expr.path.length - 1] = i;
-			cur = expr.toString();
-			what.set(what.get().replace(o + ini + c, o + cur + c));
-			ini = cur;
-			copy = matchdom(parent.cloneNode(true), what.data, what.filters);
+		var data = what.data;
+		var path = expr.path.slice();
+		while (path.length) {
+			if (typeof data == "object" && data.length) {
+				break;
+			}
+			data = data[path.shift()];
+			if (data == null) break;
+		}
+		if (data == null) data = [];
+		expr.path = path;
+		expr.removeFilter('repeat'); // this removes the first repeat
+		what.set(what.get().replace(o + expr.initial + c, o + expr.toString() + c));
+		for (var i=0; i < data.length; i++) {
+			copy = matchdom(parent.cloneNode(true), data[i], what.filters);
 			parent.parentNode.insertBefore(copy, parent);
 		}
 		parent.remove();
@@ -63,7 +68,7 @@ matchdom.filters = {
 function matchdom(root, data, filters) {
 	filters = Object.assign({}, matchdom.filters, filters);
 	if (data == null) data = {};
-	var re = new RegExp('\\' + Symbols.open + '([^\\' + Symbols.open + '\\' + Symbols.close + '<>=""\'\']+)' + Symbols.close, 'g')
+	var re = new RegExp('\\' + Symbols.open + '([^\\' + Symbols.open + '\\' + Symbols.close + '<>=""\'\']*)' + Symbols.close, 'g')
 	matchEachDom(root, re, function(node, hits, attr) {
 		var what = new What(data, filters, node, attr);
 		var strlist = hits.map(function(hit) {
@@ -169,7 +174,9 @@ What.prototype.set = function(str) {
 function Expression(str, filters) {
 	this.initial = str;
 	var list = str.split(Symbols.append);
-	this.path = list.shift().split(Symbols.path);
+	var path = list.shift();
+	if (path == "") this.path = [];
+	else this.path = path.split(Symbols.path);
 	this.filters = [];
 	var name, parts, fn;
 	for (var i=0; i < list.length; i++) {
@@ -195,8 +202,13 @@ Expression.prototype.toString = function() {
 };
 
 Expression.prototype.removeFilter = function(name) {
+	var found = false;
 	this.filters = this.filters.filter(function(obj) {
-		return obj.name != name;
+		if (!found && obj.name == name) {
+			found = true;
+			return false;
+		}
+		return true;
 	});
 };
 

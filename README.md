@@ -142,3 +142,16 @@ Removes the closest node when current value is null or undefined.
 
 The selector attribute is optional, in which case the parent node is removed.
 
+
+### repeat:selector
+
+Repeats closest repeatable data over closest selected node.
+
+Multiple repeat filters can be appended, so it is really easy to merge recursively
+rows and cells to form a table, see unit tests for examples:
+```html
+<table><tr>
+<td>[rows.cells.val|repeat:tr|repeat]</td>
+</tr></table>
+```
+
