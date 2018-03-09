@@ -216,7 +216,7 @@ describe('repeating', function() {
 		</div>`.outerHTML);
 	});
 
-	it('should repeat array and continue merging', function() {
+	it('should repeat array', function() {
 		let node = dom`<div>
 			<span>[arr.value|repeat]</span>
 		</div>`;
@@ -228,7 +228,45 @@ describe('repeating', function() {
 		</div>`.outerHTML);
 	});
 
-	it('should repeat array and continue merging recursively', function() {
+	it('should repeat array when filter is not the first one', function() {
+		let node = dom`<div>
+			<span>[arr.key] [arr.value|repeat]</span>
+		</div>`;
+		let copy = matchdom(node, {
+			arr: [{key: 1, value: 'one'}, {key: 2, value: 'two'}]
+		});
+		assert.equal(copy.outerHTML, dom`<div>
+			<span>1 one</span><span>2 two</span>
+		</div>`.outerHTML);
+	});
+
+	it('should repeat array when filter is not the first one and data is array', function() {
+		let node = dom`<div>
+			<span>[key] [value|repeat]</span>
+		</div>`;
+		let copy = matchdom(node, [
+			{key: 1, value: 'one'},
+			{key: 2, value: 'two'}
+		]);
+		assert.equal(copy.outerHTML, dom`<div>
+			<span>1 one</span><span>2 two</span>
+		</div>`.outerHTML);
+	});
+
+	it('should repeat array when filter is not the first one and data is array and first one is in attribute', function() {
+		let node = dom`<div>
+			<span data-class="[style|attr]">[key] [value|repeat]</span>
+		</div>`;
+		let copy = matchdom(node, [
+			{key: 1, value: 'one', style: 'a'},
+			{key: 2, value: 'two', style: 'b'}
+		]);
+		assert.equal(copy.outerHTML, dom`<div>
+			<span class="a">1 one</span><span class="b">2 two</span>
+		</div>`.outerHTML);
+	});
+
+	it('should repeat array recursively', function() {
 		let node = dom`<table>
 			<tr>
 				<td>[rows.cells.val|repeat:tr|repeat]</td>
@@ -249,7 +287,7 @@ describe('repeating', function() {
 		</table>`.outerHTML);
 	});
 
-	it('should repeat array and continue merging recursively with direct value', function() {
+	it('should repeat array recursively with direct value', function() {
 		let node = dom`<table>
 			<tr>
 				<td>[rows.cells|repeat:tr|repeat]</td>
@@ -289,7 +327,7 @@ describe('repeating', function() {
 		</table>`.outerHTML);
 	});
 
-	it('should repeat array and continue merging recursively, with data outside scope', function() {
+	it('should repeat array recursively, with data outside scope', function() {
 		let node = dom`<table>
 			<tr>
 				<td>[rows.cells.val|repeat:tr|repeat][some.data]</td>
