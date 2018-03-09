@@ -12,6 +12,9 @@ var Symbols = matchdom.Symbols = {
 };
 
 matchdom.filters = {
+	or: function(value, what, str) {
+		if (value == null) return str;
+	},
 	attr: function(value, what, name) {
 		if (!what.attr) {
 			if (name) {

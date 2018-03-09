@@ -132,6 +132,14 @@ and use text again to disable it: `[str|html|text]` is the same as `[str]`.
 
 html filter also works well with join filter.
 
+### or:str
+
+If value is null or undefined, merge the field with str.
+
+Can be useful also if undefined values are expected since they could be left
+unmerged (thus showing template expressions).
+
+
 ### attr:name
 
 The name parameter is optional for data-* attributes.
