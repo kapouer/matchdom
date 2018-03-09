@@ -122,9 +122,12 @@ function matchdom(parent, data, filters, scope) {
 		var what = new What(data, filters, node, attr, scope);
 		var strlist = hits.map(function(hit) {
 			if (hit.str) return hit.str;
-			return mutate(what, hit.hits[1]);
+			var val = mutate(what, hit.hits[1]);
+			return val === null ? "" : val;
+		}).filter(function(val) {
+			return val !== undefined;
 		});
-		what.set(strlist.join(''));
+		if (strlist.length > 0) what.set(strlist.join(''));
 	});
 	return parent;
 }
@@ -137,7 +140,7 @@ function mutate(what, str) {
 		ret = filter.fn.apply(null, [val, what].concat(filter.params));
 		if (ret !== undefined) val = ret;
 	}
-	return val == null ? "" : val;
+	return val;
 }
 
 function matchEachDom(root, re, fn) {
