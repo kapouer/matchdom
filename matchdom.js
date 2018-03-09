@@ -43,7 +43,6 @@ matchdom.filters = {
 		return "";
 	},
 	repeat: function(value, what, selector, alias) {
-		var node = what.node;
 		var parent = what.parent;
 		if (selector) parent = parent.closest(selector);
 		if (!parent) return null;
