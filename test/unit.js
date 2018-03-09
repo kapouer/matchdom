@@ -25,6 +25,22 @@ describe('text nodes', function() {
 		});
 		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
+
+	it('should not be merged as html', function() {
+		let node = dom`<span>[str|html|text]</span>`;
+		let copy = matchdom(node, {
+			str: "<b>bold</b>"
+		});
+		assert.equal(copy.outerHTML, '<span>&lt;b&gt;bold&lt;/b&gt;</span>');
+	});
+
+	it('should be merged as html', function() {
+		let node = dom`<span>[str|html]</span>`;
+		let copy = matchdom(node, {
+			str: "test<b>bold</b><i>italic</i>test"
+		});
+		assert.equal(copy.outerHTML, '<span>test<b>bold</b><i>italic</i>test</span>');
+	});
 });
 
 describe('attributes', function() {

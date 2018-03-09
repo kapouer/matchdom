@@ -30,15 +30,24 @@ matchdom.filters = {
 		if (selector) parent = parent.closest(selector);
 		if (parent) parent.remove();
 	},
+	html: function(value, what) {
+		what.html = true;
+	},
+	text: function(value, what) {
+		what.html = false;
+	},
 	join: function(value, what, bef, tag, aft) {
 		if (value == null || !value.join) return;
 		if (!bef) bef = '';
 		if (!aft) aft = '';
 		if (!tag) return value.join(bef + aft);
 		var doc = what.node.ownerDocument;
-		for (var i=0; i < value.length; i++) {
+		if (!what.html) for (var i=0; i < value.length; i++) {
 			what.parent.insertBefore(doc.createTextNode((i > 0 ? aft : "") + value[i] + bef), what.node);
 			if (i < value.length - 1) what.parent.insertBefore(doc.createElement(tag), what.node);
+		} else {
+			var joiner = bef + (tag ? '<' + tag + '>' : '') + aft;
+			what.set(value.join(joiner));
 		}
 		return "";
 	},
@@ -204,7 +213,14 @@ What.prototype.get = function() {
 };
 What.prototype.set = function(str) {
 	if (this.node) {
-		this.node.nodeValue = str;
+		if (this.html) {
+			var cont = this.node.ownerDocument.createElement("div");
+			cont.innerHTML = str;
+			while (cont.firstChild) this.node.parentNode.insertBefore(cont.firstChild, this.node);
+			this.node.remove();
+		} else {
+			this.node.nodeValue = str;
+		}
 	} else {
 		if (this.initialAttr && this.attr != this.initialAttr) {
 			this.parent.removeAttribute(this.initialAttr);
