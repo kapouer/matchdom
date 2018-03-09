@@ -3,8 +3,8 @@
 <head>
 <script src="../matchdom.js"></script>
 <script>
-function run() {
-	let copy = matchdom(model.cloneNode(true), {
+function runRecursive() {
+	let copy = matchdom(recursive.cloneNode(true), {
 		rows: [
 			{cells: ['A1', 'A2']},
 			{cells: ['B1', 'B2']}
@@ -12,10 +12,20 @@ function run() {
 	});
 	result.appendChild(copy);
 }
+function runArray() {
+	let copy = matchdom(array.cloneNode(true), [
+		{test: 'one'},
+		{test: 'two'}
+	]);
+	result.appendChild(copy);
+}
 </script>
 </head>
 <body>
-<div id="model">
+<div id="array">
+	<span>[test|repeat]</span>
+</div>
+<div id="recursive">
 <table>
 	<tr>
 		<td>[rows.cells|repeat:tr|repeat]</td>
