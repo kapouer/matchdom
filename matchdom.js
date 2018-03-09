@@ -184,10 +184,10 @@ What.prototype.set = function(str) {
 	if (this.node) {
 		this.node.nodeValue = str;
 	} else {
-		if (this.attr != this.initialAttr) {
+		if (this.initialAttr && this.attr != this.initialAttr) {
 			this.parent.removeAttribute(this.initialAttr);
-			this.initialAttr = this.attr;
 		}
+		this.initialAttr = this.attr;
 		if (str != null) this.parent.setAttribute(this.attr, str);
 		else this.parent.removeAttribute(this.attr);
 	}
