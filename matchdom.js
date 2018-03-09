@@ -47,8 +47,6 @@ matchdom.filters = {
 		var parent = what.parent;
 		if (selector) parent = parent.closest(selector);
 		if (!parent) return null;
-		if (value == null) value = [];
-		if (typeof value != "object") value = [value];
 		var o = matchdom.Symbols.open;
 		var c = matchdom.Symbols.close;
 		var data = what.scope || what.data;
