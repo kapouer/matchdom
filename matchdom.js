@@ -13,7 +13,16 @@ var Symbols = matchdom.Symbols = {
 
 matchdom.filters = {
 	attr: function(value, what, name) {
-		what.attr = name || what.attr.startsWith('data-') && what.attr.substring(5);
+		if (!what.attr) {
+			if (name) {
+				what.parent.setAttribute(name, value);
+				return null;
+			} else {
+				console.warn("attr filter in text node need a :name parameter");
+			}
+		} else {
+			what.attr = name || what.attr.startsWith('data-') && what.attr.substring(5);
+		}
 	},
 	magnet: function(value, what, selector) {
 		if (value != null) return;
