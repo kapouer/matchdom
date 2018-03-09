@@ -50,7 +50,6 @@ matchdom.filters = {
 		var c = matchdom.Symbols.close;
 		var data = what.scope || what.data;
 		var expr = what.expr.clone();
-		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
 		var path = expr.path;
 		var head;
 		while (path.length) {
@@ -61,9 +60,11 @@ matchdom.filters = {
 			data = data[head];
 			if (data == null) break;
 		}
+		if (typeof data == "string") return;
 		if (data == null) data = [];
 		if (!alias) alias = head;
 		if (alias) path.unshift(alias);
+		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
 		what.set(what.get().replace(o + expr.initial + c, o + expr.toString() + c));
 		var copy, scope;
 		var grandParent = parent.parentNode;
