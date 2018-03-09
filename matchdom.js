@@ -86,6 +86,19 @@ matchdom.filters = {
 		if (it[0]) old[0] = it[0];
 		if (it[1]) old[1] = it[1];
 		return old[0] + (old[1] ? '?' + old[1] : '');
+	},
+	date: function(val, what, method, param) {
+		var d = new Date(val);
+		var fn = name && d[method] || d.toLocaleString;
+		return fn.call(d, param);
+	},
+	padStart: function(val, what, size, char) {
+		if (val == null || !size || char == null) return;
+		return val.toString().padStart(size, char);
+	},
+	padEnd: function(val, what, size, char) {
+		if (val == null || !size || char == null) return;
+		return val.toString().padEnd(size, char);
 	}
 };
 

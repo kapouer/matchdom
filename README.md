@@ -132,6 +132,7 @@ so there is a filter just for that:
 <div id="model">
 	<img data-src="[url|attr]" />
 	<img something="[url|attr:src]" />
+	<a>test[url|attr:href]</a>
 </div>
 ```
 
@@ -140,8 +141,12 @@ gives:
 <div id="model">
 	<img src="/my.png" />
 	<img src="/my.png" />
+	<a href="/my.png">test</a>
 </div>
 ```
+
+See ? it's possible to set an attribute with an expression in the text node !
+
 
 ### url:name
 
@@ -168,4 +173,13 @@ rows and cells to form a table, see unit tests for examples:
 <td>[rows.cells.val|repeat:tr|repeat]</td>
 </tr></table>
 ```
+
+### padStart, padEnd :len:char
+
+Converts to string and calls the padXxx(len, char)
+
+### date:method:param
+
+Converts to date and calls `.method(param)` on it.
+If not method or method is not found, calls `toLocaleString`.
 

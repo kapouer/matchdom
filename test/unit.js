@@ -282,6 +282,42 @@ describe('join filter', function() {
 	});
 });
 
+describe('pad', function() {
+	it('start', function() {
+		let node = dom`<p>[str|padStart:3:x]</p>`;
+		let copy = matchdom(node, {
+			str: 'a'
+		});
+		assert.equal(copy.outerHTML, '<p>xxa</p>');
+	});
+
+	it('end', function() {
+		let node = dom`<p>[str|padEnd:3:x]</p>`;
+		let copy = matchdom(node, {
+			str: 'a'
+		});
+		assert.equal(copy.outerHTML, '<p>axx</p>');
+	});
+});
+
+describe('date filter', function() {
+	it('toLocaleString', function() {
+		let node = dom`<p>[str|date::en]</p>`;
+		let copy = matchdom(node, {
+			str: '2018-03-09T11:12:56.739Z'
+		});
+		assert.equal(copy.outerHTML, '<p>3/9/2018, 12:12:56 PM</p>');
+	});
+
+	it('getYear', function() {
+		let node = dom`<p>[str|date:getFullYear]</p>`;
+		let copy = matchdom(node, {
+			str: '2018-03-09T11:12:56.739Z'
+		});
+		assert.equal(copy.outerHTML, '<p>2018</p>');
+	});
+});
+
 describe('url filter', function() {
 	it('should merge url query with target pathname', function() {
 		let node = dom`<a href="/test" data-href="[href|url]">[title]</a>`;
