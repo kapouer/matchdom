@@ -44,6 +44,14 @@ describe('attributes', function() {
 		});
 		assert.equal(copy.outerHTML, '<span class="one 2 three 4">no?</span>');
 	});
+
+	it('should do fine when filters are not defined', function() {
+		let node = dom`<span data-test="[test|notfound:ff|notfound2:kk]">yes</span>`;
+		let copy = matchdom(node, {
+			test: "yes"
+		});
+		assert.equal(copy.outerHTML, '<span data-test="yes">yes</span>');
+	});
 });
 
 describe('filters on text nodes', function() {
@@ -119,15 +127,7 @@ describe('filters on text nodes', function() {
 	});
 });
 
-describe('filters on attributes', function() {
-	it('should be replaced with parameters should do nothing', function() {
-		let node = dom`<span data-test="[test|notfound:ff|notfound2:kk]">yes</span>`;
-		let copy = matchdom(node, {
-			test: "yes"
-		});
-		assert.equal(copy.outerHTML, '<span data-test="yes">yes</span>');
-	});
-
+describe('attr filter', function() {
 	it('should be renamed and merged with simple value', function() {
 		let node = dom`<img data-src="[test|attr]">`;
 		let copy = matchdom(node, {
@@ -142,6 +142,14 @@ describe('filters on attributes', function() {
 			test: "yes"
 		});
 		assert.equal(copy.outerHTML, '<img src="yes">');
+	});
+
+	it('should set attribute even when defined in the text node', function() {
+		let node = dom`<a>test[href|attr:href]</a>`;
+		let copy = matchdom(node, {
+			href: "/test"
+		});
+		assert.equal(copy.outerHTML, '<a href="/test">test</a>');
 	});
 });
 
