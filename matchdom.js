@@ -146,7 +146,8 @@ function matchdom(parent, data, filters, scope) {
 			what.index = i;
 			var val = mutate(what);
 			if (val === null) val = "";
-			hits[what.index] = val;
+			if (val !== undefined) hits[what.index] = val;
+			else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
 		});
 		hits = hits.filter(function(val) {
 			return val !== undefined;
