@@ -101,7 +101,12 @@ matchdom.filters = {
 		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
 		what.set(what.get().replace(o + expr.initial + c, o + expr.toString() + c));
 		var copy, scope;
-		var grandParent = parent.parentNode;
+		var ancestor = parent.parentNode;
+		if (!ancestor) {
+			ancestor = parent.ownerDocument.createDocumentFragment();
+			ancestor.appendChild(parent);
+			what.ancestor = ancestor;
+		}
 		for (var i=0; i < data.length; i++) {
 			if (alias) {
 				scope = {};
@@ -110,7 +115,7 @@ matchdom.filters = {
 				scope = data[i];
 			}
 			copy = matchdom(parent.cloneNode(true), what.data, what.filters, scope);
-			grandParent.insertBefore(copy, parent);
+			ancestor.insertBefore(copy, parent);
 		}
 		parent.remove();
 		return null;
@@ -155,6 +160,7 @@ function matchdom(parent, data, filters, scope) {
 			return val !== undefined;
 		});
 		if (hits.length > 0) what.set(hits.join(''));
+		if (what.ancestor) parent = what.ancestor;
 	});
 	return parent;
 }

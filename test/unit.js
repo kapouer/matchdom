@@ -228,6 +228,14 @@ describe('repeating', function() {
 		</div>`.outerHTML);
 	});
 
+	it('should repeat array and return fragment', function() {
+		let node = dom`<span>[arr.value|repeat]</span>`;
+		let copy = matchdom(node, {
+			arr: [{value: 'one'}, {value: 'two'}]
+		});
+		assert.equal(dom`<div>${copy}</div>`.innerHTML, '<span>one</span><span>two</span>');
+	});
+
 	it('should repeat array when filter is not the first one', function() {
 		let node = dom`<div>
 			<span>[arr.key] [arr.value|repeat]</span>

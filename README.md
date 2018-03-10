@@ -199,6 +199,9 @@ rows and cells to form a table, see unit tests for examples:
 </tr></table>
 ```
 
+Note that if root node is repeated, matchdom returns a fragment.
+
+
 ### padStart, padEnd :len:char
 
 Converts to string and calls the padXxx(len, char)
