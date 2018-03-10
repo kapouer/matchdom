@@ -400,7 +400,7 @@ describe('or', function() {
 	it('should set a default value', function() {
 		let node = dom`<p data-class="[yop|attr]" data-test="[vide|or:nothing|attr]">[str|or:empty] - [nul]</p>`;
 		let copy = matchdom(node, {});
-		assert.equal(copy.outerHTML, '<p data-class="[yop|attr]" test="nothing">empty - </p>');
+		assert.equal(copy.outerHTML, '<p data-class="[yop|attr]" test="nothing">empty - [nul]</p>');
 	});
 });
 
@@ -466,6 +466,15 @@ describe('url filter', function() {
 			title: 'anchor'
 		});
 		assert.equal(copy.outerHTML, '<a href="/this?id=xx&amp;const=1">anchor</a>');
+	});
+
+	it('should merge url query with partial template when repeated', function() {
+		let node = dom`<div><a href="/test?toto=1" data-href="?id=[id|url]">[title|repeat]</a></div>`;
+		let copy = matchdom(node, [{
+			id: 'xx',
+			title: 'anchor'
+		}]);
+		assert.equal(copy.outerHTML, '<div><a href="/test?id=xx">anchor</a></div>');
 	});
 });
 

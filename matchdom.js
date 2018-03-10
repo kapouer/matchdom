@@ -16,6 +16,7 @@ matchdom.filters = {
 		if (value == null) return str;
 	},
 	attr: function(value, what, name) {
+		if (value === undefined) return;
 		if (!what.attr) {
 			if (name) {
 				what.parent.setAttribute(name, value);
@@ -28,6 +29,7 @@ matchdom.filters = {
 		}
 	},
 	url: function(val, what, name) {
+		if (val === undefined) return;
 		var cur = (what.get() || '').split('?');
 		matchdom.filters.attr(val, what, name);
 		var tgt = (what.get() || '').split('?');
