@@ -78,8 +78,8 @@ matchdom.filters = {
 		var parent = what.parent;
 		if (selector) parent = parent.closest(selector);
 		if (!parent) return null;
-		var o = matchdom.Symbols.open;
-		var c = matchdom.Symbols.close;
+		var o = Symbols.open;
+		var c = Symbols.close;
 		var data = what.scope || what.data;
 		var expr = what.expr.clone();
 		var path = expr.path;
@@ -302,7 +302,7 @@ Expression.prototype.toString = function() {
 
 Expression.prototype.get = function(data, path) {
 	if (path) {
-		if (typeof path == "string") path = path.split(matchdom.Symbols.path);
+		if (typeof path == "string") path = path.split(Symbols.path);
 	} else {
 		path = this.path;
 	}
