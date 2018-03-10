@@ -75,6 +75,8 @@ with the following properties:
 - parent: node containing text node or attribute
 - expr: the parsed expression
 - filters: the object with custom filters
+- hits: the list of strings or expressions that will be concatenated
+- index: the current index of expression upon which the filter is called
 
 and the following methods (which are useful to write filters that are
 independent of their position inside a text node or an attribute):
@@ -171,8 +173,12 @@ See ? it's possible to set an attribute with an expression in the text node !
 
 The name parameter is optional as for attr:name (which is called by this filter).
 
-Merges pathname, query of url to the value of the target attribute.
+Merges a value that is part of an url attribute, into a target attribute,
+with the following rules:
 
+- if url has no pathname, prepend pathname of target attribute if any
+- if url has no query, append the query of target attribute if any
+- if url has both, overwrite target attribute
 
 ### magnet:selector
 

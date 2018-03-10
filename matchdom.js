@@ -27,6 +27,26 @@ matchdom.filters = {
 			what.attr = name || what.attr.startsWith('data-') && what.attr.substring(5);
 		}
 	},
+	url: function(val, what, name) {
+		var cur = (what.get() || '').split('?');
+		matchdom.filters.attr(val, what, name);
+		var tgt = (what.get() || '').split('?');
+		var parts = (val || '').split('?');
+		if (cur[0] == "") {
+			what.hits[0] = tgt[0] + what.hits[0];
+		} else if (what.index == 0) {
+			if (val.startsWith('?')) {
+				if (tgt[0]) {
+					what.hits.unshift(tgt[0]);
+					what.index++;
+				}
+			} else if (tgt[1] != null && parts[1] == null) {
+				what.hits.push('?' + tgt[1]);
+			}
+		} else if (cur[1] == null && tgt[1] != null) {
+			what.hits.push(tgt[1]);
+		}
+	},
 	magnet: function(value, what, selector) {
 		if (value != null) return;
 		var parent = what.parent;
@@ -93,14 +113,6 @@ matchdom.filters = {
 		parent.remove();
 		return null;
 	},
-	url: function(url, what, name) {
-		matchdom.filters.attr(url, what, name);
-		var old = what.get().split('?');
-		var it = url.split('?');
-		if (it[0]) old[0] = it[0];
-		if (it[1]) old[1] = it[1];
-		return old[0] + (old[1] ? '?' + old[1] : '');
-	},
 	date: function(val, what, method, param) {
 		var d = new Date(val);
 		var fn = name && d[method] || d.toLocaleString;
@@ -123,20 +135,29 @@ function matchdom(parent, data, filters, scope) {
 
 	matchEachDom(parent, re, function(node, hits, attr) {
 		var what = new What(data, filters, node, attr, scope);
-		var strlist = hits.map(function(hit) {
+		hits = hits.map(function(hit) {
 			if (hit.str) return hit.str;
-			var val = mutate(what, hit.hits[1]);
-			return val === null ? "" : val;
-		}).filter(function(val) {
+			return new Expression(hit.hits[1], what.filters);
+		});
+		what.hits = hits;
+		hits.forEach(function(hit, i) {
+			if (typeof hit == "string") return;
+			what.expr = hit;
+			what.index = i;
+			var val = mutate(what);
+			if (val === null) val = "";
+			hits[what.index] = val;
+		});
+		hits = hits.filter(function(val) {
 			return val !== undefined;
 		});
-		if (strlist.length > 0) what.set(strlist.join(''));
+		if (hits.length > 0) what.set(hits.join(''));
 	});
 	return parent;
 }
 
-function mutate(what, str) {
-	var expr = what.expr = new Expression(str, what.filters);
+function mutate(what) {
+	var expr = what.expr;
 	var val = what.scope && expr.get(what.scope);
 	if (val === undefined) val = expr.get(what.data);
 	var filter, ret;

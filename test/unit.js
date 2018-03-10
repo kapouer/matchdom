@@ -449,5 +449,23 @@ describe('url filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<a href="/path?a=1&amp;b=2">anchor</a>');
 	});
+
+	it('should merge url query with partial template', function() {
+		let node = dom`<a href="/test?toto=1" data-href="?id=[id|url]">[title]</a>`;
+		let copy = matchdom(node, {
+			id: 'xx',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/test?id=xx">anchor</a>');
+	});
+
+	it('should overwrite url pathname and query with partial template', function() {
+		let node = dom`<a href="/test?toto=1" data-href="/this?id=[id|url]&amp;const=1">[title]</a>`;
+		let copy = matchdom(node, {
+			id: 'xx',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/this?id=xx&amp;const=1">anchor</a>');
+	});
 });
 
