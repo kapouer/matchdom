@@ -494,5 +494,13 @@ describe('url filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<div><a href="/test?id=xx&amp;status=12">anchor</a></div>');
 	});
+
+	it('should not crash when data is not string', function() {
+		let node = dom`<div><a href="/test?toto=1" data-href="?id=[id|url]">aaa</a></div>`;
+		let copy = matchdom(node, {
+			id: 12
+		});
+		assert.equal(copy.outerHTML, '<div><a href="/test?id=12">aaa</a></div>');
+	});
 });
 

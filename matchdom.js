@@ -31,6 +31,7 @@ matchdom.filters = {
 	},
 	url: function(val, what, name) {
 		if (val === undefined) return;
+		if (val != null && typeof val != "string") val = "" + val;
 		var cur = (what.get() || '').split('?');
 		matchdom.filters.attr(val, what, name);
 		var tgt = (what.get() || '').split('?');
