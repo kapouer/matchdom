@@ -25,7 +25,8 @@ matchdom.filters = {
 				console.warn("attr filter in text node need a :name parameter");
 			}
 		} else {
-			what.attr = name || what.attr.startsWith('data-') && what.attr.substring(5);
+			var attr = name || what.attr.startsWith('data-') && what.attr.substring(5);
+			if (attr) what.attr = attr;
 		}
 	},
 	url: function(val, what, name) {

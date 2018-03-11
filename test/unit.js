@@ -484,5 +484,15 @@ describe('url filter', function() {
 		}]);
 		assert.equal(copy.outerHTML, '<div><a href="/test?id=xx">anchor</a></div>');
 	});
+
+	it('should be able to be called multiple times for the same attribute', function() {
+		let node = dom`<div><a href="/test?toto=1" data-href="?id=[id|url]&amp;status=[status|url]">[title]</a></div>`;
+		let copy = matchdom(node, {
+			id: 'xx',
+			title: 'anchor',
+			status: "12"
+		});
+		assert.equal(copy.outerHTML, '<div><a href="/test?id=xx&amp;status=12">anchor</a></div>');
+	});
 });
 
