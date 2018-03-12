@@ -58,7 +58,7 @@ matchdom.filters = {
 		if (cur[0] == "") {
 			what.hits[0] = tgt[0] + what.hits[0];
 		} else if (what.index == 0) {
-			if (val.startsWith('?')) {
+			if (val && val.startsWith('?')) {
 				if (tgt[0]) {
 					what.hits.unshift(tgt[0]);
 					what.index++;
