@@ -104,7 +104,10 @@ matchdom.filters = {
 		if (!alias) alias = head;
 		if (alias) path.unshift(alias);
 		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
-		what.set(what.get().replace(o + expr.initial + c, o + expr.toString() + c));
+		var cur = what.get();
+		if (cur != null) {
+			what.set(cur.replace(o + expr.initial + c, o + expr.toString() + c));
+		}
 		var copy, scope;
 		var ancestor = parent.parentNode;
 		if (!ancestor) {
