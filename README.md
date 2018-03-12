@@ -127,12 +127,18 @@ complex code doing that.
 
 Examples can be found in tests.
 
-### html, text
+### html, br, text
 
-By default all values are merged as text. Use `[str|html]` to merge as html,
-and use text again to disable it: `[str|html|text]` is the same as `[str]`.
+By default all strings are set into text nodes with newlines replaced by  `<br>`.
+
+The `text` removes that behavior (newlines won't be replaced).
+
+The `html` filter inserts html code as is.
+
+The `br` filter sets default behavior again.
 
 html filter also works well with join filter.
+
 
 ### or:str
 

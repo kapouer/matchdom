@@ -41,6 +41,14 @@ describe('text nodes', function() {
 		});
 		assert.equal(copy.outerHTML, '<span>test<b>bold</b><i>italic</i>test</span>');
 	});
+
+	it('should replace newlines with br', function() {
+		let node = dom`<p>[str]</p>`;
+		let copy = matchdom(node, {
+			str: "test\n\ntest\n"
+		});
+		assert.equal(copy.outerHTML, '<p>test<br><br>test<br></p>');
+	});
 });
 
 describe('attributes', function() {

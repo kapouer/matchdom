@@ -58,10 +58,13 @@ matchdom.filters = {
 		if (parent) parent.remove();
 	},
 	html: function(value, what) {
-		what.html = true;
+		what.mode = 'html';
 	},
 	text: function(value, what) {
-		what.html = false;
+		what.mode = 'text';
+	},
+	br: function(value, what) {
+		what.mode = 'br';
 	},
 	join: function(value, what, bef, tag, aft) {
 		if (value == null || !value.join) return;
@@ -69,7 +72,7 @@ matchdom.filters = {
 		if (!aft) aft = '';
 		if (!tag) return value.join(bef + aft);
 		var doc = what.node.ownerDocument;
-		if (!what.html) for (var i=0; i < value.length; i++) {
+		if (what.mode != 'html') for (var i=0; i < value.length; i++) {
 			what.parent.insertBefore(doc.createTextNode((i > 0 ? aft : "") + value[i] + bef), what.node);
 			if (i < value.length - 1) what.parent.insertBefore(doc.createElement(tag), what.node);
 		} else {
@@ -234,6 +237,7 @@ function matchText(str, re) {
 }
 
 function What(data, filters, node, attr, scope) {
+	this.mode = 'br';
 	this.data = data;
 	if (scope) this.scope = scope;
 	this.filters = filters;
@@ -252,13 +256,24 @@ What.prototype.get = function() {
 };
 What.prototype.set = function(str) {
 	if (this.node) {
-		if (this.html) {
-			var cont = this.node.ownerDocument.createElement("div");
+		var doc = this.node.ownerDocument;
+		var parent = this.node.parentNode;
+		if (this.mode == 'html') {
+			var cont = doc.createElement("div");
 			cont.innerHTML = str;
-			while (cont.firstChild) this.node.parentNode.insertBefore(cont.firstChild, this.node);
-			this.node.remove();
-		} else {
+			while (cont.firstChild) {
+				parent.insertBefore(cont.firstChild, this.node);
+			}
+			this.node.nodeValue = "";
+		} else if (this.mode == 'text') {
 			this.node.nodeValue = str;
+		} else {
+			var list = str.split('\n');
+			for (var i=0; i < list.length; i++) {
+				last = parent.insertBefore(doc.createTextNode(list[i]), this.node);
+				if (i < list.length - 1) parent.insertBefore(doc.createElement('br'), this.node);
+			}
+			this.node.nodeValue = "";
 		}
 	} else {
 		if (this.initialAttr && this.attr != this.initialAttr) {
