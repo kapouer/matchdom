@@ -19,7 +19,7 @@ matchdom.filters = {
 		if (value === undefined) return;
 		if (!what.attr) {
 			if (name) {
-				what.parent.setAttribute(name, value);
+				if (value !== null) what.parent.setAttribute(name, value);
 				return null;
 			} else {
 				console.warn("attr filter in text node need a :name parameter");
@@ -164,14 +164,17 @@ function matchdom(parent, data, filters, scope) {
 			what.expr = hit;
 			what.index = i;
 			var val = mutate(what);
-			if (val === null) val = "";
 			if (val !== undefined) hits[what.index] = val;
 			else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
 		});
+		var allNulls = true;
 		hits = hits.filter(function(val) {
+			if (val !== null) allNulls = false;
 			return val !== undefined;
 		});
-		if (hits.length > 0) what.set(hits.join(''));
+		if (hits.length > 0) {
+			what.set(allNulls ? null : hits.join(''));
+		}
 		if (what.ancestor) parent = what.ancestor;
 	});
 	return parent;
@@ -263,6 +266,7 @@ What.prototype.get = function() {
 };
 What.prototype.set = function(str) {
 	if (this.node) {
+		if (str == null) str = "";
 		var doc = this.node.ownerDocument;
 		var parent = this.node.parentNode;
 		if (this.mode == 'html') {
