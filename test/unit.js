@@ -199,6 +199,12 @@ describe('attr filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<div class="test product"><span>test</span></div>');
 	});
+
+	it ('should set attribute of selected ancestor with undefined or filter', function() {
+		let node = dom`<div><span>test[*|or:toto|attr:class:div]</span></div>`;
+		let copy = matchdom(node, {});
+		assert.equal(copy.outerHTML, '<div class="toto"><span>test</span></div>');
+	});
 });
 
 describe('repeating', function() {
