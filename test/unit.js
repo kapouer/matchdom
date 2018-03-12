@@ -540,5 +540,21 @@ describe('url filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<div><a href="/test?id=12">aaa</a></div>');
 	});
+
+	it('should remove current attribute', function() {
+		let node = dom`<div><a data-href="/test?[test|magnet|url]">test</a></div>`;
+		let copy = matchdom(node, {
+			// test: null
+		});
+		assert.equal(copy.outerHTML, '<div><a>test</a></div>');
+	});
+
+	it('should remove current node', function() {
+		let node = dom`<div><a href="" data-href="[test|magnet:a|url]">test</a></div>`;
+		let copy = matchdom(node, {
+			// test: null
+		});
+		assert.equal(copy.outerHTML, '<div></div>');
+	});
 });
 
