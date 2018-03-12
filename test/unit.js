@@ -438,6 +438,23 @@ describe('join filter', function() {
 	});
 });
 
+describe('slice filter', function() {
+	it('should slice array with begin and end', function() {
+		let node = dom`<p>[arr|slice:1:3|join: ]</p>`;
+		let copy = matchdom(node, {
+			arr: ['word1', 'word2', 'word3']
+		});
+		assert.equal(copy.outerHTML, '<p>word2 word3</p>');
+	});
+	it('should slice array with begin', function() {
+		let node = dom`<p>[arr|slice:2|join: ]</p>`;
+		let copy = matchdom(node, {
+			arr: ['word1', 'word2', 'word3', 'word4']
+		});
+		assert.equal(copy.outerHTML, '<p>word3 word4</p>');
+	});
+});
+
 describe('pad', function() {
 	it('start', function() {
 		let node = dom`<p>[str|padStart:3:x]</p>`;

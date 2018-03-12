@@ -233,3 +233,12 @@ Converts to string and calls the padXxx(len, char)
 Converts to date and calls `.method(param)` on it.
 If not method or method is not found, calls `toLocaleString`.
 
+### join:pre:tag:post
+
+Joins an array with optional tag and characters before/after tag.
+Often useful with `[list|join::br]`.
+
+### slice:begin:end
+
+Slices an array with optional end index. Works well with join filter.
+

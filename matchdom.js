@@ -163,6 +163,14 @@ matchdom.filters = {
 	padEnd: function(val, what, size, char) {
 		if (val == null || !size || char == null) return;
 		return val.toString().padEnd(size, char);
+	},
+	slice: function(val, what, begin, end) {
+		if (!val || !val.slice) return;
+		begin = parseInt(begin);
+		if (isNaN(begin)) return;
+		end = parseInt(end);
+		if (isNaN(end)) end = undefined;
+		return val.slice(begin, end);
 	}
 };
 
