@@ -450,6 +450,22 @@ describe('or', function() {
 	});
 });
 
+describe('eq', function() {
+	it('should set another value if equal', function() {
+		let node = dom`<p>[val|eq:ceci:cela]</p>`;
+		let copy = matchdom(node, {val: 'ceci'});
+		assert.equal(copy.outerHTML, '<p>cela</p>');
+	});
+});
+
+describe('not', function() {
+	it('should set to null if empty', function() {
+		let node = dom`<p data-test="[val|not]">test</p>`;
+		let copy = matchdom(node, {val: ''});
+		assert.equal(copy.outerHTML, '<p>test</p>');
+	});
+});
+
 describe('date filter', function() {
 	it('toLocaleString', function() {
 		let node = dom`<p>[str|date::en]</p>`;

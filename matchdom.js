@@ -15,6 +15,12 @@ matchdom.filters = {
 	or: function(value, what, str) {
 		if (value == null) return str;
 	},
+	eq: function(value, what, str, to) {
+		if (value == str) return to;
+	},
+	not: function(value) {
+		if (!value) return null;
+	},
 	attr: function(value, what, name) {
 		if (value === undefined) return;
 		if (!what.attr) {
