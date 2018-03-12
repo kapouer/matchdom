@@ -53,6 +53,10 @@ matchdom.filters = {
 	},
 	magnet: function(value, what, selector) {
 		if (value != null) return;
+		if (what.attr && !selector) {
+			what.attr = null;
+			return;
+		}
 		var parent = what.parent;
 		if (selector) parent = parent.closest(selector);
 		if (parent) parent.remove();
@@ -283,8 +287,10 @@ What.prototype.set = function(str) {
 			this.parent.removeAttribute(this.initialAttr);
 		}
 		this.initialAttr = this.attr;
-		if (str != null) this.parent.setAttribute(this.attr, str);
-		else this.parent.removeAttribute(this.attr);
+		if (this.attr) {
+			if (str != null) this.parent.setAttribute(this.attr, str);
+			else this.parent.removeAttribute(this.attr);
+		}
 	}
 	return str;
 };

@@ -130,7 +130,7 @@ describe('filters on text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>me and you</span>');
 	});
 
-	it('should be able to remove current node', function() {
+	it('should remove current node', function() {
 		let node = dom`<div><span>[test|magnet]</span></div>`;
 		let copy = matchdom(node, {
 			// test: null
@@ -138,7 +138,7 @@ describe('filters on text nodes', function() {
 		assert.equal(copy.outerHTML, '<div></div>');
 	});
 
-	it('should be able to remove closest tr', function() {
+	it('should remove closest tr', function() {
 		let node = dom`<table><tbody>
 			<th><td>Hello</td></tr><tr><td>[test|magnet:tr]</td></tr>
 		</tbody></table>`;
@@ -148,6 +148,22 @@ describe('filters on text nodes', function() {
 		assert.equal(copy.outerHTML, dom`<table><tbody>
 			<th><td>Hello</td></tr>
 		</tbody></table>`.outerHTML);
+	});
+
+	it('should remove current attribute', function() {
+		let node = dom`<div><span class="some [test|magnet]">test</span></div>`;
+		let copy = matchdom(node, {
+			// test: null
+		});
+		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
+	});
+
+	it('should remove current node from attribute', function() {
+		let node = dom`<div><span class="some [test|magnet:span]">test</span></div>`;
+		let copy = matchdom(node, {
+			// test: null
+		});
+		assert.equal(copy.outerHTML, '<div></div>');
 	});
 });
 
