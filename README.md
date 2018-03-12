@@ -147,6 +147,15 @@ If value is null or undefined, merge the field with str.
 Can be useful also if undefined values are expected since they could be left
 unmerged (thus showing template expressions).
 
+### eq:str:to
+
+If value is equal to `str`, replace it with `to`.
+
+
+### not
+
+If value evalutates to false, replace it with `null`.
+
 
 ### attr:name
 
