@@ -13,7 +13,8 @@
   "keywords": [
     "DOM",
     "template",
-    "merge"
+    "merge",
+    "prosemirror"
   ],
   "author": "Jérémy Lal <kapouer@melix.org>",
   "license": "MIT",

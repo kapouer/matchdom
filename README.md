@@ -1,4 +1,4 @@
-# matchdom -- tiny DOM data merger
+# matchdom -- tiny DOM data merger for HTML editors
 
 Write expressions in attributes or text nodes and have them merged with the
 help of filters for complex or custom cases.
