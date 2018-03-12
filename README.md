@@ -157,9 +157,12 @@ If value is equal to `str`, replace it with `to`.
 If value evalutates to false, replace it with `null`.
 
 
-### attr:name
+### attr:name:selector
 
 The name parameter is optional for data-* attributes.
+
+The selector parameter is optional and selects an ancestor only when defined
+in a text node.
 
 Sometimes the template for an attribute is better kept in another attribute,
 so there is a filter just for that:
@@ -169,6 +172,7 @@ so there is a filter just for that:
 	<img data-src="[url|attr]" />
 	<img something="[url|attr:src]" />
 	<a>test[url|attr:href]</a>
+	<div><p>test[myclass|attr:class:div]</p></div>
 </div>
 ```
 
@@ -178,6 +182,7 @@ gives:
 	<img src="/my.png" />
 	<img src="/my.png" />
 	<a href="/my.png">test</a>
+	<div class="my"><p>test</p></div>
 </div>
 ```
 

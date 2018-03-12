@@ -191,6 +191,14 @@ describe('attr filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<a href="/test">test</a>');
 	});
+
+	it('should set attribute of selected ancestor when defined in text node', function() {
+		let node = dom`<div><span>test[myclass|attr:class:div]</span></div>`;
+		let copy = matchdom(node, {
+			myclass: "test product"
+		});
+		assert.equal(copy.outerHTML, '<div class="test product"><span>test</span></div>');
+	});
 });
 
 describe('repeating', function() {

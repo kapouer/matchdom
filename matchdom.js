@@ -21,18 +21,27 @@ matchdom.filters = {
 	not: function(value) {
 		if (!value) return null;
 	},
-	attr: function(value, what, name) {
+	attr: function(value, what, name, selector) {
 		if (value === undefined) return;
 		if (!what.attr) {
 			if (name) {
-				if (value !== null) what.parent.setAttribute(name, value);
+				var parent = what.parent;
+				var parent = what.parent;
+				if (selector) parent = parent.closest(selector);
+				if (parent && value !== null) {
+					parent.setAttribute(name, value);
+				}
 				return null;
 			} else {
 				console.warn("attr filter in text node need a :name parameter");
 			}
 		} else {
-			var attr = name || what.attr.startsWith('data-') && what.attr.substring(5);
-			if (attr) what.attr = attr;
+			if (!selector) {
+				var attr = name || what.attr.startsWith('data-') && what.attr.substring(5);
+				if (attr) what.attr = attr;
+			} else {
+				console.warn("attr filter in attribute cannot select ancestor");
+			}
 		}
 	},
 	url: function(val, what, name) {
