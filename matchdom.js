@@ -29,7 +29,11 @@ matchdom.filters = {
 				var parent = what.parent;
 				if (selector) parent = parent.closest(selector);
 				if (parent && value !== null) {
-					parent.setAttribute(name, value);
+					if (name == "class") {
+						parent.classList.add.apply(parent.classList, value.split(' '))
+					} else {
+						parent.setAttribute(name, value);
+					}
 				}
 				return null;
 			} else {

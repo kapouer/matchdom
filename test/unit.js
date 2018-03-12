@@ -193,11 +193,11 @@ describe('attr filter', function() {
 	});
 
 	it('should set attribute of selected ancestor when defined in text node', function() {
-		let node = dom`<div><span>test[myclass|attr:class:div]</span></div>`;
+		let node = dom`<div class="add"><span>test[myclass|attr:class:div]</span></div>`;
 		let copy = matchdom(node, {
 			myclass: "test product"
 		});
-		assert.equal(copy.outerHTML, '<div class="test product"><span>test</span></div>');
+		assert.equal(copy.outerHTML, '<div class="add test product"><span>test</span></div>');
 	});
 
 	it ('should set attribute of selected ancestor with undefined or filter', function() {

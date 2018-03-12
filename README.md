@@ -172,7 +172,7 @@ so there is a filter just for that:
 	<img data-src="[url|attr]" />
 	<img something="[url|attr:src]" />
 	<a>test[url|attr:href]</a>
-	<div><p>test[myclass|attr:class:div]</p></div>
+	<div class="test"><p>test[myclass|attr:class:div]</p></div>
 </div>
 ```
 
@@ -182,11 +182,13 @@ gives:
 	<img src="/my.png" />
 	<img src="/my.png" />
 	<a href="/my.png">test</a>
-	<div class="my"><p>test</p></div>
+	<div class="test my"><p>test</p></div>
 </div>
 ```
 
-See ? it's possible to set an attribute with an expression in the text node !
+It's possible to set an attribute with an expression in a text node.
+
+When targeting a class attributes, values are added using `classList.add`.
 
 
 ### url:name
