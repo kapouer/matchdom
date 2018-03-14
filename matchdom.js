@@ -153,7 +153,7 @@ matchdom.filters = {
 	},
 	date: function(val, what, method, param) {
 		var d = new Date(val);
-		var fn = name && d[method] || d.toLocaleString;
+		var fn = method && d[method] || d.toLocaleString;
 		return fn.call(d, param);
 	},
 	padStart: function(val, what, size, char) {
