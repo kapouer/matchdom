@@ -368,7 +368,7 @@ describe('repeating', function() {
 		</table>`.outerHTML);
 	});
 
-	it('should repeat renamed array items', function() {
+	it('should repeat aliased array items', function() {
 		let node = dom`<table>
 			<tr>
 				<td>[cells.txt|repeat:td:cell] [cell.txt]</td>
