@@ -89,6 +89,10 @@ being merged.
 In particular, changing `what.attr` will remove the original attribute and
 set a new attribute with that name.
 
+`what` itself is shared by filters of the same field, allowing filters to set
+flags picked up by other filters (like the `mode` flag set by `html`, `text`,
+and `br` filters).
+
 Filters can receive more string parameters by appending `:param` (once or
 multiple times) to the filter name, like this:
 
@@ -131,7 +135,7 @@ Examples can be found in tests.
 
 By default all strings are set into text nodes with newlines replaced by  `<br>`.
 
-The `text` removes that behavior (newlines won't be replaced).
+The `text` filter removes that behavior (newlines won't be replaced).
 
 The `html` filter inserts html code as is.
 
@@ -147,6 +151,7 @@ If value is null or undefined, merge the field with str.
 Can be useful also if undefined values are expected since they could be left
 unmerged (thus showing template expressions).
 
+
 ### eq:str:to
 
 If value is equal to `str`, replace it with `to`.
@@ -154,7 +159,7 @@ If value is equal to `str`, replace it with `to`.
 
 ### not
 
-If value evalutates to false, replace it with `null`.
+If value is falsey, replace it with `null`.
 
 
 ### attr:name:selector
@@ -188,19 +193,20 @@ gives:
 
 It's possible to set an attribute with an expression in a text node.
 
-When targeting a class attributes, values are added using `classList.add`.
+When targeting a class attribute, values are added using `classList.add`.
 
 
 ### url:name
 
 The name parameter is optional as for attr:name (which is called by this filter).
 
-Merges a value that is part of an url attribute, into a target attribute,
-with the following rules:
+This filter merges a value that is part of an url attribute, into a target
+attribute with the following rules:
 
 - if url has no pathname, prepend pathname of target attribute if any
 - if url has no query, append the query of target attribute if any
 - if url has both, overwrite target attribute
+
 
 ### magnet:selector
 
@@ -227,17 +233,22 @@ Note that if root node is repeated, matchdom returns a fragment.
 
 ### padStart, padEnd :len:char
 
-Converts to string and calls the padXxx(len, char)
+Converts to string and calls `String.prototype.padXxx(len, char)`.
+
 
 ### date:method:param
 
-Converts to date and calls `.method(param)` on it.
-If not method or method is not found, calls `toLocaleString`.
+Converts to date and calls `Date.prototype[method](param)`.
+
+If no method is given, or method is not found, calls `toLocaleString`.
+
 
 ### join:pre:tag:post
 
 Joins an array with optional tag and characters before/after tag.
+
 Often useful with `[list|join::br]`.
+
 
 ### slice:begin:end
 
