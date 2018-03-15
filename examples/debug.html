@@ -19,6 +19,21 @@ function runArray() {
 	]);
 	result.appendChild(copy);
 }
+function runRepeatMagnet() {
+	let copy = matchdom(repeatMagnet.cloneNode(true), {
+		rows: [{
+			val: 'one',
+			col: '1'
+		}, {
+			val: 'two',
+			col: '2'
+		}, {
+			val: 'three',
+			col: null
+		}]
+	});
+	result.appendChild(copy);
+}
 </script>
 </head>
 <body>
@@ -29,6 +44,14 @@ function runArray() {
 <table>
 	<tr>
 		<td>[rows.cells|repeat:tr|repeat]</td>
+	</tr>
+</table>
+</div>
+<div id="repeatMagnet">
+<table>
+	<tr>
+		<td>[rows.val|repeat:tr]</td>
+		<td>[rows.col|magnet:tr]</td>
 	</tr>
 </table>
 </div>
