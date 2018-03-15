@@ -133,8 +133,9 @@ matchdom.filters = {
 		}
 		var copy, scope;
 		var ancestor = parent.parentNode;
+		var frag = parent.ownerDocument.createDocumentFragment();
 		if (!ancestor) {
-			ancestor = parent.ownerDocument.createDocumentFragment();
+			ancestor = frag.cloneNode();
 			ancestor.appendChild(parent);
 			what.ancestor = ancestor;
 		}
@@ -145,7 +146,9 @@ matchdom.filters = {
 			} else {
 				scope = data[i];
 			}
-			copy = matchdom(parent.cloneNode(true), what.data, what.filters, scope);
+			copy = frag.cloneNode();
+			copy.appendChild(parent.cloneNode(true));
+			copy = matchdom(copy, what.data, what.filters, scope);
 			ancestor.insertBefore(copy, parent);
 		}
 		parent.remove();
@@ -202,7 +205,10 @@ function matchdom(parent, data, filters, scope) {
 		if (hits.length > 0) {
 			what.set(allNulls ? null : hits.join(''));
 		}
-		if (what.ancestor) parent = what.ancestor;
+		if (what.ancestor) {
+			parent = what.ancestor;
+			delete what.ancestor;
+		}
 	});
 	return parent;
 }
