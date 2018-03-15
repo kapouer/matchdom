@@ -107,7 +107,10 @@ matchdom.filters = {
 	repeat: function(value, what, selector, alias) {
 		var parent = what.parent;
 		if (selector) parent = parent.closest(selector);
-		if (!parent) return null;
+		if (!parent) {
+			console.warn("Cannot repeat: ancestor not found", selector);
+			return null;
+		}
 		var o = Symbols.open;
 		var c = Symbols.close;
 		var data = what.scope || what.data;
