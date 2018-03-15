@@ -51,20 +51,6 @@ describe('repeating', function() {
 		</div>`.outerHTML);
 	});
 
-	it('should repeat array over parent of attribute with url', function() {
-		let node = dom`<div><div>
-			<img data-src="[arr|url|repeat:div]" />
-		</div></div>`;
-		let copy = matchdom(node, {
-			arr: ['one', 'two']
-		});
-		assert.equal(copy.innerHTML, dom`<div><div>
-			<img src="one" />
-		</div><div>
-			<img src="two" />
-		</div></div>`.innerHTML);
-	});
-
 	it('should repeat array', function() {
 		let node = dom`<div>
 			<span>[arr.value|repeat]</span>
