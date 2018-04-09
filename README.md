@@ -9,6 +9,10 @@ Features:
 - Comes with useful filters: attr, magnet, repeat, join and more.
 - Source code is short, simple, and does not require compilation.
 
+## Examples
+
+Run some code on [here](https://runkit.com/kapouer/5acbe92f4299c500122960d1)
+
 ## usage
 
 `matchdom(node, data, filters?, scope?) -> node`
