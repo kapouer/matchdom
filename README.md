@@ -204,13 +204,11 @@ When targeting a class attribute, values are added using `classList.add`.
 
 The name parameter is optional as for attr:name (which is called by this filter).
 
-This filter merges a value that is part of an url attribute, into a target
-attribute with the following rules:
+This filter builds a url attribute from a template and merges it into a target
+attribute.
 
-- if url has no pathname, prepend pathname of target attribute if any
-- if url has no query, append the query of target attribute if any
-- if url has both, overwrite target attribute
-
+- replace target pathname by url pathname
+- merge target query with url query
 
 ### magnet:selector
 

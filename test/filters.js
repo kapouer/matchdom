@@ -136,13 +136,22 @@ describe('url filter', function() {
 		assert.equal(copy.outerHTML, '<a href="/path?a=1&amp;b=2">anchor</a>');
 	});
 
+	it('should overwrite target query name with partial template', function() {
+		let node = dom`<a href="/test?id=1" data-href="?id=[id|url]">[title]</a>`;
+		let copy = matchdom(node, {
+			id: 'xx',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/test?id=xx">anchor</a>');
+	});
+
 	it('should merge url query with partial template', function() {
 		let node = dom`<a href="/test?toto=1" data-href="?id=[id|url]">[title]</a>`;
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor'
 		});
-		assert.equal(copy.outerHTML, '<a href="/test?id=xx">anchor</a>');
+		assert.equal(copy.outerHTML, '<a href="/test?id=xx&amp;toto=1">anchor</a>');
 	});
 
 	it('should overwrite url pathname and query with partial template', function() {
@@ -151,11 +160,11 @@ describe('url filter', function() {
 			id: 'xx',
 			title: 'anchor'
 		});
-		assert.equal(copy.outerHTML, '<a href="/this?id=xx&amp;const=1">anchor</a>');
+		assert.equal(copy.outerHTML, '<a href="/this?id=xx&amp;const=1&amp;toto=1">anchor</a>');
 	});
 
 	it('should merge url query with partial template when repeated', function() {
-		let node = dom`<div><a href="/test?toto=1" data-href="?id=[id|url]">[title|repeat]</a></div>`;
+		let node = dom`<div><a href="/test?id=1" data-href="?id=[id|url]">[title|repeat]</a></div>`;
 		let copy = matchdom(node, [{
 			id: 'xx',
 			title: 'anchor'
@@ -164,7 +173,7 @@ describe('url filter', function() {
 	});
 
 	it('should be able to be called multiple times for the same attribute', function() {
-		let node = dom`<div><a href="/test?toto=1" data-href="?id=[id|url]&amp;status=[status|url]">[title]</a></div>`;
+		let node = dom`<div><a href="/test?status=0" data-href="?id=[id|url]&amp;status=[status|url]">[title]</a></div>`;
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor',
@@ -174,7 +183,7 @@ describe('url filter', function() {
 	});
 
 	it('should not crash when data is not string', function() {
-		let node = dom`<div><a href="/test?toto=1" data-href="?id=[id|url]">aaa</a></div>`;
+		let node = dom`<div><a href="/test" data-href="?id=[id|url]">aaa</a></div>`;
 		let copy = matchdom(node, {
 			id: 12
 		});

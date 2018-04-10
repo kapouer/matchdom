@@ -48,26 +48,40 @@ matchdom.filters = {
 			}
 		}
 	},
-	url: function(val, what, name) {
-		if (val === undefined) return;
-		if (val != null && typeof val != "string") val = "" + val;
-		var cur = (what.get() || '').split('?');
-		matchdom.filters.attr(val, what, name);
-		var tgt = (what.get() || '').split('?');
-		var parts = (val || '').split('?');
-		if (cur[0] == "") {
-			what.hits[0] = tgt[0] + what.hits[0];
-		} else if (what.index == 0) {
-			if (val && val.startsWith('?')) {
-				if (tgt[0]) {
-					what.hits.unshift(tgt[0]);
+	url: function(value, what, name) {
+		if (value === undefined) return;
+		if (value != null && typeof value != "string") value = "" + value;
+		var cur = parseUrl(what.get());
+		matchdom.filters.attr(value, what, name);
+		var tgt = parseUrl(what.get());
+		var val = parseUrl(value);
+		if (what.index == 0) {
+			if (!val.pathname) {
+				if (tgt.pathname) {
+					what.hits.unshift(tgt.pathname);
 					what.index++;
 				}
-			} else if (tgt[1] != null && parts[1] == null) {
-				what.hits.push('?' + tgt[1]);
+			} else if (val.pathname) {
+				if (!val.query) {
+					what.hits.push(serializeUrl({query: tgt.query}));
+				} else {
+					what.hits[0] = serializeUrl({
+						pathname: val.pathname,
+						query: Object.assign(tgt.query || {}, val.query)
+					});
+				}
 			}
-		} else if (cur[1] == null && tgt[1] != null) {
-			what.hits.push(tgt[1]);
+		} else if (!cur.query && tgt.query) {
+			what.hits.push(serializeUrl({query: tgt.query}));
+		} else if (cur.query) {
+			if (!cur.pathname) what.hits[0] = tgt.pathname + what.hits[0];
+			if (tgt.query) {
+				for (var k in cur.query) delete tgt.query[k];
+				var tail = serializeUrl({
+					query: tgt.query
+				}).substring(1);
+				if (tail.length) what.hits.push('&' + tail);
+			}
 		}
 	},
 	magnet: function(value, what, selector) {
@@ -280,6 +294,27 @@ function matchText(str, re) {
 		str: str.substring(index)
 	});
 	return list;
+}
+
+function parseUrl(str) {
+	var obj = {};
+	var parts = (str || '').split('?');
+	obj.pathname = parts[0];
+	if (parts.length > 1) {
+		obj.query = {};
+		parts[1].split('&').forEach(function(pair) {
+			pair = pair.split('=');
+			obj.query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+		});
+	}
+	return obj;
+}
+
+function serializeUrl(obj) {
+	var str = obj.query && Object.keys(obj.query).map(function(key) {
+		return key + '=' + obj.query[key];
+	}).join('&');
+	return (obj.pathname || '') + (str && '?' + str || '');
 }
 
 function What(data, filters, node, attr, scope) {
