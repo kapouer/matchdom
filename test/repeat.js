@@ -193,5 +193,85 @@ describe('repeating', function() {
 			</tr>
 		</table>`.outerHTML);
 	});
+
+	it('should repeat array recursively, with data outside node and outside scope', function() {
+		let node = dom`<div><span>[data.title]</span><table>
+			<tr class="repeat">
+				<td><h1>[data.title]</h1></td>
+				<td><h2>[row.data.obj.title]</h2></td>
+				<td><span>[data.text]</span></td>
+				<td><p><span><strong><span>[rows.data.obj.text|repeat:.repeat:row]</span></strong></span></p></td>
+				<td>[data.extra]</td>
+			</tr>
+		</table></div>`;
+		let copy = matchdom(node, {
+			rows: [
+				{data: {obj: {title:'title1', text: 'text1'}}},
+				{data: {obj: {title:'title2', text: 'text2'}}}
+			],
+			data: {
+				extra: "extra",
+				title: "title",
+				text: "text",
+			}
+		});
+		assert.equal(copy.outerHTML, dom`<div><span>title</span><table>
+			<tr class="repeat">
+				<td><h1>title</h1></td>
+				<td><h2>title1</h2></td>
+				<td><span>text</span></td>
+				<td><p><span><strong><span>text1</span></strong></span></p></td>
+				<td>extra</td>
+			</tr><tr class="repeat">
+				<td><h1>title</h1></td>
+				<td><h2>title2</h2></td>
+				<td><span>text</span></td>
+				<td><p><span><strong><span>text2</span></strong></span></p></td>
+				<td>extra</td>
+			</tr>
+		</table></div>`.outerHTML);
+	});
+
+	it('should keep initial context when repeating array', function() {
+		let node = dom`<div><span>[data.title]</span><table>
+			<tr class="repeat">
+				<td><h1>[data.title]</h1></td>
+				<td><h2>[row.data.obj.title]</h2></td>
+				<td><span>[data.text]</span></td>
+				<td><p><span><strong><span>[rows.data.obj.text|repeat:.repeat:row]</span></strong></span></p></td>
+				<td>[data.extra]</td>
+			</tr>
+		</table></div>`;
+		var ctx = {
+			data: {
+				rows: [
+					{data: {obj: {title:'title1', text: 'text1'}}},
+					{data: {obj: {title:'title2', text: 'text2'}}}
+				],
+				data: {
+					extra: "extra",
+					title: "title",
+					text: "text",
+				}
+			}
+		};
+
+		let copy = matchdom(node, ctx, {}, ctx.data);
+		assert.equal(copy.outerHTML, dom`<div><span>title</span><table>
+			<tr class="repeat">
+				<td><h1>title</h1></td>
+				<td><h2>title1</h2></td>
+				<td><span>text</span></td>
+				<td><p><span><strong><span>text1</span></strong></span></p></td>
+				<td>extra</td>
+			</tr><tr class="repeat">
+				<td><h1>title</h1></td>
+				<td><h2>title2</h2></td>
+				<td><span>text</span></td>
+				<td><p><span><strong><span>text2</span></strong></span></p></td>
+				<td>extra</td>
+			</tr>
+		</table></div>`.outerHTML);
+	});
 });
 
