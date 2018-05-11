@@ -158,10 +158,10 @@ matchdom.filters = {
 		}
 		for (var i=0; i < data.length; i++) {
 			if (alias) {
-				scope = {};
+				scope = Object.assign({}, what.scope);
 				scope[alias] = data[i];
 			} else {
-				scope = data[i];
+				scope = Object.assign({}, what.scope, data[i]);
 			}
 			copy = frag.cloneNode();
 			copy.appendChild(parent.cloneNode(true));
