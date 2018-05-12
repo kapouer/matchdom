@@ -215,5 +215,21 @@ describe('fill filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<p><b>word</b></p>');
 	});
+
+	it('should not fill current node', function() {
+		let node = dom`<p>a[field|fill]b</p>`;
+		let copy = matchdom(node, {
+			other: 'word'
+		});
+		assert.equal(copy.outerHTML, '<p>a[field|fill]b</p>');
+	});
+
+	it('should not fill from attribute', function() {
+		let node = dom`<p data-template="[field|fill]">abb</p>`;
+		let copy = matchdom(node, {
+			other: 'word'
+		});
+		assert.equal(copy.outerHTML, '<p data-template="[field|fill]">abb</p>');
+	});
 });
 

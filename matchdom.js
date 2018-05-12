@@ -193,6 +193,7 @@ matchdom.filters = {
 		return val.slice(begin, end);
 	},
 	fill: function(val, what) {
+		if (val === undefined) return;
 		what.parent.innerText = '';
 		if (what.attr) {
 			what.parent.removeAttribute(what.attr);
