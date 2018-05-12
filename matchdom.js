@@ -194,13 +194,14 @@ matchdom.filters = {
 	},
 	fill: function(val, what) {
 		if (val === undefined) return;
-		what.parent.innerText = '';
+		what.parent.textContent = "";
+		what.node = what.parent.ownerDocument.createTextNode('');
+		what.parent.appendChild(what.node);
 		if (what.attr) {
 			what.parent.removeAttribute(what.attr);
 			delete what.attr;
 			delete what.initialAttr;
 		}
-		what.node = what.parent.firstChild;
 		what.hits.forEach(function(h, i) {
 			if (h === what.expr) return;
 			what.hits[i] = '';
