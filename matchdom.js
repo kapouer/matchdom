@@ -191,6 +191,19 @@ matchdom.filters = {
 		end = parseInt(end);
 		if (isNaN(end)) end = undefined;
 		return val.slice(begin, end);
+	},
+	fill: function(val, what) {
+		what.parent.innerText = '';
+		if (what.attr) {
+			what.parent.removeAttribute(what.attr);
+			delete what.attr;
+			delete what.initialAttr;
+		}
+		what.node = what.parent.firstChild;
+		what.hits.forEach(function(h, i) {
+			if (h === what.expr) return;
+			what.hits[i] = '';
+		});
 	}
 };
 

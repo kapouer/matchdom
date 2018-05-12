@@ -147,6 +147,12 @@ The `br` filter sets default behavior again.
 
 html filter also works well with join filter.
 
+### fill
+
+Sets current node content to merged field.
+
+If it's used in an attribute, also removes the attribute containing the expression.
+
 
 ### or:str
 

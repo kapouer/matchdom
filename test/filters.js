@@ -191,3 +191,29 @@ describe('url filter', function() {
 	});
 });
 
+describe('fill filter', function() {
+	it('should fill current node', function() {
+		let node = dom`<p>a[field|fill]b</p>`;
+		let copy = matchdom(node, {
+			field: 'word'
+		});
+		assert.equal(copy.outerHTML, '<p>word</p>');
+	});
+
+	it('should fill current node from attribute', function() {
+		let node = dom`<p data-template="[field|fill]">ab</p>`;
+		let copy = matchdom(node, {
+			field: 'word'
+		});
+		assert.equal(copy.outerHTML, '<p>word</p>');
+	});
+
+	it('should fill current node from attribute using html', function() {
+		let node = dom`<p data-template="[field|fill|html]">ab</p>`;
+		let copy = matchdom(node, {
+			field: '<b>word</b>'
+		});
+		assert.equal(copy.outerHTML, '<p><b>word</b></p>');
+	});
+});
+
