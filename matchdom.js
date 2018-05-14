@@ -52,7 +52,7 @@ matchdom.filters = {
 		if (value === undefined) return;
 		if (value != null && typeof value != "string") value = "" + value;
 		var cur = parseUrl(what.get());
-		matchdom.filters.attr(value, what, name);
+		what.filters.attr(value, what, name);
 		var tgt = parseUrl(what.get());
 		var val = parseUrl(value);
 		if (what.index == 0) {
