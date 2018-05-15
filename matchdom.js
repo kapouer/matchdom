@@ -213,6 +213,13 @@ function matchdom(parent, data, filters, scope) {
 	filters = Object.assign({}, matchdom.filters, filters);
 	if (data == null) data = {};
 	var re = new RegExp('\\' + Symbols.open + '([^\\' + Symbols.open + '\\' + Symbols.close + '<>=""\'\']*)' + Symbols.close, 'g');
+	var wasText = false;
+	if (typeof parent == "string") {
+		wasText = true;
+		var str = parent;
+		parent = document.createElement('div');
+		parent.textContent = str;
+	}
 
 	matchEachDom(parent, re, function(node, hits, attr) {
 		var what = new What(data, filters, node, attr, scope);
@@ -242,7 +249,7 @@ function matchdom(parent, data, filters, scope) {
 			delete what.ancestor;
 		}
 	});
-	return parent;
+	return wasText ? parent.textContent : parent;
 }
 
 function mutate(what) {

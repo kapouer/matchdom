@@ -3,6 +3,15 @@ const matchdom = require('../matchdom');
 const dom = require('dom-template-strings');
 require('dom4'); // jsdom is missing .closest
 
+describe('string', function() {
+	it('should be merged and returned', function() {
+		let copy = matchdom('no? [test]!', {
+			test: "yes"
+		});
+		assert.equal(copy, 'no? yes!');
+	});
+});
+
 describe('text nodes', function() {
 	it('should be merged with simple value', function() {
 		let node = dom`<span>no? [test]!</span>`;
