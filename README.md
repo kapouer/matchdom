@@ -17,6 +17,8 @@ Run some code on [here](https://runkit.com/kapouer/5acbe92f4299c500122960d1)
 
 `matchdom(node, data, filters?, scope?) -> node`
 
+`matchdom(string, data, filters?, scope?) -> string`
+
 Given a DOM and placeholders like this:
 
 ```html
