@@ -34,6 +34,12 @@ function runRepeatMagnet() {
 	});
 	result.appendChild(copy);
 }
+function runAttrFill() {
+	let copy = matchdom(attrFill.cloneNode(true), {
+		test: "toto"
+	});
+	result.appendChild(copy);
+}
 </script>
 </head>
 <body>
@@ -54,6 +60,9 @@ function runRepeatMagnet() {
 		<td>[rows.col|magnet:tr]</td>
 	</tr>
 </table>
+</div>
+<div id="attrFill">
+	<div><a data-expr="[test|attr:class:div|fill]">temp</a></div>
 </div>
 <div id="result"></div>
 </body>
