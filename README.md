@@ -83,6 +83,7 @@ with the following properties:
 - filters: the object with custom filters
 - hits: the list of strings or expressions that will be concatenated
 - index: the current index of expression upon which the filter is called
+- val: last known non null value
 
 and the following methods (which are useful to write filters that are
 independent of their position inside a text node or an attribute):
@@ -154,6 +155,9 @@ html filter also works well with join filter.
 Sets current node content to merged field.
 
 If it's used in an attribute, also removes the attribute containing the expression.
+
+Can be used with attr filter to set a value to an attribute and content at the
+same time.
 
 
 ### or:str
