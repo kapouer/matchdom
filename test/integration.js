@@ -54,5 +54,21 @@ describe('integration', function() {
 			<tr><td>one</td><td>1</td></tr><tr><td>two</td><td>2</td></tr>
 		</table>`.outerHTML);
 	});
+
+	it('attr and fill filters should work on same node', function() {
+		let node = dom`<div><a data-expr="[test|attr|fill]">temp</a></div>`;
+		let copy = matchdom(node, {
+			test: "toto"
+		});
+		assert.equal(copy.outerHTML, '<div><a expr="toto">toto</a></div>');
+	});
+
+	it('attr and fill filters should work on closest node', function() {
+		let node = dom`<div><a data-expr="[test|attr:class:div|fill]">temp</a></div>`;
+		let copy = matchdom(node, {
+			test: "toto"
+		});
+		assert.equal(copy.outerHTML, '<div class="toto"><a>toto</a></div>');
+	});
 });
 
