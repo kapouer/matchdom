@@ -23,30 +23,37 @@ matchdom.filters = {
 	},
 	attr: function(value, what, name, selector) {
 		if (value === undefined) return;
-		if (!what.attr) {
-			if (name) {
-				var parent = what.parent;
-				var parent = what.parent;
-				if (selector) parent = parent.closest(selector);
-				if (parent && value !== null) {
-					if (name == "class") {
-						parent.classList.add.apply(parent.classList, value.split(' '))
-					} else {
-						parent.setAttribute(name, value);
-					}
-				}
-				return null;
+		var attr = name;
+		if (!name && what.attr) {
+			if (what.attr.startsWith('data-')) {
+				attr = what.attr.substring(5);
 			} else {
-				console.warn("attr filter in text node need a :name parameter");
-			}
-		} else {
-			if (!selector) {
-				var attr = name || what.attr.startsWith('data-') && what.attr.substring(5);
-				if (attr) what.attr = attr;
-			} else {
-				console.warn("attr filter in attribute cannot select ancestor");
+				attr = what.attr;
 			}
 		}
+		if (!attr) {
+			console.warn('attr filter first :name parameter is needed');
+			return;
+		}
+		var parent = what.parent || what.node;
+
+		if (!selector) {
+			if (what.attr) {
+				what.attr = attr;
+				return value;
+			}
+		} else {
+			parent = parent.closest(selector);
+		}
+
+		if (parent && value !== null) {
+			if (attr == "class") {
+				parent.classList.add.apply(parent.classList, value.split(' '))
+			} else {
+				parent.setAttribute(attr, value);
+			}
+		}
+		return (selector || what.node) ? null : value;
 	},
 	url: function(value, what, name) {
 		if (value === undefined) return;
@@ -195,14 +202,15 @@ matchdom.filters = {
 	fill: function(val, what) {
 		if (val === undefined) return;
 		what.parent.textContent = "";
+		var fromNode = !!what.node;
 		what.node = what.parent.ownerDocument.createTextNode('');
 		what.parent.appendChild(what.node);
-		if (what.attr) {
+		if (what.attr && what.attr == what.initialAttr && !fromNode) {
 			what.parent.removeAttribute(what.attr);
 			delete what.attr;
 			delete what.initialAttr;
 		}
-		what.hits.forEach(function(h, i) {
+		if (fromNode) what.hits.forEach(function(h, i) {
 			if (h === what.expr) return;
 			what.hits[i] = '';
 		});
@@ -379,16 +387,17 @@ What.prototype.set = function(str) {
 			}
 			this.node.nodeValue = "";
 		}
-	} else {
-		if (this.initialAttr && this.attr != this.initialAttr) {
-			this.parent.removeAttribute(this.initialAttr);
-		}
-		this.initialAttr = this.attr;
-		if (this.attr) {
-			if (str != null) this.parent.setAttribute(this.attr, str);
-			else this.parent.removeAttribute(this.attr);
-		}
 	}
+	if (this.initialAttr && this.attr != this.initialAttr) {
+		this.parent.removeAttribute(this.initialAttr);
+	}
+
+	if (this.attr) {
+		this.initialAttr = this.attr;
+		if (str != null) this.parent.setAttribute(this.attr, str);
+		else this.parent.removeAttribute(this.attr);
+	}
+
 	return str;
 };
 
