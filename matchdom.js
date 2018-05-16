@@ -214,6 +214,9 @@ matchdom.filters = {
 			if (h === what.expr) return;
 			what.hits[i] = '';
 		});
+		if (val == null && what.val !== undefined) {
+			return what.val;
+		}
 	}
 };
 
@@ -266,6 +269,7 @@ function mutate(what) {
 	if (val === undefined) val = expr.get(what.data);
 	var filter, ret;
 	while (filter = expr.filters.shift()) {
+		if (val !== null) what.val = val;
 		ret = filter.fn.apply(null, [val, what].concat(filter.params));
 		if (ret !== undefined) val = ret;
 	}
