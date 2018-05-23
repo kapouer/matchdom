@@ -145,5 +145,20 @@ describe('filters on text nodes', function() {
 		});
 		assert.equal(copy.outerHTML, '<div></div>');
 	});
+
+	it('should be merge list of nodes', function() {
+		let node = dom`<div>
+			<span>no? [test]!</span>
+			<div><span>no? [test2]!</span></div>
+		</div>`;
+		matchdom(node.querySelectorAll('span'), {
+			test: "yes",
+			test2: "no"
+		});
+		assert.equal(node.outerHTML, dom`<div>
+			<span>no? yes!</span>
+			<div><span>no? no!</span></div>
+		</div>`.outerHTML);
+	});
 });
 

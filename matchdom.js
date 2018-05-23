@@ -232,33 +232,39 @@ function matchdom(parent, data, filters, scope) {
 		parent.textContent = str;
 	}
 
-	matchEachDom(parent, re, function(node, hits, attr) {
-		var what = new What(data, filters, node, attr, scope);
-		hits = hits.map(function(hit) {
-			if (hit.str) return hit.str;
-			return new Expression(hit.hits[1], what.filters);
+	var list = parent;
+	if (list.ownerDocument && typeof list.item != "function" && list.length === undefined) {
+		list = [parent];
+	}
+	list.forEach(function(root) {
+		matchEachDom(root, re, function(node, hits, attr) {
+			var what = new What(data, filters, node, attr, scope);
+			hits = hits.map(function(hit) {
+				if (hit.str) return hit.str;
+				return new Expression(hit.hits[1], what.filters);
+			});
+			what.hits = hits;
+			hits.forEach(function(hit, i) {
+				if (typeof hit == "string") return;
+				what.expr = hit;
+				what.index = i;
+				var val = mutate(what);
+				if (val !== undefined) hits[what.index] = val;
+				else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
+			});
+			var allNulls = true;
+			hits = hits.filter(function(val) {
+				if (val !== null) allNulls = false;
+				return val !== undefined;
+			});
+			if (hits.length > 0) {
+				what.set(allNulls ? null : hits.join(''));
+			}
+			if (what.ancestor) {
+				parent = what.ancestor;
+				delete what.ancestor;
+			}
 		});
-		what.hits = hits;
-		hits.forEach(function(hit, i) {
-			if (typeof hit == "string") return;
-			what.expr = hit;
-			what.index = i;
-			var val = mutate(what);
-			if (val !== undefined) hits[what.index] = val;
-			else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
-		});
-		var allNulls = true;
-		hits = hits.filter(function(val) {
-			if (val !== null) allNulls = false;
-			return val !== undefined;
-		});
-		if (hits.length > 0) {
-			what.set(allNulls ? null : hits.join(''));
-		}
-		if (what.ancestor) {
-			parent = what.ancestor;
-			delete what.ancestor;
-		}
 	});
 	return wasText ? parent.textContent : parent;
 }
