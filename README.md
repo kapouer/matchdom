@@ -8,6 +8,7 @@ Features:
 - Super customizable with filters.
 - Comes with useful filters: attr, magnet, repeat, join and more.
 - Source code is short, simple, and does not require compilation.
+- Nested expressions (since 1.6.0).
 
 ## Examples
 
