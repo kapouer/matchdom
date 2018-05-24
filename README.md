@@ -134,6 +134,13 @@ and two methods:
 Expressions can be modified by filters. See the repeat filter for the most
 complex code doing that.
 
+Expressions can be nested:
+
+```
+<span>[val|or:[otherval]]</span>
+```
+(see examples in tests).
+
 
 ## bundled filters
 
