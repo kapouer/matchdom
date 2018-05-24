@@ -223,7 +223,6 @@ matchdom.filters = {
 function matchdom(parent, data, filters, scope) {
 	filters = Object.assign({}, matchdom.filters, filters);
 	if (data == null) data = {};
-	var re = new RegExp('\\' + Symbols.open + '([^\\' + Symbols.open + '\\' + Symbols.close + '<>=""\'\']*)' + Symbols.close, 'g');
 	var wasText = false;
 	if (typeof parent == "string") {
 		wasText = true;
@@ -237,11 +236,11 @@ function matchdom(parent, data, filters, scope) {
 		list = [parent];
 	}
 	list.forEach(function(root) {
-		matchEachDom(root, re, function(node, hits, attr) {
+		matchEachDom(root, function(node, hits, attr) {
 			var what = new What(data, filters, node, attr, scope);
 			hits = hits.map(function(hit) {
-				if (hit.str) return hit.str;
-				return new Expression(hit.hits[1], what.filters);
+				if (typeof hit == "string") return hit;
+				return new Expression(hit[0], what.filters);
 			});
 			what.hits = hits;
 			hits.forEach(function(hit, i) {
@@ -282,30 +281,30 @@ function mutate(what) {
 	return val;
 }
 
-function matchEachDom(root, re, fn) {
+function matchEachDom(root, fn) {
 	var what = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
 	var it = root.ownerDocument.createNodeIterator(root, what);
 	var node, i, hits;
 	while (node = it.nextNode()) {
 		if (node.nodeType == Node.ELEMENT_NODE) {
-			matchAttributes(node, re).forEach(function(atthit) {
+			matchAttributes(node).forEach(function(atthit) {
 				fn(node, atthit.list, atthit.attr);
 			});
 		} else {
-			hits = matchText(node.nodeValue, re);
-			if (hits.length) fn(node, hits);
+			hits = tokenize(node.nodeValue);
+			if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") fn(node, hits);
 		}
 	}
 }
 
-function matchAttributes(node, re) {
+function matchAttributes(node) {
 	var hits = [];
 	var atts = node.attributes;
 	var att, list;
 	for (var i=0; i < atts.length; i++) {
 		att = atts[i];
 		if (!att.value) continue;
-		list = matchText(att.value, re);
+		list = tokenize(att.value);
 		if (!list.length) continue;
 		hits.push({
 			attr: att.name,
@@ -315,25 +314,30 @@ function matchAttributes(node, re) {
 	return hits;
 }
 
-function matchText(str, re) {
+function tokenize(str) {
 	var list = [];
-	var hit, index = 0, ok = false;
-	while ((hit = re.exec(str)) != null) {
-		ok = true;
-		if (index != hit.index) list.push({
-			str:str.substring(index, hit.index)
-		});
-		index = hit.index + hit[0].length;
-		list.push({
-			hits: hit.slice(0)
-		});
-		re.lastIndex = index;
-	}
-	if (!ok) return [];
-	if (index != str.length) list.push({
-		str: str.substring(index)
-	});
+	_tokenize(list, str, 0, str.length);
 	return list;
+}
+function _tokenize(list, str, pos, len) {
+	var openPos, closePos;
+	while (pos < len) {
+		openPos = str.indexOf(Symbols.open, pos);
+		closePos = str.indexOf(Symbols.close, pos);
+		if (openPos >= pos && (openPos < closePos || closePos < pos)) {
+			if (pos != openPos) list.push(str.substring(pos, openPos));
+			var sub = [];
+			list.push(sub);
+			pos = _tokenize(sub, str, openPos + 1, len);
+		} else if (closePos >= pos && (closePos < openPos || openPos < pos)) {
+			if (pos != closePos) list.push(str.substring(pos, closePos));
+			return closePos + 1;
+		} else {
+			list.push(str.substring(pos));
+			pos = len;
+		}
+	}
+	return pos;
 }
 
 function parseUrl(str) {
