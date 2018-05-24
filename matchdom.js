@@ -211,8 +211,11 @@ matchdom.filters = {
 			delete what.initialAttr;
 		}
 		if (fromNode) what.hits.forEach(function(h, i) {
-			if (h === what.expr) return;
-			what.hits[i] = '';
+			if (typeof h != "string" && what.expr.initial == h[0]) {
+				// leave intact for other filters ? but cannot figure out a test for this
+			} else {
+				what.hits[i] = '';
+			}
 		});
 		if (val == null && what.val !== undefined) {
 			return what.val;
