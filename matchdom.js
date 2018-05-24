@@ -238,19 +238,8 @@ function matchdom(parent, data, filters, scope) {
 	list.forEach(function(root) {
 		matchEachDom(root, function(node, hits, attr) {
 			var what = new What(data, filters, node, attr, scope);
-			hits = hits.map(function(hit) {
-				if (typeof hit == "string") return hit;
-				return new Expression(hit[0], what.filters);
-			});
 			what.hits = hits;
-			hits.forEach(function(hit, i) {
-				if (typeof hit == "string") return;
-				what.expr = hit;
-				what.index = i;
-				var val = mutate(what);
-				if (val !== undefined) hits[what.index] = val;
-				else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
-			});
+			mutateHits(what, hits);
 			var allNulls = true;
 			hits = hits.filter(function(val) {
 				if (val !== null) allNulls = false;
@@ -266,6 +255,24 @@ function matchdom(parent, data, filters, scope) {
 		});
 	});
 	return wasText ? parent.textContent : parent;
+}
+
+function mutateHits(what, hits) {
+	hits.forEach(function(hit, i) {
+		if (typeof hit == "string") return;
+		if (hit.length > 1) {
+			hit = mutateHits(what, hit).join('');
+		} else {
+			hit = hit[0];
+		}
+		what.expr = new Expression(hit, what.filters);
+		what.index = i;
+		var val = mutate(what);
+		if (val !== undefined) hits[what.index] = val;
+		else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
+	});
+
+	return hits;
 }
 
 function mutate(what) {
