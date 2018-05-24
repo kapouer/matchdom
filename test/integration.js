@@ -70,5 +70,24 @@ describe('integration', function() {
 		});
 		assert.equal(copy.outerHTML, '<div class="toto"><a>toto</a></div>');
 	});
+
+	it('attr and fill filters should not work on same node from text node', function() {
+		let node = dom`<div><a href="/test">b[test|url:href|fill]a</a></div>`;
+		let copy = matchdom(node, {
+			test: "?toto=1"
+		});
+		assert.equal(copy.outerHTML, '<div><a href="?toto=1">?toto=1</a></div>');
+	});
+
+	it('nested fill filter', function() {
+		let node = dom`<p>a[sub.[name]|fill]b</p>`;
+		let copy = matchdom(node, {
+			sub: {
+				key: 'word'
+			},
+			name: 'key'
+		});
+		assert.equal(copy.outerHTML, '<p>word</p>');
+	});
 });
 

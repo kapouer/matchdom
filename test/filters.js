@@ -231,5 +231,41 @@ describe('fill filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<p data-template="[field|fill]">abb</p>');
 	});
+
+	it('should fill current node and set an attribute using two separate expressions', function() {
+		let node = dom`<p data-fill="[field|fill]" data-attr="[field2|attr:class]">astuffb</p>`;
+		let copy = matchdom(node, {
+			field: 'word',
+			field2: 'myclass'
+		});
+		assert.equal(copy.outerHTML, '<p class="myclass">word</p>');
+	});
+
+	it('should fill current node and set an attribute on parent node using two separate expressions', function() {
+		let node = dom`<div><p data-fill="[field|fill]" data-attr="[field2|attr:class:div]">astuffb</p></div>`;
+		let copy = matchdom(node, {
+			field: 'word',
+			field2: 'myclass'
+		});
+		assert.equal(copy.outerHTML, '<div class="myclass"><p>word</p></div>');
+	});
+
+	it('should fill current node before setting an attribute from within', function() {
+		let node = dom`<p data-expr="[field|fill]">a[field|attr:class]b</p>`;
+		let copy = matchdom(node, {
+			field: 'word',
+			field2: 'myclass'
+		});
+		assert.equal(copy.outerHTML, '<p>word</p>');
+	});
+
+	it('should set an attribute partially filled', function() {
+		let node = dom`<div><p data-attr="toto[field|fill]aa">astuffb</p></div>`;
+		let copy = matchdom(node, {
+			field: 'word',
+			field2: 'myclass'
+		});
+		assert.equal(copy.outerHTML, '<div><p>totowordaa</p></div>');
+	});
 });
 
