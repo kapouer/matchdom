@@ -337,8 +337,8 @@ function _tokenize(list, str, pos, len) {
 		if (openPos >= pos && (openPos < closePos || closePos < pos)) {
 			if (pos != openPos) list.push(str.substring(pos, openPos));
 			var sub = [];
-			list.push(sub);
 			pos = _tokenize(sub, str, openPos + 1, len);
+			if (sub.length > 0) list.push(sub);
 		} else if (closePos >= pos && (closePos < openPos || openPos < pos)) {
 			if (pos != closePos) list.push(str.substring(pos, closePos));
 			return closePos + 1;
