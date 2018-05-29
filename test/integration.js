@@ -18,6 +18,23 @@ describe('integration', function() {
 		</div></div>`.innerHTML);
 	});
 
+	it('should repeat array of keys', function() {
+		let node = dom`<div>
+			<span>[key|keys:obj.properties|repeat::keys]: [keys.val]</span>
+		</div>`;
+		let copy = matchdom(node, {
+			obj: {
+				properties: {
+					a: 'one',
+					b: 'two'
+				}
+			}
+		});
+		assert.equal(copy.innerHTML, dom`<div>
+			<span>a: one</span><span>b: two</span>
+		</div>`.innerHTML);
+	});
+
 	it('should remove current attribute', function() {
 		let node = dom`<div><a data-href="/test?[test|magnet|url]">test</a></div>`;
 		let copy = matchdom(node, {
