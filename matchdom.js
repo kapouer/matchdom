@@ -180,21 +180,21 @@ matchdom.filters = {
 	},
 	keys: function(val, what, str) {
 		var expr = new Expression(str);
-		var data = what.scope || what.data;
-		var path = expr.path;
-		var head;
-		while (path.length) {
-			head = path.shift();
-			data = data[head];
-			if (data == null) break;
+		var data = val;
+		if (str) {
+			data = what.scope ? expr.get(what.scope) : undefined;
+			if (data === undefined) data = expr.get(what.data);
 		}
-		if (typeof data == "string") return;
-		if (data == null) data = {};
-		path.unshift(head);
-
-		if (data) what.scope = Object.keys(data).map(function(k) {
+		if (!data || typeof data == "string" || typeof data != "object") return;
+		what.scope = Object.keys(data).map(function(k) {
 			return {key: k, val: data[k]};
 		});
+		var prefixes = 0;
+		while (prefixes < what.expr.path.length && expr.path.length > 0) {
+			if (what.expr.path[prefixes] != expr.path.shift()) break;
+			prefixes += 1;
+		}
+		what.expr.path.splice(0, prefixes);
 	},
 	date: function(val, what, method, param) {
 		var d = new Date(val);
