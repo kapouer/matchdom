@@ -178,6 +178,24 @@ matchdom.filters = {
 		parent.remove();
 		return null;
 	},
+	keys: function(val, what, str) {
+		var expr = new Expression(str);
+		var data = what.scope || what.data;
+		var path = expr.path;
+		var head;
+		while (path.length) {
+			head = path.shift();
+			data = data[head];
+			if (data == null) break;
+		}
+		if (typeof data == "string") return;
+		if (data == null) data = {};
+		path.unshift(head);
+
+		if (data) what.scope = Object.keys(data).map(function(k) {
+			return {key: k, val: data[k]};
+		});
+	},
 	date: function(val, what, method, param) {
 		var d = new Date(val);
 		var fn = method && d[method] || d.toLocaleString;
