@@ -253,6 +253,25 @@ rows and cells to form a table, see unit tests for examples:
 Note that if root node is repeated, matchdom returns a fragment.
 
 
+### keys:path
+
+Converts object found at path into an array of {key, val} items:
+```
+matchdom(dom`<div>
+	<span>[key|keys:obj.properties|repeat::keys]: [keys.val]</span>
+</div>`, {
+	obj: {
+		properties: {
+			a: 'one',
+			b: 'two'
+		}
+	}
+}).outerHTML == dom`<div>
+	<span>a: one</span><span>b: two</span>
+</div>`;
+```
+
+
 ### padStart, padEnd :len:char
 
 Converts to string and calls `String.prototype.padXxx(len, char)`.
