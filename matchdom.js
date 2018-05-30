@@ -134,7 +134,7 @@ matchdom.filters = {
 		}
 		var o = Symbols.open;
 		var c = Symbols.close;
-		var data = what.scope || what.data;
+		var data = what.scope.data || what.data;
 		var expr = what.expr.clone();
 		var path = expr.path;
 		var head;
@@ -155,7 +155,6 @@ matchdom.filters = {
 		if (cur != null) {
 			what.set(cur.replace(o + expr.initial + c, o + expr.toString() + c));
 		}
-		var copy, scope;
 		var ancestor = parent.parentNode;
 		var frag = parent.ownerDocument.createDocumentFragment();
 		if (!ancestor) {
@@ -165,14 +164,17 @@ matchdom.filters = {
 		}
 		for (var i=0; i < data.length; i++) {
 			if (alias) {
-				scope = Object.assign({}, what.scope);
-				scope[alias] = data[i];
+				itemData = Object.assign({}, what.scope.data);
+				itemData[alias] = data[i];
 			} else {
-				scope = Object.assign({}, what.scope, data[i]);
+				itemData = Object.assign({}, what.scope.data, data[i]);
 			}
 			copy = frag.cloneNode();
 			copy.appendChild(parent.cloneNode(true));
-			copy = matchdom(copy, what.data, what.filters, scope);
+			copy = matchdom(copy, what.data, what.filters, {
+				data: itemData,
+				expr: what.expr
+			});
 			ancestor.insertBefore(copy, parent);
 		}
 		parent.remove();
@@ -182,11 +184,11 @@ matchdom.filters = {
 		var expr = new Expression(str);
 		var data = val;
 		if (str) {
-			data = what.scope ? expr.get(what.scope) : undefined;
+			data = what.scope.data ? expr.get(what.scope.data) : undefined;
 			if (data === undefined) data = expr.get(what.data);
 		}
 		if (!data || typeof data == "string" || typeof data != "object") return;
-		what.scope = Object.keys(data).map(function(k) {
+		what.scope.data = Object.keys(data).map(function(k) {
 			return {key: k, val: data[k]};
 		});
 		var prefixes = 0;
@@ -298,7 +300,7 @@ function mutateHits(what, hits) {
 
 function mutate(what) {
 	var expr = what.expr;
-	var val = what.scope && expr.get(what.scope);
+	var val = what.scope.data && expr.get(what.scope.data);
 	if (val === undefined) val = expr.get(what.data);
 	var filter, ret;
 	while (filter = expr.filters.shift()) {
@@ -392,7 +394,7 @@ function serializeUrl(obj) {
 function What(data, filters, node, attr, scope) {
 	this.mode = 'br';
 	this.data = data;
-	if (scope) this.scope = scope;
+	this.scope = scope || {};
 	this.filters = filters;
 	if (attr) {
 		this.initialAttr = attr;

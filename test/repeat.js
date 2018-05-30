@@ -256,7 +256,7 @@ describe('repeating', function() {
 			}
 		};
 
-		let copy = matchdom(node, ctx, {}, ctx.data);
+		let copy = matchdom(node, ctx, {}, ctx);
 		assert.equal(copy.outerHTML, dom`<div><span>title</span><table>
 			<tr class="repeat">
 				<td><h1>title</h1></td>
