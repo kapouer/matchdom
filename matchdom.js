@@ -137,6 +137,7 @@ matchdom.filters = {
 		var data = what.scope.data || what.data;
 		var expr = what.expr.clone();
 		var path = expr.path;
+		var keys = [];
 		var head;
 		while (path.length) {
 			if (typeof data == "object" && data.length) {
@@ -145,6 +146,7 @@ matchdom.filters = {
 			head = path.shift();
 			data = data[head];
 			if (data == null) break;
+			keys.push(head);
 		}
 		if (typeof data == "string") return;
 		if (data == null) data = [];
@@ -162,19 +164,23 @@ matchdom.filters = {
 			ancestor.appendChild(parent);
 			what.ancestor = ancestor;
 		}
+		var copy;
+		var scope;
 		for (var i=0; i < data.length; i++) {
+			scope = Object.assign({}, what.scope);
+			scope.path = what.scope.path.concat(keys);
+			scope.index = i;
+			scope.data = Object.assign({}, what.scope.data);
 			if (alias) {
-				itemData = Object.assign({}, what.scope.data);
-				itemData[alias] = data[i];
+				scope.alias = alias;
+				scope.data[alias] = data[i];
 			} else {
-				itemData = Object.assign({}, what.scope.data, data[i]);
+				Object.assign(scope.data, data[i]);
 			}
+
 			copy = frag.cloneNode();
 			copy.appendChild(parent.cloneNode(true));
-			copy = matchdom(copy, what.data, what.filters, {
-				data: itemData,
-				expr: what.expr
-			});
+			copy = matchdom(copy, what.data, what.filters, scope);
 			ancestor.insertBefore(copy, parent);
 		}
 		parent.remove();
@@ -193,9 +199,12 @@ matchdom.filters = {
 		});
 		var prefixes = 0;
 		while (prefixes < what.expr.path.length && expr.path.length > 0) {
-			if (what.expr.path[prefixes] != expr.path.shift()) break;
+			var comp = expr.path.shift();
+			if (what.expr.path[prefixes] != comp) break;
+			what.scope.path.push(comp);
 			prefixes += 1;
 		}
+		what.scope.keys = true;
 		what.expr.path.splice(0, prefixes);
 	},
 	date: function(val, what, method, param) {
@@ -394,7 +403,7 @@ function serializeUrl(obj) {
 function What(data, filters, node, attr, scope) {
 	this.mode = 'br';
 	this.data = data;
-	this.scope = scope || {};
+	this.scope = Object.assign({path: []}, scope);
 	this.filters = filters;
 	if (attr) {
 		this.initialAttr = attr;
