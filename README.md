@@ -75,8 +75,12 @@ matchdom(model, {some: "data"}, {
 The filter always receives the two first arguments where `what` is an object
 with the following properties:
 - data: the initial data object
-- scope: the current data object - typically used with repeat,
-  takes precedence for finding values
+- scope: an object representing currently resolved state:
+  + data: the current data object, takes precedence for finding values
+  + path: the current path used to find the data from the initial data
+  + alias: the current alias set by repeat filter
+  + keys: boolean, set when "keys" filter was applied
+  + index: integer, the index when "repeat" filter is run
 - node: text node when expression was inside one
 - attr: attribute name when expression was inside an attribute value
 - parent: node containing text node or attribute
