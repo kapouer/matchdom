@@ -238,7 +238,7 @@ describe('repeating', function() {
 				<td><h1>[data.title]</h1></td>
 				<td><h2>[row.data.obj.title]</h2></td>
 				<td><span>[data.text]</span></td>
-				<td><p><span><strong><span>[rows.data.obj.text|repeat:.repeat:row]</span></strong></span></p></td>
+				<td><p><span><strong><span>[rows.data.obj.text|repeat:.repeat:row|test]</span></strong></span></p></td>
 				<td>[data.extra]</td>
 			</tr>
 		</table></div>`;
@@ -256,7 +256,18 @@ describe('repeating', function() {
 			}
 		};
 
-		let copy = matchdom(node, ctx, {}, ctx);
+		let copy = matchdom(node, ctx.data, {test: function(val, what) {
+			var absPath = what.scope.path.slice();
+			var curPath = what.expr.path.slice();
+			if (what.scope.alias) {
+				assert.equal(what.scope.alias, curPath.shift());
+			}
+			if (what.scope.index != null) {
+				absPath.push(what.scope.index);
+			}
+			absPath = absPath.concat(curPath);
+			assert.equal(val, what.expr.get(what.data, absPath));
+		}}, ctx);
 		assert.equal(copy.outerHTML, dom`<div><span>title</span><table>
 			<tr class="repeat">
 				<td><h1>title</h1></td>
