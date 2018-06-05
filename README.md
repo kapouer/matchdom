@@ -9,6 +9,7 @@ Features:
 - Comes with useful filters: attr, magnet, repeat, join and more.
 - Source code is short, simple, and does not require compilation.
 - Nested expressions (since 1.6.0).
+- Can run without DOM when merging pure strings (since 2.1.0).
 
 ## Examples
 
