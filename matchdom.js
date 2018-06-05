@@ -256,14 +256,21 @@ function matchdom(parent, data, filters, scope) {
 	filters = Object.assign({}, matchdom.filters, filters);
 	if (data == null) data = {};
 	var wasText = false;
+	var list;
 	if (typeof parent == "string") {
 		wasText = true;
 		var str = parent;
-		parent = document.createElement('div');
+		if (typeof window !== 'undefined') {
+			parent = document.createElement('div');
+		} else {
+			parent = {};
+		}
 		parent.textContent = str;
+		list = [parent];
+	} else {
+		list = parent;
 	}
 
-	var list = parent;
 	if (list.ownerDocument && typeof list.item != "function" && list.length === undefined) {
 		list = [parent];
 	}
@@ -321,6 +328,10 @@ function mutate(what) {
 }
 
 function matchEachDom(root, fn) {
+	if (!root.ownerDocument) {
+		fn(root, tokenize(root.textContent));
+		return;
+	}
 	var what = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
 	var it = root.ownerDocument.createNodeIterator(root, what);
 	var node, i, hits;
@@ -422,6 +433,10 @@ What.prototype.set = function(str) {
 	if (this.node) {
 		if (str == null) str = "";
 		var doc = this.node.ownerDocument;
+		if (!doc) {
+			this.node.textContent = str;
+			return str;
+		}
 		var parent = this.node.parentNode;
 		if (this.mode == 'html') {
 			var cont = doc.createElement("div");
