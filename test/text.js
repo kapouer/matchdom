@@ -12,6 +12,15 @@ describe('string', function() {
 	});
 });
 
+describe('string', function() {
+	it('should be merged as text', function() {
+		let copy = matchdom('no?\n [test]!', {
+			test: "yes\nnl"
+		});
+		assert.equal(copy, 'no?\n yes\nnl!');
+	});
+});
+
 describe('text nodes', function() {
 	it('should be merged with simple value', function() {
 		let node = dom`<span>no? [test]!</span>`;

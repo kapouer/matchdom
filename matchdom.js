@@ -277,6 +277,7 @@ function matchdom(parent, data, filters, scope) {
 	list.forEach(function(root) {
 		matchEachDom(root, function(node, hits, attr) {
 			var what = new What(data, filters, node, attr, scope);
+			if (wasText) what.mode = "text";
 			what.hits = hits;
 			mutateHits(what, hits);
 			var allNulls = true;

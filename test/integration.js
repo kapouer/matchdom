@@ -94,6 +94,14 @@ describe('integration', function() {
 		</table>`.outerHTML);
 	});
 
+	it('fill filter should work with br mode by default', function() {
+		let node = dom`<div><span data-expr="[test|fill]">temp</span></div>`;
+		let copy = matchdom(node, {
+			test: "a\nb"
+		});
+		assert.equal(copy.outerHTML, '<div><span>a<br>b</span></div>');
+	});
+
 	it('attr and fill filters should work on same node', function() {
 		let node = dom`<div><a data-expr="[test|attr|fill]">temp</a></div>`;
 		let copy = matchdom(node, {
