@@ -1,6 +1,6 @@
 {
   "name": "matchdom",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Tiny DOM data merger",
   "main": "matchdom.js",
   "scripts": {
