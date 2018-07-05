@@ -228,6 +228,31 @@ matchdom.filters = {
 		if (isNaN(end)) end = undefined;
 		return val.slice(begin, end);
 	},
+	trim: function(val) {
+		if (!val) return val;
+		return val.toString().trim();
+	},
+	trimStart: function(val) {
+		if (!val) return val;
+		return val.toString().trimStart();
+	},
+	trimEnd: function(val) {
+		if (!val) return val;
+		return val.toString().trimEnd();
+	},
+	lower: function(val) {
+		if (!val) return val;
+		return val.toString().toLowerCase();
+	},
+	upper: function(val) {
+		if (!val) return val;
+		return val.toString().toUpperCase();
+	},
+	capitalize: function(val) {
+		if (!val) return val;
+		var str = val.toString();
+		return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
+	},
 	fill: function(val, what) {
 		if (val === undefined) return;
 		what.parent.textContent = "";

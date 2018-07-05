@@ -282,6 +282,11 @@ matchdom(dom`<div>
 Converts to string and calls `String.prototype.padXxx(len, char)`.
 
 
+### trim, trimStart, trimEnd, lower, upper, capitalize
+
+Converts to string and calls them.
+
+
 ### date:method:param
 
 Converts to date and calls `Date.prototype[method](param)`.
