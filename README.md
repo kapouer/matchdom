@@ -79,7 +79,8 @@ with the following properties:
 - scope: an object representing currently resolved state:
   + data: the current data object, takes precedence for finding values
   + path: the current path used to find the data from the initial data,
-    this should be true: `what.get(what.data, what.scope.path) == val`
+    this should be true: `what.get(what.data, what.scope.path) == val`  
+    *This is a breaking change introduced in matchdom 3.0.0.*
   + keys: boolean, set when "keys" filter was applied
   + alias: `scope.data[scope.alias]` is the currently iterated data.
 - node: text node when expression was inside one
