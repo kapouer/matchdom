@@ -139,6 +139,7 @@ matchdom.filters = {
 		var path = expr.path;
 		var keys = [];
 		var head;
+
 		while (path.length) {
 			if (typeof data == "object" && data.length) {
 				break;
@@ -150,8 +151,8 @@ matchdom.filters = {
 		}
 		if (typeof data == "string") return;
 		if (data == null) data = [];
-		if (!alias) alias = head;
-		if (alias) path.unshift(alias);
+		if (alias) head = alias;
+		if (head) path.unshift(head);
 		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
 		var cur = what.get();
 		if (cur != null) {
@@ -166,14 +167,16 @@ matchdom.filters = {
 		}
 		var copy;
 		var scope;
+		var scopePath = what.scope.path.slice(0, -path.length).concat([keys[keys.length - 1]]);
+
 		for (var i=0; i < data.length; i++) {
 			scope = Object.assign({}, what.scope);
-			scope.path = what.scope.path.concat(keys);
-			scope.index = i;
+			scope.path = scopePath.slice();
+			scope.path.push(i);
 			scope.data = Object.assign({}, what.scope.data);
-			if (alias) {
-				scope.alias = alias;
-				scope.data[alias] = data[i];
+			scope.alias = alias || head;
+			if (head) {
+				scope.data[head] = data[i];
 			} else {
 				Object.assign(scope.data, data[i]);
 			}
@@ -323,6 +326,7 @@ function matchdom(parent, data, filters, scope) {
 }
 
 function mutateHits(what, hits) {
+	var scopePath = what.scope.path;
 	hits.forEach(function(hit, i) {
 		if (typeof hit == "string") return;
 		if (hit.length > 1) {
@@ -332,10 +336,14 @@ function mutateHits(what, hits) {
 		}
 		what.expr = new Expression(hit, what.filters);
 		what.index = i;
+		var path = what.expr.path;
+		if (path[0] == what.scope.alias) what.scope.path = scopePath.concat(path.slice(1));
+		else what.scope.path = path.slice();
 		var val = mutate(what);
 		if (val !== undefined) hits[what.index] = val;
 		else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
 	});
+	what.scope = {path: []};
 
 	return hits;
 }

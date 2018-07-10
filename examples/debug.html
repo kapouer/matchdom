@@ -3,6 +3,26 @@
 <head>
 <script src="../matchdom.js"></script>
 <script>
+function runRepeatScope() {
+	let copy = matchdom(repeatScope.cloneNode(true), {
+		rows: [
+			{cells: [{val:'A1'}, {val:'A2'}]},
+			{cells: [{val:'B1'}, {val:'B2'}]}
+		],
+		some: {
+			data: "x"
+		}
+	}, {
+		scope: function(val, what) {
+			console.log("scope filter receives", val, what.scope.path);
+			if (val != what.expr.get(what.data, what.scope.path)) {
+				console.error("val not equal");
+			} else {
+				console.info("val is equal");
+			}
+		}
+	});
+}
 function runRecursive() {
 	let copy = matchdom(recursive.cloneNode(true), {
 		rows: [
@@ -63,6 +83,13 @@ function runAttrFill() {
 </div>
 <div id="attrFill">
 	<div><a data-expr="[test|attr:class:div|fill]">temp</a></div>
+</div>
+<div id="repeatScope">
+	<table>
+		<tr>
+			<td>[rows.cells.val|repeat:tr|repeat|scope][some.data|scope]</td>
+		</tr>
+	</table>
 </div>
 <div id="result"></div>
 </body>

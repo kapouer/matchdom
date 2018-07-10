@@ -173,7 +173,7 @@ describe('repeating', function() {
 	it('should repeat array recursively, with data outside scope', function() {
 		let node = dom`<table>
 			<tr>
-				<td>[rows.cells.val|repeat:tr|repeat][some.data]</td>
+				<td>[rows.cells.val|repeat:tr|repeat|scope][some.data|scope]</td>
 			</tr>
 		</table>`;
 		let copy = matchdom(node, {
@@ -183,6 +183,10 @@ describe('repeating', function() {
 			],
 			some: {
 				data: "x"
+			}
+		}, {
+			scope: function(val, what) {
+				assert.equal(val, what.expr.get(what.data, what.scope.path));
 			}
 		});
 		assert.equal(copy.outerHTML, dom`<table>
@@ -197,11 +201,11 @@ describe('repeating', function() {
 	it('should repeat array recursively, with data outside node and outside scope', function() {
 		let node = dom`<div><span>[data.title]</span><table>
 			<tr class="repeat">
-				<td><h1>[data.title]</h1></td>
-				<td><h2>[row.data.obj.title]</h2></td>
-				<td><span>[data.text]</span></td>
-				<td><p><span><strong><span>[rows.data.obj.text|repeat:.repeat:row]</span></strong></span></p></td>
-				<td>[data.extra]</td>
+				<td><h1>[data.title|scope]</h1></td>
+				<td><h2>[row.data.obj.title|scope]</h2></td>
+				<td><span>[data.text|scope]</span></td>
+				<td><p><span><strong><span>[rows.data.obj.text|repeat:.repeat:row|scope]</span></strong></span></p></td>
+				<td>[data.extra|scope]</td>
 			</tr>
 		</table></div>`;
 		let copy = matchdom(node, {
@@ -213,6 +217,10 @@ describe('repeating', function() {
 				extra: "extra",
 				title: "title",
 				text: "text",
+			}
+		}, {
+			scope: function(val, what) {
+				assert.equal(val, what.expr.get(what.data, what.scope.path));
 			}
 		});
 		assert.equal(copy.outerHTML, dom`<div><span>title</span><table>
@@ -257,16 +265,11 @@ describe('repeating', function() {
 		};
 
 		let copy = matchdom(node, ctx.data, {test: function(val, what) {
-			var absPath = what.scope.path.slice();
 			var curPath = what.expr.path.slice();
 			if (what.scope.alias) {
 				assert.equal(what.scope.alias, curPath.shift());
 			}
-			if (what.scope.index != null) {
-				absPath.push(what.scope.index);
-			}
-			absPath = absPath.concat(curPath);
-			assert.equal(val, what.expr.get(what.data, absPath));
+			assert.equal(val, what.expr.get(what.data, what.scope.path));
 		}}, ctx);
 		assert.equal(copy.outerHTML, dom`<div><span>title</span><table>
 			<tr class="repeat">
