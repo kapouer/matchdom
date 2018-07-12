@@ -265,7 +265,8 @@ append `+` to its path name:
 <td>[obj+.key|repeat:tr:pair]</td><td>[pair.val]</td>
 </tr></table>
 ```
-This used to be the `keys` filter in matchdom 2.
+This used to be the `keys` filter in matchdom 2, and it is a breaking change
+in matchdom 3.
 
 In this case `what.scope.path` is the path to the *value*, however when
 it is actually a key being merged, `what.scope.iskey` is set to `true`.
