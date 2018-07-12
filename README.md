@@ -305,3 +305,15 @@ Often useful with `[list|join::br]`.
 
 Slices an array with optional end index. Works well with join filter.
 
+### ?:yes:no
+
+If value is true, replace it with `yes`, if it is false, replace it with `no`,
+otherwise do not change the value.
+
+This filter works well with `not` filter to make sure empty values are cast to
+boolean false.
+
+### !
+
+The `!` operator.
+

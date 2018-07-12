@@ -277,6 +277,14 @@ matchdom.filters = {
 		if (val == null && what.val !== undefined) {
 			return what.val;
 		}
+	},
+	'?': function(val, what, yes, no) {
+		if (val === true) return yes;
+		else if (val === false) return no;
+		else return val;
+	},
+	'!': function(val) {
+		return !val;
 	}
 };
 
