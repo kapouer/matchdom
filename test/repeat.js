@@ -287,5 +287,76 @@ describe('repeating', function() {
 			</tr>
 		</table></div>`.outerHTML);
 	});
+
+	it('should repeat array of keys', function() {
+		let node = dom`<div>
+			<span>[obj.properties+.key|repeat::keys|scope]: [keys.val|scope]</span>
+		</div>`;
+		let copy = matchdom(node, {
+			obj: {
+				properties: {
+					a: 'one',
+					b: 'two'
+				}
+			}
+		}, {
+			scope: function(val, what) {
+				if (!what.scope.iskey) assert.equal(val, what.expr.get(what.data, what.scope.path));
+				else assert.equal(val, what.scope.path[what.scope.path.length - 1]);
+			}
+		});
+		assert.equal(copy.innerHTML, dom`<div>
+			<span>a: one</span><span>b: two</span>
+		</div>`.innerHTML);
+	});
+
+	it('should repeat object then repeat keys', function() {
+		let node = dom`<div>
+			<span>[list.props+.key|repeat|repeat|scope]: [props.val|scope]</span>
+		</div>`;
+		let copy = matchdom(node, {
+			list: [{
+				props: {
+					a: 'one',
+					b: 'two'
+				}
+			}, {
+				props: {
+					c: 'three',
+					d: 'four'
+				}
+			}]
+		}, {
+			scope: function(val, what) {
+				if (!what.scope.iskey) assert.equal(val, what.expr.get(what.data, what.scope.path));
+				else assert.equal(val, what.scope.path[what.scope.path.length - 1]);
+			}
+		});
+		assert.equal(copy.innerHTML, dom`<div>
+			<span>a: one</span><span>b: two</span><span>c: three</span><span>d: four</span>
+		</div>`.innerHTML);
+	});
+
+	it('should repeat array of keys and access nested value', function() {
+		let node = dom`<div>
+			<span>[obj.properties+.key|repeat::keys|scope]: [keys.val.nested|scope]</span>
+		</div>`;
+		let copy = matchdom(node, {
+			obj: {
+				properties: {
+					a: {nested: 'one'},
+					b: {nested: 'two'}
+				}
+			}
+		}, {
+			scope: function(val, what) {
+				if (!what.scope.iskey) assert.equal(val, what.expr.get(what.data, what.scope.path));
+				else assert.equal(val, what.scope.path[what.scope.path.length - 1]);
+			}
+		});
+		assert.equal(copy.innerHTML, dom`<div>
+			<span>a: one</span><span>b: two</span>
+		</div>`.innerHTML);
+	});
 });
 

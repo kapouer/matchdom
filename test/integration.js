@@ -18,45 +18,6 @@ describe('integration', function() {
 		</div></div>`.innerHTML);
 	});
 
-	it('should repeat array of keys', function() {
-		let node = dom`<div>
-			<span>[key|keys:obj.properties|repeat::keys]: [keys.val]</span>
-		</div>`;
-		let copy = matchdom(node, {
-			obj: {
-				properties: {
-					a: 'one',
-					b: 'two'
-				}
-			}
-		});
-		assert.equal(copy.innerHTML, dom`<div>
-			<span>a: one</span><span>b: two</span>
-		</div>`.innerHTML);
-	});
-
-	it('should repeat object then repeat keys', function() {
-		let node = dom`<div>
-			<span>[list.props.key|repeat|keys:list.props|repeat]: [val]</span>
-		</div>`;
-		let copy = matchdom(node, {
-			list: [{
-				props: {
-					a: 'one',
-					b: 'two'
-				}
-			}, {
-				props: {
-					c: 'three',
-					d: 'four'
-				}
-			}]
-		});
-		assert.equal(copy.innerHTML, dom`<div>
-			<span>a: one</span><span>b: two</span><span>c: three</span><span>d: four</span>
-		</div>`.innerHTML);
-	});
-
 	it('should remove current attribute', function() {
 		let node = dom`<div><a data-href="/test?[test|magnet|url]">test</a></div>`;
 		let copy = matchdom(node, {

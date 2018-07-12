@@ -257,26 +257,23 @@ rows and cells to form a table, see unit tests for examples:
 </tr></table>
 ```
 
+To repeat over the keys of an object as a list of `{key, val}` items,
+append `+` to its path name:
+
+```html
+<table><tr>
+<td>[obj+.key|repeat:tr:pair]</td><td>[pair.val]</td>
+</tr></table>
+```
+This used to be the `keys` filter in matchdom 2.
+
+In this case `what.scope.path` is the path to the *value*, however when
+it is actually a key being merged, `what.scope.iskey` is set to `true`.
+
+Caveat: won't work if there is actually a property `obj+`, in that case
+a warning will be emitted.
+
 Note that if root node is repeated, matchdom returns a fragment.
-
-
-### keys:path
-
-Converts object found at path into an array of {key, val} items:
-```
-matchdom(dom`<div>
-	<span>[key|keys:obj.properties|repeat::keys]: [keys.val]</span>
-</div>`, {
-	obj: {
-		properties: {
-			a: 'one',
-			b: 'two'
-		}
-	}
-}).outerHTML == dom`<div>
-	<span>a: one</span><span>b: two</span>
-</div>`;
-```
 
 
 ### padStart, padEnd :len:char

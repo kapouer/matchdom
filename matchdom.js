@@ -139,12 +139,21 @@ matchdom.filters = {
 		var path = expr.path;
 		var keys = [];
 		var head;
+		var inkeys = false;
 
-		while (path.length) {
+		while (path.length && inkeys == false) {
 			if (typeof data == "object" && data.length) {
 				break;
 			}
 			head = path.shift();
+			if (head.endsWith('+')) {
+				if (data[head]) {
+					console.warn("repeat filter ignores", head, "because the key exists");
+				} else {
+					head = head.slice(0, -1);
+					inkeys = true;
+				}
+			}
 			data = data[head];
 			if (data == null) break;
 			keys.push(head);
@@ -169,16 +178,23 @@ matchdom.filters = {
 		var scope;
 		var scopePath = what.scope.path.slice(0, -path.length).concat([keys[keys.length - 1]]);
 
+		if (inkeys) data = Object.keys(data).map(function(key) {
+			return {key: key, val: data[key]};
+		});
+
+		var item;
 		for (var i=0; i < data.length; i++) {
 			scope = Object.assign({}, what.scope);
 			scope.path = scopePath.slice();
-			scope.path.push(i);
+			scope.iskey = inkeys;
+			item = data[i];
+			scope.path.push(inkeys ? item.key : i);
 			scope.data = Object.assign({}, what.scope.data);
 			scope.alias = alias || head;
 			if (head) {
-				scope.data[head] = data[i];
+				scope.data[head] = item;
 			} else {
-				Object.assign(scope.data, data[i]);
+				Object.assign(scope.data, item);
 			}
 
 			copy = frag.cloneNode();
@@ -189,26 +205,10 @@ matchdom.filters = {
 		parent.remove();
 		return null;
 	},
-	keys: function(val, what, str) {
-		var expr = new Expression(str);
-		var data = val;
-		if (str) {
-			data = what.scope.data ? expr.get(what.scope.data) : undefined;
-			if (data === undefined) data = expr.get(what.data);
-		}
-		if (!data || typeof data == "string" || typeof data != "object") return;
-		what.scope.data = Object.keys(data).map(function(k) {
-			return {key: k, val: data[k]};
-		});
-		var prefixes = 0;
-		while (prefixes < what.expr.path.length && expr.path.length > 0) {
-			var comp = expr.path.shift();
-			if (what.expr.path[prefixes] != comp) break;
-			what.scope.path.push(comp);
-			prefixes += 1;
-		}
-		what.scope.keys = true;
-		what.expr.path.splice(0, prefixes);
+	keys: function(val) {
+		console.error("This filter is no longer available in matchdom 3.\n\
+		The repeat filter can now handle this.");
+		return val;
 	},
 	date: function(val, what, method, param) {
 		var d = new Date(val);
@@ -327,6 +327,7 @@ function matchdom(parent, data, filters, scope) {
 
 function mutateHits(what, hits) {
 	var scopePath = what.scope.path;
+	var scopeIsKey = !!what.scope.iskey;
 	hits.forEach(function(hit, i) {
 		if (typeof hit == "string") return;
 		if (hit.length > 1) {
@@ -337,8 +338,25 @@ function mutateHits(what, hits) {
 		what.expr = new Expression(hit, what.filters);
 		what.index = i;
 		var path = what.expr.path;
-		if (path[0] == what.scope.alias) what.scope.path = scopePath.concat(path.slice(1));
-		else what.scope.path = path.slice();
+		var beg = 0;
+		if (path[0] == what.scope.alias) {
+			beg = 1;
+			if (scopeIsKey) {
+				delete what.scope.iskey;
+				if (path.length >= 2) {
+					if (path[1] == "key") {
+						what.scope.iskey = true;
+						beg = 2;
+					} else if (path[1] == "val") {
+						what.scope.iskey = false;
+						beg = 2;
+					}
+				}
+			}
+			what.scope.path = scopePath.concat(path.slice(beg));
+		} else {
+			what.scope.path = path.slice(beg);
+		}
 		var val = mutate(what);
 		if (val !== undefined) hits[what.index] = val;
 		else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
