@@ -82,7 +82,7 @@ with the following properties:
     a filter should find this to be always true:  
     `what.get(what.data, what.scope.path) == val`  
     *This is a breaking change introduced in matchdom 3.0.0.*
-  + keys: boolean, set when "keys" filter was applied
+  + iskey: boolean, set when keys of an object are repeated and merged value is a key.
   + alias: `scope.data[scope.alias]` is the currently iterated data.
 - node: text node when expression was inside one
 - attr: attribute name when expression was inside an attribute value
