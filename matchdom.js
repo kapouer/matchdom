@@ -1,4 +1,4 @@
-(function(self) {
+(function() {
 
 if (typeof module !== 'undefined') module.exports = matchdom;
 else window.matchdom = matchdom;
