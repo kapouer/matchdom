@@ -90,6 +90,34 @@ describe('not', function() {
 	});
 });
 
+describe('?', function() {
+	it('should set a value when true', function() {
+		let node = dom`<p>[val|?:ceci:cela]</p>`;
+		let copy = matchdom(node, {val: true});
+		assert.equal(copy.outerHTML, '<p>ceci</p>');
+	});
+	it('should set a value when false', function() {
+		let node = dom`<p>[val|?:ceci:cela]</p>`;
+		let copy = matchdom(node, {val: false});
+		assert.equal(copy.outerHTML, '<p>cela</p>');
+	});
+	it('should set an empty string when false is not set', function() {
+		let node = dom`<p>[val|?:ceci]</p>`;
+		let copy = matchdom(node, {val: false});
+		assert.equal(copy.outerHTML, '<p></p>');
+	});
+	it('should set last path component when true is not set', function() {
+		let node = dom`<p>[to.val|?]</p>`;
+		let copy = matchdom(node, {to: {val: true}});
+		assert.equal(copy.outerHTML, '<p>val</p>');
+	});
+	it('should set empty string when true is not set', function() {
+		let node = dom`<p>[val|?]</p>`;
+		let copy = matchdom(node, {val: false});
+		assert.equal(copy.outerHTML, '<p></p>');
+	});
+});
+
 describe('date filter', function() {
 	it('toLocaleString', function() {
 		let node = dom`<p>[str|date::en]</p>`;

@@ -310,6 +310,9 @@ Slices an array with optional end index. Works well with join filter.
 If value is true, replace it with `yes`, if it is false, replace it with `no`,
 otherwise do not change the value.
 
+If `no` is not set, replace it with empty string.
+If `yes` is not set either, replace it with current variable name.
+
 This filter works well with `not` filter to make sure empty values are cast to
 boolean false.
 

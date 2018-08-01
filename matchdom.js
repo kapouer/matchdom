@@ -279,9 +279,15 @@ matchdom.filters = {
 		}
 	},
 	'?': function(val, what, yes, no) {
-		if (val === true) return yes;
-		else if (val === false) return no;
-		else return val;
+		if (val === true) {
+			if (yes === undefined) return what.scope.path.slice(-1).pop();
+			return yes;
+		} else if (val === false) {
+			if (no === undefined) no = '';
+			return no;
+		} else {
+			return val;
+		}
 	},
 	'!': function(val) {
 		return !val;
