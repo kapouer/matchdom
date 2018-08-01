@@ -127,7 +127,19 @@ matchdom.filters = {
 	},
 	repeat: function(value, what, selector, alias) {
 		var parent = what.parent;
-		if (selector) parent = parent.closest(selector);
+		var prevSibs = 0;
+		var nextSibs = 0;
+		if (selector) {
+			while (selector.startsWith('+')) {
+				prevSibs++;
+				selector = selector.slice(1);
+			}
+			while (selector.endsWith('+')) {
+				nextSibs++;
+				selector = selector.slice(0, -1);
+			}
+			parent = parent.closest(selector);
+		}
 		if (!parent) {
 			console.warn("Cannot repeat: ancestor not found", selector);
 			return null;
@@ -169,10 +181,16 @@ matchdom.filters = {
 		}
 		var ancestor = parent.parentNode;
 		var frag = parent.ownerDocument.createDocumentFragment();
+		while (prevSibs-- && parent.previousElementSibling) {
+			frag.appendChild(parent.previousElementSibling);
+		}
+		frag.appendChild(parent.cloneNode(true));
+		while (nextSibs-- && parent.nextElementSibling) {
+			frag.appendChild(parent.nextElementSibling);
+		}
 		if (!ancestor) {
-			ancestor = frag.cloneNode();
-			ancestor.appendChild(parent);
-			what.ancestor = ancestor;
+			what.ancestor = ancestor = frag.cloneNode();
+			parent = ancestor.appendChild(parent);
 		}
 		var copy;
 		var scope;
@@ -197,8 +215,7 @@ matchdom.filters = {
 				Object.assign(scope.data, item);
 			}
 
-			copy = frag.cloneNode();
-			copy.appendChild(parent.cloneNode(true));
+			copy = frag.cloneNode(true);
 			copy = matchdom(copy, what.data, what.filters, scope);
 			ancestor.insertBefore(copy, parent);
 		}

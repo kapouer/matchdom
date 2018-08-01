@@ -60,6 +60,12 @@ function runAttrFill() {
 	});
 	result.appendChild(copy);
 }
+function runRepeatSiblings() {
+	let copy = matchdom(repeatSiblings, {
+		arr: [{value: 'one'}, {value: 'two'}]
+	});
+	result.appendChild(copy);
+}
 </script>
 </head>
 <body>
@@ -90,6 +96,9 @@ function runAttrFill() {
 			<td>[rows.cells.val|repeat:tr|repeat|scope][some.data|scope]</td>
 		</tr>
 	</table>
+</div>
+<div id="repeatSiblings">
+	<div><i>*</i><span>[arr.value|repeat:+span+]</span><br></div>
 </div>
 <div id="result"></div>
 </body>

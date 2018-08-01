@@ -257,6 +257,17 @@ rows and cells to form a table, see unit tests for examples:
 </tr></table>
 ```
 
+If selector is prefixed or postfixed by one or several `+` signs, as many
+previous or next siblings are repeated:
+
+```html
+<div>
+	<hr>
+	<p>[sections.text|repeat:+p+]</p>
+	<br>
+</div>
+```
+
 To repeat over the keys of an object as a list of `{key, val}` items,
 append `+` to its path name:
 
