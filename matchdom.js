@@ -529,7 +529,7 @@ What.prototype.set = function(str) {
 	if (this.attr) {
 		this.initialAttr = this.attr;
 		if (str) str = str.trim();
-		if (str == null || (this.attr == "class" && str === "")) {
+		if (str == null || (this.attr == "class" && str === "")) {
 			this.parent.removeAttribute(this.attr);
 		} else {
 			this.parent.setAttribute(this.attr, str);
