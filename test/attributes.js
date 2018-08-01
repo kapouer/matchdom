@@ -28,6 +28,50 @@ describe('attributes', function() {
 		});
 		assert.equal(copy.outerHTML, '<span data-test="yes">yes</span>');
 	});
+
+	it('should remove attribute when null', function() {
+		let node = dom`<span class="[empty]">test</span>`;
+		let copy = matchdom(node, {
+			empty: null
+		});
+		assert.equal(copy.outerHTML, '<span>test</span>');
+	});
+
+	it('should always trim attribute value', function() {
+		let node = dom`<span some=" [notempty]
+		">test</span>`;
+		let copy = matchdom(node, {
+			empty: null,
+			notempty: 'test'
+		});
+		assert.equal(copy.outerHTML, '<span some="test">test</span>');
+	});
+
+	it('should not remove attribute when not null', function() {
+		let node = dom`<span class="[notempty] [empty]">test</span>`;
+		let copy = matchdom(node, {
+			empty: null,
+			notempty: 'test'
+		});
+		assert.equal(copy.outerHTML, '<span class="test">test</span>');
+	});
+
+	it('should remove class attribute when empty', function() {
+		let node = dom`<span class="[empty]">test</span>`;
+		let copy = matchdom(node, {
+			empty: ""
+		});
+		assert.equal(copy.outerHTML, '<span>test</span>');
+	});
+
+	it('should remove class attribute when empty with whitespace', function() {
+		let node = dom`<span class="[empty] [alsoempty]">test</span>`;
+		let copy = matchdom(node, {
+			empty: "",
+			alsoempty: ""
+		});
+		assert.equal(copy.outerHTML, '<span>test</span>');
+	});
 });
 
 describe('attr filter', function() {
