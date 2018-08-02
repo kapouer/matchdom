@@ -55,6 +55,14 @@ describe('integration', function() {
 		</table>`).outerHTML);
 	});
 
+	it('should remove current text node and previous node', function() {
+		let node = dom(`<div><br><span>test</span>[test|not|magnet:+*|]</div>`);
+		let copy = matchdom(node, {
+			test: false
+		});
+		assert.equal(copy.outerHTML, '<div><br></div>');
+	});
+
 	it('fill filter should work with br mode by default', function() {
 		let node = dom(`<div><span data-expr="[test|fill]">temp</span></div>`);
 		let copy = matchdom(node, {

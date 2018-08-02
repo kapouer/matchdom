@@ -117,7 +117,11 @@ matchdom.filters = {
 				nextSibs++;
 				selector = selector.slice(0, -1);
 			}
-			if (selector != "*") parent = parent.closest(selector);
+			if (selector != "*") {
+				parent = parent.closest(selector);
+			} else if (what.node) {
+				if (prevSibs && what.node.previousElementSibling || nextSibs && what.node.nextElementSibling) parent = what.node;
+			}
 		}
 		if (parent) {
 			while (prevSibs-- && parent.previousElementSibling) parent.previousElementSibling.remove();
@@ -162,7 +166,11 @@ matchdom.filters = {
 				nextSibs++;
 				selector = selector.slice(0, -1);
 			}
-			if (selector != "*") parent = parent.closest(selector);
+			if (selector != "*") {
+				parent = parent.closest(selector);
+			} else if (what.node) {
+				if (prevSibs && what.node.previousElementSibling || nextSibs && what.node.nextElementSibling) parent = what.node;
+			}
 		}
 		if (!parent) {
 			console.warn("Cannot repeat: ancestor not found", selector);
@@ -571,7 +579,9 @@ What.prototype.set = function(str) {
 			return str;
 		}
 		var parent = this.node.parentNode;
-		if (this.mode == 'html') {
+		if (!parent) {
+			// do nothing
+		} else if (this.mode == 'html') {
 			var cont = doc.createElement("div");
 			cont.innerHTML = str;
 			while (cont.firstChild) {
@@ -582,11 +592,12 @@ What.prototype.set = function(str) {
 			this.node.nodeValue = str;
 		} else {
 			var list = str.split('\n');
-			for (var i=0; i < list.length; i++) {
-				last = parent.insertBefore(doc.createTextNode(list[i]), this.node);
-				if (i < list.length - 1) parent.insertBefore(doc.createElement('br'), this.node);
+			this.node.nodeValue = list[0];
+			var cur = this.node;
+			for (var i=1; i < list.length; i++) {
+				cur = parent.insertBefore(doc.createElement('br'), cur.nextSibling);
+				cur = parent.insertBefore(doc.createTextNode(list[i]), cur.nextSibling);
 			}
-			this.node.nodeValue = "";
 		}
 	}
 	if (this.initialAttr && this.attr != this.initialAttr) {
