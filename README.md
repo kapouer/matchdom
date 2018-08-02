@@ -334,3 +334,15 @@ boolean false.
 
 The `!` operator.
 
+### !?
+
+Like `?` applied on `!val`.
+
+### pre:str
+
+Prepend string if value is not null or not empty.
+
+### post:str
+
+Append string if value is not null or not empty.
+
