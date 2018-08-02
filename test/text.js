@@ -1,6 +1,7 @@
 const assert = require('assert');
 const matchdom = require('../matchdom');
-const dom = require('dom-template-strings');
+const dom = require('domify');
+
 require('dom4'); // jsdom is missing .closest
 
 describe('string', function() {
@@ -23,7 +24,7 @@ describe('string', function() {
 
 describe('text nodes', function() {
 	it('should be merged with simple value', function() {
-		let node = dom`<span>no? [test]!</span>`;
+		let node = dom(`<span>no? [test]!</span>`);
 		let copy = matchdom(node, {
 			test: "yes"
 		});
@@ -31,7 +32,7 @@ describe('text nodes', function() {
 	});
 
 	it('should be merged with nested path accessor', function() {
-		let node = dom`<span>[path.test.to]</span>`;
+		let node = dom(`<span>[path.test.to]</span>`);
 		let copy = matchdom(node, {
 			path: {
 				test: {
@@ -43,7 +44,7 @@ describe('text nodes', function() {
 	});
 
 	it('should not be merged as html', function() {
-		let node = dom`<span>[str|html|text]</span>`;
+		let node = dom(`<span>[str|html|text]</span>`);
 		let copy = matchdom(node, {
 			str: "<b>bold</b>"
 		});
@@ -51,7 +52,7 @@ describe('text nodes', function() {
 	});
 
 	it('should be merged as html', function() {
-		let node = dom`<span>[str|html]</span>`;
+		let node = dom(`<span>[str|html]</span>`);
 		let copy = matchdom(node, {
 			str: "test<b>bold</b><i>italic</i>test"
 		});
@@ -59,7 +60,7 @@ describe('text nodes', function() {
 	});
 
 	it('should replace newlines with br', function() {
-		let node = dom`<p>[str]</p>`;
+		let node = dom(`<p>[str]</p>`);
 		let copy = matchdom(node, {
 			str: "test\n\ntest\n"
 		});
@@ -69,7 +70,7 @@ describe('text nodes', function() {
 
 describe('filters on text nodes', function() {
 	it('should do nothing if missing', function() {
-		let node = dom`<span>[test|notfound]</span>`;
+		let node = dom(`<span>[test|notfound]</span>`);
 		let copy = matchdom(node, {
 			test: "yes"
 		});
@@ -77,7 +78,7 @@ describe('filters on text nodes', function() {
 	});
 
 	it('should do nothing if multiple filters are missing', function() {
-		let node = dom`<span>[test|notfound|notfound2]</span>`;
+		let node = dom(`<span>[test|notfound|notfound2]</span>`);
 		let copy = matchdom(node, {
 			test: "yes"
 		});
@@ -85,7 +86,7 @@ describe('filters on text nodes', function() {
 	});
 
 	it('should do nothing if multiple filters with parameters are missing', function() {
-		let node = dom`<span>[test|notfound:ff|notfound2:kk]</span>`;
+		let node = dom(`<span>[test|notfound:ff|notfound2:kk]</span>`);
 		let copy = matchdom(node, {
 			test: "yes"
 		});
@@ -93,7 +94,7 @@ describe('filters on text nodes', function() {
 	});
 
 	it('should receive parameter', function() {
-		let node = dom`<span>[test|prefix:me]</span>`;
+		let node = dom(`<span>[test|prefix:me]</span>`);
 		let copy = matchdom(node, {
 			test: "yes"
 		}, {
@@ -105,7 +106,7 @@ describe('filters on text nodes', function() {
 	});
 
 	it('should receive parameter when multiple filters are applied', function() {
-		let node = dom`<span>[test|prefix:me|postfix:you]</span>`;
+		let node = dom(`<span>[test|prefix:me|postfix:you]</span>`);
 		let copy = matchdom(node, {
 			test: " and "
 		}, {
@@ -120,7 +121,7 @@ describe('filters on text nodes', function() {
 	});
 
 	it('should remove current node', function() {
-		let node = dom`<div><span>[test|magnet]</span></div>`;
+		let node = dom(`<div><span>[test|magnet]</span></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -128,19 +129,19 @@ describe('filters on text nodes', function() {
 	});
 
 	it('should remove closest tr', function() {
-		let node = dom`<table><tbody>
+		let node = dom(`<table><tbody>
 			<th><td>Hello</td></tr><tr><td>[test|magnet:tr]</td></tr>
-		</tbody></table>`;
+		</tbody></table>`);
 		let copy = matchdom(node, {
 			test: null // nothing is fine too
 		});
-		assert.equal(copy.outerHTML, dom`<table><tbody>
+		assert.equal(copy.outerHTML, dom(`<table><tbody>
 			<th><td>Hello</td></tr>
-		</tbody></table>`.outerHTML);
+		</tbody></table>`).outerHTML);
 	});
 
 	it('should remove current attribute', function() {
-		let node = dom`<div><span class="some [test|magnet]">test</span></div>`;
+		let node = dom(`<div><span class="some [test|magnet]">test</span></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -148,7 +149,7 @@ describe('filters on text nodes', function() {
 	});
 
 	it('should remove current node from attribute', function() {
-		let node = dom`<div><span class="some [test|magnet:span]">test</span></div>`;
+		let node = dom(`<div><span class="some [test|magnet:span]">test</span></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -156,18 +157,18 @@ describe('filters on text nodes', function() {
 	});
 
 	it('should be merge list of nodes', function() {
-		let node = dom`<div>
+		let node = dom(`<div>
 			<span>no? [test]!</span>
 			<div><span>no? [test2]!</span></div>
-		</div>`;
+		</div>`);
 		matchdom(node.querySelectorAll('span'), {
 			test: "yes",
 			test2: "no"
 		});
-		assert.equal(node.outerHTML, dom`<div>
+		assert.equal(node.outerHTML, dom(`<div>
 			<span>no? yes!</span>
 			<div><span>no? no!</span></div>
-		</div>`.outerHTML);
+		</div>`).outerHTML);
 	});
 });
 

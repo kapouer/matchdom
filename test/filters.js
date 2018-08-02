@@ -1,13 +1,11 @@
 const assert = require('assert');
 const matchdom = require('../matchdom');
-const dom = require('dom-template-strings');
+const dom = require('domify');
 require('dom4'); // jsdom is missing .closest
-
-
 
 describe('join filter', function() {
 	it('with space', function() {
-		let node = dom`<p>[arr|join: ]</p>`;
+		let node = dom(`<p>[arr|join: ]</p>`);
 		let copy = matchdom(node, {
 			arr: ['word1', 'word2']
 		});
@@ -15,7 +13,7 @@ describe('join filter', function() {
 	});
 
 	it('with <br>', function() {
-		let node = dom`<p>[arr|join::br]</p>`;
+		let node = dom(`<p>[arr|join::br]</p>`);
 		let copy = matchdom(node, {
 			arr: ['line1', 'line2']
 		});
@@ -23,7 +21,7 @@ describe('join filter', function() {
 	});
 
 	it('html with <br>', function() {
-		let node = dom`<p>[arr|html|join::br]</p>`;
+		let node = dom(`<p>[arr|html|join::br]</p>`);
 		let copy = matchdom(node, {
 			arr: ['<b>line1</b>', '<i>line2</i>']
 		});
@@ -33,14 +31,14 @@ describe('join filter', function() {
 
 describe('slice filter', function() {
 	it('should slice array with begin and end', function() {
-		let node = dom`<p>[arr|slice:1:3|join: ]</p>`;
+		let node = dom(`<p>[arr|slice:1:3|join: ]</p>`);
 		let copy = matchdom(node, {
 			arr: ['word1', 'word2', 'word3']
 		});
 		assert.equal(copy.outerHTML, '<p>word2 word3</p>');
 	});
 	it('should slice array with begin', function() {
-		let node = dom`<p>[arr|slice:2|join: ]</p>`;
+		let node = dom(`<p>[arr|slice:2|join: ]</p>`);
 		let copy = matchdom(node, {
 			arr: ['word1', 'word2', 'word3', 'word4']
 		});
@@ -50,7 +48,7 @@ describe('slice filter', function() {
 
 describe('pad', function() {
 	it('start', function() {
-		let node = dom`<p>[str|padStart:3:x]</p>`;
+		let node = dom(`<p>[str|padStart:3:x]</p>`);
 		let copy = matchdom(node, {
 			str: 'a'
 		});
@@ -58,7 +56,7 @@ describe('pad', function() {
 	});
 
 	it('end', function() {
-		let node = dom`<p>[str|padEnd:3:x]</p>`;
+		let node = dom(`<p>[str|padEnd:3:x]</p>`);
 		let copy = matchdom(node, {
 			str: 'a'
 		});
@@ -68,7 +66,7 @@ describe('pad', function() {
 
 describe('or', function() {
 	it('should set a default value', function() {
-		let node = dom`<p data-class="[yop|attr]" data-test="[vide|or:nothing|attr]">[str|or:empty] - [nul]</p>`;
+		let node = dom(`<p data-class="[yop|attr]" data-test="[vide|or:nothing|attr]">[str|or:empty] - [nul]</p>`);
 		let copy = matchdom(node, {});
 		assert.equal(copy.outerHTML, '<p data-class="[yop|attr]" test="nothing">empty - [nul]</p>');
 	});
@@ -76,7 +74,7 @@ describe('or', function() {
 
 describe('eq', function() {
 	it('should set another value if equal', function() {
-		let node = dom`<p>[val|eq:ceci:cela]</p>`;
+		let node = dom(`<p>[val|eq:ceci:cela]</p>`);
 		let copy = matchdom(node, {val: 'ceci'});
 		assert.equal(copy.outerHTML, '<p>cela</p>');
 	});
@@ -84,7 +82,7 @@ describe('eq', function() {
 
 describe('not', function() {
 	it('should set to null if empty', function() {
-		let node = dom`<p data-test="[val|not]">test</p>`;
+		let node = dom(`<p data-test="[val|not]">test</p>`);
 		let copy = matchdom(node, {val: ''});
 		assert.equal(copy.outerHTML, '<p>test</p>');
 	});
@@ -92,27 +90,27 @@ describe('not', function() {
 
 describe('?', function() {
 	it('should set a value when true', function() {
-		let node = dom`<p>[val|?:ceci:cela]</p>`;
+		let node = dom(`<p>[val|?:ceci:cela]</p>`);
 		let copy = matchdom(node, {val: true});
 		assert.equal(copy.outerHTML, '<p>ceci</p>');
 	});
 	it('should set a value when false', function() {
-		let node = dom`<p>[val|?:ceci:cela]</p>`;
+		let node = dom(`<p>[val|?:ceci:cela]</p>`);
 		let copy = matchdom(node, {val: false});
 		assert.equal(copy.outerHTML, '<p>cela</p>');
 	});
 	it('should set an empty string when false is not set', function() {
-		let node = dom`<p>[val|?:ceci]</p>`;
+		let node = dom(`<p>[val|?:ceci]</p>`);
 		let copy = matchdom(node, {val: false});
 		assert.equal(copy.outerHTML, '<p></p>');
 	});
 	it('should set last path component when true is not set', function() {
-		let node = dom`<p>[to.val|?]</p>`;
+		let node = dom(`<p>[to.val|?]</p>`);
 		let copy = matchdom(node, {to: {val: true}});
 		assert.equal(copy.outerHTML, '<p>val</p>');
 	});
 	it('should set empty string when true is not set', function() {
-		let node = dom`<p>[val|?]</p>`;
+		let node = dom(`<p>[val|?]</p>`);
 		let copy = matchdom(node, {val: false});
 		assert.equal(copy.outerHTML, '<p></p>');
 	});
@@ -120,7 +118,7 @@ describe('?', function() {
 
 describe('date filter', function() {
 	it('toLocaleString', function() {
-		let node = dom`<p>[str|date::en]</p>`;
+		let node = dom(`<p>[str|date::en]</p>`);
 		let copy = matchdom(node, {
 			str: '2018-03-09T11:12:56.739Z'
 		});
@@ -128,7 +126,7 @@ describe('date filter', function() {
 	});
 
 	it('getYear', function() {
-		let node = dom`<p>[str|date:getFullYear]</p>`;
+		let node = dom(`<p>[str|date:getFullYear]</p>`);
 		let copy = matchdom(node, {
 			str: '2018-03-09T11:12:56.739Z'
 		});
@@ -138,7 +136,7 @@ describe('date filter', function() {
 
 describe('url filter', function() {
 	it('should merge url query with target pathname', function() {
-		let node = dom`<a href="/test" data-href="[href|url]">[title]</a>`;
+		let node = dom(`<a href="/test" data-href="[href|url]">[title]</a>`);
 		let copy = matchdom(node, {
 			href: '?arg=1&val=2',
 			title: 'anchor'
@@ -147,7 +145,7 @@ describe('url filter', function() {
 	});
 
 	it('should merge url pathname with target query', function() {
-		let node = dom`<a href="/test?toto=1" data-href="[href|url]">[title]</a>`;
+		let node = dom(`<a href="/test?toto=1" data-href="[href|url]">[title]</a>`);
 		let copy = matchdom(node, {
 			href: '/path',
 			title: 'anchor'
@@ -156,7 +154,7 @@ describe('url filter', function() {
 	});
 
 	it('should overwrite target with url', function() {
-		let node = dom`<a href="/test?toto=1" data-href="[href|url]">[title]</a>`;
+		let node = dom(`<a href="/test?toto=1" data-href="[href|url]">[title]</a>`);
 		let copy = matchdom(node, {
 			href: '/path?a=1&b=2',
 			title: 'anchor'
@@ -165,7 +163,7 @@ describe('url filter', function() {
 	});
 
 	it('should overwrite target query name with partial template', function() {
-		let node = dom`<a href="/test?id=1" data-href="?id=[id|url]">[title]</a>`;
+		let node = dom(`<a href="/test?id=1" data-href="?id=[id|url]">[title]</a>`);
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor'
@@ -174,7 +172,7 @@ describe('url filter', function() {
 	});
 
 	it('should merge url query with partial template', function() {
-		let node = dom`<a href="/test?toto=1" data-href="?id=[id|url]">[title]</a>`;
+		let node = dom(`<a href="/test?toto=1" data-href="?id=[id|url]">[title]</a>`);
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor'
@@ -183,7 +181,7 @@ describe('url filter', function() {
 	});
 
 	it('should overwrite url pathname and query with partial template', function() {
-		let node = dom`<a href="/test?toto=1" data-href="/this?id=[id|url]&amp;const=1">[title]</a>`;
+		let node = dom(`<a href="/test?toto=1" data-href="/this?id=[id|url]&amp;const=1">[title]</a>`);
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor'
@@ -192,7 +190,7 @@ describe('url filter', function() {
 	});
 
 	it('should merge url query with partial template when repeated', function() {
-		let node = dom`<div><a href="/test?id=1" data-href="?id=[id|url]">[title|repeat]</a></div>`;
+		let node = dom(`<div><a href="/test?id=1" data-href="?id=[id|url]">[title|repeat]</a></div>`);
 		let copy = matchdom(node, [{
 			id: 'xx',
 			title: 'anchor'
@@ -201,7 +199,7 @@ describe('url filter', function() {
 	});
 
 	it('should be able to be called multiple times for the same attribute', function() {
-		let node = dom`<div><a href="/test?status=0" data-href="?id=[id|url]&amp;status=[status|url]">[title]</a></div>`;
+		let node = dom(`<div><a href="/test?status=0" data-href="?id=[id|url]&amp;status=[status|url]">[title]</a></div>`);
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor',
@@ -211,7 +209,7 @@ describe('url filter', function() {
 	});
 
 	it('should not crash when data is not string', function() {
-		let node = dom`<div><a href="/test" data-href="?id=[id|url]">aaa</a></div>`;
+		let node = dom(`<div><a href="/test" data-href="?id=[id|url]">aaa</a></div>`);
 		let copy = matchdom(node, {
 			id: 12
 		});
@@ -221,7 +219,7 @@ describe('url filter', function() {
 
 describe('fill filter', function() {
 	it('should fill current node', function() {
-		let node = dom`<p>a[field|fill]b</p>`;
+		let node = dom(`<p>a[field|fill]b</p>`);
 		let copy = matchdom(node, {
 			field: 'word'
 		});
@@ -229,7 +227,7 @@ describe('fill filter', function() {
 	});
 
 	it('should fill current node from attribute', function() {
-		let node = dom`<p data-template="[field|fill]">ab</p>`;
+		let node = dom(`<p data-template="[field|fill]">ab</p>`);
 		let copy = matchdom(node, {
 			field: 'word'
 		});
@@ -237,7 +235,7 @@ describe('fill filter', function() {
 	});
 
 	it('should fill current node from attribute using html', function() {
-		let node = dom`<p data-template="[field|fill|html]">ab</p>`;
+		let node = dom(`<p data-template="[field|fill|html]">ab</p>`);
 		let copy = matchdom(node, {
 			field: '<b>word</b>'
 		});
@@ -245,7 +243,7 @@ describe('fill filter', function() {
 	});
 
 	it('should not fill current node', function() {
-		let node = dom`<p>a[field|fill]b</p>`;
+		let node = dom(`<p>a[field|fill]b</p>`);
 		let copy = matchdom(node, {
 			other: 'word'
 		});
@@ -253,7 +251,7 @@ describe('fill filter', function() {
 	});
 
 	it('should not fill from attribute', function() {
-		let node = dom`<p data-template="[field|fill]">abb</p>`;
+		let node = dom(`<p data-template="[field|fill]">abb</p>`);
 		let copy = matchdom(node, {
 			other: 'word'
 		});
@@ -261,7 +259,7 @@ describe('fill filter', function() {
 	});
 
 	it('should fill current node and set an attribute using two separate expressions', function() {
-		let node = dom`<p data-fill="[field|fill]" data-attr="[field2|attr:class]">astuffb</p>`;
+		let node = dom(`<p data-fill="[field|fill]" data-attr="[field2|attr:class]">astuffb</p>`);
 		let copy = matchdom(node, {
 			field: 'word',
 			field2: 'myclass'
@@ -270,7 +268,7 @@ describe('fill filter', function() {
 	});
 
 	it('should fill current node and set an attribute on parent node using two separate expressions', function() {
-		let node = dom`<div><p data-fill="[field|fill]" data-attr="[field2|attr:class:div]">astuffb</p></div>`;
+		let node = dom(`<div><p data-fill="[field|fill]" data-attr="[field2|attr:class:div]">astuffb</p></div>`);
 		let copy = matchdom(node, {
 			field: 'word',
 			field2: 'myclass'
@@ -279,7 +277,7 @@ describe('fill filter', function() {
 	});
 
 	it('should fill current node before setting an attribute from within', function() {
-		let node = dom`<p data-expr="[field|fill]">a[field|attr:class]b</p>`;
+		let node = dom(`<p data-expr="[field|fill]">a[field|attr:class]b</p>`);
 		let copy = matchdom(node, {
 			field: 'word',
 			field2: 'myclass'
@@ -288,7 +286,7 @@ describe('fill filter', function() {
 	});
 
 	it('should set an attribute partially filled', function() {
-		let node = dom`<div><p data-attr="toto[field|fill]aa">astuffb</p></div>`;
+		let node = dom(`<div><p data-attr="toto[field|fill]aa">astuffb</p></div>`);
 		let copy = matchdom(node, {
 			field: 'word',
 			field2: 'myclass'
