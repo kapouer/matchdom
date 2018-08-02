@@ -329,6 +329,9 @@ matchdom.filters = {
 	},
 	'!?': function(val, what, yes, no) {
 		return what.filters['?'](!val, what, yes, no);
+	},
+	'': function(val, what, str) {
+		return str || '';
 	}
 };
 

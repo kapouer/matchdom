@@ -136,6 +136,19 @@ describe('?', function() {
 	});
 });
 
+describe('empty filter', function() {
+	it('should set to empty string', function() {
+		let node = dom(`<p>[val|]</p>`);
+		let copy = matchdom(node, {val: 'toto'});
+		assert.equal(copy.outerHTML, '<p></p>');
+	});
+	it('should set to string', function() {
+		let node = dom(`<p>[val|:def]</p>`);
+		let copy = matchdom(node, {val: 'toto'});
+		assert.equal(copy.outerHTML, '<p>def</p>');
+	});
+});
+
 describe('!?', function() {
 	it('should set last path component when true is not set', function() {
 		let node = dom(`<p>[to.val|!?]</p>`);

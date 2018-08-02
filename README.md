@@ -246,6 +246,10 @@ Removes the closest node when current value is null or undefined.
 
 The selector attribute is optional, in which case the parent node is removed.
 
+### The empty filter:str
+
+The empty filter, usually used as the last filter in an expression, sets
+current value to the `str` parameter, or to the empty string if none given.
 
 ### repeat:selector:alias
 
