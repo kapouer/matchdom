@@ -380,12 +380,21 @@ function matchdom(parent, data, filters, scope) {
 			what.hits = hits;
 			mutateHits(what, hits);
 			var allNulls = true;
+			var allTrue = true;
+			var allBools = true;
 			hits = hits.filter(function(val) {
 				if (val !== null) allNulls = false;
+				if (val === true) ; // do nothing
+				else if (val === false) allTrue = false;
+				else allBools = false;
 				return val !== undefined;
 			});
 			if (hits.length > 0) {
-				what.set(allNulls ? null : hits.join(''));
+				var result;
+				if (allNulls) result = null;
+				else if (allBools) result = allTrue;
+				else result = hits.join('');
+				what.set(result);
 			}
 			if (what.ancestor) {
 				parent = what.ancestor;
@@ -555,6 +564,7 @@ What.prototype.get = function() {
 What.prototype.set = function(str) {
 	if (this.node) {
 		if (str == null) str = "";
+		else if (str === true || str === false) str = str.toString();
 		var doc = this.node.ownerDocument;
 		if (!doc) {
 			this.node.textContent = str;
@@ -585,10 +595,14 @@ What.prototype.set = function(str) {
 
 	if (this.attr) {
 		this.initialAttr = this.attr;
-		if (str) str = str.trim();
-		if (str == null || (this.attr == "class" && str === "")) {
+		if (typeof str == "string") str = str.trim();
+		if (str === false || str == null || (this.attr == "class" && str === "")) {
 			this.parent.removeAttribute(this.attr);
 		} else {
+			if (str === true) {
+				if (this.attr.startsWith('data-') == true) str = str + "";
+				else str = "";
+			}
 			this.parent.setAttribute(this.attr, str);
 		}
 	}

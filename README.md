@@ -150,6 +150,14 @@ Expressions can be nested:
 (see examples in tests).
 
 
+## booleans in attributes
+
+When merging only booleans in an attribute:
+- if boolean AND of all values is true, attribute value is "true" for data-attributes,
+or "" for other attributes
+- if boolean AND of all values is not true, attribute is removed
+
+
 ## bundled filters
 
 Examples can be found in tests.

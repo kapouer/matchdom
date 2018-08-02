@@ -114,3 +114,42 @@ describe('attr filter', function() {
 	});
 });
 
+describe('boolean value in attribute filter', function() {
+	it('should drop attribute if value is falsey', function() {
+		let node = dom(`<textarea required="[required]"></textarea>`);
+		let copy = matchdom(node, {
+			required: false
+		});
+		assert.equal(copy.outerHTML, '<textarea></textarea>');
+	});
+	it('should keep attribute empty', function() {
+		let node = dom(`<textarea required="[required]"></textarea>`);
+		let copy = matchdom(node, {
+			required: true
+		});
+		assert.equal(copy.outerHTML, '<textarea required=""></textarea>');
+	});
+	it('should set data-attribute to true', function() {
+		let node = dom(`<textarea data-required="[required]"></textarea>`);
+		let copy = matchdom(node, {
+			required: true
+		});
+		assert.equal(copy.outerHTML, '<textarea data-required="true"></textarea>');
+	});
+	it('should set data-attribute to true with multiple booleans', function() {
+		let node = dom(`<textarea data-required="[required][check]"></textarea>`);
+		let copy = matchdom(node, {
+			required: true,
+			check: true
+		});
+		assert.equal(copy.outerHTML, '<textarea data-required="true"></textarea>');
+	});
+	it('should set data-attribute to joined strings with multiple booleans and a string', function() {
+		let node = dom(`<textarea data-required="[required] [check]"></textarea>`);
+		let copy = matchdom(node, {
+			required: true,
+			check: true
+		});
+		assert.equal(copy.outerHTML, '<textarea data-required="true true"></textarea>');
+	});
+});
