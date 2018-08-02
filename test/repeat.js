@@ -81,6 +81,14 @@ describe('repeating', function() {
 		assert.equal(copy.innerHTML, '<i>*</i><span>one</span><br><i>*</i><span>two</span><br>');
 	});
 
+	it('should repeat array over previous child and next child with wildcard selector', function() {
+		let node = dom(`<div><i>*</i><span>[arr.value|repeat:+*+]</span><br></div>`);
+		let copy = matchdom(node, {
+			arr: [{value: 'one'}, {value: 'two'}]
+		});
+		assert.equal(copy.innerHTML, '<i>*</i><span>one</span><br><i>*</i><span>two</span><br>');
+	});
+
 	it('should repeat array over previous child and next child and not fail', function() {
 		let node = dom(`<div><i>*</i><span>[arr.value|repeat:+span++]</span><br></div>`);
 		let copy = matchdom(node, {

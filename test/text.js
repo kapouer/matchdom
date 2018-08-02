@@ -11,9 +11,7 @@ describe('string', function() {
 		});
 		assert.equal(copy, 'no? yes!');
 	});
-});
 
-describe('string', function() {
 	it('should be merged as text', function() {
 		let copy = matchdom('no?\n [test]!', {
 			test: "yes\nnl"
@@ -118,42 +116,6 @@ describe('filters on text nodes', function() {
 			}
 		});
 		assert.equal(copy.outerHTML, '<span>me and you</span>');
-	});
-
-	it('should remove current node', function() {
-		let node = dom(`<div><span>[test|magnet]</span></div>`);
-		let copy = matchdom(node, {
-			// test: null
-		});
-		assert.equal(copy.outerHTML, '<div></div>');
-	});
-
-	it('should remove closest tr', function() {
-		let node = dom(`<table><tbody>
-			<th><td>Hello</td></tr><tr><td>[test|magnet:tr]</td></tr>
-		</tbody></table>`);
-		let copy = matchdom(node, {
-			test: null // nothing is fine too
-		});
-		assert.equal(copy.outerHTML, dom(`<table><tbody>
-			<th><td>Hello</td></tr>
-		</tbody></table>`).outerHTML);
-	});
-
-	it('should remove current attribute', function() {
-		let node = dom(`<div><span class="some [test|magnet]">test</span></div>`);
-		let copy = matchdom(node, {
-			// test: null
-		});
-		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
-	});
-
-	it('should remove current node from attribute', function() {
-		let node = dom(`<div><span class="some [test|magnet:span]">test</span></div>`);
-		let copy = matchdom(node, {
-			// test: null
-		});
-		assert.equal(copy.outerHTML, '<div></div>');
 	});
 
 	it('should be merge list of nodes', function() {

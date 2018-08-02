@@ -106,8 +106,24 @@ matchdom.filters = {
 			return;
 		}
 		var parent = what.parent;
-		if (selector) parent = parent.closest(selector);
-		if (parent) parent.remove();
+		var prevSibs = 0;
+		var nextSibs = 0;
+		if (selector) {
+			while (selector.startsWith('+')) {
+				prevSibs++;
+				selector = selector.slice(1);
+			}
+			while (selector.endsWith('+')) {
+				nextSibs++;
+				selector = selector.slice(0, -1);
+			}
+			if (selector != "*") parent = parent.closest(selector);
+		}
+		if (parent) {
+			while (prevSibs-- && parent.previousElementSibling) parent.previousElementSibling.remove();
+			while (nextSibs-- && parent.nextElementSibling) parent.nextElementSibling.remove();
+			parent.remove();
+		}
 	},
 	html: function(value, what) {
 		what.mode = 'html';
@@ -146,7 +162,7 @@ matchdom.filters = {
 				nextSibs++;
 				selector = selector.slice(0, -1);
 			}
-			parent = parent.closest(selector);
+			if (selector != "*") parent = parent.closest(selector);
 		}
 		if (!parent) {
 			console.warn("Cannot repeat: ancestor not found", selector);

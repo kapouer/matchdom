@@ -240,13 +240,6 @@ attribute.
 - replace target pathname by url pathname
 - merge target query with url query
 
-### magnet:selector
-
-Removes the closest node when current value is null or undefined.
-
-`selector` is optional, in which case the parent node is removed, or if magnet
-is set inside an attribute, the attribute is removed.
-
 ### The empty filter:str
 
 The empty filter, usually used as the last filter in an expression, sets
@@ -266,13 +259,21 @@ rows and cells to form a table, see unit tests for examples:
 ```
 
 If selector is prefixed or postfixed by one or several `+` signs, as many
-previous or next siblings are repeated:
+previous or next element siblings are repeated:
 
 ```html
 <div>
 	<hr>
 	<p>[sections.text|repeat:+p+]</p>
 	<br>
+</div>
+```
+
+If selector is `*`, current node is selected:
+
+```html
+<div>
+	<p>[sections.text|repeat:*+]</p><br>
 </div>
 ```
 
@@ -294,6 +295,15 @@ Caveat: won't work if there is actually a property `obj+`, in that case
 a warning will be emitted.
 
 Note that if root node is repeated, matchdom returns a fragment.
+
+
+### magnet:selector
+
+Removes the closest node when current value is null or undefined.
+
+`selector` is optional and supports same syntax as in repeat filter.
+If not set, the parent node is removed, or expression is inside an attribute,
+the attribute is removed.
 
 
 ### padStart, padEnd :len:char
