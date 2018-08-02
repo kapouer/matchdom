@@ -244,7 +244,8 @@ attribute.
 
 Removes the closest node when current value is null or undefined.
 
-The selector attribute is optional, in which case the parent node is removed.
+`selector` is optional, in which case the parent node is removed, or if magnet
+is set inside an attribute, the attribute is removed.
 
 ### The empty filter:str
 
