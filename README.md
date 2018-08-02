@@ -199,6 +199,14 @@ Without parameters, returns `str == value`.
 Otherwise return `yes` or `no`, or does not change value if `no` is not passed.
 
 
+### neq:str:yes:no
+
+Like `eq` but test is `str != value`.
+
+Not exactly `eq:str|!|?:yes:no` because `?` has different behavior with missing
+parameters.
+
+
 ### not
 
 If value is falsey, replace it with `null`.
@@ -312,6 +320,13 @@ Removes the closest node when current value is null or undefined.
 `selector` is optional and supports same syntax as in repeat filter.
 If not set, the parent node is removed, or expression is inside an attribute,
 the attribute is removed.
+
+
+### bmagnet:selector
+
+Same as magnet, only it takes a boolean to decide, and does not print anything.
+
+Synonym of `not|magnet:sel|`.
 
 
 ### padStart, padEnd :len:char

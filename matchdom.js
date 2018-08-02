@@ -15,15 +15,22 @@ matchdom.filters = {
 	or: function(value, what, str) {
 		if (value == null) return str;
 	},
-	eq: function(value, what, str, yes, no) {
-		var same = value == str;
+	eq: function(val, what, str, yes, no) {
+		var test = val == str;
 		if (yes !== undefined) {
-			if (same) return yes;
-			else if (no !== undefined) return no;
-			else return value;
+			if (test) return yes;
+			else return no !== undefined ? no : val;
 		} else {
-			if (same) return true;
-			else return false;
+			return test;
+		}
+	},
+	neq: function(val, what, str, yes, no) {
+		var test = val != str;
+		if (yes !== undefined) {
+			if (test) return yes;
+			else return no !== undefined ? no : val;
+		} else {
+			return test;
 		}
 	},
 	not: function(value) {
@@ -128,6 +135,10 @@ matchdom.filters = {
 			while (nextSibs-- && parent.nextElementSibling) parent.nextElementSibling.remove();
 			parent.remove();
 		}
+	},
+	bmagnet: function(val, what, sel) {
+		what.filters.magnet(val ? val : null, what, sel);
+		return '';
 	},
 	html: function(value, what) {
 		what.mode = 'html';

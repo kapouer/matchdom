@@ -67,3 +67,30 @@ describe('magnet filter', function() {
 
 });
 
+describe('bmagnet filter', function() {
+	it('should remove current node', function() {
+		let node = dom(`<div><span>test [test|bmagnet]</span></div>`);
+		let copy = matchdom(node, {
+			test: false
+		});
+		assert.equal(copy.outerHTML, '<div></div>');
+	});
+
+	it('should not remove current node', function() {
+		let node = dom(`<div><span>test[test|bmagnet]</span></div>`);
+		let copy = matchdom(node, {
+			test: true
+		});
+		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
+	});
+
+	it('should remove current attribute', function() {
+		let node = dom(`<div><span class="some[test|bmagnet]">test</span></div>`);
+		let copy = matchdom(node, {
+			test: 0
+		});
+		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
+	});
+
+});
+

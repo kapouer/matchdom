@@ -100,6 +100,19 @@ describe('eq', function() {
 	});
 });
 
+describe('neq', function() {
+	it('should return boolean true', function() {
+		let node = dom(`<p>[val|neq:ceci]</p>`);
+		let copy = matchdom(node, {val: 'cecia'});
+		assert.equal(copy.outerHTML, '<p>true</p>');
+	});
+	it('should return boolean false', function() {
+		let node = dom(`<p test="[val|neq:cela]">ora</p>`);
+		let copy = matchdom(node, {val: 'cela'});
+		assert.equal(copy.outerHTML, '<p>ora</p>');
+	});
+});
+
 describe('not', function() {
 	it('should set to null if empty', function() {
 		let node = dom(`<p data-test="[val|not]">test</p>`);
