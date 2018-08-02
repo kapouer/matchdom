@@ -1,15 +1,16 @@
-# matchdom -- tiny DOM data merger for HTML editors
+# matchdom -- merge data into DOM
 
 Write expressions in attributes or text nodes and have them merged with the
 help of filters for complex or custom cases.
 
 Features:
-- DOM only. No serialization or parsing required.
+- Securely traverses and mutates DOM attributes and nodes.
 - Super customizable with filters.
-- Comes with useful filters: attr, magnet, repeat, join and more.
+- Comes with powerful filters: attr, magnet, repeat, join, and much more.
 - Source code is short, simple, and does not require compilation.
 - Nested expressions (since 1.6.0).
 - Can run without DOM when merging pure strings (since 2.1.0).
+- Test suite.
 
 ## Examples
 
