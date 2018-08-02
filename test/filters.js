@@ -73,10 +73,30 @@ describe('or', function() {
 });
 
 describe('eq', function() {
+	it('should return boolean true', function() {
+		let node = dom(`<p>[val|eq:ceci]</p>`);
+		let copy = matchdom(node, {val: 'ceci'});
+		assert.equal(copy.outerHTML, '<p>true</p>');
+	});
+	it('should return boolean false', function() {
+		let node = dom(`<p>[val|eq:cela]</p>`);
+		let copy = matchdom(node, {val: 'ceci'});
+		assert.equal(copy.outerHTML, '<p>false</p>');
+	});
 	it('should set another value if equal', function() {
 		let node = dom(`<p>[val|eq:ceci:cela]</p>`);
 		let copy = matchdom(node, {val: 'ceci'});
 		assert.equal(copy.outerHTML, '<p>cela</p>');
+	});
+	it('should set another value if not equal', function() {
+		let node = dom(`<p>[val|eq:ceci:cela:non]</p>`);
+		let copy = matchdom(node, {val: 'ceca'});
+		assert.equal(copy.outerHTML, '<p>non</p>');
+	});
+	it('should not change value if not equal and no third param is set', function() {
+		let node = dom(`<p>[val|eq:ceci:cela]</p>`);
+		let copy = matchdom(node, {val: 'ceca'});
+		assert.equal(copy.outerHTML, '<p>ceca</p>');
 	});
 });
 
@@ -113,6 +133,40 @@ describe('?', function() {
 		let node = dom(`<p>[val|?]</p>`);
 		let copy = matchdom(node, {val: false});
 		assert.equal(copy.outerHTML, '<p></p>');
+	});
+});
+
+describe('!?', function() {
+	it('should set last path component when true is not set', function() {
+		let node = dom(`<p>[to.val|!?]</p>`);
+		let copy = matchdom(node, {to: {val: false}});
+		assert.equal(copy.outerHTML, '<p>val</p>');
+	});
+});
+
+describe('pre', function() {
+	it('should not prepend string if value is empty', function() {
+		let node = dom(`<a class="test [button|pre:ui ]">test</a>`);
+		let copy = matchdom(node, {button: ''});
+		assert.equal(copy.outerHTML, '<a class="test">test</a>');
+	});
+	it('should prepend string if value is not empty', function() {
+		let node = dom(`<a class="[button|pre:ui ]">test</a>`);
+		let copy = matchdom(node, {button: 'button'});
+		assert.equal(copy.outerHTML, '<a class="ui button">test</a>');
+	});
+});
+
+describe('post', function() {
+	it('should not append string if value is empty', function() {
+		let node = dom(`<a class="test [size|post: wide]">test</a>`);
+		let copy = matchdom(node, {size: ''});
+		assert.equal(copy.outerHTML, '<a class="test">test</a>');
+	});
+	it('should append string if value is not empty', function() {
+		let node = dom(`<a class="test [size|post: wide]">test</a>`);
+		let copy = matchdom(node, {size: 'ten'});
+		assert.equal(copy.outerHTML, '<a class="test ten wide">test</a>');
 	});
 });
 

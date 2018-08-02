@@ -303,6 +303,16 @@ matchdom.filters = {
 			return what.val;
 		}
 	},
+	pre: function(val, what, str) {
+		if (val == null || val === '') return val;
+		if (val && str != null) val = str + val;
+		return val;
+	},
+	post: function(val, what, str) {
+		if (val == null || val === '') return val;
+		if (val && str != null) val += str;
+		return val;
+	},
 	'?': function(val, what, yes, no) {
 		if (val === true) {
 			if (yes === undefined) return what.scope.path.slice(-1).pop();
@@ -316,6 +326,9 @@ matchdom.filters = {
 	},
 	'!': function(val) {
 		return !val;
+	},
+	'!?': function(val, what, yes, no) {
+		return what.filters['?'](!val, what, yes, no);
 	}
 };
 
