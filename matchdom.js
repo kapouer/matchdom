@@ -15,8 +15,16 @@ matchdom.filters = {
 	or: function(value, what, str) {
 		if (value == null) return str;
 	},
-	eq: function(value, what, str, to) {
-		if (value == str) return to;
+	eq: function(value, what, str, yes, no) {
+		var same = value == str;
+		if (yes !== undefined) {
+			if (same) return yes;
+			else if (no !== undefined) return no;
+			else return value;
+		} else {
+			if (same) return true;
+			else return false;
+		}
 	},
 	not: function(value) {
 		if (!value) return null;

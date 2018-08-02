@@ -184,9 +184,11 @@ Can be useful also if undefined values are expected since they could be left
 unmerged (thus showing template expressions).
 
 
-### eq:str:to
+### eq:str:yes:no
 
-If value is equal to `str`, replace it with `to`.
+Without parameters, returns `str == value`.
+
+Otherwise return `yes` or `no`, or does not change value if `no` is not passed.
 
 
 ### not
