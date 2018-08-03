@@ -389,8 +389,8 @@ function matchdom(parent, data, filters, scope) {
 		list = parent;
 	}
 
-	if (list.ownerDocument && typeof list.item != "function" && list.length === undefined) {
-		list = [parent];
+	if (typeof list.forEach != "function") {
+		list = [list];
 	}
 	list.forEach(function(root) {
 		matchEachDom(root, function(node, hits, attr) {
