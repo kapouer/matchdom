@@ -469,6 +469,7 @@ function mutate(what) {
 	var expr = what.expr;
 	var val = what.scope.data && expr.get(what.scope.data);
 	if (val === undefined) val = expr.get(what.data);
+	if (expr.last && val === undefined) val = null;
 	var filter, ret;
 	while (filter = expr.filters.shift()) {
 		if (val !== null) what.val = val;
@@ -673,6 +674,7 @@ Expression.prototype.toString = function() {
 };
 
 Expression.prototype.get = function(data, path) {
+	this.last = false;
 	if (path) {
 		if (typeof path == "string") path = path.split(Symbols.path);
 	} else {
@@ -680,8 +682,12 @@ Expression.prototype.get = function(data, path) {
 	}
 	for (var i=0; i < path.length; i++) {
 		data = data[path[i]];
-		if (data == null) break;
+		if (data == null) {
+			i += 1;
+			break;
+		}
 	}
+	if (data === undefined && i == path.length) this.last = true;
 	return data;
 };
 

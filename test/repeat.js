@@ -132,7 +132,7 @@ describe('repeating', function() {
 
 	it('should repeat array when filter is not the first one and data is array and first one is in attribute', function() {
 		let node = dom(`<div>
-			<span data-class="[style|attr]">[key] [value|repeat]</span>
+			<span data-class="[it.style|attr]">[it.key] [value|repeat:*:it]</span>
 		</div>`);
 		let copy = matchdom(node, [
 			{key: 1, value: 'one', style: 'a'},

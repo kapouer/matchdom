@@ -64,6 +64,34 @@ describe('text nodes', function() {
 		});
 		assert.equal(copy.outerHTML, '<p>test<br><br>test<br></p>');
 	});
+
+	it('should be merged as if empty when undefined and first level', function() {
+		let node = dom(`<span>no? [test]!</span>`);
+		let copy = matchdom(node, {
+			toto: 'me'
+		});
+		assert.equal(copy.outerHTML, '<span>no? !</span>');
+	});
+
+	it('should be merged as if empty when undefined and second level', function() {
+		let node = dom(`<span>no? [test.it]!</span>`);
+		let copy = matchdom(node, {
+			test: {
+				ot: 'oui'
+			}
+		});
+		assert.equal(copy.outerHTML, '<span>no? !</span>');
+	});
+
+	it('should be left unmerged when first-level is undefined on a two-level path', function() {
+		let node = dom(`<span>no? [test.it]!</span>`);
+		let copy = matchdom(node, {
+			tost: {
+				it: 'oui'
+			}
+		});
+		assert.equal(copy.outerHTML, '<span>no? [test.it]!</span>');
+	});
 });
 
 describe('filters on text nodes', function() {

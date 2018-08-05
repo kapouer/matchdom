@@ -66,9 +66,9 @@ describe('pad', function() {
 
 describe('or', function() {
 	it('should set a default value', function() {
-		let node = dom(`<p data-class="[yop|attr]" data-test="[vide|or:nothing|attr]">[str|or:empty] - [nul]</p>`);
+		let node = dom(`<p data-class="[test.yop|or:myclass|attr]" data-test="[vide|or:nothing|attr]">[str|or:empty] - [nul]</p>`);
 		let copy = matchdom(node, {});
-		assert.equal(copy.outerHTML, '<p data-class="[yop|attr]" test="nothing">empty - [nul]</p>');
+		assert.equal(copy.outerHTML, '<p class="myclass" test="nothing">empty - </p>');
 	});
 });
 
@@ -270,7 +270,7 @@ describe('url filter', function() {
 	});
 
 	it('should merge url query with partial template when repeated', function() {
-		let node = dom(`<div><a href="/test?id=1" data-href="?id=[id|url]">[title|repeat]</a></div>`);
+		let node = dom(`<div><a href="/test?id=1" data-href="?id=[id|repeat:*|url]">[title]</a></div>`);
 		let copy = matchdom(node, [{
 			id: 'xx',
 			title: 'anchor'
@@ -323,19 +323,19 @@ describe('fill filter', function() {
 	});
 
 	it('should not fill current node', function() {
-		let node = dom(`<p>a[field|fill]b</p>`);
+		let node = dom(`<p>a[field.it|fill]b</p>`);
 		let copy = matchdom(node, {
 			other: 'word'
 		});
-		assert.equal(copy.outerHTML, '<p>a[field|fill]b</p>');
+		assert.equal(copy.outerHTML, '<p>a[field.it|fill]b</p>');
 	});
 
 	it('should not fill from attribute', function() {
-		let node = dom(`<p data-template="[field|fill]">abb</p>`);
+		let node = dom(`<p data-template="[field.it|fill]">abb</p>`);
 		let copy = matchdom(node, {
 			other: 'word'
 		});
-		assert.equal(copy.outerHTML, '<p data-template="[field|fill]">abb</p>');
+		assert.equal(copy.outerHTML, '<p data-template="[field.it|fill]">abb</p>');
 	});
 
 	it('should fill current node and set an attribute using two separate expressions', function() {

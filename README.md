@@ -139,6 +139,16 @@ and two methods:
 - toString()
 - get(data) returns the data accessed by expr.path
 
+When the last item of the path of an expression refers to an `undefined` value,
+the value is converted to `null`, so the expression is merged.
+
+When the path refers to an `undefined` value before the last item, the expression
+is not merged.
+
+It can be confusing when repeating an array, in which case either the `repeat`
+filter should be used first, or it should get an alias parameter to avoid
+merging undefined expressions that are actually meant to be repeated.
+
 Expressions can be modified by filters. See the repeat filter for the most
 complex code doing that.
 
