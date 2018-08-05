@@ -21,6 +21,18 @@ describe('attributes', function() {
 		assert.equal(copy.outerHTML, '<span class="one 2 three 4">no?</span>');
 	});
 
+	it('should be merged with multiple values and class removes whitespaces', function() {
+		let node = dom(`<span class="one
+		[two]
+		three [four]
+		">no?</span>`);
+		let copy = matchdom(node, {
+			two: 2,
+			four: 4
+		});
+		assert.equal(copy.outerHTML, '<span class="one 2 three 4">no?</span>');
+	});
+
 	it('should do fine when filters are not defined', function() {
 		let node = dom(`<span data-test="[test|notfound:ff|notfound2:kk]">yes</span>`);
 		let copy = matchdom(node, {

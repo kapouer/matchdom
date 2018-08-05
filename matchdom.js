@@ -625,6 +625,8 @@ What.prototype.set = function(str) {
 			if (str === true) {
 				if (this.attr.startsWith('data-') == true) str = str + "";
 				else str = "";
+			} else if (this.attr == "class" && typeof str == "string") {
+				str = str.replace(/[\n\t\s]+/g, ' ').trim();
 			}
 			this.parent.setAttribute(this.attr, str);
 		}
