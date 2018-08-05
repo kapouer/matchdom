@@ -56,7 +56,7 @@ describe('integration', function() {
 	});
 
 	it('should remove current text node and previous node', function() {
-		let node = dom(`<div><br><span>test</span>[test|not|magnet:+*|]</div>`);
+		let node = dom(`<div><br><span>test</span>[test|bmagnet:+*|]</div>`);
 		let copy = matchdom(node, {
 			test: false
 		});
