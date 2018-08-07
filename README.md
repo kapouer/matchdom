@@ -120,7 +120,7 @@ multiple times) to the filter name, like this:
 </table>
 ```
 
-Multiple filters can be appended: `[text|prefix:me|postfix:him]`.
+Multiple filters can be appended: `[text|pre:me |post: him]`.
 
 A filter can itself change what.expr.filters, typically the `repeat` filter,
 being recursive, empties following filters.
@@ -172,104 +172,7 @@ or "" for other attributes
 
 Examples can be found in tests.
 
-### html, br, text
-
-By default all strings are set into text nodes with newlines replaced by  `<br>`.
-
-The `text` filter removes that behavior (newlines won't be replaced).
-
-The `html` filter inserts html code as is.
-
-The `br` filter sets default behavior again.
-
-html filter also works well with join filter.
-
-### fill
-
-Sets current node content to merged field.
-
-If it's used in an attribute, also removes the attribute containing the expression.
-
-Can be used with attr filter to set a value to an attribute and content at the
-same time.
-
-
-### or:str
-
-If value is null or undefined, merge the field with str.
-
-Can be useful also if undefined values are expected since they could be left
-unmerged (thus showing template expressions).
-
-
-### eq:str:yes:no
-
-Without parameters, returns `str == value`.
-
-Otherwise return `yes` or `no`, or does not change value if `no` is not passed.
-
-
-### neq:str:yes:no
-
-Like `eq` but test is `str != value`.
-
-Not exactly `eq:str|!|?:yes:no` because `?` has different behavior with missing
-parameters.
-
-
-### not
-
-If value is falsey, replace it with `null`.
-
-
-### attr:name:selector
-
-The name parameter is optional for data-* attributes.
-
-The selector parameter is optional and selects an ancestor only when defined
-in a text node.
-
-Sometimes the template for an attribute is better kept in another attribute,
-so there is a filter just for that:
-
-```html
-<div id="model">
-	<img data-src="[url|attr]" />
-	<img something="[url|attr:src]" />
-	<a>test[url|attr:href]</a>
-	<div class="test"><p>test[myclass|attr:class:div]</p></div>
-</div>
-```
-
-gives:
-```html
-<div id="model">
-	<img src="/my.png" />
-	<img src="/my.png" />
-	<a href="/my.png">test</a>
-	<div class="test my"><p>test</p></div>
-</div>
-```
-
-It's possible to set an attribute with an expression in a text node.
-
-When targeting a class attribute, values are added using `classList.add`.
-
-
-### url:name
-
-The name parameter is optional as for attr:name (which is called by this filter).
-
-This filter builds a url attribute from a template and merges it into a target
-attribute.
-
-- replace target pathname by url pathname
-- merge target query with url query
-
-### The empty filter:str
-
-The empty filter, usually used as the last filter in an expression, sets
-current value to the `str` parameter, or to the empty string if none given.
+repeat, magnet, url filters provide most of the interesting features.
 
 ### repeat:selector:alias
 
@@ -339,6 +242,108 @@ Same as magnet, only it takes a boolean to decide, and does not print anything.
 Synonym of `not|magnet:sel|`.
 
 
+### url:name
+
+The name parameter is optional as for attr:name (which is called by this filter).
+
+This filter builds a url attribute from a template and merges it into a target
+attribute.
+
+- replace target pathname by url pathname
+- merge target query with url query
+
+
+### attr:name:selector
+
+The name parameter is optional for data-* attributes.
+
+The selector parameter is optional and selects an ancestor only when defined
+in a text node.
+
+Sometimes the template for an attribute is better kept in another attribute,
+so there is a filter just for that:
+
+```html
+<div id="model">
+	<img data-src="[url|attr]" />
+	<img something="[url|attr:src]" />
+	<a>test[url|attr:href]</a>
+	<div class="test"><p>test[myclass|attr:class:div]</p></div>
+</div>
+```
+
+gives:
+```html
+<div id="model">
+	<img src="/my.png" />
+	<img src="/my.png" />
+	<a href="/my.png">test</a>
+	<div class="test my"><p>test</p></div>
+</div>
+```
+
+It's possible to set an attribute with an expression in a text node.
+
+When targeting a class attribute, values are added using `classList.add`.
+
+
+### The empty filter:str
+
+The empty filter, usually used as the last filter in an expression, sets
+current value to the `str` parameter, or to the empty string if none given.
+
+
+### or:str
+
+If value is null or undefined, merge the field with str.
+
+Can be useful also if undefined values are expected since they could be left
+unmerged (thus showing template expressions).
+
+
+### html, br, text
+
+By default all strings are set into text nodes with newlines replaced by  `<br>`.
+
+The `text` filter removes that behavior (newlines won't be replaced).
+
+The `html` filter inserts html code as is.
+
+The `br` filter sets default behavior again.
+
+html filter also works well with join filter.
+
+
+### fill
+
+Sets current node content to merged field.
+
+If it's used in an attribute, also removes the attribute containing the expression.
+
+Can be used with attr filter to set a value to an attribute and content at the
+same time.
+
+
+### eq:str:yes:no
+
+Without parameters, returns `str == value`.
+
+Otherwise return `yes` or `no`, or does not change value if `no` is not passed.
+
+
+### neq:str:yes:no
+
+Like `eq` but test is `str != value`.
+
+Not exactly `eq:str|!|?:yes:no` because `?` has different behavior with missing
+parameters.
+
+
+### not
+
+If value is falsey, replace it with `null`.
+
+
 ### padStart, padEnd :len:char
 
 Converts to string and calls `String.prototype.padXxx(len, char)`.
@@ -367,6 +372,7 @@ Often useful with `[list|join::br]`.
 
 Slices an array with optional end index. Works well with join filter.
 
+
 ### ?:yes:no
 
 If value is true, replace it with `yes`, if it is false, replace it with `no`,
@@ -378,17 +384,21 @@ If `yes` is not set either, replace it with current variable name.
 This filter works well with `not` filter to make sure empty values are cast to
 boolean false.
 
+
 ### !
 
 The `!` operator.
+
 
 ### !?
 
 Like `?` applied on `!val`.
 
+
 ### pre:str
 
 Prepend string if value is not null or not empty.
+
 
 ### post:str
 
