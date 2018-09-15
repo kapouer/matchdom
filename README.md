@@ -404,3 +404,21 @@ Prepend string if value is not null or not empty.
 
 Append string if value is not null or not empty.
 
+
+## Filter hooks
+
+Special filter names (which cannot be parsed as legit names) provide hooks:
+
+- <fn>|  
+  hook after filter <fn>
+
+- ||  
+  hook after all filters have run (even if none where defined)
+
+This is available since version 4.2.0.
+
+
+## Custom symbols
+
+`matchdom.Symbols` allows one to change open, close, path, append, param symbols.
+

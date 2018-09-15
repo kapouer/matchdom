@@ -643,22 +643,39 @@ function Expression(str, filters) {
 		return this;
 	}
 	this.initial = str;
-	var list = str.split(Symbols.append);
+	var sa = Symbols.append;
+	var list = str.split(sa);
 	var path = list.shift();
 	if (path == "") this.path = [];
 	else this.path = path.split(Symbols.path);
 	this.filters = [];
 	var name, parts, fn;
+
 	for (var i=0; i < list.length; i++) {
 		parts = list[i].split(Symbols.param);
 		name = parts.shift();
 		fn = filters[name];
-		if (fn) this.filters.push({
+		if (!fn) continue;
+		this.filters.push({
 			name: name,
 			fn: fn,
 			params: parts
 		});
+		name = name + sa;
+		fn = filters[name];
+		if (fn) this.filters.push({
+			name: name,
+			fn: fn,
+			params: []
+		});
 	}
+	name = sa + sa;
+	fn = filters[name];
+	if (fn) this.filters.push({
+		name: name,
+		fn: fn,
+		params: []
+	});
 }
 
 Expression.prototype.clone = function() {
