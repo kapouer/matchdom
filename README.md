@@ -26,6 +26,7 @@ Given a DOM and placeholders like this:
 
 ```html
 <div id="model" class="[myclass]">
+	<h[n]>Header</h[n]>
 	<span>[data.text]</span>
 </div>
 ```
@@ -33,6 +34,7 @@ Given a DOM and placeholders like this:
 matchdom can be used like this to merge data:
 ```js
 matchdom(model, {
+	n: 4,
 	myclass: "yes",
 	data: {
 		text: "test"
@@ -44,6 +46,7 @@ resulting in:
 
 ```html
 <div id="model" class="yes">
+	<h4>Header></h4>
 	<span>test</span>
 </div>
 ```
@@ -86,6 +89,8 @@ with the following properties:
   + iskey: boolean, set when keys of an object are repeated and merged value is a key.
   + alias: `scope.data[scope.alias]` is the currently iterated data.
 - node: text node when expression was inside one
+- tag: boolean true when expression is inside a tag name (matchdom 4.3.0)  
+  in this case, expressions must be valid in lower case only.
 - attr: attribute name when expression was inside an attribute value
 - parent: node containing text node or attribute
 - expr: the parsed expression

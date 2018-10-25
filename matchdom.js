@@ -393,6 +393,7 @@ function matchdom(parent, data, filters, scope) {
 		list = [list];
 	}
 	list.forEach(function(root) {
+		var replacements = [];
 		matchEachDom(root, function(node, hits, attr) {
 			var what = new What(data, filters, node, attr, scope);
 			if (wasText) what.mode = "text";
@@ -415,9 +416,26 @@ function matchdom(parent, data, filters, scope) {
 				else result = hits.join('');
 				what.set(result);
 			}
+			if (what.replacement) replacements.unshift(what.replacement);
 			if (what.ancestor) {
 				parent = what.ancestor;
 				delete what.ancestor;
+			}
+		});
+		replacements.forEach(function(pair) {
+			var old = pair[1];
+			var tag = pair[0];
+			var atts = old.attributes;
+			var att;
+			for (var i=0; i < atts.length; i++) {
+				att = atts[i];
+				tag.setAttribute(att.name, att.value);
+			}
+			while (old.firstChild) tag.appendChild(old.firstChild);
+			if (old.parentNode) {
+				old.parentNode.replaceChild(tag, old);
+			} else if (old == parent) {
+				parent = tag;
 			}
 		});
 	});
@@ -492,6 +510,8 @@ function matchEachDom(root, fn) {
 			matchAttributes(node).forEach(function(atthit) {
 				fn(node, atthit.list, atthit.attr);
 			});
+			hits = tokenize(node.tagName.toLowerCase());
+			if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") fn(node, hits, true);
 		} else {
 			hits = tokenize(node.nodeValue);
 			if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") fn(node, hits);
@@ -568,6 +588,10 @@ function What(data, filters, node, attr, scope) {
 	this.data = data;
 	this.scope = Object.assign({path: []}, scope);
 	this.filters = filters;
+	if (attr === true) {
+		this.tag = true;
+		attr = false;
+	}
 	if (attr) {
 		this.initialAttr = attr;
 		this.attr = attr;
@@ -582,15 +606,23 @@ What.prototype.get = function() {
 	else return this.parent.getAttribute(this.attr);
 };
 What.prototype.set = function(str) {
+	var doc = this.node ? this.node.ownerDocument : null;
+	if (this.tag) {
+		if (!doc) return str;
+		var tag = doc.createElement('body');
+		tag.innerHTML = '<' + str + '></' + str + '>';
+		tag = tag.firstChild;
+		this.replacement = [tag, this.node];
+		return;
+	}
 	if (this.node) {
 		if (str == null) str = "";
 		else if (str === true || str === false) str = str.toString();
-		var doc = this.node.ownerDocument;
 		if (!doc) {
 			this.node.textContent = str;
 			return str;
 		}
-		var parent = this.node.parentNode;
+		var parent = this.parent;
 		if (!parent) {
 			// do nothing
 		} else if (this.mode == 'html') {
