@@ -3,6 +3,14 @@ const matchdom = require('../matchdom');
 const dom = require('domify');
 require('dom4'); // jsdom is missing .closest
 
+describe('parameters', function() {
+	it('with colon escaping', function() {
+		let node = dom(`<a>Size[size|pre:%3A |post: mm]</a>`);
+		let copy = matchdom(node, {size: 10});
+		assert.equal(copy.outerHTML, '<a>Size: 10 mm</a>');
+	});
+});
+
 describe('join filter', function() {
 	it('with space', function() {
 		let node = dom(`<p>[arr|join: ]</p>`);

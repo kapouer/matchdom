@@ -122,6 +122,8 @@ multiple times) to the filter name, like this:
 
 Multiple filters can be appended: `[text|pre:me |post: him]`.
 
+Parameters values can be escaped using encodeURIComponent.
+
 A filter can itself change what.expr.filters, typically the `repeat` filter,
 being recursive, empties following filters.
 

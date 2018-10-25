@@ -654,6 +654,7 @@ function Expression(str, filters) {
 	for (var i=0; i < list.length; i++) {
 		parts = list[i].split(Symbols.param);
 		name = parts.shift();
+		parts = parts.map(decodeURIComponent);
 		fn = filters[name];
 		if (!fn) continue;
 		this.filters.push({
