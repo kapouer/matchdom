@@ -471,7 +471,7 @@ function mutate(what) {
 	if (val === undefined) val = expr.get(what.data);
 	if (expr.last && val === undefined) val = null;
 	var filter, ret;
-	while (filter = expr.filters.shift()) {
+	while ((filter = expr.filters.shift())) {
 		if (val !== null) what.val = val;
 		ret = filter.fn.apply(null, [val, what].concat(filter.params));
 		if (ret !== undefined) val = ret;
@@ -486,8 +486,8 @@ function matchEachDom(root, fn) {
 	}
 	var what = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
 	var it = root.ownerDocument.createNodeIterator(root, what);
-	var node, i, hits;
-	while (node = it.nextNode()) {
+	var node, hits;
+	while ((node = it.nextNode())) {
 		if (node.nodeType == Node.ELEMENT_NODE) {
 			matchAttributes(node).forEach(function(atthit) {
 				fn(node, atthit.list, atthit.attr);
