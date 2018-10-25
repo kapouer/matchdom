@@ -4,10 +4,15 @@ const dom = require('domify');
 require('dom4'); // jsdom is missing .closest
 
 describe('parameters', function() {
-	it('with colon escaping', function() {
+	it('should uri-decode value', function() {
 		let node = dom(`<a>Size[size|pre:%3A |post: mm]</a>`);
 		let copy = matchdom(node, {size: 10});
 		assert.equal(copy.outerHTML, '<a>Size: 10 mm</a>');
+	});
+	it('should leave value untouched if not uri-decodable', function() {
+		let node = dom(`<a>Percent[pp|post: %|pre:%3A ]</a>`);
+		let copy = matchdom(node, {pp: 10});
+		assert.equal(copy.outerHTML, '<a>Percent: 10 %</a>');
 	});
 });
 
