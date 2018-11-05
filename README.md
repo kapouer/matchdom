@@ -181,7 +181,7 @@ Examples can be found in tests.
 
 repeat, magnet, url filters provide most of the interesting features.
 
-### repeat:selector:alias
+### repeat:selector:alias:step:offset:limit
 
 Repeats closest repeatable data over closest selected node, with optional alias
 parameter.
@@ -212,6 +212,11 @@ If selector is `*`, current node is selected:
 	<p>[sections.text|repeat:*+]</p><br>
 </div>
 ```
+
+- `step` parameter (an integer, defaults to 1) allows one to iterate by step,
+negative values are interpreted as iterating in reverse order
+- `offset` parameter adds an offset to the start of iteration (defaults 0)
+- `limit` parameter limits the number of total iterations (0 is no limit).
 
 To repeat over the keys of an object as a list of `{key, val}` items,
 append `+` to its path name:

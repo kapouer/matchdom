@@ -164,7 +164,7 @@ matchdom.filters = {
 		}
 		return "";
 	},
-	repeat: function(value, what, selector, alias) {
+	repeat: function(value, what, selector, alias, step, offset, limit) {
 		var parent = what.parent;
 		var prevSibs = 0;
 		var nextSibs = 0;
@@ -243,8 +243,21 @@ matchdom.filters = {
 			return {key: key, val: data[key]};
 		});
 
+		step = parseInt(step);
+		if (isNaN(step) || step === 0) step = 1;
+
+		offset = parseInt(offset);
+		if (isNaN(offset) || offset < 0) offset = 0;
+
+		limit = parseInt(limit);
+		if (isNaN(limit) || limit <= 0) limit = Infinity;
+
 		var item;
-		for (var i=0; i < data.length; i++) {
+		var asc = step > 0;
+		var len = data.length - 1;
+		var count = 0;
+		for (var i = asc ? offset : (len - offset); asc ? i <= len : i >= 0; i += step) {
+			if (count++ >= limit) break;
 			scope = Object.assign({}, what.scope);
 			scope.path = scopePath.slice();
 			scope.iskey = inkeys;

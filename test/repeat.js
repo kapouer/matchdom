@@ -63,6 +63,42 @@ describe('repeating', function() {
 		</div>`).outerHTML);
 	});
 
+	it('should repeat array in reverse order', function() {
+		let node = dom(`<div>
+			<span>[arr.value|repeat:::-1]</span>
+		</div>`);
+		let copy = matchdom(node, {
+			arr: [{value: 'one'}, {value: 'two'}]
+		});
+		assert.equal(copy.outerHTML, dom(`<div>
+			<span>two</span><span>one</span>
+		</div>`).outerHTML);
+	});
+
+	it('should repeat array every odd item', function() {
+		let node = dom(`<div>
+			<span>[arr|repeat:::2:1]</span>
+		</div>`);
+		let copy = matchdom(node, {
+			arr: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+		});
+		assert.equal(copy.outerHTML, dom(`<div>
+			<span>1</span><span>3</span><span>5</span><span>7</span><span>9</span>
+		</div>`).outerHTML);
+	});
+
+	it('should repeat array the second and third even items in reverse order', function() {
+		let node = dom(`<div>
+			<span>[arr|repeat:::-2:1:2]</span>
+		</div>`);
+		let copy = matchdom(node, {
+			arr: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+		});
+		assert.equal(copy.outerHTML, dom(`<div>
+			<span>8</span><span>6</span>
+		</div>`).outerHTML);
+	});
+
 	it('should repeat array and return fragment', function() {
 		let node = dom(`<span>[arr.value|repeat]</span>`);
 		let copy = matchdom(node, {
