@@ -623,6 +623,9 @@ What.prototype.set = function(str) {
 	if (this.tag) {
 		if (!doc) return str;
 		var tag = doc.createElement('body');
+		// customize built-in elements compatibility
+		var is = this.node.getAttribute('is');
+		if (is) str += ' is="' + is + '"';
 		tag.innerHTML = '<' + str + '></' + str + '>';
 		tag = tag.firstChild;
 		this.replacement = [tag, this.node];
