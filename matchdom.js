@@ -47,6 +47,7 @@ matchdom.filters = {
 			}
 		}
 		if (!attr) {
+			// eslint-disable-next-line no-console
 			console.warn('attr filter first :name parameter is needed');
 			return;
 		}
@@ -184,6 +185,7 @@ matchdom.filters = {
 			}
 		}
 		if (!parent) {
+			// eslint-disable-next-line no-console
 			console.warn("Cannot repeat: ancestor not found", selector);
 			return null;
 		}
@@ -203,6 +205,7 @@ matchdom.filters = {
 			head = path.shift();
 			if (head.endsWith('+')) {
 				if (data[head]) {
+					// eslint-disable-next-line no-console
 					console.warn("repeat filter ignores", head, "because the key exists");
 				} else {
 					head = head.slice(0, -1);
@@ -247,10 +250,10 @@ matchdom.filters = {
 		if (isNaN(step) || step === 0) step = 1;
 
 		offset = parseInt(offset);
-		if (isNaN(offset) || offset < 0) offset = 0;
+		if (isNaN(offset) || offset < 0) offset = 0;
 
 		limit = parseInt(limit);
-		if (isNaN(limit) || limit <= 0) limit = Infinity;
+		if (isNaN(limit) || limit <= 0) limit = Infinity;
 
 		var item;
 		var asc = step > 0;
@@ -279,6 +282,7 @@ matchdom.filters = {
 		return null;
 	},
 	keys: function(val) {
+		// eslint-disable-next-line no-console
 		console.error("This filter is no longer available in matchdom 3.\n\
 		The repeat filter can now handle this.");
 		return val;
