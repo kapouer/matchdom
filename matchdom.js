@@ -464,7 +464,7 @@ function mutateHits(what, hits) {
 	var scopeIsKey = !!what.scope.iskey;
 	hits.forEach(function(hit, i) {
 		if (typeof hit == "string") return;
-		if (hit.length > 1) {
+		if (hit.length > 1 || typeof hit[0] != "string") {
 			hit = mutateHits(what, hit).join('');
 		} else {
 			hit = hit[0];
@@ -758,6 +758,7 @@ Expression.prototype.get = function(data, path) {
 	} else {
 		path = this.path;
 	}
+	if (path.length == 0) return;
 	for (var i=0; i < path.length; i++) {
 		data = data[path[i]];
 		if (data == null) {

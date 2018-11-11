@@ -10,6 +10,12 @@ describe('nesting', function() {
 		assert.equal(copy.outerHTML, '<div>[]</div>');
 	});
 
+	it('should merge nested value', function() {
+		let node = dom(`<div>[[nested]]</div>`);
+		let copy = matchdom(node, {nested: 'test', test: 'yes'});
+		assert.equal(copy.outerHTML, '<div>yes</div>');
+	});
+
 	it('should not crash on nested empty expressions', function() {
 		let node = dom(`<div>[[nested]]</div>`);
 		let copy = matchdom(node, {});
