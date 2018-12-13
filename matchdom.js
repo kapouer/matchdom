@@ -165,6 +165,14 @@ matchdom.filters = {
 		}
 		return "";
 	},
+	split: function(value, what, sep, trim) {
+		if (value == null || !value.split) return;
+		var list = value.split(sep);
+		if (trim != null) list = list.filter(function(item) {
+			return item !== trim;
+		});
+		return list;
+	},
 	repeat: function(value, what, selector, alias, step, offset, limit) {
 		var parent = what.parent;
 		var prevSibs = 0;
@@ -378,6 +386,9 @@ matchdom.filters = {
 	},
 	'!': function(val) {
 		return !val;
+	},
+	'!!': function(val) {
+		return !!val;
 	},
 	'!?': function(val, what, yes, no) {
 		return what.filters['?'](!val, what, yes, no);

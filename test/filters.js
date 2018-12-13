@@ -42,6 +42,30 @@ describe('join filter', function() {
 	});
 });
 
+describe('split filter', function() {
+	it('with space', function() {
+		let node = dom(`<p>[text|split: |join:X]</p>`);
+		let copy = matchdom(node, {
+			text: 'word1 word2'
+		});
+		assert.equal(copy.outerHTML, '<p>word1Xword2</p>');
+	});
+	it('with newlines and trim', function() {
+		let node = dom(`<p>[text|split:%0A:|join:X]</p>`);
+		let copy = matchdom(node, {
+			text: 'word1\nword2\nword3\n'
+		});
+		assert.equal(copy.outerHTML, '<p>word1Xword2Xword3</p>');
+	});
+	it('with newlines and trim by value', function() {
+		let node = dom(`<p>[text|split:%0A:word2|join:X]</p>`);
+		let copy = matchdom(node, {
+			text: 'word1\nword2\nword3'
+		});
+		assert.equal(copy.outerHTML, '<p>word1Xword3</p>');
+	});
+});
+
 describe('slice filter', function() {
 	it('should slice array with begin and end', function() {
 		let node = dom(`<p>[arr|slice:1:3|join: ]</p>`);
