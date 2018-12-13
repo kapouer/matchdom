@@ -501,7 +501,9 @@ function mutate(what) {
 	if (val === undefined) val = expr.get(what.data);
 	if (expr.last && val === undefined) val = null;
 	var filter, ret;
-	while ((filter = expr.filters.shift())) {
+	var hooks = [];
+	if (expr.hook) hooks.push(expr.hook);
+	while ((filter = expr.filters.shift() || hooks.shift())) {
 		if (val !== null) what.val = val;
 		ret = filter.fn.apply(null, [val, what].concat(filter.params));
 		if (ret !== undefined) val = ret;
@@ -758,11 +760,11 @@ function Expression(str, filters) {
 	}
 	name = sa + sa;
 	fn = filters[name];
-	if (fn) this.filters.push({
+	if (fn) this.hook = {
 		name: name,
 		fn: fn,
 		params: []
-	});
+	};
 }
 
 Expression.prototype.clone = function() {

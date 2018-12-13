@@ -28,5 +28,18 @@ describe('hooks filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<p>it now word1 word2</p>');
 	});
+	it('should not be written in repeated block', function() {
+		let node = dom(`<p><span>[arr.val|repeat]</span></p>`);
+		let copy = matchdom(node, {
+			arr: [{val: 'word1'}, {val: 'word2'}]
+		}, {
+			'||': function(val, what) {
+				var len = what.scope.path.length;
+				assert.ok((val == "word1" || val == "word2") && len == 3 || len == 2);
+				if (len == 3) return "it " + val;
+			}
+		});
+		assert.equal(copy.outerHTML, '<p><span>it word1</span><span>it word2</span></p>');
+	});
 });
 
