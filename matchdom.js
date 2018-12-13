@@ -155,7 +155,7 @@ matchdom.filters = {
 		if (!bef) bef = '';
 		if (!aft) aft = '';
 		if (!tag) return value.join(bef + aft);
-		var doc = what.node.ownerDocument;
+		var doc = what.parent.ownerDocument;
 		if (what.mode != 'html') for (var i=0; i < value.length; i++) {
 			what.parent.insertBefore(doc.createTextNode((i > 0 ? aft : "") + value[i] + bef), what.node);
 			if (i < value.length - 1) what.parent.insertBefore(doc.createElement(tag), what.node);
