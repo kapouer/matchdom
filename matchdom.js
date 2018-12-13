@@ -199,33 +199,17 @@ matchdom.filters = {
 		}
 		var o = Symbols.open;
 		var c = Symbols.close;
-		var data = what.scope.data || what.data;
 		var expr = what.expr.clone();
-		var path = expr.path;
-		var keys = [];
-		var head;
-		var inkeys = false;
 
-		while (path.length && inkeys == false) {
-			if (typeof data == "object" && data.length) {
-				break;
-			}
-			head = path.shift();
-			if (head.endsWith('+')) {
-				if (data[head]) {
-					// eslint-disable-next-line no-console
-					console.warn("repeat filter ignores", head, "because the key exists");
-				} else {
-					head = head.slice(0, -1);
-					inkeys = true;
-				}
-			}
-			data = data[head];
-			if (data == null) break;
-			keys.push(head);
-		}
+		var ret = findData(what.scope.data, expr.path);
+		if (!ret.data) ret = findData(what.data, expr.path);
+		var data = ret.data;
 		if (typeof data == "string") return;
 		if (data == null) data = [];
+		var path = expr.path = ret.path;
+		var keys = ret.keys;
+		var inkeys = ret.inkeys;
+		var head = ret.head;
 		if (alias) head = alias;
 		if (head) path.unshift(head);
 		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
@@ -609,6 +593,39 @@ function serializeUrl(obj) {
 		return key + '=' + obj.query[key];
 	}).join('&');
 	return (obj.pathname || '') + (str && '?' + str || '');
+}
+
+function findData(data, path) {
+	if (!data) return {};
+	path = path.slice();
+	var keys = [];
+	var head;
+	var inkeys = false;
+	while (path.length && inkeys == false) {
+		if (typeof data == "object" && data.length) {
+			break;
+		}
+		head = path.shift();
+		if (head.endsWith('+')) {
+			if (data[head]) {
+				// eslint-disable-next-line no-console
+				console.warn("repeat filter ignores", head, "because the key exists");
+			} else {
+				head = head.slice(0, -1);
+				inkeys = true;
+			}
+		}
+		data = data[head];
+		if (data == null) break;
+		keys.push(head);
+	}
+	return {
+		head: head,
+		path: path,
+		keys: keys,
+		inkeys: inkeys,
+		data: data
+	};
 }
 
 function What(data, filters, node, attr, scope) {

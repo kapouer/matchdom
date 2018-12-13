@@ -109,6 +109,18 @@ describe('repeating', function() {
 		assert.equal(parent.innerHTML, '<span>one</span><span>two</span>');
 	});
 
+	it('should repeat array accessing data after scope', function() {
+		let node = dom(`<div><div class="[$arr.data.test]"><span>[$arr.data.value|repeat:div]</span></div></div>`);
+		var arr = [
+			{data: {value: 'one', test:1}},
+			{data: {value: 'two', test:2}}
+		];
+		let copy = matchdom(node, { $arr: arr }, {}, {
+			data: {	trump: "card" }
+		});
+		assert.equal(copy.innerHTML, '<div class="1"><span>one</span></div><div class="2"><span>two</span></div>');
+	});
+
 	it('should repeat array over previous child and next child', function() {
 		let node = dom(`<div><i>*</i><span>[arr.value|repeat:+span+]</span><br></div>`);
 		let copy = matchdom(node, {
