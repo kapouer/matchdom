@@ -380,9 +380,17 @@ Joins an array with optional tag and characters before/after tag.
 Often useful with `[list|join::br]`.
 
 
+### split:sep:trim
+
+Splits a string with separator, and removes items equal to `trim` (typical use
+is to remove spaces).
+
+Example `[str|split:%0A:|join:: - ]`.
+
+
 ### slice:begin:end
 
-Slices an array with optional end index. Works well with join filter.
+Slices an array with optional end index. Works well with split and join filters.
 
 
 ### ?:yes:no
@@ -397,9 +405,9 @@ This filter works well with `not` filter to make sure empty values are cast to
 boolean false.
 
 
-### !
+### ! or !!
 
-The `!` operator.
+The `!` or `!!` operators.
 
 
 ### !?
