@@ -64,7 +64,7 @@ matchdom.filters = {
 
 		if (parent && value !== null) {
 			if (attr == "class") {
-				parent.classList.add.apply(parent.classList, value.split(' '))
+				if (value) parent.classList.add.apply(parent.classList, value.split(' '))
 			} else {
 				parent.setAttribute(attr, value);
 			}

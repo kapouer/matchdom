@@ -124,6 +124,22 @@ describe('attr filter', function() {
 		let copy = matchdom(node, {});
 		assert.equal(copy.outerHTML, '<div class="toto"><span>test</span></div>');
 	});
+
+	it('should add a class', function() {
+		let node = dom(`<span class="some">[label|attr:class]test</span>`);
+		let copy = matchdom(node, {
+			label: "visible"
+		});
+		assert.equal(copy.outerHTML, '<span class="some visible">test</span>');
+	});
+
+	it('should not crash when adding an empty class', function() {
+		let node = dom(`<span class="some">[label|attr:class]test</span>`);
+		let copy = matchdom(node, {
+			label: ""
+		});
+		assert.equal(copy.outerHTML, '<span class="some">test</span>');
+	});
 });
 
 describe('boolean value in attribute filter', function() {
