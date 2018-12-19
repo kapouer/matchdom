@@ -490,7 +490,7 @@ function mutateHits(what, hits) {
 		if (val !== undefined) hits[what.index] = val;
 		else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
 	});
-	what.scope = {path: []};
+	what.scope.path = [];
 
 	return hits;
 }

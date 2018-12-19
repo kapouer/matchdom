@@ -39,3 +39,17 @@ describe('scope path', function() {
 	});
 });
 
+describe('scope variables', function() {
+	it('should be kept', function() {
+		let node = dom(`<div>
+			<span>[$one|eq:[$two]:yes:no]</span>
+		</div>`);
+		let copy = matchdom(node, {}, {}, {data: {
+			$one: "one",
+			$two: "one"
+		}});
+		assert.equal(copy.outerHTML, dom(`<div>
+			<span>yes</span>
+		</div>`).outerHTML);
+	});
+});
