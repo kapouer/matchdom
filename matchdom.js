@@ -390,12 +390,9 @@ function matchdom(parent, data, filters, scope) {
 	if (typeof parent == "string") {
 		wasText = true;
 		var str = parent;
-		if (typeof window !== 'undefined') {
-			parent = document.createElement('div');
-		} else {
-			parent = {};
-		}
-		parent.textContent = str;
+		parent = {
+			textContent: str
+		};
 		list = [parent];
 	} else {
 		list = parent;
@@ -666,12 +663,12 @@ What.prototype.set = function(str) {
 		return;
 	}
 	if (this.node) {
-		if (str == null) str = "";
-		else if (str === true || str === false) str = str.toString();
 		if (!doc) {
 			this.node.textContent = str;
 			return str;
 		}
+		if (str == null) str = "";
+		else if (str === true || str === false) str = str.toString();
 		var parent = this.parent;
 		if (!parent) {
 			// do nothing

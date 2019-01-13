@@ -18,6 +18,20 @@ describe('string', function() {
 		});
 		assert.equal(copy, 'no?\n yes\nnl!');
 	});
+
+	it('should return null', function() {
+		let copy = matchdom('[test]', {
+			test: null
+		});
+		assert.equal(copy, null);
+	});
+
+	it('should not return null', function() {
+		let copy = matchdom('[test]a', {
+			test: null
+		});
+		assert.equal(copy, 'a');
+	});
 });
 
 describe('text nodes', function() {
