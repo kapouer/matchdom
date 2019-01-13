@@ -20,7 +20,10 @@ Run some code on [here](https://runkit.com/kapouer/5acbe92f4299c500122960d1)
 
 `matchdom(node, data, filters?, scope?) -> node`
 
-`matchdom(string, data, filters?, scope?) -> string`
+`matchdom(string, data, filters?, scope?) -> value or string`
+
+(since 5.0.0 if the whole string is an expression, it's the expression value
+that is returned).
 
 Given a DOM and placeholders like this:
 
