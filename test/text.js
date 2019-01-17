@@ -106,6 +106,19 @@ describe('text nodes', function() {
 		});
 		assert.equal(copy.outerHTML, '<span>no? [test.it]!</span>');
 	});
+
+	it('should not replace newlines of contiguous text nodes with br', function() {
+		let node = dom(`<div>
+		<span>[inside]</span>[outside]at
+		</div>`);
+		let copy = matchdom(node, {
+			inside: 'this',
+			outside: 'th'
+		});
+		assert.equal(copy.outerHTML, `<div>
+		<span>this</span>that
+		</div>`);
+	});
 });
 
 describe('filters on text nodes', function() {
