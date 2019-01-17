@@ -407,6 +407,7 @@ function matchdom(parent, data, filters, scope) {
 			var what = new What(data, filters, node, attr, scope);
 			if (wasText) what.mode = "text";
 			what.hits = hits;
+			what.level = 0;
 			mutateHits(what, hits);
 			var allNulls = true;
 			var allTrue = true;
@@ -422,7 +423,7 @@ function matchdom(parent, data, filters, scope) {
 				var result;
 				if (allNulls) result = null;
 				else if (allBools) result = allTrue;
-				else result = hits.join('');
+				else result = hits;
 				what.set(result);
 			}
 			if (what.replacement) replacements.unshift(what.replacement);
@@ -454,10 +455,13 @@ function matchdom(parent, data, filters, scope) {
 function mutateHits(what, hits) {
 	var scopePath = what.scope.path;
 	var scopeIsKey = !!what.scope.iskey;
+	what.level++;
 	hits.forEach(function(hit, i) {
-		if (typeof hit == "string") return;
+		if (typeof hit == "string") {
+			return;
+		}
 		if (hit.length > 1 || typeof hit[0] != "string") {
-			hit = mutateHits(what, hit).join('');
+			hit = mutateHits(what, hit).join('')
 		} else {
 			hit = hit[0];
 		}
@@ -484,11 +488,14 @@ function mutateHits(what, hits) {
 			what.scope.path = path.slice(beg);
 		}
 		var val = mutate(what);
-		if (val !== undefined) hits[what.index] = val;
-		else hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
+		if (val !== undefined) {
+			if (what.level == 1 && typeof val == "string") hits[what.index] = { val: val };
+			else hits[what.index] = val;
+		} else {
+			hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
+		}
 	});
 	what.scope.path = [];
-
 	return hits;
 }
 
@@ -649,46 +656,68 @@ What.prototype.get = function() {
 	if (this.node) return this.node.nodeValue;
 	else return this.parent.getAttribute(this.attr);
 };
-What.prototype.set = function(str) {
-	var doc = this.node ? this.node.ownerDocument : null;
+
+function textOut(hits) {
+	if (hits == null) return hits;
+	else if (hits === true || hits === false) return hits;
+	else if (Array.isArray(hits)) return hits.map(function(hit) {
+		if (hit == null) return "";
+		else if (hit.val != null) return hit.val;
+		else return hit;
+	}).join('');
+	else return hits;
+}
+
+What.prototype.set = function(hits) {
+	var str;
+	var node = this.node;
+	var doc = node ? node.ownerDocument : null;
 	if (this.tag) {
-		if (!doc) return str;
+		if (!doc) return;
+		str = textOut(hits);
 		var tag = doc.createElement('body');
 		// customize built-in elements compatibility
-		var is = this.node.getAttribute('is');
+		var is = node.getAttribute('is');
 		if (is) str += ' is="' + is + '"';
 		tag.innerHTML = '<' + str + '></' + str + '>';
 		tag = tag.firstChild;
-		this.replacement = [tag, this.node];
+		this.replacement = [tag, node];
 		return;
 	}
-	if (this.node) {
+	if (node) {
 		if (!doc) {
-			this.node.textContent = str;
-			return str;
+			node.textContent = textOut(hits);
+			return;
 		}
-		if (str == null) str = "";
-		else if (str === true || str === false) str = str.toString();
 		var parent = this.parent;
 		if (!parent) {
 			// do nothing
 		} else if (this.mode == 'html') {
 			var cont = doc.createElement("div");
-			cont.innerHTML = str;
+			cont.innerHTML = textOut(hits);
 			while (cont.firstChild) {
-				parent.insertBefore(cont.firstChild, this.node);
+				parent.insertBefore(cont.firstChild, node);
 			}
-			this.node.nodeValue = "";
+			node.nodeValue = "";
 		} else if (this.mode == 'text') {
-			this.node.nodeValue = str;
+			node.nodeValue = textOut(hits);
+		} else if (Array.isArray(hits)) {
+			var cur = node;
+			hits.forEach(function(obj, i) {
+				var list;
+				if (obj == null) list = [''];
+				else if (obj === true || obj === false) list = [obj.toString()];
+				else if (typeof obj == "object" && obj.val != null) list = obj.val.toString().split('\n');
+				else list = [obj];
+				if (i == 0) node.nodeValue = list[0];
+				else cur = parent.insertBefore(doc.createTextNode(list[0]), cur.nextSibling);
+				for (var j=1; j < list.length; j++) {
+					cur = parent.insertBefore(doc.createElement('br'), cur.nextSibling);
+					cur = parent.insertBefore(doc.createTextNode(list[j]), cur.nextSibling);
+				}
+			});
 		} else {
-			var list = str.split('\n');
-			this.node.nodeValue = list[0];
-			var cur = this.node;
-			for (var i=1; i < list.length; i++) {
-				cur = parent.insertBefore(doc.createElement('br'), cur.nextSibling);
-				cur = parent.insertBefore(doc.createTextNode(list[i]), cur.nextSibling);
-			}
+			node.nodeValue = hits;
 		}
 	}
 	if (this.initialAttr && this.attr != this.initialAttr) {
@@ -696,22 +725,22 @@ What.prototype.set = function(str) {
 	}
 
 	if (this.attr) {
+		str = textOut(hits);
+		if (str === null) str = "";
+		else str = str.toString();
 		this.initialAttr = this.attr;
 		if (typeof str == "string") str = str.trim();
-		if (str === false || str == null || (this.attr == "class" && str === "")) {
+		if (hits === false || hits == null || (this.attr == "class" && str === "")) {
 			this.parent.removeAttribute(this.attr);
 		} else {
-			if (str === true) {
-				if (this.attr.startsWith('data-') == true) str = str + "";
-				else str = "";
+			if (hits === true) {
+				if (this.attr.startsWith('data-') == false) str = "";
 			} else if (this.attr == "class" && typeof str == "string") {
 				str = str.replace(/[\n\t\s]+/g, ' ').trim();
 			}
 			this.parent.setAttribute(this.attr, str);
 		}
 	}
-
-	return str;
 };
 
 function Expression(str, filters) {
