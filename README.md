@@ -49,7 +49,7 @@ resulting in:
 
 ```html
 <div id="model" class="yes">
-	<h4>Header></h4>
+	<h4>Header</h4>
 	<span>test</span>
 </div>
 ```
@@ -168,6 +168,15 @@ Expressions can be nested:
 <span>[val|or:[otherval]]</span>
 ```
 (see examples in tests).
+
+
+## escaping
+
+The simplest way to write bracketed expressions without merging them is to use
+the `or` filter:
+```
+[|or:%5Ba bracketed expressions%5D]
+```
 
 
 ## booleans in attributes
