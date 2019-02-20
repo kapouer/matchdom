@@ -44,7 +44,7 @@ describe('integration', function() {
 
 	it('should remove currently repeated node if magnet kicks in', function() {
 		let node = dom(`<table>
-			<tr><td>[rows.val|repeat:tr]</td><td>[rows.col|magnet:tr]</td></tr>
+			<tr><td>[rows.val|repeat:tr]</td><td>[rows.val][rows.col|magnet:tr]</td></tr>
 		</table>`);
 		let copy = matchdom(node, {
 			rows: [{
@@ -59,7 +59,7 @@ describe('integration', function() {
 			}]
 		});
 		assert.equal(copy.outerHTML, dom(`<table>
-			<tr><td>one</td><td>1</td></tr><tr><td>two</td><td>2</td></tr>
+			<tr><td>one</td><td>one1</td></tr><tr><td>two</td><td>two2</td></tr>
 		</table>`).outerHTML);
 	});
 

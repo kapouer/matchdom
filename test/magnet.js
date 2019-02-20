@@ -6,9 +6,10 @@ require('dom4'); // jsdom is missing .closest
 
 describe('magnet filter', function() {
 	it('should remove current node', function() {
-		let node = dom(`<div><span>[test|magnet]</span></div>`);
+		let node = dom(`<div><span>[obj.test|magnet]yop[toto]</span></div>`);
 		let copy = matchdom(node, {
-			// test: null
+			obj: {},
+			toto: 23
 		});
 		assert.equal(copy.outerHTML, '<div></div>');
 	});
@@ -42,9 +43,10 @@ describe('magnet filter', function() {
 	});
 
 	it('should remove current attribute', function() {
-		let node = dom(`<div><span class="some [test|magnet]">test</span></div>`);
+		let node = dom(`<div><span class="some [test|magnet] [tata]">[tata]</span></div>`);
 		let copy = matchdom(node, {
-			// test: null
+			// test: null,
+			tata: "test"
 		});
 		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
 	});
