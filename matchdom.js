@@ -461,7 +461,7 @@ function mutateHits(what, hits) {
 	var scopeIsKey = !!what.scope.iskey;
 	what.level++;
 	hits.forEach(function(hit, i) {
-		if (typeof hit == "string") {
+		if (hit === null || typeof hit == "string") {
 			return;
 		}
 		if (hit.length > 1 || typeof hit[0] != "string") {
