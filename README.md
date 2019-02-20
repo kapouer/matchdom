@@ -253,7 +253,8 @@ Note that if root node is repeated, matchdom returns a fragment.
 
 ### magnet:selector
 
-Removes the closest node when current value is null or undefined.
+Removes the closest node when current value is null or undefined, in which case
+the returned value is set to null.
 
 `selector` is optional and supports same syntax as in repeat filter.
 If not set, the parent node is removed, or expression is inside an attribute,
@@ -264,7 +265,7 @@ the attribute is removed.
 
 Same as magnet, only it takes a boolean to decide, and does not print anything.
 
-Synonym of `not|magnet:sel|`.
+Synonym of `!!|magnet:sel|not`.
 
 
 ### url:name
