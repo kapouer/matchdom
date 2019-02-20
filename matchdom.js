@@ -111,7 +111,7 @@ matchdom.filters = {
 		if (value != null) return;
 		if (what.attr && !selector) {
 			what.attr = null;
-			return;
+			return null;
 		}
 		var parent = what.parent;
 		var prevSibs = 0;
@@ -136,10 +136,11 @@ matchdom.filters = {
 			while (nextSibs-- && parent.nextElementSibling) parent.nextElementSibling.remove();
 			parent.remove();
 		}
+		return null;
 	},
 	bmagnet: function(val, what, sel) {
 		what.filters.magnet(val ? val : null, what, sel);
-		return '';
+		return null;
 	},
 	html: function(value, what) {
 		what.mode = 'html';
