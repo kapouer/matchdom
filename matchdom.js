@@ -507,7 +507,8 @@ function mutate(what) {
 	var filter, ret;
 	var hooks = [];
 	if (expr.hook) hooks.push(expr.hook);
-	while ((filter = expr.filters.shift() || hooks.shift())) {
+	while (expr.filter < expr.filters.length || hooks.length) {
+		filter = expr.filters[expr.filter++] || hooks.shift();
 		if (val !== null) what.val = val;
 		ret = filter.fn.apply(null, [val, what].concat(filter.params));
 		if (ret !== undefined) val = ret;
@@ -744,10 +745,11 @@ What.prototype.set = function(hits) {
 };
 
 function Expression(str, filters) {
+	this.filter = 0;
 	if (str instanceof Expression) {
 		this.initial = str.initial;
 		this.path = str.path.slice();
-		this.filters = str.filters.slice();
+		this.filters = str.filters.slice(str.filter);
 		return this;
 	}
 	this.initial = str;

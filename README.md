@@ -143,6 +143,7 @@ Several default filters are provided, see below.
 A parsed expression has properties:
 - path (array of strings)
 - filters (array of {name, fn, params} objects where params is an array)
+- filter (index of current filter being applied in filters)
 
 and two methods:
 - clone()
