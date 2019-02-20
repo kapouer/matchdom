@@ -26,6 +26,14 @@ describe('integration', function() {
 		assert.equal(copy.outerHTML, '<div><a>test</a></div>');
 	});
 
+	it('should remove current attribute edge case', function() {
+		let node = dom(`<div><link rel="icon" href="[$site.favicon|magnet:*|url]?format=ico"></div>`);
+		let copy = matchdom(node, {
+			$site: {}
+		});
+		assert.equal(copy.outerHTML, '<div></div>');
+	});
+
 	it('should remove current node', function() {
 		let node = dom(`<div><a href="" data-href="[test|magnet:a|url]">test</a></div>`);
 		let copy = matchdom(node, {
