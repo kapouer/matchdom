@@ -365,7 +365,7 @@ Not exactly `eq:str|!|?:yes:no` because `?` has different behavior with missing
 parameters.
 
 
-### not
+### not,ornull
 
 If value is falsey, replace it with `null`.
 

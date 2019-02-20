@@ -36,6 +36,9 @@ matchdom.filters = {
 	not: function(value) {
 		if (!value) return null;
 	},
+	ornull: function(value) {
+		if (!value) return null;
+	},
 	attr: function(value, what, name, selector) {
 		if (value === undefined) return;
 		var attr = name;
