@@ -4,36 +4,6 @@ const dom = require('domify');
 
 require('dom4'); // jsdom is missing .closest
 
-describe('string', function() {
-	it('should be merged and returned', function() {
-		let copy = matchdom('no? [test]!', {
-			test: "yes"
-		});
-		assert.equal(copy, 'no? yes!');
-	});
-
-	it('should be merged as text', function() {
-		let copy = matchdom('no?\n [test]!', {
-			test: "yes\nnl"
-		});
-		assert.equal(copy, 'no?\n yes\nnl!');
-	});
-
-	it('should return null', function() {
-		let copy = matchdom('[test]', {
-			test: null
-		});
-		assert.equal(copy, null);
-	});
-
-	it('should not return null', function() {
-		let copy = matchdom('[test]a', {
-			test: null
-		});
-		assert.equal(copy, 'a');
-	});
-});
-
 describe('text nodes', function() {
 	it('should be merged with simple value', function() {
 		let node = dom(`<span>no? [test]!</span>`);
