@@ -178,9 +178,13 @@ matchdom.filters = {
 		return list;
 	},
 	repeat: function(value, what, selector, alias, step, offset, limit) {
+		var tmode = what.mode == "text";
 		var parent = what.parent;
+		var o = Symbols.open;
+		var c = Symbols.close;
 		var prevSibs = 0;
 		var nextSibs = 0;
+		var ancestor;
 		if (selector) {
 			while (selector.startsWith('+')) {
 				prevSibs++;
@@ -190,19 +194,35 @@ matchdom.filters = {
 				nextSibs++;
 				selector = selector.slice(0, -1);
 			}
+			if (tmode && selector != "*") {
+				// eslint-disable-next-line no-console
+				console.warn("text mode supports only repeat with * or no selector");
+				selector = "*";
+			}
 			if (selector != "*") {
 				parent = parent.closest(selector);
 			} else if (what.node) {
 				if (prevSibs && what.node.previousElementSibling || nextSibs && what.node.nextElementSibling) parent = what.node;
+				if (tmode) {
+					ancestor = {
+						nodeValue: ''
+					};
+					parent = {
+						nodeValue: o + what.hits[what.index] + c
+					};
+				}
 			}
+		} else if (tmode) {
+			parent = what.node;
+			ancestor = what.ancestor = {
+				nodeValue: ''
+			};
 		}
 		if (!parent) {
 			// eslint-disable-next-line no-console
 			console.warn("Cannot repeat: ancestor not found", selector);
 			return null;
 		}
-		var o = Symbols.open;
-		var c = Symbols.close;
 		var expr = what.expr.clone();
 
 		var ret = findData(what.scope.data, expr.path);
@@ -221,20 +241,36 @@ matchdom.filters = {
 		if (cur != null) {
 			what.set(cur.replace(o + expr.initial + c, o + expr.toString() + c));
 		}
-		var ancestor = parent.parentNode;
-		var frag = parent.ownerDocument.createDocumentFragment();
-		while (prevSibs-- && parent.previousElementSibling) {
-			frag.appendChild(parent.previousElementSibling);
+
+		var copy, frag;
+		if (tmode) {
+			var hit;
+			hit = what.hits[what.index - 1];
+			if (hit && prevSibs) {
+				what.hits[what.index - 1] = hit.slice(0, -prevSibs);
+				parent.nodeValue = hit.slice(-prevSibs) + parent.nodeValue;
+			}
+			hit = what.hits[what.index + 1];
+			if (hit && nextSibs) {
+				what.hits[what.index + 1] = hit.slice(nextSibs);
+				parent.nodeValue = parent.nodeValue + hit.slice(0, nextSibs);
+			}
+			frag = {nodeValue: parent.nodeValue};
+		} else {
+			ancestor = parent.parentNode;
+			frag = parent.ownerDocument.createDocumentFragment();
+			while (prevSibs-- && parent.previousElementSibling) {
+				frag.appendChild(parent.previousElementSibling);
+			}
+			frag.appendChild(parent.cloneNode(true));
+			while (nextSibs-- && parent.nextElementSibling) {
+				frag.appendChild(parent.nextElementSibling);
+			}
+			if (!ancestor) {
+				what.ancestor = ancestor = frag.cloneNode();
+				parent = ancestor.appendChild(parent);
+			}
 		}
-		frag.appendChild(parent.cloneNode(true));
-		while (nextSibs-- && parent.nextElementSibling) {
-			frag.appendChild(parent.nextElementSibling);
-		}
-		if (!ancestor) {
-			what.ancestor = ancestor = frag.cloneNode();
-			parent = ancestor.appendChild(parent);
-		}
-		var copy;
 		var scope;
 		var scopePath = what.scope.path.slice(0, -path.length).concat([keys[keys.length - 1]]);
 
@@ -270,12 +306,19 @@ matchdom.filters = {
 				Object.assign(scope.data, item);
 			}
 
-			copy = frag.cloneNode(true);
+			if (!tmode) copy = frag.cloneNode(true);
+			else copy = frag.nodeValue;
 			copy = matchdom(copy, what.data, what.filters, scope);
-			ancestor.insertBefore(copy, parent);
+			if (!tmode) ancestor.insertBefore(copy, parent);
+			else ancestor.nodeValue += copy;
 		}
-		parent.remove();
-		return null;
+		if (!tmode) {
+			parent.remove();
+			return null;
+		} else {
+			if (!what.ancestor) return ancestor.nodeValue;
+			else return null;
+		}
 	},
 	keys: function(val) {
 		// eslint-disable-next-line no-console
@@ -395,16 +438,13 @@ function matchdom(parent, data, filters, scope) {
 		wasText = true;
 		var str = parent;
 		parent = {
-			textContent: str
+			nodeValue: str
 		};
 		list = [parent];
 	} else {
-		list = parent;
+		list = typeof parent.forEach == "function" ? parent : [parent];
 	}
 
-	if (typeof list.forEach != "function") {
-		list = [list];
-	}
 	list.forEach(function(root) {
 		var replacements = [];
 		matchEachDom(root, function(node, hits, attr) {
@@ -453,7 +493,7 @@ function matchdom(parent, data, filters, scope) {
 			}
 		});
 	});
-	return wasText ? parent.textContent : parent;
+	return wasText ? parent.nodeValue : parent;
 }
 
 function mutateHits(what, hits) {
@@ -522,7 +562,7 @@ function mutate(what) {
 
 function matchEachDom(root, fn) {
 	if (!root.ownerDocument) {
-		fn(root, tokenize(root.textContent));
+		fn(root, tokenize(root.nodeValue));
 		return;
 	}
 	var what = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
@@ -690,12 +730,10 @@ What.prototype.set = function(hits) {
 		return;
 	}
 	if (node) {
-		if (!doc) {
-			node.textContent = textOut(hits);
-			return;
-		}
 		var parent = this.parent;
-		if (!parent) {
+		if (this.mode == "text") {
+			node.nodeValue = textOut(hits);
+		} else if (!parent) {
 			// do nothing
 		} else if (this.mode == 'html') {
 			var cont = doc.createElement("div");
@@ -704,8 +742,6 @@ What.prototype.set = function(hits) {
 				parent.insertBefore(cont.firstChild, node);
 			}
 			node.nodeValue = "";
-		} else if (this.mode == 'text') {
-			node.nodeValue = textOut(hits);
 		} else if (Array.isArray(hits)) {
 			var cur = node;
 			hits.forEach(function(obj, i) {

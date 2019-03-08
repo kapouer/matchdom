@@ -208,7 +208,7 @@ rows and cells to form a table, see unit tests for examples:
 ```
 
 If selector is prefixed or postfixed by one or several `+` signs, as many
-previous or next element siblings are repeated:
+previous or next element siblings (or characters in text mode) are repeated:
 
 ```html
 <div>
@@ -218,13 +218,18 @@ previous or next element siblings are repeated:
 </div>
 ```
 
-If selector is `*`, current node is selected:
+If selector is `*`, current node (or current expression in text mode) is selected:
 
 ```html
 <div>
 	<p>[sections.text|repeat:*+]</p><br>
 </div>
 ```
+
+Without selector, current node (or the whole string in text mode) is selected.
+
+In text mode, the only bare selector allowed is `*`.
+
 
 - `step` parameter (an integer, defaults to 1) allows one to iterate by step,
 negative values are interpreted as iterating in reverse order
