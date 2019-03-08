@@ -37,6 +37,20 @@ describe('string', function() {
 		assert.equal(copy, "--onetwo--");
 	});
 
+	it('should repeat object', function() {
+		let copy = matchdom("keys: [obj+.key|repeat:*+] ", {
+			obj: {a: 1, b: 2}
+		});
+		assert.equal(copy, "keys: a b ");
+	});
+
+	it('should repeat object keys', function() {
+		let copy = matchdom("[obj+.key|repeat]=[obj.val]&", {
+			obj: {a: 1, b: 2}
+		});
+		assert.equal(copy, "a=1&b=2&");
+	});
+
 	it('should repeat array using whole string', function() {
 		let copy = matchdom("--[arr.value|repeat]--", {
 			arr: [{value: 'one'}, {value: 'two'}]

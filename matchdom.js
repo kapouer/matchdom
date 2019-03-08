@@ -207,9 +207,6 @@ matchdom.filters = {
 					ancestor = {
 						nodeValue: ''
 					};
-					parent = {
-						nodeValue: o + what.hits[what.index] + c
-					};
 				}
 			}
 		} else if (tmode) {
@@ -218,12 +215,8 @@ matchdom.filters = {
 				nodeValue: ''
 			};
 		}
-		if (!parent) {
-			// eslint-disable-next-line no-console
-			console.warn("Cannot repeat: ancestor not found", selector);
-			return null;
-		}
 		var expr = what.expr.clone();
+
 
 		var ret = findData(what.scope.data, expr.path);
 		if (!ret.data) ret = findData(what.data, expr.path);
@@ -239,11 +232,16 @@ matchdom.filters = {
 		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
 		var cur = what.get();
 		if (cur != null) {
-			what.set(cur.replace(o + expr.initial + c, o + expr.toString() + c));
+			what.hits[what.index] = expr.toString();
+			cur = cur.replace(o + expr.initial + c, o + what.hits[what.index] + c);
+			what.set(cur);
 		}
 
 		var copy, frag;
 		if (tmode) {
+			if (selector == "*") parent = {
+				nodeValue: o + what.hits[what.index] + c
+			};
 			var hit;
 			hit = what.hits[what.index - 1];
 			if (hit && prevSibs) {
@@ -256,6 +254,10 @@ matchdom.filters = {
 				parent.nodeValue = parent.nodeValue + hit.slice(0, nextSibs);
 			}
 			frag = {nodeValue: parent.nodeValue};
+		} else if (!parent) {
+			// eslint-disable-next-line no-console
+			console.warn("Cannot repeat: ancestor not found", selector);
+			return null;
 		} else {
 			ancestor = parent.parentNode;
 			frag = parent.ownerDocument.createDocumentFragment();
