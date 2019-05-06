@@ -270,7 +270,9 @@ the attribute is removed.
 
 Same as magnet, only it takes a boolean to decide, and does not print anything.
 
-Synonym of `!!|magnet:sel|not`.
+Synonym of `!!|magnet:sel|`.
+
+In particular, it's useless to add a filter after bmagnet.
 
 
 ### url:name
