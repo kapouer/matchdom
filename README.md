@@ -444,6 +444,18 @@ Prepend string if value is not null or not empty.
 Append string if value is not null or not empty.
 
 
+### gt:num, lt:num, gte:num, lte:num
+
+Comparisons, return booleans.
+If cannot be compared, returns value.
+
+
+### battr
+
+Boolean attribute: if value is true, returns the current attribute name;
+else removes the current attribute.
+
+
 ## Filter hooks
 
 Special filter names (which cannot be parsed as legit names) provide hooks:

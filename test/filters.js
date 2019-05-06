@@ -150,6 +150,19 @@ describe('neq', function() {
 	});
 });
 
+describe('gt', function() {
+	it('should parse float, compare, and return boolean true', function() {
+		let node = dom(`<p>[val|gt:0.5]</p>`);
+		let copy = matchdom(node, {val: 0.6});
+		assert.equal(copy.outerHTML, '<p>true</p>');
+	});
+	it('should fail to parse float and return value', function() {
+		let node = dom(`<p>[val|gt:0.5]</p>`);
+		let copy = matchdom(node, {val: "xx"});
+		assert.equal(copy.outerHTML, '<p>xx</p>');
+	});
+});
+
 describe('not', function() {
 	it('should set to null if empty', function() {
 		let node = dom(`<p data-test="[val|not]">test</p>`);

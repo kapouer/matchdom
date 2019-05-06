@@ -33,6 +33,38 @@ matchdom.filters = {
 			return test;
 		}
 	},
+	gt: function(val, what, to) {
+		var fval = parseFloat(val);
+		var fto = parseFloat(to);
+		if (isNaN(fval) || isNaN(fto)) return val;
+		else return fval > fto;
+	},
+	gte: function(val, what, to) {
+		var fval = parseFloat(val);
+		var fto = parseFloat(to);
+		if (isNaN(fval) || isNaN(fto)) return val;
+		else return fval >= fto;
+	},
+	lt: function(val, what, to) {
+		var fval = parseFloat(val);
+		var fto = parseFloat(to);
+		if (isNaN(fval) || isNaN(fto)) return val;
+		else return fval < fto;
+	},
+	lte: function(val, what, to) {
+		var fval = parseFloat(val);
+		var fto = parseFloat(to);
+		if (isNaN(fval) || isNaN(fto)) return val;
+		else return fval <= fto;
+	},
+	battr: function(val, what) {
+		if (!what.attr) {
+			// eslint-disable-next-line no-console
+			console.warn("battr must be used inside an attribute")
+		}
+		if (val == true) return what.attr;
+		else return null;
+	},
 	not: function(value) {
 		if (!value) return null;
 	},
