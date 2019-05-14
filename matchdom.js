@@ -151,6 +151,7 @@ matchdom.filters = {
 		var parent = what.parent;
 		var prevSibs = 0;
 		var nextSibs = 0;
+		var tmode = what.mode == "text";
 		if (selector) {
 			while (selector.startsWith('+')) {
 				prevSibs++;
@@ -159,6 +160,11 @@ matchdom.filters = {
 			while (selector.endsWith('+')) {
 				nextSibs++;
 				selector = selector.slice(0, -1);
+			}
+			if (tmode && selector != "*") {
+				// eslint-disable-next-line no-console
+				console.warn("text mode supports only repeat with * or no selector");
+				selector = "*";
 			}
 			if (selector != "*") {
 				parent = parent.closest(selector);

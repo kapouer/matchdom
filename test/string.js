@@ -64,5 +64,12 @@ describe('string', function() {
 		});
 		assert.equal(copy, "-XoneYYXtwoYY-");
 	});
+
+	it('should ignore magnet', function() {
+		let copy = matchdom("[$query.event-id|magnet:form]", {
+			
+		});
+		assert.equal(copy, null);
+	});
 });
 
