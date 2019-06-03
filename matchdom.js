@@ -915,3 +915,26 @@ Expression.prototype.get = function(data, path) {
 };
 
 })();
+
+// IE/Edge/OldSafari polyfill
+['previous', 'next'].forEach(function(name) {
+	var keyEl = name + 'ElementSibling';
+	var key = name + 'Sibling';
+	[Element, CharacterData].forEach(function(item) {
+		var proto = item.prototype;
+		if (proto.hasOwnProperty(keyEl)) return;
+		Object.defineProperty(proto, keyEl, {
+			configurable: true,
+			enumerable: true,
+			get: function () {
+				var el = this;
+				while ((el = el[key])) {
+					if (el.nodeType === 1) return el;
+				}
+				return null;
+			},
+			set: undefined
+		});
+	});
+});
+
