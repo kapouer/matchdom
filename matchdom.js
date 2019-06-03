@@ -419,7 +419,7 @@ matchdom.filters = {
 		what.node = what.parent.ownerDocument.createTextNode('');
 		what.parent.appendChild(what.node);
 		if (what.attr && what.attr == what.initialAttr && !fromNode) {
-			what.parent.removeAttribute(what.attr);
+			clearAttr(what.parent, what.attr);
 			delete what.attr;
 			delete what.initialAttr;
 		}
@@ -803,7 +803,7 @@ What.prototype.set = function(hits) {
 		}
 	}
 	if (this.initialAttr && this.attr != this.initialAttr) {
-		this.parent.removeAttribute(this.initialAttr);
+		clearAttr(this.parent, this.initialAttr);
 	}
 
 	if (this.attr) {
@@ -813,7 +813,7 @@ What.prototype.set = function(hits) {
 		this.initialAttr = this.attr;
 		if (typeof str == "string") str = str.trim();
 		if (hits === false || hits == null || (this.attr == "class" && str === "")) {
-			this.parent.removeAttribute(this.attr);
+			clearAttr(this.parent, this.attr);
 		} else {
 			if (hits === true) {
 				if (this.attr.startsWith('data-') == false) str = "";
@@ -824,6 +824,11 @@ What.prototype.set = function(hits) {
 		}
 	}
 };
+
+function clearAttr(node, attr) {
+	if (node[attr] != null) node.setAttribute(attr, '');
+	node.removeAttribute(attr);
+}
 
 function Expression(str, filters) {
 	this.filter = 0;
