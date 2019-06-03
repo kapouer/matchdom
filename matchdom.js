@@ -606,9 +606,8 @@ function matchEachDom(root, fn) {
 		return;
 	}
 	var what = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
-	var it = root.ownerDocument.createNodeIterator(root, what, function(node) {
-		return NodeFilter.FILTER_ACCEPT;
-	});
+	// old IE need all params
+	var it = root.ownerDocument.createNodeIterator(root, what, null, false);
 	var node, hits;
 	while ((node = it.nextNode())) {
 		if (node.nodeType == Node.ELEMENT_NODE) {
