@@ -322,8 +322,9 @@ When targeting a class attribute, values are added using `classList.add`.
 
 ### The empty filter:str
 
-The empty filter, usually used as the last filter in an expression, sets
-current value to the `str` parameter, or to the empty string if none given.
+The empty filter, usually used as the last filter in an expression,
+unconditionally sets current value to the `str` parameter, or to the empty
+string if none given.
 
 
 ### or:str
