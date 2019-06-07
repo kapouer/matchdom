@@ -103,6 +103,17 @@ describe('integration', function() {
 		assert.equal(copy.outerHTML, '<div><a href="?toto=1">?toto=1</a></div>');
 	});
 
+	it('should repeat parent node and fill current node and set an attribute on parent node using two separate expressions', function() {
+		let node = dom(`<div><div><p data-fill="[list.field|repeat:div:item|fill]" data-attr="[item.field2|attr:class:div]">astuffb</p></div></div>`);
+		let copy = matchdom(node, {
+			list: [
+				{field: 'bluew', field2: 'blue'},
+				{field: 'redw', field2: 'red'}
+			]
+		});
+		assert.equal(copy.outerHTML, '<div><div class="blue"><p>bluew</p></div><div class="red"><p>redw</p></div></div>');
+	});
+
 	it('nested fill filter', function() {
 		let node = dom(`<p>a[sub.[name]|fill]b</p>`);
 		let copy = matchdom(node, {
