@@ -331,6 +331,8 @@ matchdom.filters = {
 		var asc = step > 0;
 		var len = data.length - 1;
 		var count = 0;
+		var scopeData = what.scope.data;
+		if (Array.isArray(scopeData)) scopeData = {};
 		for (var i = asc ? offset : (len - offset); asc ? i <= len : i >= 0; i += step) {
 			if (count++ >= limit) break;
 			scope = Object.assign({}, what.scope);
@@ -338,7 +340,7 @@ matchdom.filters = {
 			scope.iskey = inkeys;
 			item = data[i];
 			scope.path.push(inkeys ? item.key : i);
-			scope.data = Object.assign({}, what.scope.data);
+			scope.data = Object.assign({}, scopeData);
 			scope.alias = alias || head;
 			if (head) {
 				scope.data[head] = item;
