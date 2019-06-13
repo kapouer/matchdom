@@ -312,7 +312,8 @@ matchdom.filters = {
 			}
 		}
 		var scope;
-		var scopePath = what.scope.path.slice(0, -path.length).concat([keys[keys.length - 1]]);
+		var scopePath = what.scope.path.slice(0, -path.length);
+		if (keys.length) scopePath.push(keys[keys.length - 1]);
 
 		if (inkeys) data = Object.keys(data).map(function(key) {
 			return {key: key, val: data[key]};
