@@ -917,10 +917,8 @@ Expression.prototype.get = function(data, path) {
 	return data;
 };
 
-})();
-
 // IE/Edge/OldSafari polyfill
-['previous', 'next'].forEach(function(name) {
+if (typeof window !== "undefined") ['previous', 'next'].forEach(function(name) {
 	var keyEl = name + 'ElementSibling';
 	var key = name + 'Sibling';
 	[Element, CharacterData].forEach(function(item) {
@@ -940,4 +938,6 @@ Expression.prototype.get = function(data, path) {
 		});
 	});
 });
+
+})();
 
