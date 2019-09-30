@@ -23,6 +23,16 @@ describe('string', function() {
 		assert.equal(copy, null);
 	});
 
+	it('should not change when nested variable has no parent set', function() {
+		let copy = matchdom('notfound: [test.a]', {});
+		assert.equal(copy, 'notfound: [test.a]');
+	});
+
+	it('should not change when top variable is not \\w\\S*', function() {
+		let copy = matchdom('notfound: [$test]', {test:1});
+		assert.equal(copy, 'notfound: [$test]');
+	});
+
 	it('should not return null', function() {
 		let copy = matchdom('[test]a', {
 			test: null
