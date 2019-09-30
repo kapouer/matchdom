@@ -552,34 +552,39 @@ function mutateHits(what, hits) {
 		} else {
 			hit = hit[0];
 		}
-		what.expr = new Expression(hit, what.filters);
 		what.index = i;
-		var path = what.expr.path;
-		var beg = 0;
-		if (path[0] == what.scope.alias) {
-			beg = 1;
-			if (scopeIsKey) {
-				delete what.scope.iskey;
-				if (path.length >= 2) {
-					if (path[1] == "key") {
-						what.scope.iskey = true;
-						beg = 2;
-					} else if (path[1] == "val") {
-						what.scope.iskey = false;
-						beg = 2;
+		what.expr = new Expression(hit, what.filters);
+		var val;
+		if (what.expr.check()) {
+			var path = what.expr.path;
+			var beg = 0;
+			if (path[0] == what.scope.alias) {
+				beg = 1;
+				if (scopeIsKey) {
+					delete what.scope.iskey;
+					if (path.length >= 2) {
+						if (path[1] == "key") {
+							what.scope.iskey = true;
+							beg = 2;
+						} else if (path[1] == "val") {
+							what.scope.iskey = false;
+							beg = 2;
+						}
 					}
 				}
+				what.scope.path = scopePath.concat(path.slice(beg));
+			} else {
+				what.scope.path = path.slice(beg);
 			}
-			what.scope.path = scopePath.concat(path.slice(beg));
+			val = mutate(what);
 		} else {
-			what.scope.path = path.slice(beg);
+			console.error("no hit", hit);
 		}
-		var val = mutate(what);
 		if (val !== undefined) {
 			if (what.level == 1 && typeof val == "string") hits[what.index] = { val: val };
 			else hits[what.index] = val;
 		} else {
-			hits[what.index] = Symbols.open + what.expr.initial + Symbols.close;
+			hits[what.index] = Symbols.open + hit + Symbols.close;
 		}
 	});
 	what.scope.path = [];
@@ -886,6 +891,13 @@ function Expression(str, filters) {
 
 Expression.prototype.clone = function() {
 	return new Expression(this);
+};
+
+Expression.prototype.check = function() {
+	for (var i=0; i < this.path.length; i++) {
+		if (/^[^\\]*$/.test(this.path[i]) === false) return false;
+	}
+	return true;
 };
 
 Expression.prototype.toString = function() {

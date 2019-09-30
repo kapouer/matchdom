@@ -29,8 +29,8 @@ describe('string', function() {
 	});
 
 	it('should not change when top variable is not \\w\\S*', function() {
-		let copy = matchdom('notfound: [$test]', {test:1});
-		assert.equal(copy, 'notfound: [$test]');
+		let copy = matchdom('notfound: [\\w]', {test:1});
+		assert.equal(copy, 'notfound: [\\w]');
 	});
 
 	it('should not return null', function() {
