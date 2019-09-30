@@ -923,7 +923,7 @@ if (typeof window !== "undefined") ['previous', 'next'].forEach(function(name) {
 	var key = name + 'Sibling';
 	[Element, CharacterData].forEach(function(item) {
 		var proto = item.prototype;
-		if (proto.hasOwnProperty(keyEl)) return;
+		if (Object.prototype.hasOwnProperty.call(proto, keyEl)) return;
 		Object.defineProperty(proto, keyEl, {
 			configurable: true,
 			enumerable: true,
