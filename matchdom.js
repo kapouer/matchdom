@@ -577,8 +577,6 @@ function mutateHits(what, hits) {
 				what.scope.path = path.slice(beg);
 			}
 			val = mutate(what);
-		} else {
-			console.error("no hit", hit);
 		}
 		if (val !== undefined) {
 			if (what.level == 1 && typeof val == "string") hits[what.index] = { val: val };
