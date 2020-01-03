@@ -275,7 +275,7 @@ Synonym of `!!|magnet:sel|`.
 In particular, it's useless to add a filter after bmagnet.
 
 
-### url:name
+### url:name:selector
 
 The name parameter is optional as for attr:name (which is called by this filter).
 
