@@ -81,5 +81,11 @@ describe('string', function() {
 		});
 		assert.equal(copy, null);
 	});
+
+	it('should return array', function() {
+		var arr = ['one', 'two'];
+		let copy = matchdom("[arr]", {arr});
+		assert.deepEqual(copy, arr);
+	});
 });
 

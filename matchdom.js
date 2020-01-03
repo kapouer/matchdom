@@ -106,11 +106,11 @@ matchdom.filters = {
 		}
 		return (selector || what.node) ? null : value;
 	},
-	url: function(value, what, name) {
+	url: function(value, what, name, selector) {
 		if (value === undefined) return;
 		if (value != null && typeof value != "string") value = "" + value;
 		var cur = parseUrl(what.get());
-		what.filters.attr(value, what, name);
+		what.filters.attr(value, what, name, selector);
 		var tgt = parseUrl(what.get());
 		var val = parseUrl(value);
 		if (what.index == 0) {
@@ -749,15 +749,20 @@ What.prototype.get = function() {
 	else return this.parent.getAttribute(this.attr);
 };
 
-function textOut(hits) {
-	if (hits == null) return hits;
-	else if (hits === true || hits === false) return hits;
-	else if (Array.isArray(hits)) return hits.map(function(hit) {
-		if (hit == null) return "";
-		else if (hit.val != null) return hit.val;
-		else return hit;
-	}).join('');
-	else return hits;
+function textOut(hits, keep) {
+	if (hits == null || hits === true || hits === false) {
+		return hits;
+	} else if (Array.isArray(hits)) {
+		hits = hits.map(function(hit) {
+			if (hit == null) return "";
+			else if (hit.val != null) return hit.val;
+			else return hit;
+		});
+		if (!keep || hits.length != 1) return hits.join('');
+		else return hits[0];
+	} else {
+		return hits;
+	}
 }
 
 What.prototype.set = function(hits) {
@@ -776,10 +781,11 @@ What.prototype.set = function(hits) {
 		this.replacement = [tag, node];
 		return;
 	}
+
 	if (node) {
 		var parent = this.parent;
 		if (this.mode == "text") {
-			node.nodeValue = textOut(hits);
+			node.nodeValue = textOut(hits, true);
 		} else if (!parent) {
 			// do nothing
 		} else if (this.mode == 'html') {
