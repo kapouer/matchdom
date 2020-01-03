@@ -4,7 +4,7 @@
   "description": "Tiny DOM data merger",
   "main": "matchdom.js",
   "scripts": {
-    "test": "mocha -r jsdom-global/register"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,9 @@
     "domify": "^1.4.0",
     "jsdom": "^11.6.2",
     "jsdom-global": "^3.0.2",
-    "mocha": "^4.1.0"
+    "mocha": "^6.2.2"
+  },
+  "mocha": {
+    "require": "jsdom-global/register"
   }
 }
