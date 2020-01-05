@@ -459,9 +459,12 @@ Boolean attribute: if value is true, returns the current attribute name;
 else removes the current attribute.
 
 
-## Filter hooks
+## Hooks
 
 Special filter names (which cannot be parsed as legit names) provide hooks:
+
+- |  
+  hook before all filters have run (even if none where defined)
 
 - <fn>|  
   hook after filter <fn>

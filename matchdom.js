@@ -595,10 +595,12 @@ function mutate(what) {
 	if (val === undefined) val = expr.get(what.data);
 	if (expr.last && val === undefined) val = null;
 	var filter, ret;
-	var hooks = [];
-	if (expr.hook) hooks.push(expr.hook);
-	while (expr.filter < expr.filters.length || hooks.length) {
-		filter = expr.filters[expr.filter++] || hooks.shift();
+	var prehooks = [];
+	var posthooks = [];
+	if (expr.prehook) prehooks.push(expr.prehook);
+	if (expr.posthook) posthooks.push(expr.posthook);
+	while (prehooks.length || expr.filter < expr.filters.length || posthooks.length) {
+		filter = prehooks.shift() || expr.filters[expr.filter++] || posthooks.shift();
 		if (val !== null) what.val = val;
 		ret = filter.fn.apply(null, [val, what].concat(filter.params));
 		if (ret !== undefined) val = ret;
@@ -857,8 +859,14 @@ function Expression(str, filters) {
 	if (path == "") this.path = [];
 	else this.path = path.split(Symbols.path);
 	this.filters = [];
-	var name, parts, fn;
-
+	var parts, fn;
+	var name = sa;
+	fn = filters[name];
+	if (fn) this.prehook = {
+		name: name,
+		fn: fn,
+		params: []
+	};
 	for (var i=0; i < list.length; i++) {
 		parts = list[i].split(Symbols.param);
 		name = parts.shift();
@@ -886,7 +894,7 @@ function Expression(str, filters) {
 	}
 	name = sa + sa;
 	fn = filters[name];
-	if (fn) this.hook = {
+	if (fn) this.posthook = {
 		name: name,
 		fn: fn,
 		params: []
