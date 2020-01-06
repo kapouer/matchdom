@@ -16,6 +16,54 @@ describe('parameters', function() {
 	});
 });
 
+describe('what', function() {
+	it('cancel drops merging of expression', function() {
+		let node = dom(`<p>[arr|drop]</p>`);
+		let copy = matchdom(node, {
+			arr: ['word1', 'word2']
+		}, {
+			drop: function(val, what) {
+				what.cancel = true;
+				return val;
+			}
+		});
+		assert.equal(copy.outerHTML, '<p>[arr|drop]</p>');
+	});
+
+	it('cancel drops merging of missing level one expression', function() {
+		let node = dom(`<p>[arr|drop]</p>`);
+		let copy = matchdom(node, {}, {
+			drop: function(val, what) {
+				what.cancel = true;
+				return val;
+			}
+		});
+		assert.equal(copy.outerHTML, '<p>[arr|drop]</p>');
+	});
+
+	it('cancel drops merging of level two expression', function() {
+		let node = dom(`<p>[obj.toto|drop]</p>`);
+		let copy = matchdom(node, {obj: {toto:1}}, {
+			drop: function(val, what) {
+				what.cancel = true;
+				return val;
+			}
+		});
+		assert.equal(copy.outerHTML, '<p>[obj.toto|drop]</p>');
+	});
+
+	it('cancel drops merging of missing level two expression', function() {
+		let node = dom(`<p>[arr.toto|drop]</p>`);
+		let copy = matchdom(node, {}, {
+			drop: function(val, what) {
+				what.cancel = true;
+				return val;
+			}
+		});
+		assert.equal(copy.outerHTML, '<p>[arr.toto|drop]</p>');
+	});
+});
+
 describe('join filter', function() {
 	it('with space', function() {
 		let node = dom(`<p>[arr|join: ]</p>`);

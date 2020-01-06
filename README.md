@@ -101,6 +101,7 @@ with the following properties:
 - hits: the list of strings or expressions that will be concatenated
 - index: the current index of expression upon which the filter is called
 - val: last known non null value
+- cancel: if true, current expression is not merged
 
 and the following methods (which are useful to write filters that are
 independent of their position inside a text node or an attribute):

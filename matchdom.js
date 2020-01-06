@@ -578,7 +578,7 @@ function mutateHits(what, hits) {
 			}
 			val = mutate(what);
 		}
-		if (val !== undefined) {
+		if (!what.cancel && val !== undefined) {
 			if (what.level == 1 && typeof val == "string") hits[what.index] = { val: val };
 			else hits[what.index] = val;
 		} else {
