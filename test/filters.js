@@ -3,6 +3,30 @@ const matchdom = require('../matchdom');
 const dom = require('domify');
 require('dom4'); // jsdom is missing .closest
 
+describe('value', function() {
+	it('should be undefined', function() {
+		let node = dom(`<a>Size[size|try]</a>`);
+		var hasTried = false;
+		let copy = matchdom(node, {}, {try: function(val) {
+			hasTried = true;
+			assert.equal(val, undefined);
+		}});
+		assert.equal(hasTried, true);
+		assert.equal(copy.outerHTML, '<a>Size</a>');
+	});
+
+	it('should be undefined and not merge level 2', function() {
+		let node = dom(`<a>Size[obj.size|try]</a>`);
+		var hasTried = false;
+		let copy = matchdom(node, {}, {try: function(val) {
+			hasTried = true;
+			assert.equal(val, undefined);
+		}});
+		assert.equal(hasTried, true);
+		assert.equal(copy.outerHTML, '<a>Size[obj.size|try]</a>');
+	});
+});
+
 describe('parameters', function() {
 	it('should uri-decode value', function() {
 		let node = dom(`<a>Size[size|pre:%3A |post: mm]</a>`);

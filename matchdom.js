@@ -15,6 +15,10 @@ matchdom.filters = {
 	or: function(value, what, str) {
 		if (value == null) return str;
 	},
+	opt: function(val) {
+		if (val === undefined) return null;
+		else return val;
+	},
 	eq: function(val, what, str, yes, no) {
 		var test = val == str;
 		if (yes !== undefined) {
@@ -578,7 +582,7 @@ function mutateHits(what, hits) {
 			}
 			val = mutate(what);
 		}
-		if (!what.cancel && val !== undefined) {
+		if (val !== undefined) {
 			if (what.level == 1 && typeof val == "string") hits[what.index] = { val: val };
 			else hits[what.index] = val;
 		} else {
@@ -593,7 +597,6 @@ function mutate(what) {
 	var expr = what.expr;
 	var val = what.scope.data && expr.get(what.scope.data);
 	if (val === undefined) val = expr.get(what.data);
-	if (expr.last && val === undefined) val = null;
 	var filter, ret;
 	var prehooks = [];
 	var posthooks = [];
@@ -604,7 +607,13 @@ function mutate(what) {
 		if (val !== null) what.val = val;
 		ret = filter.fn.apply(null, [val, what].concat(filter.params));
 		if (ret !== undefined) val = ret;
+		if (what.cancel) {
+			expr.last = false;
+			val = undefined;
+		}
 	}
+
+	if (expr.last && val === undefined) val = null;
 	return val;
 }
 
