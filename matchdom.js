@@ -261,7 +261,10 @@ matchdom.filters = {
 			if (selector != "*") {
 				parent = parent.closest(selector);
 			} else if (what.node) {
-				if (prevSibs && what.node.previousElementSibling || nextSibs && what.node.nextElementSibling) parent = what.node;
+				if (prevSibs && what.node.previousElementSibling
+				|| nextSibs && what.node.nextElementSibling) {
+					parent = what.node;
+				}
 				if (tmode) {
 					ancestor = {
 						nodeValue: ''
@@ -290,6 +293,7 @@ matchdom.filters = {
 		if (head) path.unshift(head);
 		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
 		var cur = what.get();
+
 		if (cur != null) {
 			what.hits[what.index] = expr.toString();
 			cur = cur.replace(o + expr.initial + c, o + what.hits[what.index] + c);
@@ -372,6 +376,7 @@ matchdom.filters = {
 
 			if (!tmode) copy = frag.cloneNode(true);
 			else copy = frag.nodeValue;
+
 			copy = matchdom(copy, what.data, what.filters, scope);
 			if (!tmode) ancestor.insertBefore(copy, parent);
 			else ancestor.nodeValue += copy;
@@ -832,7 +837,7 @@ What.prototype.set = function(hits) {
 	}
 
 	if (node) {
-		if (this.mode == "text") {
+		if (mode == "text") {
 			node.nodeValue = list.length == 1 ? list[0] : list.join('');
 		} else if (!parent) {
 			// do nothing
