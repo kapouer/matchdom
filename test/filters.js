@@ -88,6 +88,16 @@ describe('what', function() {
 	});
 });
 
+describe('html filter', function() {
+	it('should select nodes', function() {
+		let node = dom(`<p>[str|html:span]</p>`);
+		let copy = matchdom(node, {
+			str: '<img src="toto"><span>test</span><i>test</i><span>toto</span>'
+		});
+		assert.equal(copy.outerHTML, '<p><span>test</span><span>toto</span></p>');
+	});
+});
+
 describe('join filter', function() {
 	it('with space', function() {
 		let node = dom(`<p>[arr|join: ]</p>`);
@@ -97,8 +107,8 @@ describe('join filter', function() {
 		assert.equal(copy.outerHTML, '<p>word1 word2</p>');
 	});
 
-	it('with <br>', function() {
-		let node = dom(`<p>[arr|join::br]</p>`);
+	it('with newline in br mode', function() {
+		let node = dom(`<p>[arr|join:%0A]</p>`);
 		let copy = matchdom(node, {
 			arr: ['line1', 'line2']
 		});
@@ -106,7 +116,7 @@ describe('join filter', function() {
 	});
 
 	it('html with <br>', function() {
-		let node = dom(`<p>[arr|html|join::br]</p>`);
+		let node = dom(`<p>[arr|join::br|html]</p>`);
 		let copy = matchdom(node, {
 			arr: ['<b>line1</b>', '<i>line2</i>']
 		});

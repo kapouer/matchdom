@@ -336,17 +336,23 @@ Can be useful also if undefined values are expected since they could be left
 unmerged (thus showing template expressions).
 
 
-### html, br, text
+### br
 
-By default all strings are set into text nodes with newlines replaced by  `<br>`.
+All strings are set into text nodes with newlines replaced by  `<br>`.
 
-The `text` filter removes that behavior (newlines won't be replaced).
+This filter is the default behavior.
 
-The `html` filter inserts html code as is.
 
-The `br` filter sets default behavior again.
+### text
 
-html filter also works well with join filter.
+The `text` filter removes default br behavior (newlines won't be replaced).
+
+
+### html:selector
+
+The `html` filter creates DOM nodes out of string(s).
+
+The selector allows one to filter the result using querySelectorAll.
 
 
 ### fill

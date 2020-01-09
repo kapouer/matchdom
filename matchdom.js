@@ -187,11 +187,30 @@ matchdom.filters = {
 		what.filters.magnet(val ? val : null, what, sel);
 		return null;
 	},
-	html: function(value, what) {
+	html: function(val, what, selector) {
 		what.mode = 'html';
+		if (val == null || val === true || val === false) return;
+		var list = Array.isArray(val) ? val : [val];
+		var doc = what.parent.ownerDocument;
+		var cont = doc.createElement("div");
+		list.forEach(function(item) {
+			if (typeof item == "string") {
+				cont.insertAdjacentHTML('beforeEnd', item);
+			} else if (item.nodeType) {
+				cont.appendChild(item);
+			}
+		});
+		if (selector) {
+			return cont.querySelectorAll(selector);
+		} else {
+			return cont;
+		}
 	},
-	text: function(value, what) {
+	text: function(val, what) {
 		what.mode = 'text';
+		if (val == null || val === true || val === false) return val;
+		if (val.nodeType) return val.innerHTML;
+		else return val;
 	},
 	br: function(value, what) {
 		what.mode = 'br';
@@ -202,14 +221,12 @@ matchdom.filters = {
 		if (!aft) aft = '';
 		if (!tag) return value.join(bef + aft);
 		var doc = what.parent.ownerDocument;
-		if (what.mode != 'html') for (var i=0; i < value.length; i++) {
-			what.parent.insertBefore(doc.createTextNode((i > 0 ? aft : "") + value[i] + bef), what.node);
-			if (i < value.length - 1) what.parent.insertBefore(doc.createElement(tag), what.node);
-		} else {
-			var joiner = bef + (tag ? '<' + tag + '>' : '') + aft;
-			what.set(value.join(joiner));
-		}
-		return "";
+		var list = [];
+		value.forEach(function(val, i) {
+			if (i > 0) list.push(doc.createElement(tag));
+			list.push(val);
+		});
+		return list;
 	},
 	split: function(value, what, sep, trim) {
 		if (value == null || !value.split) return;
@@ -760,29 +777,50 @@ What.prototype.get = function() {
 	else return this.parent.getAttribute(this.attr);
 };
 
-function textOut(hits, keep) {
-	if (hits == null || hits === true || hits === false) {
-		return hits;
-	} else if (Array.isArray(hits)) {
-		hits = hits.map(function(hit) {
-			if (hit == null) return "";
-			else if (hit.val != null) return hit.val;
-			else return hit;
-		});
-		if (!keep || hits.length != 1) return hits.join('');
-		else return hits[0];
-	} else {
-		return hits;
-	}
-}
-
 What.prototype.set = function(hits) {
 	var str;
 	var node = this.node;
+	var parent = this.parent;
+	if (!parent && !this.mode) this.mode = "text";
+	var mode = this.mode;
+
 	var doc = node ? node.ownerDocument : null;
+	var list = [];
+
+	if (hits != null && hits !== true && hits !== false) {
+		if (!Array.isArray(hits)) hits = [hits];
+		hits.forEach(function(hit) {
+			if (hit == null) return;
+			var isVal = false;
+			if (hit.val != null) {
+				hit = hit.val;
+				isVal = true;
+			}
+			hit = hit.childNodes || hit;
+			if (mode == "html" && hit.item) {
+				for (var i=0; i < hit.length; i++) list.push(hit.item(i));
+			} else if (typeof hit == "object") {
+				list.push(hit);
+			} else {
+				hit = hit.toString();
+				if (mode == "br" && doc) {
+					var lines = isVal ? hit.split('\n') : [hit];
+					lines.forEach(function(line, i) {
+						if (i > 0) list.push(doc.createElement('br'));
+						list.push(line);
+					});
+				} else {
+					list.push(hit);
+				}
+			}
+		});
+	} else {
+		list.push(hits);
+	}
+
 	if (this.tag) {
 		if (!doc) return;
-		str = textOut(hits);
+		str = list.join('');
 		var tag = doc.createElement('body');
 		// customize built-in elements compatibility
 		var is = node.getAttribute('is');
@@ -794,35 +832,20 @@ What.prototype.set = function(hits) {
 	}
 
 	if (node) {
-		var parent = this.parent;
 		if (this.mode == "text") {
-			node.nodeValue = textOut(hits, true);
+			node.nodeValue = list.length == 1 ? list[0] : list.join('');
 		} else if (!parent) {
 			// do nothing
-		} else if (this.mode == 'html') {
-			var cont = doc.createElement("div");
-			cont.innerHTML = textOut(hits);
-			while (cont.firstChild) {
-				parent.insertBefore(cont.firstChild, node);
-			}
-			node.nodeValue = "";
-		} else if (Array.isArray(hits)) {
-			var cur = node;
-			hits.forEach(function(obj, i) {
-				var list;
-				if (obj == null) list = [''];
-				else if (obj === true || obj === false) list = [obj.toString()];
-				else if (typeof obj == "object" && obj.val != null) list = obj.val.toString().split('\n');
-				else list = [obj];
-				if (i == 0) node.nodeValue = list[0];
-				else cur = parent.insertBefore(doc.createTextNode(list[0]), cur.nextSibling);
-				for (var j=1; j < list.length; j++) {
-					cur = parent.insertBefore(doc.createElement('br'), cur.nextSibling);
-					cur = parent.insertBefore(doc.createTextNode(list[j]), cur.nextSibling);
-				}
-			});
 		} else {
-			node.nodeValue = hits;
+			list.forEach(function(item) {
+				if (item == null) return;
+				if (!item.nodeType) {
+					if (item === "") return;
+					item = doc.createTextNode(item);
+				}
+				parent.insertBefore(item, node);
+			});
+			node.nodeValue = "";
 		}
 	}
 	if (this.initialAttr && this.attr != this.initialAttr) {
@@ -830,11 +853,8 @@ What.prototype.set = function(hits) {
 	}
 
 	if (this.attr) {
-		str = textOut(hits);
-		if (str === null) str = "";
-		else str = str.toString();
+		str = list.join('').trim();
 		this.initialAttr = this.attr;
-		if (typeof str == "string") str = str.trim();
 		if (hits === false || hits == null || (this.attr == "class" && str === "")) {
 			clearAttr(this.parent, this.attr);
 		} else {
