@@ -297,7 +297,7 @@ matchdom.filters = {
 		if (cur != null) {
 			what.hits[what.index] = expr.toString();
 			cur = cur.replace(o + expr.initial + c, o + what.hits[what.index] + c);
-			what.set(cur);
+			what.set([cur]);
 		}
 
 		var copy, frag;
@@ -842,15 +842,22 @@ What.prototype.set = function(hits) {
 		} else if (!parent) {
 			// do nothing
 		} else {
-			list.forEach(function(item) {
+			var mutates = false;
+			list.forEach(function(item, i) {
 				if (item == null) return;
 				if (!item.nodeType) {
 					if (item === "") return;
-					item = doc.createTextNode(item);
+					if (i == list.length - 1) {
+						mutates = true;
+						node.nodeValue = item;
+						return;
+					} else {
+						item = doc.createTextNode(item);
+					}
 				}
 				parent.insertBefore(item, node);
 			});
-			node.nodeValue = "";
+			if (!mutates) node.nodeValue = "";
 		}
 	}
 	if (this.initialAttr && this.attr != this.initialAttr) {
