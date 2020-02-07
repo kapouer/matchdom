@@ -660,8 +660,13 @@ function matchEachDom(root, fn) {
 			hits = tokenize(node.tagName.toLowerCase());
 			if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") fn(node, hits, true);
 		} else {
-			hits = tokenize(node.nodeValue);
-			if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") fn(node, hits);
+			val = node.nodeValue;
+			if (val != null) {
+				hits = tokenize(node.nodeValue);
+				if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") {
+					fn(node, hits);
+				}
+			}
 		}
 	}
 }
