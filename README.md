@@ -364,6 +364,8 @@ If it's used in an attribute, also removes the attribute containing the expressi
 Can be used with attr filter to set a value to an attribute and content at the
 same time.
 
+Because `<[tag]>` can't be parsed as DOM, use `<a[tag|fill]>` to define whole tag name.
+
 
 ### eq:str:yes:no
 
