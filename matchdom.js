@@ -444,7 +444,7 @@ matchdom.filters = {
 	fill: function(val, what) {
 		if (val === undefined) return;
 		var fromNode = !!what.node;
-		if (what.parent) {
+		if (what.parent && !what.tag) {
 			what.parent.textContent = "";
 			what.node = what.parent.ownerDocument.createTextNode('');
 			what.parent.appendChild(what.node);
