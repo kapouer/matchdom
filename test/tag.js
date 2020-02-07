@@ -39,7 +39,7 @@ describe('tag', function() {
 		assert.equal(copy.outerHTML, '<h1 class="yes">Header</h1>');
 	});
 	it('should merge whole tag name', function() {
-		let node = dom(`<h[name|fill] class="[test]">div</z>`);
+		let node = dom(`<h[name|fill] class="[test]">div</h[name|fill]>`);
 		let copy = matchdom(node, {
 			name: "div",
 			test: "yes"
@@ -47,12 +47,20 @@ describe('tag', function() {
 		assert.equal(copy.outerHTML, '<div class="yes">div</div>');
 	});
 	it('should merge whole tag name when it has a parent', function() {
-		let node = dom(`<div><h[name|fill] class="[test]">div</z></div>`);
+		let node = dom(`<div><h[name|fill] class="[test]">div</h[name|fill]></div>`);
 		let copy = matchdom(node, {
 			name: "main",
 			test: "yes"
 		});
 		assert.equal(copy.outerHTML, '<div><main class="yes">div</main></div>');
+	});
+	it('should merge whole tag name when it has a next sibling', function() {
+		let node = dom(`<div><h[name|fill] class="[test]">div</h[name|fill]><div class="toto"></div></div>`);
+		let copy = matchdom(node, {
+			name: "main",
+			test: "yes"
+		});
+		assert.equal(copy.outerHTML, '<div><main class="yes">div</main><div class="toto"></div></div>');
 	});
 });
 
