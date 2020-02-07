@@ -96,6 +96,50 @@ describe('html filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<p><span>test</span><span>toto</span></p>');
 	});
+
+	it('should support xml', function() {
+		const xml = `<?xml version="1.0" encoding="utf-8"?>
+		<root>
+			<title>[title]</title>
+		</root>`;
+		var node = (new DOMParser()).parseFromString(xml, "application/xml");
+		let copy = matchdom(node, {
+			title: 'test'
+		});
+		assert.equal((new XMLSerializer()).serializeToString(copy), `<root>
+			<title>test</title>
+		</root>`);
+	});
+
+	it('should support merging html in xml', function() {
+		const xml = `<?xml version="1.0" encoding="utf-8"?>
+		<root>
+			<content>
+				[content|html]
+			</content>
+		</root>`;
+		var node = (new DOMParser()).parseFromString(xml, "application/xml");
+		let copy = matchdom(node, {
+			content: 'test<br/>test'
+		});
+		assert.equal((new XMLSerializer()).serializeToString(copy), `<root>
+			<content>
+				test<br/>test
+			</content>
+		</root>`);
+	});
+
+	it('should support magnet in xml', function() {
+		const xml = `<?xml version="1.0" encoding="utf-8"?>
+		<root><content>
+			[content|magnet:content]
+		</content></root>`;
+		var node = (new DOMParser()).parseFromString(xml, "application/xml");
+		let copy = matchdom(node, {
+			content: null
+		});
+		assert.equal((new XMLSerializer()).serializeToString(copy), `<root/>`);
+	});
 });
 
 describe('join filter', function() {
