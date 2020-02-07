@@ -443,14 +443,16 @@ matchdom.filters = {
 	},
 	fill: function(val, what) {
 		if (val === undefined) return;
-		what.parent.textContent = "";
 		var fromNode = !!what.node;
-		what.node = what.parent.ownerDocument.createTextNode('');
-		what.parent.appendChild(what.node);
-		if (what.attr && what.attr == what.initialAttr && !fromNode) {
-			clearAttr(what.parent, what.attr);
-			delete what.attr;
-			delete what.initialAttr;
+		if (what.parent) {
+			what.parent.textContent = "";
+			what.node = what.parent.ownerDocument.createTextNode('');
+			what.parent.appendChild(what.node);
+			if (what.attr && what.attr == what.initialAttr && !fromNode) {
+				clearAttr(what.parent, what.attr);
+				delete what.attr;
+				delete what.initialAttr;
+			}
 		}
 		if (fromNode) what.hits.forEach(function(h, i) {
 			if (typeof h != "string" && what.expr.initial == h[0]) {
