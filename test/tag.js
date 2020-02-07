@@ -38,5 +38,13 @@ describe('tag', function() {
 		});
 		assert.equal(copy.outerHTML, '<h1 class="yes">Header</h1>');
 	});
+	it('should merge whole tag name', function() {
+		let node = dom(`<h[name|fill] class="[test]">div</z>`);
+		let copy = matchdom(node, {
+			name: "div",
+			test: "yes"
+		});
+		assert.equal(copy.outerHTML, '<div class="yes">div</div>');
+	});
 });
 
