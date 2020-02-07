@@ -640,8 +640,12 @@ function mutate(what) {
 }
 
 function matchEachDom(root, fn) {
-	if (!root.ownerDocument) {
-		fn(root, tokenize(root.nodeValue));
+	var val;
+	if (root.documentElement) {
+		root = root.documentElement;
+	} else if (!root.ownerDocument) {
+		val = root.nodeValue;
+		if (val != null) fn(root, tokenize(root.nodeValue));
 		return;
 	}
 	var what = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
