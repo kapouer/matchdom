@@ -7,6 +7,7 @@
     "require": "./matchdom.js",
     "import": "./matchdom.mjs"
   },
+  "files": ["./matchdom.mjs"],
   "scripts": {
     "prepare": "echo '\nexport default matchdom;' | cat matchdom.js - > matchdom.mjs",
     "test": "mocha"
