@@ -11,6 +11,7 @@ Features:
 - Nested expressions (since 1.6.0).
 - Can run without DOM when merging pure strings (since 2.1.0).
 - Test suite.
+- Supports legacy (window.matchdom), cjs, and esm styles
 
 ## Examples
 
