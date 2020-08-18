@@ -8,7 +8,7 @@
     "import": "./matchdom.mjs"
   },
   "files": [
-    "./matchdom.mjs"
+    "matchdom.*js"
   ],
   "scripts": {
     "prepare": "echo '\nexport default matchdom;' | cat matchdom.js - > matchdom.mjs",
