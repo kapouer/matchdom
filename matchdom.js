@@ -1,6 +1,4 @@
-if (typeof module !== 'undefined') module.exports = (function() {
-
-if (typeof module === 'undefined') window.matchdom = matchdom;
+var matchdom = (function() {
 
 var Symbols = matchdom.Symbols = {
 	open: '[',
@@ -1016,4 +1014,6 @@ if (typeof window !== "undefined") ['previous', 'next'].forEach(function(name) {
 
 return matchdom;
 })();
+
+if (typeof module != 'undefined') module.exports = matchdom;
 
