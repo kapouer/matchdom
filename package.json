@@ -1,13 +1,15 @@
 {
   "name": "matchdom",
-  "version": "5.10.2",
+  "version": "5.10.4",
   "description": "Tiny DOM data merger",
   "main": "./matchdom.js",
   "exports": {
     "require": "./matchdom.js",
     "import": "./matchdom.mjs"
   },
-  "files": ["./matchdom.mjs"],
+  "files": [
+    "./matchdom.mjs"
+  ],
   "scripts": {
     "prepare": "echo '\nexport default matchdom;' | cat matchdom.js - > matchdom.mjs",
     "test": "mocha"
