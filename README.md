@@ -62,6 +62,13 @@ model unmodified:
 var copy = matchdom(model.cloneNode(true), ...);
 ```
 
+## html template node and script text/html placeholder support
+
+Since version 6.0.0, matchdom supports `<template>` tag.
+
+When traversing the DOM, template.content is simply appended after the current
+template node.
+
 
 ## filters
 

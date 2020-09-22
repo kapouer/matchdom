@@ -653,6 +653,9 @@ function matchEachDom(root, fn) {
 	var node, hits;
 	while ((node = it.nextNode())) {
 		if (node.nodeType == Node.ELEMENT_NODE) {
+			if (node.content && node.content.nodeType == Node.DOCUMENT_FRAGMENT_NODE) {
+				node.parentNode.insertBefore(node.content.cloneNode(true), node.nextSibling);
+			}
 			matchAttributes(node).forEach(function(atthit) {
 				fn(node, atthit.list, atthit.attr);
 			});
