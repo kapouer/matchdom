@@ -62,13 +62,17 @@ model unmodified:
 var copy = matchdom(model.cloneNode(true), ...);
 ```
 
-## html template node and script text/html placeholder support
+## customized dom traversal
 
-Since version 6.0.0, matchdom supports `<template>` tag.
+Since: 5.11.0
 
-When traversing the DOM, template.content is simply appended after the current
-template node.
+Sometimes one might want to customize how the DOM is traversed.
 
+This can be done by defining `matchdom.check(elementNode, iter):boolean`,
+which is called before processing node, so this function can change it,
+or can append/remove next siblings.
+
+See tests for an example.
 
 ## filters
 
@@ -93,14 +97,14 @@ with the following properties:
 - data: the initial data object
 - scope: an object representing currently resolved state:
   + data: the current data object, takes precedence for finding values
-  + path: the current path used to find the data from the initial data,  
-    a filter should find this to be always true:  
-    `what.get(what.data, what.scope.path) == val`  
+  + path: the current path used to find the data from the initial data,
+    a filter should find this to be always true:
+    `what.get(what.data, what.scope.path) == val`
     *This is a breaking change introduced in matchdom 3.0.0.*
   + iskey: boolean, set when keys of an object are repeated and merged value is a key.
   + alias: `scope.data[scope.alias]` is the currently iterated data.
 - node: text node when expression was inside one
-- tag: boolean true when expression is inside a tag name (matchdom 4.3.0)  
+- tag: boolean true when expression is inside a tag name (matchdom 4.3.0)
   in this case, expressions must be valid in lower case only.
 - attr: attribute name when expression was inside an attribute value
 - parent: node containing text node or attribute
@@ -480,13 +484,13 @@ else removes the current attribute.
 
 Special filter names (which cannot be parsed as legit names) provide hooks:
 
-- |  
+- |
   hook before all filters have run (even if none where defined)
 
-- <fn>|  
+- <fn>|
   hook after filter <fn>
 
-- ||  
+- ||
   hook after all filters have run (even if none where defined)
 
 This is available since version 4.2.0.
