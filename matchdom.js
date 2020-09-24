@@ -652,9 +652,9 @@ function matchEachDom(root, fn) {
 	var it = root.ownerDocument.createNodeIterator(root, what, null, false);
 	var node, hits;
 	while ((node = it.nextNode())) {
+		var check = matchdom.check ? matchdom.check(node, it) : true;
+		if (!check) continue;
 		if (node.nodeType == Node.ELEMENT_NODE) {
-			var check = matchdom.check ? matchdom.check(node, it) : true;
-			if (!check) continue;
 			matchAttributes(node).forEach(function(atthit) {
 				fn(node, atthit.list, atthit.attr);
 			});
