@@ -1,6 +1,6 @@
-var matchdom = (function() {
+const matchdom = (function() {
 
-var Symbols = matchdom.Symbols = {
+const Symbols = matchdom.Symbols = {
 	open: '[',
 	close: ']',
 	path: '.',
@@ -17,7 +17,7 @@ matchdom.filters = {
 		else return val;
 	},
 	eq: function(val, what, str, yes, no) {
-		var test = val == str;
+		const test = val == str;
 		if (yes !== undefined) {
 			if (test) return yes;
 			else return no !== undefined ? no : val;
@@ -26,7 +26,7 @@ matchdom.filters = {
 		}
 	},
 	neq: function(val, what, str, yes, no) {
-		var test = val != str;
+		const test = val != str;
 		if (yes !== undefined) {
 			if (test) return yes;
 			else return no !== undefined ? no : val;
@@ -35,26 +35,26 @@ matchdom.filters = {
 		}
 	},
 	gt: function(val, what, to) {
-		var fval = parseFloat(val);
-		var fto = parseFloat(to);
+		const fval = parseFloat(val);
+		const fto = parseFloat(to);
 		if (isNaN(fval) || isNaN(fto)) return val;
 		else return fval > fto;
 	},
 	gte: function(val, what, to) {
-		var fval = parseFloat(val);
-		var fto = parseFloat(to);
+		const fval = parseFloat(val);
+		const fto = parseFloat(to);
 		if (isNaN(fval) || isNaN(fto)) return val;
 		else return fval >= fto;
 	},
 	lt: function(val, what, to) {
-		var fval = parseFloat(val);
-		var fto = parseFloat(to);
+		const fval = parseFloat(val);
+		const fto = parseFloat(to);
 		if (isNaN(fval) || isNaN(fto)) return val;
 		else return fval < fto;
 	},
 	lte: function(val, what, to) {
-		var fval = parseFloat(val);
-		var fto = parseFloat(to);
+		const fval = parseFloat(val);
+		const fto = parseFloat(to);
 		if (isNaN(fval) || isNaN(fto)) return val;
 		else return fval <= fto;
 	},
@@ -74,7 +74,7 @@ matchdom.filters = {
 	},
 	attr: function(value, what, name, selector) {
 		if (value === undefined) return;
-		var attr = name;
+		let attr = name;
 		if (!name && what.attr) {
 			if (what.attr.startsWith('data-')) {
 				attr = what.attr.substring(5);
@@ -87,7 +87,7 @@ matchdom.filters = {
 			console.warn('attr filter first :name parameter is needed');
 			return;
 		}
-		var parent = what.parent || what.node;
+		let parent = what.parent || what.node;
 
 		if (!selector) {
 			if (what.attr) {
@@ -110,10 +110,10 @@ matchdom.filters = {
 	url: function(value, what, name, selector) {
 		if (value === undefined) return;
 		if (value != null && typeof value != "string") value = "" + value;
-		var cur = parseUrl(what.get());
+		const cur = parseUrl(what.get());
 		what.filters.attr(value, what, name, selector);
-		var tgt = parseUrl(what.get());
-		var val = parseUrl(value);
+		const tgt = parseUrl(what.get());
+		const val = parseUrl(value);
 		if (what.index == 0) {
 			if (!val.pathname) {
 				if (tgt.pathname) {
@@ -135,8 +135,8 @@ matchdom.filters = {
 		} else if (cur.query) {
 			if (!cur.pathname) what.hits[0] = tgt.pathname + what.hits[0];
 			if (tgt.query) {
-				for (var k in cur.query) delete tgt.query[k];
-				var tail = serializeUrl({
+				for (let k in cur.query) delete tgt.query[k];
+				let tail = serializeUrl({
 					query: tgt.query
 				}).substring(1);
 				if (tail.length) what.hits.push('&' + tail);
@@ -149,10 +149,10 @@ matchdom.filters = {
 			what.attr = null;
 			return null;
 		}
-		var parent = what.parent;
-		var prevSibs = 0;
-		var nextSibs = 0;
-		var tmode = what.mode == "text";
+		let parent = what.parent;
+		let prevSibs = 0;
+		let nextSibs = 0;
+		const tmode = what.mode == "text";
 		if (selector) {
 			while (selector.startsWith('+')) {
 				prevSibs++;
@@ -187,16 +187,16 @@ matchdom.filters = {
 	html: function(val, what, selector) {
 		what.mode = 'html';
 		if (val == null || val === true || val === false) return;
-		var list = Array.isArray(val) ? val : [val];
-		var doc = what.parent.ownerDocument;
-		var cont = doc.createElement("div");
-		list.forEach(function(item) {
+		const list = Array.isArray(val) ? val : [val];
+		const doc = what.parent.ownerDocument;
+		const cont = doc.createElement("div");
+		for (let item of list) {
 			if (typeof item == "string") {
 				cont.insertAdjacentHTML('beforeEnd', item);
 			} else if (item.nodeType) {
 				cont.appendChild(item);
 			}
-		});
+		}
 		if (selector) {
 			return cont.querySelectorAll(selector);
 		} else {
@@ -212,35 +212,35 @@ matchdom.filters = {
 	br: function(value, what) {
 		what.mode = 'br';
 	},
-	join: function(value, what, bef, tag, aft) {
-		if (value == null || !value.join) return;
+	join: function(list, what, bef, tag, aft) {
+		if (list == null || !list.join) return;
 		if (!bef) bef = '';
 		if (!aft) aft = '';
-		if (!tag) return value.join(bef + aft);
-		var doc = what.parent.ownerDocument;
-		var list = [];
-		value.forEach(function(val, i) {
-			if (i > 0) list.push(doc.createElement(tag));
-			list.push(val);
-		});
-		return list;
+		if (!tag) return list.join(bef + aft);
+		const doc = what.parent.ownerDocument;
+		const ret = [];
+		for (let i = 0; i < list.length; i++) {
+			if (i > 0) ret.push(doc.createElement(tag));
+			ret.push(list[i]);
+		}
+		return ret;
 	},
 	split: function(value, what, sep, trim) {
 		if (value == null || !value.split) return;
-		var list = value.split(sep);
+		let list = value.split(sep);
 		if (trim != null) list = list.filter(function(item) {
 			return item !== trim;
 		});
 		return list;
 	},
 	repeat: function(value, what, selector, alias, step, offset, limit) {
-		var tmode = what.mode == "text";
-		var parent = what.parent;
-		var o = Symbols.open;
-		var c = Symbols.close;
-		var prevSibs = 0;
-		var nextSibs = 0;
-		var ancestor;
+		const tmode = what.mode == "text";
+		let parent = what.parent;
+		const o = Symbols.open;
+		const c = Symbols.close;
+		let prevSibs = 0;
+		let nextSibs = 0;
+		let ancestor;
 		if (selector) {
 			while (selector.startsWith('+')) {
 				prevSibs++;
@@ -274,22 +274,22 @@ matchdom.filters = {
 				nodeValue: ''
 			};
 		}
-		var expr = what.expr.clone();
+		const expr = what.expr.clone();
 
 
-		var ret = findData(what.scope.data, expr.path);
+		let ret = findData(what.scope.data, expr.path);
 		if (!ret.data) ret = findData(what.data, expr.path);
-		var data = ret.data;
+		let data = ret.data;
 		if (typeof data == "string") return;
 		if (data == null) data = [];
-		var path = expr.path = ret.path;
-		var keys = ret.keys;
-		var inkeys = ret.inkeys;
-		var head = ret.head;
+		const path = expr.path = ret.path;
+		const keys = ret.keys;
+		const inkeys = ret.inkeys;
+		let head = ret.head;
 		if (alias) head = alias;
 		if (head) path.unshift(head);
 		what.expr.filters.splice(0, what.expr.filters.length); // empty next filters
-		var cur = what.get();
+		let cur = what.get();
 
 		if (cur != null) {
 			what.hits[what.index] = expr.toString();
@@ -297,13 +297,12 @@ matchdom.filters = {
 			what.set([cur]);
 		}
 
-		var copy, frag;
+		let frag;
 		if (tmode) {
 			if (selector == "*") parent = {
 				nodeValue: o + what.hits[what.index] + c
 			};
-			var hit;
-			hit = what.hits[what.index - 1];
+			let hit = what.hits[what.index - 1];
 			if (hit && prevSibs) {
 				what.hits[what.index - 1] = hit.slice(0, -prevSibs);
 				parent.nodeValue = hit.slice(-prevSibs) + parent.nodeValue;
@@ -333,8 +332,8 @@ matchdom.filters = {
 				parent = ancestor.appendChild(parent);
 			}
 		}
-		var scope;
-		var scopePath = what.scope.path.slice(0, -path.length);
+		let scope;
+		const scopePath = what.scope.path.slice(0, -path.length);
 		if (keys.length) scopePath.push(keys[keys.length - 1]);
 
 		if (inkeys) data = Object.keys(data).map(function(key) {
@@ -350,18 +349,17 @@ matchdom.filters = {
 		limit = parseInt(limit);
 		if (isNaN(limit) || limit <= 0) limit = Infinity;
 
-		var item;
-		var asc = step > 0;
-		var len = data.length - 1;
-		var count = 0;
-		var scopeData = what.scope.data;
+		const asc = step > 0;
+		const len = data.length - 1;
+		let count = 0;
+		let scopeData = what.scope.data;
 		if (Array.isArray(scopeData)) scopeData = {};
-		for (var i = asc ? offset : (len - offset); asc ? i <= len : i >= 0; i += step) {
+		for (let i = asc ? offset : (len - offset); asc ? i <= len : i >= 0; i += step) {
 			if (count++ >= limit) break;
 			scope = Object.assign({}, what.scope);
 			scope.path = scopePath.slice();
 			scope.iskey = inkeys;
-			item = data[i];
+			let item = data[i];
 			scope.path.push(inkeys ? item.key : i);
 			scope.data = Object.assign({}, scopeData);
 			scope.alias = alias || head;
@@ -370,10 +368,7 @@ matchdom.filters = {
 			} else {
 				Object.assign(scope.data, item);
 			}
-
-			if (!tmode) copy = frag.cloneNode(true);
-			else copy = frag.nodeValue;
-
+			let copy = tmode ? frag.nodeValue : frag.cloneNode(true);
 			copy = matchdom(copy, what.data, what.filters, scope);
 			if (!tmode) ancestor.insertBefore(copy, parent);
 			else ancestor.nodeValue += copy;
@@ -393,8 +388,8 @@ matchdom.filters = {
 		return val;
 	},
 	date: function(val, what, method, param) {
-		var d = new Date(val);
-		var fn = method && d[method] || d.toLocaleString;
+		const d = new Date(val);
+		const fn = method && d[method] || d.toLocaleString;
 		return fn.call(d, param);
 	},
 	padStart: function(val, what, size, char) {
@@ -435,12 +430,12 @@ matchdom.filters = {
 	},
 	capitalize: function(val) {
 		if (!val) return val;
-		var str = val.toString();
+		const str = val.toString();
 		return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
 	},
 	fill: function(val, what) {
 		if (val === undefined) return;
-		var fromNode = !!what.node;
+		const fromNode = !!what.node;
 		if (what.parent && !what.tag) {
 			what.parent.textContent = "";
 			what.node = what.parent.ownerDocument.createTextNode('');
@@ -500,13 +495,12 @@ matchdom.filters = {
 function matchdom(parent, data, filters, scope) {
 	filters = Object.assign({}, matchdom.filters, filters);
 	if (data == null) data = {};
-	var wasText = false;
-	var list;
+	let wasText = false;
+	let list;
 	if (typeof parent == "string") {
 		wasText = true;
-		var str = parent;
 		parent = {
-			nodeValue: str
+			nodeValue: parent
 		};
 		list = [parent];
 	} else {
@@ -514,16 +508,16 @@ function matchdom(parent, data, filters, scope) {
 	}
 
 	list.forEach(function(root) {
-		var replacements = [];
+		const replacements = [];
 		matchEachDom(root, function(node, hits, attr) {
-			var what = new What(data, filters, node, attr, scope);
+			const what = new What(data, filters, node, attr, scope);
 			if (wasText) what.mode = "text";
 			what.hits = hits;
 			what.level = 0;
 			mutateHits(what, hits);
-			var allNulls = true;
-			var allTrue = true;
-			var allBools = true;
+			let allNulls = true;
+			let allTrue = true;
+			let allBools = true;
 			hits = hits.filter(function(val) {
 				if (val !== null) allNulls = false;
 				if (val === true) ; // do nothing
@@ -532,7 +526,7 @@ function matchdom(parent, data, filters, scope) {
 				return val !== undefined;
 			});
 			if (hits.length > 0) {
-				var result;
+				let result;
 				if (allNulls) result = null;
 				else if (allBools) result = allTrue;
 				else result = hits;
@@ -545,12 +539,9 @@ function matchdom(parent, data, filters, scope) {
 			}
 		});
 		replacements.forEach(function(pair) {
-			var old = pair[1];
-			var tag = pair[0];
-			var atts = old.attributes;
-			var att;
-			for (var i=0; i < atts.length; i++) {
-				att = atts[i];
+			const old = pair[1];
+			const tag = pair[0];
+			for (let att of old.attributes) {
 				tag.setAttribute(att.name, att.value);
 			}
 			while (old.firstChild) tag.appendChild(old.firstChild);
@@ -565,8 +556,8 @@ function matchdom(parent, data, filters, scope) {
 }
 
 function mutateHits(what, hits) {
-	var scopePath = what.scope.path;
-	var scopeIsKey = !!what.scope.iskey;
+	const scopePath = what.scope.path;
+	const scopeIsKey = !!what.scope.iskey;
 	what.level++;
 	hits.forEach(function(hit, i) {
 		if (hit === null || typeof hit == "string") {
@@ -579,10 +570,10 @@ function mutateHits(what, hits) {
 		}
 		what.index = i;
 		what.expr = new Expression(hit, what.filters);
-		var val;
+		let val;
 		if (what.expr.check()) {
-			var path = what.expr.path;
-			var beg = 0;
+			const path = what.expr.path;
+			let beg = 0;
 			if (path[0] == what.scope.alias) {
 				beg = 1;
 				if (scopeIsKey) {
@@ -615,18 +606,17 @@ function mutateHits(what, hits) {
 }
 
 function mutate(what) {
-	var expr = what.expr;
-	var val = what.scope.data && expr.get(what.scope.data);
+	const expr = what.expr;
+	let val = what.scope.data && expr.get(what.scope.data);
 	if (val === undefined) val = expr.get(what.data);
-	var filter, ret;
-	var prehooks = [];
-	var posthooks = [];
+	const prehooks = [];
+	const posthooks = [];
 	if (expr.prehook) prehooks.push(expr.prehook);
 	if (expr.posthook) posthooks.push(expr.posthook);
 	while (prehooks.length || expr.filter < expr.filters.length || posthooks.length) {
-		filter = prehooks.shift() || expr.filters[expr.filter++] || posthooks.shift();
+		let filter = prehooks.shift() || expr.filters[expr.filter++] || posthooks.shift();
 		if (val !== null) what.val = val;
-		ret = filter.fn.apply(null, [val, what].concat(filter.params));
+		let ret = filter.fn.apply(null, [val, what].concat(filter.params));
 		if (ret !== undefined) val = ret;
 		if (what.cancel) {
 			expr.last = false;
@@ -639,7 +629,7 @@ function mutate(what) {
 }
 
 function matchEachDom(root, fn) {
-	var val;
+	let val;
 	if (root.documentElement) {
 		root = root.documentElement;
 	} else if (!root.ownerDocument) {
@@ -647,23 +637,23 @@ function matchEachDom(root, fn) {
 		if (val != null) fn(root, tokenize(root.nodeValue));
 		return;
 	}
-	var what = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
+	const what = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
 	// old IE need all params
-	var it = root.ownerDocument.createNodeIterator(root, what, null, false);
-	var node, hits;
+	const it = root.ownerDocument.createNodeIterator(root, what, null, false);
+	const check = matchdom.check;
+	let node;
 	while ((node = it.nextNode())) {
-		var check = matchdom.check ? matchdom.check(node, it) : true;
-		if (!check) continue;
+		if (!(check ? check(node, it) : true)) continue;
 		if (node.nodeType == Node.ELEMENT_NODE) {
 			matchAttributes(node).forEach(function(atthit) {
 				fn(node, atthit.list, atthit.attr);
 			});
-			hits = tokenize(node.tagName.toLowerCase());
+			let hits = tokenize(node.tagName.toLowerCase());
 			if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") fn(node, hits, true);
 		} else {
 			val = node.nodeValue;
 			if (val != null) {
-				hits = tokenize(node.nodeValue);
+				let hits = tokenize(node.nodeValue);
 				if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") {
 					fn(node, hits);
 				}
@@ -673,13 +663,10 @@ function matchEachDom(root, fn) {
 }
 
 function matchAttributes(node) {
-	var hits = [];
-	var atts = node.attributes;
-	var att, list;
-	for (var i=0; i < atts.length; i++) {
-		att = atts[i];
+	const hits = [];
+	for (let att of node.attributes) {
 		if (!att.value) continue;
-		list = tokenize(att.value);
+		let list = tokenize(att.value);
 		if (!list.length) continue;
 		hits.push({
 			attr: att.name,
@@ -690,18 +677,17 @@ function matchAttributes(node) {
 }
 
 function tokenize(str) {
-	var list = [];
+	const list = [];
 	_tokenize(list, str, 0, str.length);
 	return list;
 }
 function _tokenize(list, str, pos, len) {
-	var openPos, closePos;
 	while (pos < len) {
-		openPos = str.indexOf(Symbols.open, pos);
-		closePos = str.indexOf(Symbols.close, pos);
+		const openPos = str.indexOf(Symbols.open, pos);
+		const closePos = str.indexOf(Symbols.close, pos);
 		if (openPos >= pos && (openPos < closePos || closePos < pos)) {
 			if (pos != openPos) list.push(str.substring(pos, openPos));
-			var sub = [];
+			const sub = [];
 			pos = _tokenize(sub, str, openPos + 1, len);
 			if (sub.length > 0) list.push(sub);
 		} else if (closePos >= pos && (closePos < openPos || openPos < pos)) {
@@ -716,8 +702,8 @@ function _tokenize(list, str, pos, len) {
 }
 
 function parseUrl(str) {
-	var obj = {};
-	var parts = (str || '').split('?');
+	const obj = {};
+	const parts = (str || '').split('?');
 	obj.pathname = parts[0];
 	if (parts.length > 1) {
 		obj.query = {};
@@ -730,7 +716,7 @@ function parseUrl(str) {
 }
 
 function serializeUrl(obj) {
-	var str = obj.query && Object.keys(obj.query).map(function(key) {
+	const str = obj.query && Object.keys(obj.query).map(function(key) {
 		return key + '=' + obj.query[key];
 	}).join('&');
 	return (obj.pathname || '') + (str && '?' + str || '');
@@ -739,9 +725,9 @@ function serializeUrl(obj) {
 function findData(data, path) {
 	if (!data) return {};
 	path = path.slice();
-	var keys = [];
-	var head;
-	var inkeys = false;
+	const keys = [];
+	let inkeys = false;
+	let head;
 	while (path.length && inkeys == false) {
 		if (typeof data == "object" && data.length) {
 			break;
@@ -793,37 +779,36 @@ What.prototype.get = function() {
 };
 
 What.prototype.set = function(hits) {
-	var str;
-	var node = this.node;
-	var parent = this.parent;
+	const node = this.node;
+	const parent = this.parent;
 	if (!parent && !this.mode) this.mode = "text";
-	var mode = this.mode;
+	const mode = this.mode;
 
-	var doc = node ? node.ownerDocument : null;
-	var list = [];
+	const doc = node ? node.ownerDocument : null;
+	const list = [];
 
 	if (hits != null && hits !== true && hits !== false) {
 		if (!Array.isArray(hits)) hits = [hits];
 		hits.forEach(function(hit) {
 			if (hit == null) return;
-			var isVal = false;
+			let isVal = false;
 			if (hit.val != null) {
 				hit = hit.val;
 				isVal = true;
 			}
 			hit = hit.childNodes || hit;
 			if (mode == "html" && hit.item) {
-				for (var i=0; i < hit.length; i++) list.push(hit.item(i));
+				for (let i = 0; i < hit.length; i++) list.push(hit.item(i));
 			} else if (typeof hit == "object") {
 				list.push(hit);
 			} else {
 				hit = hit.toString();
 				if (mode == "br" && doc) {
-					var lines = isVal ? hit.split('\n') : [hit];
-					lines.forEach(function(line, i) {
+					const lines = isVal ? hit.split('\n') : [hit];
+					for (let i = 0; i < lines.length; i++) {
 						if (i > 0) list.push(doc.createElement('br'));
-						list.push(line);
-					});
+						list.push(lines[i]);
+					}
 				} else {
 					list.push(hit);
 				}
@@ -835,10 +820,10 @@ What.prototype.set = function(hits) {
 
 	if (this.tag) {
 		if (!doc) return;
-		str = list.join('');
-		var tag = doc.createElement('body');
+		let str = list.join('');
+		let tag = doc.createElement('body');
 		// customize built-in elements compatibility
-		var is = node.getAttribute('is');
+		const is = node.getAttribute('is');
 		if (is) str += ' is="' + is + '"';
 		tag.innerHTML = '<' + str + '></' + str + '>';
 		tag = tag.firstChild;
@@ -852,7 +837,7 @@ What.prototype.set = function(hits) {
 		} else if (!parent) {
 			// do nothing
 		} else {
-			var mutates = false;
+			let mutates = false;
 			list.forEach(function(item, i) {
 				if (item == null) return;
 				if (!item.nodeType) {
@@ -875,7 +860,7 @@ What.prototype.set = function(hits) {
 	}
 
 	if (this.attr) {
-		str = list.join('').trim();
+		let str = list.join('').trim();
 		this.initialAttr = this.attr;
 		if (hits === false || hits == null || (this.attr == "class" && str === "")) {
 			clearAttr(this.parent, this.attr);
@@ -904,23 +889,20 @@ function Expression(str, filters) {
 		return this;
 	}
 	this.initial = str;
-	var sa = Symbols.append;
-	var list = str.split(sa);
-	var path = list.shift();
+	const sa = Symbols.append;
+	const list = str.split(sa);
+	const path = list.shift();
 	if (path == "") this.path = [];
 	else this.path = path.split(Symbols.path);
 	this.filters = [];
-	var parts, fn;
-	var name = sa;
-	fn = filters[name];
-	if (fn) this.prehook = {
-		name: name,
-		fn: fn,
+	if (filters[sa]) this.prehook = {
+		name: sa,
+		fn: filters[sa],
 		params: []
 	};
-	for (var i=0; i < list.length; i++) {
-		parts = list[i].split(Symbols.param);
-		name = parts.shift();
+	for (let item of list) {
+		let parts =item.split(Symbols.param);
+		let name = parts.shift();
 		parts = parts.map(function(pt) {
 			try {
 				return decodeURIComponent(pt);
@@ -928,7 +910,7 @@ function Expression(str, filters) {
 				return pt;
 			}
 		});
-		fn = filters[name];
+		let fn = filters[name];
 		if (!fn) continue;
 		this.filters.push({
 			name: name,
@@ -943,11 +925,10 @@ function Expression(str, filters) {
 			params: []
 		});
 	}
-	name = sa + sa;
-	fn = filters[name];
-	if (fn) this.posthook = {
+	let name = sa + sa;
+	if (filters[name]) this.posthook = {
 		name: name,
-		fn: fn,
+		fn: filters[name],
 		params: []
 	};
 }
@@ -957,16 +938,16 @@ Expression.prototype.clone = function() {
 };
 
 Expression.prototype.check = function() {
-	for (var i=0; i < this.path.length; i++) {
-		if (/^[^\\]*$/.test(this.path[i]) === false) return false;
+	for (let str of this.path) {
+		if (/^[^\\]*$/.test(str) === false) return false;
 	}
 	return true;
 };
 
 Expression.prototype.toString = function() {
-	var str = this.path.join(Symbols.path);
+	let str = this.path.join(Symbols.path);
 	if (this.filters.length) str += Symbols.append + this.filters.map(function(obj) {
-		var expr = obj.name;
+		let expr = obj.name;
 		if (obj.params.length) expr += Symbols.param + obj.params.join(Symbols.param);
 		return expr;
 	}).join(Symbols.append);
@@ -981,7 +962,8 @@ Expression.prototype.get = function(data, path) {
 		path = this.path;
 	}
 	if (path.length == 0) return;
-	for (var i=0; i < path.length; i++) {
+	let i;
+	for (i = 0; i < path.length; i++) {
 		data = data[path[i]];
 		if (data == null) {
 			i += 1;
@@ -994,16 +976,16 @@ Expression.prototype.get = function(data, path) {
 
 // IE/Edge/OldSafari polyfill
 if (typeof window !== "undefined") ['previous', 'next'].forEach(function(name) {
-	var keyEl = name + 'ElementSibling';
-	var key = name + 'Sibling';
+	const keyEl = name + 'ElementSibling';
+	const key = name + 'Sibling';
 	[Element, CharacterData].forEach(function(item) {
-		var proto = item.prototype;
+		const proto = item.prototype;
 		if (Object.prototype.hasOwnProperty.call(proto, keyEl)) return;
 		Object.defineProperty(proto, keyEl, {
 			configurable: true,
 			enumerable: true,
 			get: function () {
-				var el = this;
+				let el = this;
 				while ((el = el[key])) {
 					if (el.nodeType === 1) return el;
 				}
