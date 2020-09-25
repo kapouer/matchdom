@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/kapouer/matchdom#readme",
   "devDependencies": {
+    "@kapouer/eslint-config": "^1.0.0",
     "dom4": "^2.0.1",
     "domify": "^1.4.0",
     "global-jsdom": "^6.0.0",
@@ -39,5 +40,13 @@
   },
   "mocha": {
     "require": "global-jsdom/lib/register"
+  },
+  "eslintConfig": {
+    "extends": "@kapouer/eslint-config",
+    "overrides": [{
+      "env": {
+        "browser": true
+      }
+    }]
   }
 }
