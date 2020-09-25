@@ -43,10 +43,8 @@
   },
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
-    "overrides": [{
-      "env": {
-        "browser": true
-      }
-    }]
+    "env": {
+      "browser": true
+    }
   }
 }
