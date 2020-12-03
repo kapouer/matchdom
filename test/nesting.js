@@ -1,7 +1,6 @@
-const assert = require('assert');
-const matchdom = require('../matchdom');
-const dom = require('domify');
-require('dom4'); // jsdom is missing .closest
+import assert from 'assert';
+import matchdom from 'matchdom';
+import dom from 'domify';
 
 describe('nesting', function() {
 	it('should not crash on empty expressions', function() {

@@ -1,8 +1,6 @@
-const assert = require('assert');
-const matchdom = require('../matchdom');
-const dom = require('domify');
-
-require('dom4'); // jsdom is missing .closest
+import assert from 'assert';
+import matchdom from 'matchdom';
+import dom from 'domify';
 
 describe('text nodes', function() {
 	it('should be merged with simple value', function() {

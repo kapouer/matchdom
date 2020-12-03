@@ -1,5 +1,5 @@
-const assert = require('assert');
-const matchdom = require('../matchdom');
+import assert from 'assert';
+import matchdom from 'matchdom';
 
 describe('string', function() {
 	it('should be merged and returned', function() {
@@ -77,7 +77,7 @@ describe('string', function() {
 
 	it('should ignore magnet', function() {
 		let copy = matchdom("[$query.event-id|magnet:form]", {
-			
+
 		});
 		assert.equal(copy, null);
 	});

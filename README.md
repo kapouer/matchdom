@@ -11,7 +11,6 @@ Features:
 - Nested expressions (since 1.6.0).
 - Can run without DOM when merging pure strings (since 2.1.0).
 - Test suite.
-- Supports legacy (window.matchdom), cjs, and esm styles
 
 ## Examples
 
@@ -19,9 +18,17 @@ Run some code on [here](https://runkit.com/kapouer/5acbe92f4299c500122960d1)
 
 ## usage
 
-`matchdom(node, data, filters?, scope?) -> node`
+```js
+const md = new Matchdom({filters, filterNode});
+const mergedNode = md.merge(node, data, scope);
 
-`matchdom(string, data, filters?, scope?) -> value or string`
+// or
+const mergedNode = matchdom(node, data, filters, scope);
+
+const mergedStr = matchdom(string, data, filters, scope)
+```
+
+`filters`, `scope`, `filterNode` are optional, see below.
 
 (since 5.0.0 if the whole string is an expression, it's the expression value
 that is returned).
@@ -68,7 +75,12 @@ Since: 5.11.0
 
 Sometimes one might want to customize how the DOM is traversed.
 
-This can be done by defining `matchdom.check(elementNode, iter):boolean`,
+This can be done by defining
+```js
+new Matchdom({
+	nodeFilter(elementNode, iter):boolean
+})
+```
 which is called before processing node, so this function can change it,
 or can append/remove next siblings.
 
@@ -85,12 +97,17 @@ Full control over how fields are replaced is possible using *filters*:
 ```
 
 ```js
-matchdom(model, {some: "data"}, {
+const md = new Matchdom({filters: {
 	magnet: function(value, what) {
 		if (value == null) what.parent.remove();
 	}
-});
+}});
+md.merge(model, {some: "data"});
 ```
+
+The filter function `this` refers to the current matchdom instance.
+In particular, `this.filters` is the new way to access the deprecated
+`what.filters` (since version 6).
 
 The filter always receives the two first arguments where `what` is an object
 with the following properties:
@@ -109,7 +126,6 @@ with the following properties:
 - attr: attribute name when expression was inside an attribute value
 - parent: node containing text node or attribute
 - expr: the parsed expression
-- filters: the object with custom filters
 - hits: the list of strings or expressions that will be concatenated
 - index: the current index of expression upon which the filter is called
 - val: last known non null value
@@ -498,5 +514,5 @@ This is available since version 4.2.0.
 
 ## Custom symbols
 
-`matchdom.Symbols` allows one to change open, close, path, append, param symbols.
+`Symbols` allows one to change open, close, path, append, param symbols.
 

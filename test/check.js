@@ -1,16 +1,20 @@
-const assert = require('assert');
-const matchdom = require('../matchdom');
-const dom = require('domify');
-require('dom4'); // jsdom is missing .closest
+import assert from 'assert';
+import {Matchdom} from 'matchdom';
+import dom from 'domify';
 
-matchdom.check = function(node, iter) {
-	if (node.content) {
-		node.after(node.content.cloneNode(true));
-		node.remove();
-		return false;
-	} else {
-		return true;
+const md = new Matchdom({
+	nodeFilter: function (node, iter) {
+		if (node.content) {
+			node.after(node.content.cloneNode(true));
+			node.remove();
+			return false;
+		} else {
+			return true;
+		}
 	}
+});
+const matchdom = function (node, data) {
+	return md.merge(node, data);
 };
 
 describe('custom check', function() {
