@@ -41,6 +41,8 @@ export default class Matchdom {
 					else allBools = false;
 					return val !== undefined;
 				});
+				// [a][b] returns null if a and b are null
+				// likewise for booleans
 				if (hits.length > 0) {
 					let result;
 					if (allNulls) result = null;
