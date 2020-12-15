@@ -25,7 +25,7 @@ export default class Matchdom {
 
 		list.forEach((root) => {
 			const replacements = [];
-			this.matchEachDom(root, (node, hits, attr) => {
+			this.matchEachDom(root, data, scope, (node, hits, attr) => {
 				const what = new What(data, node, attr, scope);
 				if (wasText) what.mode = "text";
 				what.hits = hits;
@@ -144,7 +144,7 @@ export default class Matchdom {
 		return val;
 	}
 
-	matchEachDom(root, fn) {
+	matchEachDom(root, data, scope, fn) {
 		let val;
 		if (root.documentElement) {
 			root = root.documentElement;
@@ -159,7 +159,7 @@ export default class Matchdom {
 		const nf = this.nodeFilter;
 		let node;
 		while ((node = it.nextNode())) {
-			if (!(nf ? nf(node, it) : true)) continue;
+			if (!(nf ? nf(node, it, data, scope) : true)) continue;
 			if (node.nodeType == Node.ELEMENT_NODE) {
 				this.matchAttributes(node).forEach(function (atthit) {
 					fn(node, atthit.list, atthit.attr);
