@@ -1,37 +1,30 @@
 # matchdom -- merge data into DOM
 
-Write expressions in attributes or text nodes and have them merged with the
-help of filters for complex or custom cases.
+Data merger
 
 Features:
-- Securely traverses and mutates DOM attributes and nodes.
-- Super customizable with filters.
-- Comes with powerful filters: attr, magnet, repeat, join, and much more.
-- Source code is short, simple, and does not require compilation.
-- Nested expressions (since 1.6.0).
-- Can run without DOM when merging pure strings (since 2.1.0).
-- Test suite.
-
-## Examples
-
-Run some code on [here](https://runkit.com/kapouer/5acbe92f4299c500122960d1)
+- traverses and mutates DOM attributes and nodes - no custom html parser
+- powerful accessors and filters syntax
+- bundled with filters: attr, magnet, repeat, join, and much more.
+- handles nested expressions
+- able to merge pure text too (though some filters won't apply)
 
 ## usage
 
 ```js
-const md = new Matchdom({filters, filterNode});
+const md = new Matchdom({
+	filters = {},
+	filterNode = () => true
+});
 const mergedNode = md.merge(node, data, scope);
 
-// or
+// old-style
 const mergedNode = matchdom(node, data, filters, scope);
-
-const mergedStr = matchdom(string, data, filters, scope)
+const mergedStr = matchdom(string, data, filters, scope);
 ```
 
 `filters`, `scope`, `filterNode` are optional, see below.
 
-(since 5.0.0 if the whole string is an expression, it's the expression value
-that is returned).
 
 Given a DOM and placeholders like this:
 
@@ -50,11 +43,9 @@ matchdom(model, {
 	data: {
 		text: "test"
 	}
-}); // returns model
+});
 ```
-
-resulting in:
-
+returns:
 ```html
 <div id="model" class="yes">
 	<h4>Header</h4>
@@ -78,7 +69,7 @@ Sometimes one might want to customize how the DOM is traversed.
 This can be done by defining
 ```js
 new Matchdom({
-	nodeFilter(elementNode, iter):boolean
+	nodeFilter(elementNode, iter, data, scope):boolean
 })
 ```
 which is called before processing node, so this function can change it,
@@ -131,7 +122,7 @@ with the following properties:
 - val: last known non null value
 - cancel: if true, current expression is not merged
 
-and the following methods (which are useful to write filters that are
+The following methods (which are useful to write filters that are
 independent of their position inside a text node or an attribute):
 - set(str): updates node or attr value
 - get(): returns node or attr value
@@ -146,7 +137,7 @@ set a new attribute with that name.
 flags picked up by other filters (like the `mode` flag set by `html`, `text`,
 and `br` filters).
 
-Filters can receive more string parameters by appending `:param` (once or
+Filters can receive more string parameters, by appending `:param` (once or
 multiple times) to the filter name, like this:
 
 ```html
