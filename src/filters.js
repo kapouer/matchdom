@@ -251,7 +251,7 @@ export function split(value, what, sep, trim) {
 	return list;
 }
 
-export function repeat(value, what, selector, alias, step, offset, limit) {
+export function repeat(value, what, selector, alias, step, offset, limit, func) {
 	const tmode = what.mode == "text";
 	let parent = what.parent;
 	const o = Symbols.open;
@@ -388,8 +388,19 @@ export function repeat(value, what, selector, alias, step, offset, limit) {
 		}
 		let copy = tmode ? frag.nodeValue : frag.cloneNode(true);
 		copy = this.merge(copy, what.data, scope);
-		if (!tmode) ancestor.insertBefore(copy, parent);
-		else ancestor.nodeValue += copy;
+		if (func) {
+			if (this.filters[func]) {
+				this.filters[func](copy, what, ancestor, parent);
+				continue;
+			} else {
+				console.warn("repeat func is not found in filters");
+			}
+		}
+		if (!tmode) {
+			ancestor.insertBefore(copy, parent);
+		} else {
+			ancestor.nodeValue += copy;
+		}
 	}
 	if (!tmode) {
 		parent.remove();
