@@ -397,27 +397,27 @@ describe('not', function() {
 
 describe('name', function() {
 	it('should set a value when true', function() {
-		let node = dom(`<p>[val|as:ceci|key:]</p>`);
+		let node = dom(`<p>[val|path:name]</p>`);
 		let copy = matchdom(node, {val: true});
-		assert.equal(copy.outerHTML, '<p>ceci</p>');
+		assert.equal(copy.outerHTML, '<p>val</p>');
 	});
 	it('should set a value when false', function() {
-		let node = dom(`<p>[val|?:ceci:cela]</p>`);
+		let node = dom(`<p>[val|and:ceci|else:path:name]</p>`);
 		let copy = matchdom(node, {val: false});
-		assert.equal(copy.outerHTML, '<p>cela</p>');
+		assert.equal(copy.outerHTML, '<p>val</p>');
 	});
 	it('should set an empty string when false is not set', function() {
-		let node = dom(`<p>[val|?:ceci]</p>`);
+		let node = dom(`<p>[val|and:path:name|or:]</p>`);
 		let copy = matchdom(node, {val: false});
 		assert.equal(copy.outerHTML, '<p></p>');
 	});
 	it('should set last path component when true is not set', function() {
-		let node = dom(`<p>[to.val|?]</p>`);
+		let node = dom(`<p>[to.val|path:name]</p>`);
 		let copy = matchdom(node, {to: {val: true}});
 		assert.equal(copy.outerHTML, '<p>val</p>');
 	});
 	it('should set empty string when true is not set', function() {
-		let node = dom(`<p>[val|?]</p>`);
+		let node = dom(`<p>[val|and:path:name|or:]</p>`);
 		let copy = matchdom(node, {val: false});
 		assert.equal(copy.outerHTML, '<p></p>');
 	});
@@ -438,7 +438,7 @@ describe('const filter', function() {
 
 describe('!?', function() {
 	it('should set last path component when true is not set', function() {
-		let node = dom(`<p>[to.val|!?]</p>`);
+		let node = dom(`<p>[to.val|not:|path:name]</p>`);
 		let copy = matchdom(node, {to: {val: false}});
 		assert.equal(copy.outerHTML, '<p>val</p>');
 	});
