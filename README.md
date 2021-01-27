@@ -109,10 +109,10 @@ A filter function can have side effects on the document being merged.
 - index: the current index of expression upon which the filter is called
 - cancel: if true, current expression is not merged
 
-The following methods (which are useful to write filters that are
-independent of their position inside a text node or an attribute):
-- set(str): updates node or attr value
-- get(): returns node or attr value
+And methods:
+- write(str): updates node or attr value
+- read(): returns node or attr value
+- ignoreHits(): ignore other hits
 
 ### place
 
@@ -131,10 +131,11 @@ A parsed expression has properties:
 - filters (array of {name, fn, params} objects where params is an array)
 - filter (index of current filter being applied in filters)
 
-and two methods:
+and methods:
 - clone()
 - toString()
-- get(data) returns the data accessed by expr.path
+- get(data, path, save)
+- ignoreFilters() ignore following filters
 
 Expressions can be nested:
 
