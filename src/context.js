@@ -1,6 +1,6 @@
 import Expression from './expr.js';
 
-export default class What {
+export default class Context {
 	#cancel = false
 	constructor(md, data, scope, place) {
 		this.data = data;
@@ -81,20 +81,20 @@ export default class What {
 		return val;
 	}
 
-	reduce() {
+	ignoreHits() {
 		this.hits.splice(0, this.index);
 		this.hits.splice(1);
 		this.index = 0;
 	}
 
-	get() {
+	read() {
 		const { node, attr, tag } = this.dest;
 		if (tag) return node.tagName;
 		else if (attr) return node.getAttribute(attr);
 		else return node.nodeValue;
 	}
 
-	set(hits) {
+	write(hits) {
 		const src = this.src;
 		const { node, attr, tag, root } = this.dest;
 		this.src = { node, attr, tag, root };
@@ -219,7 +219,7 @@ export default class What {
 			});
 			return fn(this, ...params);
 		} catch (ex) {
-			console.info(name, "filter throws", ex.toString());
+			console.info(name, "filter throws", ex.toString(), params);
 			return null;
 		}
 	}
@@ -232,8 +232,10 @@ export default class What {
 			}
 		}
 		if (type) {
-			if (type == "filter" && this.filters.map[str] == null) {
-				if (!val[str] || typeof val[str] != "function") throw new ParamError(val, type);
+			if (type == "filter") {
+				if (this.filters.map[str] == null && (!val[str] || typeof val[str] != "function")) {
+					throw new ParamError(val, type);
+				}
 			} else if (type == "path") {
 				str = this.toPath(str, val);
 			} else {

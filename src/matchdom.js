@@ -1,7 +1,7 @@
 import './polyfills.js';
 import Filters from './filters/index.js';
 import Symbols from './symbols.js';
-import What from './what.js';
+import Context from './context.js';
 import TextDocument from './fragment.js';
 
 export default class Matchdom {
@@ -28,11 +28,11 @@ export default class Matchdom {
 		list = Array.prototype.map.call(list, (root) => {
 			const replacements = [];
 			this.matchEachDom(root, data, scope, (place, str) => {
-				const what = new What(this, data, scope, place);
-				let hits = what.parse(str);
+				const ctx = new Context(this, data, scope, place);
+				let hits = ctx.parse(str);
 				if (!hits) return;
-				what.hits = hits;
-				hits = what.processHits(hits);
+				ctx.hits = hits;
+				hits = ctx.processHits(hits);
 				let allNulls = true;
 				let allTrue = true;
 				let allBools = true;
@@ -50,10 +50,10 @@ export default class Matchdom {
 					if (allNulls) result = null;
 					else if (allBools) result = allTrue;
 					else result = hits;
-					what.set(result);
+					ctx.write(result);
 				}
-				if (what.dest.root && what.dest.root != root) root = what.dest.root;
-				if (what.replacement) replacements.unshift(what.replacement);
+				if (ctx.dest.root && ctx.dest.root != root) root = ctx.dest.root;
+				if (ctx.replacement) replacements.unshift(ctx.replacement);
 			});
 			replacements.forEach(function (pair) {
 				const old = pair[1];
@@ -88,9 +88,9 @@ export default class Matchdom {
 		if (root.documentElement) {
 			root = root.documentElement;
 		}
-		const what = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
+		const ctx = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
 		// old IE need all params
-		const it = root.ownerDocument.createNodeIterator(root, what, null, false);
+		const it = root.ownerDocument.createNodeIterator(root, ctx, null, false);
 		const nf = this.nodeFilter;
 		let node;
 		while ((node = it.nextNode())) {

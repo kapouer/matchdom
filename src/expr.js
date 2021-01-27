@@ -42,6 +42,9 @@ export default class Expression {
 			return expr;
 		}).join(this.symbols.append);
 	}
+	ignoreFilters() {
+		this.filter = this.filters.length;
+	}
 
 	get(data, path, save) {
 		if (path.length == 0) return data;
