@@ -1,6 +1,8 @@
 import assert from 'assert';
-import matchdom from 'matchdom';
-import dom from 'domify';
+import { Matchdom, HTML as dom } from 'matchdom';
+const matchdom = (node, data, filters) => {
+	return (new Matchdom({ filters })).merge(node, data);
+};
 
 describe('text nodes', function() {
 	it('should be merged with simple value', function() {
@@ -24,7 +26,7 @@ describe('text nodes', function() {
 	});
 
 	it('should not be merged as html', function() {
-		let node = dom(`<span>[str|html|text]</span>`);
+		let node = dom(`<span>[str|as:text]</span>`);
 		let copy = matchdom(node, {
 			str: "<b>bold</b>"
 		});
@@ -32,7 +34,7 @@ describe('text nodes', function() {
 	});
 
 	it('should be merged as html', function() {
-		let node = dom(`<span>[str|html]</span>`);
+		let node = dom(`<span>[str|as:html]</span>`);
 		let copy = matchdom(node, {
 			str: "test<b>bold</b><i>italic</i>test"
 		});
@@ -40,7 +42,7 @@ describe('text nodes', function() {
 	});
 
 	it('should replace newlines with br', function() {
-		let node = dom(`<p>[str]</p>`);
+		let node = dom(`<p>[str|as:text]</p>`);
 		let copy = matchdom(node, {
 			str: "test\n\ntest\n"
 		});
@@ -91,7 +93,7 @@ describe('text nodes', function() {
 
 describe('filters on text nodes', function() {
 	it('should do nothing if missing', function() {
-		let node = dom(`<span>[test|notfound]</span>`);
+		let node = dom(`<span>[test|notfound:]</span>`);
 		let copy = matchdom(node, {
 			test: "yes"
 		});
@@ -99,7 +101,7 @@ describe('filters on text nodes', function() {
 	});
 
 	it('should do nothing if multiple filters are missing', function() {
-		let node = dom(`<span>[test|notfound|notfound2]</span>`);
+		let node = dom(`<span>[test|notfound:|notfound2:]</span>`);
 		let copy = matchdom(node, {
 			test: "yes"
 		});
@@ -119,9 +121,9 @@ describe('filters on text nodes', function() {
 		let copy = matchdom(node, {
 			test: "yes"
 		}, {
-			prefix: function(val, what, prefix) {
+			prefix: ['?', 'string', function(ctx, val, prefix) {
 				return prefix + val;
-			}
+			}]
 		});
 		assert.equal(copy.outerHTML, '<span>meyes</span>');
 	});
@@ -131,10 +133,10 @@ describe('filters on text nodes', function() {
 		let copy = matchdom(node, {
 			test: " and "
 		}, {
-			prefix: function(val, what, str) {
+			prefix: function(x, val, str) {
 				return str + val;
 			},
-			postfix: function(val, what, str) {
+			postfix: function (x, val, str) {
 				return val + str;
 			}
 		});

@@ -1,6 +1,8 @@
 import assert from 'assert';
-import matchdom from 'matchdom';
-import dom from 'domify';
+import { Matchdom, HTML as dom } from 'matchdom';
+const matchdom = (node, data, filters) => {
+	return (new Matchdom({ filters })).merge(node, data);
+};
 
 
 describe('scope path', function() {

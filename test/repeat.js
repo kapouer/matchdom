@@ -1,12 +1,21 @@
 import assert from 'assert';
-import matchdom from 'matchdom';
-import dom from 'domify';
+import { Matchdom, HTML as dom } from 'matchdom';
+const matchdom = (node, data, filters, scope) => {
+	return (new Matchdom({ filters })).merge(node, data, scope);
+};
 
 
-describe('repeating', function() {
+describe('repeating', function () {
+	it('should repeat array of strings in string', function () {
+		let node = dom(`<div>[arr|repeat:|]</div>`);
+		let copy = matchdom(node, {
+			arr: ['one', 'two']
+		});
+		assert.equal(copy.outerHTML, dom(`<div>onetwo</div>`).outerHTML);
+	});
 	it('should repeat array-in-object over node', function() {
 		let node = dom(`<div>
-			<span>[arr|repeat]</span>
+			<span>[arr|repeat:*|]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			arr: ['one', 'two']
@@ -18,7 +27,7 @@ describe('repeating', function() {
 
 	it('should repeat direct array over node', function() {
 		let node = dom(`<div>
-			<span>[test|repeat]</span>
+			<span>[repeat:*|test]</span>
 		</div>`);
 		let copy = matchdom(node, [{test: 'one'}, {test: 'two'}]);
 		assert.equal(copy.outerHTML, dom(`<div>
@@ -28,7 +37,7 @@ describe('repeating', function() {
 
 	it('should repeat array over closest node', function() {
 		let node = dom(`<table><tbody>
-			<th><td>Hello</td></tr><tr><td>[arr|repeat:tr]</td></tr>
+			<th><td>Hello</td></tr><tr><td>[arr|repeat:tr|]</td></tr>
 		</tbody></table>`);
 		let copy = matchdom(node, {
 			arr: ['one', 'two']
@@ -40,7 +49,7 @@ describe('repeating', function() {
 
 	it('should repeat array over parent of attribute', function() {
 		let node = dom(`<div>
-			<img data-src="[arr|repeat|attr]" />
+			<img data-src="[arr|repeat:|to:src]" />
 		</div>`);
 		let copy = matchdom(node, {
 			arr: ['one', 'two']
@@ -52,7 +61,7 @@ describe('repeating', function() {
 
 	it('should repeat array', function() {
 		let node = dom(`<div>
-			<span>[arr.value|repeat]</span>
+			<span>[arr|repeat:*|value]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			arr: [{value: 'one'}, {value: 'two'}]
@@ -64,7 +73,7 @@ describe('repeating', function() {
 
 	it('should repeat array in reverse order', function() {
 		let node = dom(`<div>
-			<span>[arr.value|repeat:::-1]</span>
+			<span>[arr|reverse:|repeat:*|value]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			arr: [{value: 'one'}, {value: 'two'}]
@@ -76,7 +85,7 @@ describe('repeating', function() {
 
 	it('should repeat array every odd item', function() {
 		let node = dom(`<div>
-			<span>[arr|repeat:::2:1]</span>
+			<span>[arr|nth:2:1|repeat:*|]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			arr: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -88,7 +97,7 @@ describe('repeating', function() {
 
 	it('should repeat array the second and third even items in reverse order', function() {
 		let node = dom(`<div>
-			<span>[arr|repeat:::-2:1:2]</span>
+			<span>[arr|reverse:|nth:2:1|slice:0:2|repeat:*|]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			arr: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -99,7 +108,7 @@ describe('repeating', function() {
 	});
 
 	it('should repeat array and return fragment', function() {
-		let node = dom(`<span>[arr.value|repeat]</span>`);
+		let node = dom(`<span>[arr|repeat:*|value]</span>`);
 		let copy = matchdom(node, {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
@@ -109,7 +118,7 @@ describe('repeating', function() {
 	});
 
 	it('should repeat array accessing data after scope', function() {
-		let node = dom(`<div><div class="[$arr.data.test]"><span>[$arr.data.value|repeat:div]</span></div></div>`);
+		let node = dom(`<div><div class="[data.test]"><span>[$arr|repeat:div|data.value]</span></div></div>`);
 		var arr = [
 			{data: {value: 'one', test:1}},
 			{data: {value: 'two', test:2}}
@@ -121,7 +130,7 @@ describe('repeating', function() {
 	});
 
 	it('should repeat array over previous child and next child', function() {
-		let node = dom(`<div><i>*</i><span>[arr.value|repeat:+span+]</span><br></div>`);
+		let node = dom(`<div><i>*</i><span>[arr|repeat:+span+|value]</span><br></div>`);
 		let copy = matchdom(node, {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
@@ -129,7 +138,7 @@ describe('repeating', function() {
 	});
 
 	it('should repeat array over previous child and next child with wildcard selector', function() {
-		let node = dom(`<div><i>*</i><span>[arr.value|repeat:+*+]</span><br></div>`);
+		let node = dom(`<div><i>*</i><span>[arr|repeat:+*+|value]</span><br></div>`);
 		let copy = matchdom(node, {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
@@ -137,7 +146,7 @@ describe('repeating', function() {
 	});
 
 	it('should repeat array over previous child and next child with wildcard selector on a text node', function() {
-		let node = dom(`<div><i>A</i>[arr.value|repeat:+*+]<br></div>`);
+		let node = dom(`<div><i>A</i>[arr|repeat:+-+|value]<br></div>`);
 		let copy = matchdom(node, {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
@@ -145,7 +154,7 @@ describe('repeating', function() {
 	});
 
 	it('should repeat array over previous child and next child and not fail', function() {
-		let node = dom(`<div><i>*</i><span>[arr.value|repeat:+span++]</span><br></div>`);
+		let node = dom(`<div><i>*</i><span>[arr|repeat:+span++|value]</span><br></div>`);
 		let copy = matchdom(node, {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
@@ -154,7 +163,7 @@ describe('repeating', function() {
 
 	it('should repeat array when filter is not the first one', function() {
 		let node = dom(`<div>
-			<span>[arr.key] [arr.value|repeat]</span>
+			<span>[key] [arr|repeat:*|value]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			arr: [{key: 1, value: 'one'}, {key: 2, value: 'two'}]
@@ -166,7 +175,7 @@ describe('repeating', function() {
 
 	it('should repeat array when filter is not the first one and data is array', function() {
 		let node = dom(`<div>
-			<span>[key] [value|repeat]</span>
+			<span>[key] [repeat:span|value]</span>
 		</div>`);
 		let copy = matchdom(node, [
 			{key: 1, value: 'one'},
@@ -179,7 +188,7 @@ describe('repeating', function() {
 
 	it('should repeat array when filter is not the first one and data is array and first one is in attribute', function() {
 		let node = dom(`<div>
-			<span data-class="[it.style|attr]">[it.key] [value|repeat:*:it]</span>
+			<span data-class="[it.style|to:class]">[it.key] [repeat:*:it|it.value]</span>
 		</div>`);
 		let copy = matchdom(node, [
 			{key: 1, value: 'one', style: 'a'},
@@ -193,7 +202,7 @@ describe('repeating', function() {
 	it('should repeat array recursively', function() {
 		let node = dom(`<table>
 			<tr>
-				<td>[rows.cells.val|repeat:tr|repeat]</td>
+				<td>[rows|repeat:tr|cells|repeat:td|val]</td>
 			</tr>
 		</table>`);
 		let copy = matchdom(node, {
@@ -214,7 +223,7 @@ describe('repeating', function() {
 	it('should repeat array recursively with direct value', function() {
 		let node = dom(`<table>
 			<tr>
-				<td>[rows.cells|repeat:tr|repeat]</td>
+				<td>[rows|repeat:tr|cells|repeat:td|]</td>
 			</tr>
 		</table>`);
 		let copy = matchdom(node, {
@@ -235,7 +244,7 @@ describe('repeating', function() {
 	it('should repeat aliased array items', function() {
 		let node = dom(`<table>
 			<tr>
-				<td>[cells.txt|repeat:td:cell] [cell.txt]</td>
+				<td>[cells|repeat:td:cell|cell.txt] [cell.txt]</td>
 			</tr>
 		</table>`);
 		let copy = matchdom(node, {
@@ -254,7 +263,7 @@ describe('repeating', function() {
 	it('should repeat array recursively, with data outside scope', function() {
 		let node = dom(`<table>
 			<tr>
-				<td>[rows.cells.val|repeat:tr|repeat|scope][some.data|scope]</td>
+				<td>[rows|repeat:tr|cells|repeat:td|val|scope:][some.data|scope:]</td>
 			</tr>
 		</table>`);
 		let copy = matchdom(node, {
@@ -266,8 +275,9 @@ describe('repeating', function() {
 				data: "x"
 			}
 		}, {
-			scope: function(val, what) {
-				assert.equal(val, what.expr.get(what.data, what.scope.path));
+			scope: function(val) {
+				assert.equal(val, this.expr.get(this.data));
+				return val;
 			}
 		});
 		assert.equal(copy.outerHTML, dom(`<table>
@@ -282,11 +292,11 @@ describe('repeating', function() {
 	it('should repeat array recursively, with data outside node and outside scope', function() {
 		let node = dom(`<div><span>[data.title]</span><table>
 			<tr class="repeat">
-				<td><h1>[data.title|scope]</h1></td>
-				<td><h2>[row.data.obj.title|scope]</h2></td>
-				<td><span>[data.text|scope]</span></td>
-				<td><p><span><strong><span>[rows.data.obj.text|repeat:.repeat:row|scope]</span></strong></span></p></td>
-				<td>[data.extra|scope]</td>
+				<td><h1>[data.title|scope:]</h1></td>
+				<td><h2>[row.data.obj.title|scope:]</h2></td>
+				<td><span>[data.text|scope:]</span></td>
+				<td><p><span><strong><span>[rows|repeat:.repeat:row|row.data.obj.text|scope:]</span></strong></span></p></td>
+				<td>[data.extra|scope:]</td>
 			</tr>
 		</table></div>`);
 		let copy = matchdom(node, {
@@ -300,8 +310,9 @@ describe('repeating', function() {
 				text: "text",
 			}
 		}, {
-			scope: function(val, what) {
-				assert.equal(val, what.expr.get(what.data, what.scope.path));
+			scope: function(val) {
+				assert.equal(val, this.expr.get(this.data));
+				return val;
 			}
 		});
 		assert.equal(copy.outerHTML, dom(`<div><span>title</span><table>

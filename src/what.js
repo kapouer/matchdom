@@ -1,122 +1,281 @@
-import { clearAttr } from './utils.js';
+import Expression from './expr.js';
 
 export default class What {
-	constructor(data, node, attr, scope) {
-		this.mode = 'br';
+	#cancel = false
+	constructor(md, data, scope, place) {
 		this.data = data;
-		this.scope = Object.assign({ path: [] }, scope);
-		if (attr === true) {
-			this.tag = true;
-			attr = false;
-		}
-		if (attr) {
-			this.initialAttr = attr;
-			this.attr = attr;
-			this.parent = node;
+		this.scope = Object.assign({}, scope);
+		this.matchdom = md;
+		this.filters = md.filters;
+		this.hooks = md.hooks;
+		this.symbols = md.symbols;
+		this.level = 0;
+		this.src = place;
+		this.dest = Object.assign({}, place);
+		this.dest.before = 0;
+		this.dest.after = 0;
+	}
+
+	own(node) {
+		const doc = this.src.node.ownerDocument;
+		return doc.importNode(node, true);
+	}
+
+	parse(str) {
+		const hits = this.tokenize(str);
+		if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") {
+			return hits;
 		} else {
-			this.node = node;
-			this.parent = node.parentNode;
+			return;
 		}
 	}
+
+	cancel() {
+		this.#cancel = true;
+	}
+
+	processHits(hits) {
+		this.level++;
+		hits.forEach((hit, i) => {
+			if (hit === null || typeof hit == "string") {
+				return;
+			}
+			if (hit.length > 1 || typeof hit[0] != "string") {
+				hit = this.processHits(hit).join('');
+			} else {
+				hit = hit[0];
+			}
+			this.index = i;
+			const val = this.mutate(hit);
+			if (val !== undefined) {
+				hits[this.index] = val;
+			} else {
+				hits[this.index] = this.symbols.open + hit + this.symbols.close;
+			}
+		});
+		return hits;
+	}
+
+	mutate(hit) {
+		let val = this.scope.data;
+		if (val === undefined) val = this.data;
+		if (this.symbols.recheck.test(hit) == false) return undefined;
+		const expr = new Expression(hit, this.symbols);
+		this.expr = expr;
+		const befEach = this.hooks.beforeEach;
+		const aftEach = this.hooks.afterEach;
+
+		if (this.hooks.before) this.hooks.before.call(this, val);
+		while (expr.filter < expr.filters.length) {
+			let filter = expr.filters[expr.filter++];
+			if (befEach) befEach.call(this, val, filter);
+			val = this.run(filter.name, val, ...filter.params);
+			if (aftEach) aftEach.call(this, val, filter);
+			if (this.#cancel) {
+				expr.last = false;
+				val = undefined;
+			}
+		}
+		if (expr.last && val === undefined) val = null;
+		if (this.hooks.after) this.hooks.after.call(this, val);
+		return val;
+	}
+
+	reduce() {
+		this.hits.splice(0, this.index);
+		this.hits.splice(1);
+		this.index = 0;
+	}
+
 	get() {
-		if (this.node) return this.node.nodeValue;
-		else return this.parent.getAttribute(this.attr);
+		const { node, attr, tag } = this.dest;
+		if (tag) return node.tagName;
+		else if (attr) return node.getAttribute(attr);
+		else return node.nodeValue;
 	}
 
 	set(hits) {
-		const node = this.node;
-		const parent = this.parent;
-		if (!parent && !this.mode) this.mode = "text";
-		const mode = this.mode;
+		const src = this.src;
+		const { node, attr, tag, root } = this.dest;
+		this.src = { node, attr, tag, root };
 
-		const doc = node ? node.ownerDocument : null;
-		const list = [];
+		const doc = node.ownerDocument;
+		const list = Array.isArray(hits) ? hits : [hits];
+		const parent = node.parentNode;
 
-		if (hits != null && hits !== true && hits !== false) {
-			if (!Array.isArray(hits)) hits = [hits];
-			hits.forEach(function (hit) {
-				if (hit == null) return;
-				let isVal = false;
-				if (hit.val != null) {
-					hit = hit.val;
-					isVal = true;
-				}
-				hit = hit.childNodes || hit;
-				if (mode == "html" && hit.item) {
-					for (let i = 0; i < hit.length; i++) list.push(hit.item(i));
-				} else if (typeof hit == "object") {
-					list.push(hit);
-				} else {
-					hit = hit.toString();
-					if (mode == "br" && doc) {
-						const lines = isVal ? hit.split('\n') : [hit];
-						for (let i = 0; i < lines.length; i++) {
-							if (i > 0) list.push(doc.createElement('br'));
-							list.push(lines[i]);
-						}
-					} else {
-						list.push(hit);
-					}
-				}
-			});
-		} else {
-			list.push(hits);
-		}
-
-		if (this.tag) {
-			if (!doc) return;
-			let str = list.join('');
-			let tag = doc.createElement('body');
-			// customize built-in elements compatibility
+		if (tag) {
+			const tagName = list.join('');
 			const is = node.getAttribute('is');
-			if (is) str += ' is="' + is + '"';
-			tag.innerHTML = '<' + str + '></' + str + '>';
-			tag = tag.firstChild;
-			this.replacement = [tag, node];
-			return;
-		}
-
-		if (node) {
-			if (mode == "text") {
-				node.nodeValue = list.length == 1 ? list[0] : list.join('');
-			} else if (!parent) {
-				// do nothing
-			} else {
-				let mutates = false;
-				list.forEach(function (item, i) {
-					if (item == null) return;
-					if (!item.nodeType) {
-						if (item === "") return;
-						if (i == list.length - 1) {
-							mutates = true;
+			let tag = doc.createElement(tagName, is ? { is } : null);
+			this.replacement = [this.own(tag), node];
+		} else {
+			let { before, after } = this.dest;
+			let mutates = false;
+			while (before-- > 0) {
+				if (!node.previousSibling) break;
+				parent.removeChild(node.previousSibling);
+			}
+			while (after-- > 0) {
+				if (!node.nextSibling) break;
+				parent.removeChild(node.nextSibling);
+			}
+			if (src.attr && (attr != src.attr || node != src.node)) {
+				clearAttr(src.node, src.attr);
+			}
+			if (!attr) {
+				for (let i = 0; i < list.length; i++) {
+					let item = list[i];
+					if (node.nodeType > 0 && item == null) continue;
+					if (!item || !item.nodeType) {
+						if (i == list.length - 1 && !node.children) {
+							// reuse current text node for the last hit
 							node.nodeValue = item;
-							return;
+							item = node;
+							mutates = true;
 						} else {
-							item = doc.createTextNode(item);
+							item = doc.createTextNode((item == null) ? "" : item);
 						}
+					} // else item can be a node or fragment
+					if (parent && item != node) {
+						node.parentNode.insertBefore(this.own(item), node);
 					}
-					parent.insertBefore(item, node);
-				});
-				if (!mutates) node.nodeValue = "";
-			}
-		}
-		if (this.initialAttr && this.attr != this.initialAttr) {
-			clearAttr(this.parent, this.initialAttr);
-		}
-
-		if (this.attr) {
-			let str = list.join('').trim();
-			this.initialAttr = this.attr;
-			if (hits === false || hits == null || (this.attr == "class" && str === "")) {
-				clearAttr(this.parent, this.attr);
-			} else {
-				if (hits === true) {
-					if (this.attr.startsWith('data-') == false) str = "";
-				} else if (this.attr == "class" && typeof str == "string") {
-					str = str.replace(/[\n\t\s]+/g, ' ').trim();
 				}
-				this.parent.setAttribute(this.attr, str);
+				if (src.node != node && src.node && !src.node.contains(node) && src.node.parentNode) {
+					// dest node is a node and is replaced by another node
+					src.node.parentNode.removeChild(src.node);
+				}
+				if (!mutates) {
+					if (node.children) parent.removeChild(node);
+					else node.nodeValue = "";
+				}
+			} else {
+				let str = list.join('').trim();
+				let attrNode = node;
+				if (!src.attr && !node.children) {
+					attrNode = node.parentNode;
+					node.remove();
+				}
+				if (hits === false || hits == null || (attr == "class" && str === "")) {
+					clearAttr(attrNode, attr);
+				} else {
+					if (hits === true) {
+						if (attr.startsWith('data-') == false) str = "";
+					} else if (attr == "class" && typeof str == "string") {
+						str = str.replace(/[\n\t\s]+/g, ' ').trim();
+					}
+					attrNode.setAttribute(attr, str);
+				}
 			}
+		}
+	}
+	tokenize(str) {
+		const list = [];
+		this._tokenize(list, str, 0, str.length);
+		return list;
+	}
+
+	_tokenize(list, str, pos, len) {
+		const { open, close } = this.symbols;
+		const openLen = open.length;
+		const closeLen = close.length;
+		while (pos < len) {
+			const openPos = str.indexOf(open, pos);
+			const closePos = str.indexOf(close, pos);
+			if (openPos >= pos && (openPos < closePos || closePos < pos)) {
+				if (pos != openPos) list.push(str.substring(pos, openPos));
+				const sub = [];
+				pos = this._tokenize(sub, str, openPos + openLen, len);
+				if (sub.length > 0) list.push(sub);
+			} else if (closePos >= pos && (closePos < openPos || openPos < pos)) {
+				if (pos != closePos) list.push(str.substring(pos, closePos));
+				return closePos + closeLen;
+			} else {
+				list.push(str.substring(pos));
+				pos = len;
+			}
+		}
+		return pos;
+	}
+
+	run(name, ...params) {
+		let it = this.filters.map[name];
+		const val = params[0];
+		if (!it && val != null && val[name]) {
+			const meth = val[name];
+			it = (ctx, val, ...args) => {
+				return meth.apply(val, args);
+			};
+		}
+		if (it == null) {
+			console.info(name, "filter is missing");
+			return val;
+		}
+		it = Array.isArray(it) ? it.slice() : [it];
+		const fn = it.pop();
+		try {
+			it.forEach((arg, i) => {
+				const [type, def] = (arg || '').split('?');
+				params[i] = this.check(val, params[i], type, def);
+			});
+			return fn(this, ...params);
+		} catch (ex) {
+			console.info(name, "filter throws", ex.toString());
+			return null;
+		}
+	}
+	check(val, str, type, def) {
+		if (str == null) {
+			if (def == null) {
+				throw new ParamError();
+			} else if (type) {
+				str = def;
+			}
+		}
+		if (type) {
+			if (type == "filter" && this.filters.map[str] == null) {
+				if (!val[str] || typeof val[str] != "function") throw new ParamError(val, type);
+			} else if (type == "path") {
+				str = this.toPath(str, val);
+			} else {
+				str = this.run('as', str, type);
+			}
+		}
+		return str;
+	}
+	isSimpleValue(val) {
+		if (val == null) return true;
+		if (["boolean", "number", "string"].includes(typeof val)) return true;
+		const typ = Object.prototype.toString.call(val).slice(8, -1).toLowerCase();
+		return [
+			"array", "bigint", "date", "error",
+			"function", "generator",
+			"regexp", "symbol"
+		].includes(typ);
+	}
+
+	toPath(str, ctxValue) {
+		if (str == null) return [];
+		if (str === "" && ctxValue !== undefined && this.isSimpleValue(ctxValue)) return [];
+		return str.split(this.symbols.path);
+	}
+}
+
+function clearAttr(node, attr) {
+	if (node[attr] != null) node.setAttribute(attr, '');
+	node.removeAttribute(attr);
+}
+
+class ParamError extends Error {
+	constructor(type, val) {
+		super();
+		this.type = type;
+		this.val = val;
+	}
+	toString() {
+		if (!this.type && this.val == null) {
+			return "ParamError: missing param";
+		} else {
+			return `ParamError: ${this.val} is not of type ${this.type}`;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 import assert from 'assert';
-import matchdom from 'matchdom';
-import dom from 'domify';
+import { Matchdom, HTML as dom } from 'matchdom';
+
+const matchdom = (node, data, filters) => new Matchdom({ filters }).merge(node, data);
 
 describe('attributes', function() {
 	it('should be merged with simple value', function() {
@@ -85,9 +86,9 @@ describe('attributes', function() {
 	});
 });
 
-describe('attr filter', function() {
+describe('to filter', function() {
 	it('should be renamed and merged with simple value', function() {
-		let node = dom(`<img data-src="[test|attr]">`);
+		let node = dom(`<img data-src="[test|to:src]">`);
 		let copy = matchdom(node, {
 			test: "yes"
 		});
@@ -95,7 +96,7 @@ describe('attr filter', function() {
 	});
 
 	it('should be renamed and merged with simple value with parameter', function() {
-		let node = dom(`<img toubidouhoua="[test|attr:src]">`);
+		let node = dom(`<img toubidouhoua="[test|to:src]">`);
 		let copy = matchdom(node, {
 			test: "yes"
 		});
@@ -103,7 +104,7 @@ describe('attr filter', function() {
 	});
 
 	it('should set attribute even when defined in the text node', function() {
-		let node = dom(`<a>test[href|attr:href]</a>`);
+		let node = dom(`<a>test[href|to:href]</a>`);
 		let copy = matchdom(node, {
 			href: "/test"
 		});

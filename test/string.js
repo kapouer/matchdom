@@ -1,5 +1,8 @@
 import assert from 'assert';
-import matchdom from 'matchdom';
+import { Matchdom } from 'matchdom';
+const matchdom = (node, data, filters) => {
+	return (new Matchdom({ filters })).merge(node, data);
+};
 
 describe('string', function() {
 	it('should be merged and returned', function() {
@@ -41,28 +44,28 @@ describe('string', function() {
 	});
 
 	it('should repeat array', function() {
-		let copy = matchdom("--[arr.value|repeat:*]--", {
+		let copy = matchdom("--[arr|repeat:|value]--", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
-		assert.equal(copy, "--onetwo--");
+		assert.equal(copy, "--one----two--");
 	});
 
 	it('should repeat object', function() {
-		let copy = matchdom("keys: [obj+.key|repeat:*+] ", {
+		let copy = matchdom("key:[obj|as:keys|repeat:|] ", {
 			obj: {a: 1, b: 2}
 		});
-		assert.equal(copy, "keys: a b ");
+		assert.equal(copy, "key:a key:b ");
 	});
 
 	it('should repeat object keys', function() {
-		let copy = matchdom("[obj+.key|repeat]=[obj.val]&", {
+		let copy = matchdom("[obj|as:entries|repeat:|key]=[value]&", {
 			obj: {a: 1, b: 2}
 		});
 		assert.equal(copy, "a=1&b=2&");
 	});
 
 	it('should repeat array using whole string', function() {
-		let copy = matchdom("--[arr.value|repeat]--", {
+		let copy = matchdom("--[arr|repeat:|value]--", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
 		assert.equal(copy, "--one----two--");
@@ -73,13 +76,6 @@ describe('string', function() {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
 		assert.equal(copy, "-XoneYYXtwoYY-");
-	});
-
-	it('should ignore magnet', function() {
-		let copy = matchdom("[$query.event-id|magnet:form]", {
-
-		});
-		assert.equal(copy, null);
 	});
 
 	it('should return array', function() {

@@ -1,6 +1,7 @@
 import assert from 'assert';
-import matchdom from 'matchdom';
-import dom from 'domify';
+import { Matchdom, HTML as dom } from 'matchdom';
+
+const matchdom = (node, data, filters) => new Matchdom({ filters }).merge(node, data);
 
 describe('hooks filter', function() {
 	it('should be called after this filter', function() {

@@ -1,99 +1,62 @@
-import Symbols from './symbols.js';
-
 export default class Expression {
-	constructor(str, filters) {
-		function gf(n) {
-			n = filters.mappings[n] || n;
-			return filters[n];
-		}
+	constructor(str, symbols) {
 		this.filter = 0;
 		if (str instanceof Expression) {
 			this.initial = str.initial;
 			this.path = str.path.slice();
-			this.filters = str.filters.slice(str.filter);
+			this.filter = str.filter;
+			this.filters = str.filters.slice();
+			this.symbols = str.symbols;
 			return this;
+		} else {
+			this.path = [];
+			this.initial = str;
+			this.symbols = symbols;
 		}
-		this.initial = str;
-		const sa = Symbols.append;
+
+		const sa = symbols.append;
 		const list = str.split(sa);
-		const path = list.shift();
-		if (path == "") this.path = [];
-		else this.path = path.split(Symbols.path);
 		this.filters = [];
-		const fsa = gf(sa);
-		if (fsa) this.prehook = {
-			name: sa,
-			fn: fsa,
-			params: []
-		};
 		for (let item of list) {
-			let parts = item.split(Symbols.param);
-			const name = parts.shift();
-			parts = parts.map(function (pt) {
+			let parts = item.split(symbols.param);
+			const name = parts.length == 1 ? 'get' : parts.shift();
+			const params = parts.map(function (pt) {
 				try {
 					return decodeURIComponent(pt);
 				} catch (ex) {
 					return pt;
 				}
 			});
-			const fn = gf(name);
-			if (!fn) continue;
-			this.filters.push({
-				name: name,
-				fn: fn,
-				params: parts
-			});
-			const bname = name + sa;
-			const bfn = gf(bname);
-			if (bfn) this.filters.push({
-				name: bname,
-				fn: bfn,
-				params: []
-			});
+			this.filters.push({ name, params });
 		}
-		const dsa = sa + sa;
-		const fdsa = gf(dsa);
-		if (fdsa) this.posthook = {
-			name: fdsa,
-			fn: fdsa,
-			params: []
-		};
 	}
 	clone() {
 		return new Expression(this);
 	}
-	check() {
-		for (let str of this.path) {
-			if (/^[^\\]*$/.test(str) === false) return false;
-		}
-		return true;
-	}
 	toString() {
-		let str = this.path.join(Symbols.path);
-		if (this.filters.length) str += Symbols.append + this.filters.map(function (obj) {
+		const sp = this.symbols.param;
+		return this.filters.map(function (obj) {
 			let expr = obj.name;
-			if (obj.params.length) expr += Symbols.param + obj.params.join(Symbols.param);
+			if (expr.length) expr += sp;
+			if (obj.params.length) expr += obj.params.join(sp);
 			return expr;
-		}).join(Symbols.append);
-		return str;
+		}).join(this.symbols.append);
 	}
-	get(data, path) {
-		this.last = false;
-		if (path) {
-			if (typeof path == "string") path = path.split(Symbols.path);
-		} else {
-			path = this.path;
-		}
-		if (path.length == 0) return;
-		let i;
-		for (i = 0; i < path.length; i++) {
+
+	get(data, path, save) {
+		if (path.length == 0) return data;
+		if (save) this.path.push(...path);
+		let n = 0;
+		for (let i = 0; i < path.length; i++) {
+			if (data == null) break;
+			n++;
 			data = data[path[i]];
-			if (data == null) {
-				i += 1;
-				break;
-			}
 		}
-		if (data === undefined && i == path.length) this.last = true;
+		if (path.length == 1 && this.last && data === null) {
+			// do not change the value
+		} else {
+			this.last = data === undefined && n === path.length;
+		}
 		return data;
 	}
 }

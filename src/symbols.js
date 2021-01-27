@@ -3,5 +3,6 @@ export default {
 	close: ']',
 	path: '.',
 	append: '|',
-	param: ':'
+	param: ':',
+	recheck: /^[^\\]+$/
 };

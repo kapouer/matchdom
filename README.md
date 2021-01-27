@@ -1,4 +1,4 @@
-# matchdom -- merge data into DOM
+# matchdom -- extensible declarative template expressions for the DOM
 
 Data merger
 
@@ -12,59 +12,40 @@ Features:
 ## usage
 
 ```js
+import {Matchdom, HTML, XML} from 'matchdom';
 const md = new Matchdom({
 	filters = {},
+	hooks = {},
+	symbols = {},
 	filterNode = () => true
 });
-const mergedNode = md.merge(node, data, scope);
-
-// old-style
-const mergedNode = matchdom(node, data, filters, scope);
-const mergedStr = matchdom(string, data, filters, scope);
-```
-
-`filters`, `scope`, `filterNode` are optional, see below.
-
-
-Given a DOM and placeholders like this:
-
-```html
-<div id="model" class="[myclass]">
+const mergedDom = md.merge(HTML(`<div id="model" class="[myclass]">
 	<h[n]>Header</h[n]>
 	<span>[data.text]</span>
-</div>
-```
-
-matchdom can be used like this to merge data:
-```js
-matchdom(model, {
+	<img src="[data.icon|else:widen:*]">
+</div>`)), {
 	n: 4,
 	myclass: "yes",
 	data: {
 		text: "test"
 	}
 });
-```
-returns:
-```html
-<div id="model" class="yes">
+const expectedHTML = `<div id="model" class="yes">
 	<h4>Header</h4>
 	<span>test</span>
-</div>
+</div>`;
+assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
 ```
 
-The Node given to matchdom is mutated. Sometimes it is desirable to keep the
-model unmodified:
 
-```
-var copy = matchdom(model.cloneNode(true), ...);
-```
+## compatibility
 
-## customized dom traversal
+- DOM parsing needs: `<template>` for HTML, DOMParser for XML
 
-Since: 5.11.0
 
-Sometimes one might want to customize how the DOM is traversed.
+## dom traversal
+
+A custom function allows advanced traversal:
 
 This can be done by defining
 ```js
@@ -79,47 +60,53 @@ See tests for an example.
 
 ## filters
 
-Full control over how fields are replaced is possible using *filters*:
+### syntax
 
-```html
-<div id="model">
-	<span>Remove span if empty [text|magnet]</span>
-</div>
+- no parameters: `name:`
+- one parameter: `name:param`
+- two parameters: `name:param1:param2`, etc...
+
+### filter function
+
+A filter function takes current value, parameters from expression, and returns a new value.
+
+Signature: `(ctx, val, param1, param2, ...)`
+
+Returns the new value.
+
+Parameters are uri-decoded.
+
+The parameters received by a filter function can be checked/coerced automatically:
+
 ```
-
-```js
-const md = new Matchdom({filters: {
-	magnet: function(value, what) {
-		if (value == null) what.parent.remove();
+const filters = {
+	myTypedFilter: ['int', 'int?1', 'bool?false', (val, cte, sub) => {
+		// val and cte are guaranteed to be integers, sub a boolean
+		// if val is missing or NaN this filter is not called
+		return val + sub ? (-cte) : cte;
+	}],
+	myUntypedFilter(val) {
+		return val + 1; // anything can happen here
 	}
-}});
-md.merge(model, {some: "data"});
+};
 ```
 
-The filter function `this` refers to the current matchdom instance.
-In particular, `this.filters` is the new way to access the deprecated
-`what.filters` (since version 6).
+Available types are the same as for the "as:" filter, with the addition of:
+- 'filter': checks the parameter is a filter name,
+- 'path': converts parameter to a path array
 
-The filter always receives the two first arguments where `what` is an object
-with the following properties:
-- data: the initial data object
-- scope: an object representing currently resolved state:
-  + data: the current data object, takes precedence for finding values
-  + path: the current path used to find the data from the initial data,
-    a filter should find this to be always true:
-    `what.get(what.data, what.scope.path) == val`
-    *This is a breaking change introduced in matchdom 3.0.0.*
-  + iskey: boolean, set when keys of an object are repeated and merged value is a key.
-  + alias: `scope.data[scope.alias]` is the currently iterated data.
-- node: text node when expression was inside one
-- tag: boolean true when expression is inside a tag name (matchdom 4.3.0)
-  in this case, expressions must be valid in lower case only.
-- attr: attribute name when expression was inside an attribute value
-- parent: node containing text node or attribute
-- expr: the parsed expression
+A filter function can have side effects on the document being merged.
+
+`ctx` has the following properties:
+- data: the data object available to expressions
+- path: the current path used to get current value from data
+  `this.get(this.data, this.path) == val`
+- src: initial place of expression
+- dest: target place of expression
+  The initial place is either mutated or removed if the target place is different.
+- expr: expression instance
 - hits: the list of strings or expressions that will be concatenated
 - index: the current index of expression upon which the filter is called
-- val: last known non null value
 - cancel: if true, current expression is not merged
 
 The following methods (which are useful to write filters that are
@@ -127,38 +114,17 @@ independent of their position inside a text node or an attribute):
 - set(str): updates node or attr value
 - get(): returns node or attr value
 
-All these properties are *mutable* and changing them have an effect on what's
-being merged.
+### place
 
-In particular, changing `what.attr` will remove the original attribute and
-set a new attribute with that name.
-
-`what` itself is shared by filters of the same field, allowing filters to set
-flags picked up by other filters (like the `mode` flag set by `html`, `text`,
-and `br` filters).
-
-Filters can receive more string parameters, by appending `:param` (once or
-multiple times) to the filter name, like this:
-
-```html
-<table>
-	<tr>
-		<td>[text|magnet:tr]</td>
-	</tr>
-</table>
-```
-
-Multiple filters can be appended: `[text|pre:me |post: him]`.
-
-Parameters values can be escaped using encodeURIComponent.
-
-A filter can itself change what.expr.filters, typically the `repeat` filter,
-being recursive, empties following filters.
-
-Several default filters are provided, see below.
+A place is an object with these properties related to where the expression sits:
+- node: node or text node
+- attr: attribute name (if any)
+- tag: boolean wether the expression is in a tag name
+  Since tag names	are case-insensitive, the expression must work in lowercase
+- root: the ancestor node passed to matchdom
 
 
-## expressions
+### expression
 
 A parsed expression has properties:
 - path (array of strings)
@@ -170,19 +136,6 @@ and two methods:
 - toString()
 - get(data) returns the data accessed by expr.path
 
-When the last item of the path of an expression refers to an `undefined` value,
-the value is converted to `null`, so the expression is merged.
-
-When the path refers to an `undefined` value before the last item, the expression
-is not merged.
-
-It can be confusing when repeating an array, in which case either the `repeat`
-filter should be used first, or it should get an alias parameter to avoid
-merging undefined expressions that are actually meant to be repeated.
-
-Expressions can be modified by filters. See the repeat filter for the most
-complex code doing that.
-
 Expressions can be nested:
 
 ```
@@ -191,319 +144,319 @@ Expressions can be nested:
 (see examples in tests).
 
 
-## escaping
+### escaping brackets
 
-The simplest way to write bracketed expressions without merging them is to use
-the `or` filter:
-```
-[|or:%5Ba bracketed expressions%5D]
-```
+Expressions leading to undefined data are ignored, so the naive use of brackets
+in a text won't be merged.
+However in some cases brackets that are not expressions must be escaped.
 
+- a couple of bracketed expressions must be escaped:
+	Use `[const:%5B]brackets[const:%5D]`
 
-## booleans in attributes
+- the document contains lots of bracketed expressions:
+	Use custom symbols, see below.
 
-When merging only booleans in an attribute:
-- if boolean AND of all values is true, attribute value is "true" for data-attributes,
-or "" for other attributes
-- if boolean AND of all values is not true, attribute is removed
 
+## path accessor filter
 
-## bundled filters
+The `get:` filter has a special syntax without colon, instead of
 
-Examples can be found in tests.
+`[get:path.to.data|myFilter:param|get:sub.data]`
 
-repeat, magnet, url filters provide most of the interesting features.
+one can write:
 
-### repeat:selector:alias:step:offset:limit
+`[path.to.data|myFilter:param|sub.data]`
 
-Repeats closest repeatable data over closest selected node, with optional alias
-parameter.
+When the last item of the path of an expression refers to an `undefined` value,
+the value is converted to `null`, so the expression is merged.
 
-Multiple repeat filters can be appended, so it is really easy to merge recursively
-rows and cells to form a table, see unit tests for examples:
-```html
-<table><tr>
-<td>[rows.cells.value|repeat:tr:cell|repeat]-[cell.unit]</td>
-</tr></table>
-```
+When the path refers to an `undefined` value before the last item, the expression
+is not merged.
 
-If selector is prefixed or postfixed by one or several `+` signs, as many
-previous or next element siblings (or characters in text mode) are repeated:
 
-```html
-<div>
-	<hr>
-	<p>[sections.text|repeat:+p+]</p>
-	<br>
-</div>
-```
+## canonical methods filter
 
-If selector is `*`, current node (or current expression in text mode) is selected:
+### name:param...
 
-```html
-<div>
-	<p>[sections.text|repeat:*+]</p><br>
-</div>
-```
+If the value has a method with that name, call it with the given parameters.
 
-Without selector, current node (or the whole string in text mode) is selected.
+Think about toLowerCase, toUpperCase, toISOString, split, join, slice etc...
 
-In text mode, the only bare selector allowed is `*`.
+This has many limitations and corner cases: for correct handling of parameters, define a custom filter.
 
 
-- `step` parameter (an integer, defaults to 1) allows one to iterate by step,
-negative values are interpreted as iterating in reverse order
-- `offset` parameter adds an offset to the start of iteration (defaults 0)
-- `limit` parameter limits the number of total iterations (0 is no limit).
+## string filters
 
-To repeat over the keys of an object as a list of `{key, val}` items,
-append `+` to its path name:
+If the value is a string, javascript string methods are callable as filters.
 
-```html
-<table><tr>
-<td>[obj+.key|repeat:tr:pair]</td><td>[pair.val]</td>
-</tr></table>
-```
-This used to be the `keys` filter in matchdom 2, and it is a breaking change
-in matchdom 3.
+### str:str
 
-In this case `what.scope.path` is the path to the *value*, however when
-it is actually a key being merged, `what.scope.iskey` is set to `true`.
-
-Caveat: won't work if there is actually a property `obj+`, in that case
-a warning will be emitted.
-
-Note that if root node is repeated, matchdom returns a fragment.
-
-
-### magnet:selector
-
-Removes the closest node when current value is null or undefined, in which case
-the returned value is set to null.
-
-`selector` is optional and supports same syntax as in repeat filter.
-If not set, the parent node is removed, or expression is inside an attribute,
-the attribute is removed.
-
-
-### bmagnet:selector
-
-Same as magnet, only it takes a boolean to decide, and does not print anything.
-
-Synonym of `!!|magnet:sel|`.
-
-In particular, it's useless to add a filter after bmagnet.
-
-
-### url:name:selector
-
-The name parameter is optional as for attr:name (which is called by this filter).
-
-This filter builds a url attribute from a template and merges it into a target
-attribute.
-
-- replace target pathname by url pathname
-- merge target query with url query
-
-
-### attr:name:selector
-
-The name parameter is optional for data-* attributes.
-
-The selector parameter is optional and selects an ancestor only when defined
-in a text node.
-
-Sometimes the template for an attribute is better kept in another attribute,
-so there is a filter just for that:
-
-```html
-<div id="model">
-	<img data-src="[url|attr]" />
-	<img something="[url|attr:src]" />
-	<a>test[url|attr:href]</a>
-	<div class="test"><p>test[myclass|attr:class:div]</p></div>
-</div>
-```
-
-gives:
-```html
-<div id="model">
-	<img src="/my.png" />
-	<img src="/my.png" />
-	<a href="/my.png">test</a>
-	<div class="test my"><p>test</p></div>
-</div>
-```
-
-It's possible to set an attribute with an expression in a text node.
-
-When targeting a class attribute, values are added using `classList.add`.
-
-
-### The empty filter:str
-
-The empty filter, usually used as the last filter in an expression,
-unconditionally sets current value to the `str` parameter, or to the empty
-string if none given.
-
-
-### or:str
-
-If value is null or undefined, merge the field with str.
-
-Can be useful also if undefined values are expected since they could be left
-unmerged (thus showing template expressions).
-
-
-### br
-
-All strings are set into text nodes with newlines replaced by  `<br>`.
-
-This filter is the default behavior.
-
-
-### text
-
-The `text` filter removes default br behavior (newlines won't be replaced).
-
-
-### html:selector
-
-The `html` filter creates DOM nodes out of string(s).
-
-The selector allows one to filter the result using querySelectorAll.
-
-
-### fill
-
-Sets current node content to merged field.
-
-If it's used in an attribute, also removes the attribute containing the expression.
-
-Can be used with attr filter to set a value to an attribute and content at the
-same time.
-
-Because `<[tag]>` can't be parsed as DOM, use `<a[tag|fill]>` to define whole tag name.
-
-
-### eq:str:yes:no
-
-Without parameters, returns `str == value`.
-
-Otherwise return `yes` or `no`, or does not change value if `no` is not passed.
-
-
-### neq:str:yes:no
-
-Like `eq` but test is `str != value`.
-
-Not exactly `eq:str|!|?:yes:no` because `?` has different behavior with missing
-parameters.
-
-
-### not,ornull
-
-If value is falsey, replace it with `null`.
-
-
-### padStart, padEnd :len:char
-
-Converts to string and calls `String.prototype.padXxx(len, char)`.
-
-
-### trim, trimStart, trimEnd, lower, upper, capitalize
-
-Converts to string and calls them.
-
-
-### date:method:param
-
-Converts to date and calls `Date.prototype[method](param)`.
-
-If no method is given, or method is not found, calls `toLocaleString`.
-
-
-### join:pre:tag:post
-
-Joins an array with optional tag and characters before/after tag.
-
-Often useful with `[list|join::br]`.
-
-
-### split:sep:trim
-
-Splits a string with separator, and removes items equal to `trim` (typical use
-is to remove spaces).
-
-Example `[str|split:%0A:|join:: - ]`.
-
-
-### slice:begin:end
-
-Slices an array with optional end index. Works well with split and join filters.
-
-
-### ?:yes:no
-
-If value is true, replace it with `yes`, if it is false, replace it with `no`,
-otherwise do not change the value.
-
-If `no` is not set, replace it with empty string.
-If `yes` is not set either, replace it with current variable name.
-
-This filter works well with `not` filter to make sure empty values are cast to
-boolean false.
-
-
-### ! or !!
-
-The `!` or `!!` operators.
-
-
-### !?
-
-Like `?` applied on `!val`.
-
+Always return str.
 
 ### pre:str
 
-Prepend string if value is not null or not empty.
-
+Prepends string if value is not null or not empty.
 
 ### post:str
 
-Append string if value is not null or not empty.
+Appends string if value is not null or not empty.
+
+### lower: and upper:
+
+Shorthands for toLowerCase, toUpperCase string methods.
+
+### cap
+
+Capitalizes the string value.
 
 
-### gt:num, lt:num, gte:num, lte:num
+## flow control filters
 
-Comparisons, return booleans.
-If cannot be compared, returns value.
+### then:name:param:...
+
+When value is loosely true, return the value of running the given named filter;
+else return the value.
+
+### and:str
+
+Alias for `and:const:str`
 
 
-### battr
+### else:name:param:...
 
-Boolean attribute: if value is true, returns the current attribute name;
-else removes the current attribute.
+Same as then but when value is falsey.
+
+### or:str
+
+Alias for `else:const:str`
+
+
+## boolean operators
+
+These filters return the value if the condition is true, or null if the condition is false:
+
+- eq:str
+- neq:str
+- has:str (contains str)
+- in:str (contained in str)
+- gt:num
+- lt:num
+- gte:num
+- lte:num
+
+## numeric operators
+
+Standard operations:
+
+- add:num
+- sub:num
+- mul:num
+- div:num
+- mod:num
+- pow:num
+
+
+## type filters
+
+Some filters have a `type` parameter used to name a basic javascript type,
+or basic document format.
+
+available types (and their shorthands) are:
+- undefined: none, undefined
+- null: null
+- integer: int, integer
+- string: str, string
+- boolean: bool, boolean
+- float
+- date
+- array
+
+These default formats are supported:
+- text: converts string with newlines by a dom fragment with hard breaks
+- html: converts string to a dom fragment
+- xml: converts string to an xml fragment
+- keys: array of keys
+- values: array of values
+- entries: arrays of {key, value}
+
+### is:<type>
+
+Checks value is of that type, and returns a boolean.
+
+### as:<type|format>
+
+Coerces value to type, or converts string to format.
+
+Returns null when it fails to coerce or format:
+- cannot coerce a string (empty or not), or false, or 0, to undefined or null
+- cannot coerce a date or number (NaN)
+- cannot format to dom for any reason
+
+
+## array filters
+
+While usual array methods are available by inspection (slice, splice, reverse),
+there additional filters allow array transformations before merging.
+
+### filter:str:cond:path
+
+Keep items of a list that satisfy `this.get(item, path) <op> str`.
+
+- cond can be any conditional filter name eq, neq, gt, lt, lte, gte, has,
+and defaults to eq
+- path is relative to each item, and can be omitted
+
+### map:name:param:...
+
+Map an array with the filter `name` and its parameters.
+
+### select:path
+
+Map array items to their paths.
+
+### page:count:index
+
+Returns `array.slice(index * count, (index + 1) * count)`.
+
+### nth:step:offset
+
+Returns every n*step + offset index of the array.
+
+Offset is optional.
+
+For example to get evens and odds: `[list|nth:2]` `[list|nth:2:1]`.
+
+### sort:path:nullsFirst
+
+Calls array.sort on each property specified by path.
+
+nullsFirst can be "1" or "true".
+
+Numeric or dates are compared as such, strings are compared using localeCompare.
+
+
+## html filters
+
+While repeat and magnet can be used as pure string filters in a limited fashion,
+they are meant to manipulate dom nodes.
+
+### widen:range
+
+By default an expression is replaced by its value,
+without affecting surrounding text, tag name, attribute, or node.
+
+This filter widens what the expression will replace (or not) depending on `range`:
+- empty range: the whole string, attribute, or text node.
+- selector range: the closest selected parent
+- wildcard(s): the nth selected parent
+- plus sign(s): before or after a parent selector, previous and next siblings of parent
+
+If used in conjunction with the "to:" filter, widen allows one to replace an
+attribute on selected node(s), instead of replacing the nodes themselves.
+
+Examples:
+- `widen:div.card` selects `closest('div.card')`.
+- `widen:+div.card+` selects also the previous and next siblings of the ancestor.
+- `widen:+**++|to:class` selects one sibling before and two siblings after parent node,
+  and sets the class on them.
+
+
+### to:attrName or *
+
+Moves where the expression is merged:
+- `to:` fills the content of the node
+- `to:*` replaces the node
+- `to:attr` replaces the attribute of the node(s)
+
+Examples:
+- `to:src` fills the src attribute of the current node
+- `widen:div|to:class` fills the class attribute of the closest `div`
+- `widen:p|then:to:class|else:to:*` fills the class attribute of closest `p` or remove it entirely
+
+
+### repeat:range:alias
+
+Expect the value to be iterable (array, collection, etc...).
+
+Repeats selected range for each item in the value.
+
+The keys in each item become available in the scope of each repeated range.
+
+The alias parameter can name repeated item, so that these two expressions
+are equivalent:
+- `[items|repeat:div|id]`
+- `[items|repeat:div:my|my.id]`
+
+However the alias is useful when merging several properties of the same item.
+Compare:
+- `<div id="[items|repeat:*|id]" class="[style]">[title]</div>`
+- `<div id="[items|repeat:*:my|my.id]" class="[my.style]">[my.title]</div>`
+
+The first case is shorter to write but overwrites current scope with iterated item keys.
+
+
+### class:method
+
+`node.classList[method](value)` where method is add, remove, toggle.
+
+
+### url:to
+
+Compose the value-as-url with the target-value-as-url.
+
+- reads the target url value
+- replaces target hostname with value hostname
+- replaces target pathname with value pathname
+- overwrites target query with value query
+
+The "to" attribute name autodetects the presence of src, href, srcset,
+so it can be omitted in most cases.
+
+Example:
+With a value `/api2?find=test`
+`<a href="https://test.com/api?find=str&sort=asc" data-tpl="[request|url]">`
+becomes
+`<a href="https://test.com/api2?find=testsort=asc">`
+
+
+### query: selector
+
+If the current value is a dom node or fragment, runs querySelector(selector) on it.
+
+### queryAll: selector
+
+If the current value is a dom node or fragment, runs querySelectorAll(selector) on it,
+and return a fragment of the selected nodes.
 
 
 ## Hooks
 
-Special filter names (which cannot be parsed as legit names) provide hooks:
+Hooks are called before applying filters, or after.
 
-- |
-  hook before all filters have run (even if none where defined)
+```
+hooks: {
+	before: (val) => {},
+	beforeEach: (val, filter) => {},
+	afterEach: (val, filter) => {},
+	after: (val) => {}
+}
+```
 
-- <fn>|
-  hook after filter <fn>
+In hooks, `this` is the same object as in filters.
 
-- ||
-  hook after all filters have run (even if none where defined)
-
-This is available since version 4.2.0.
+The `filter` parameter contains:
+- name:string
+- params:array
+and can be modified.
 
 
 ## Custom symbols
 
-`Symbols` allows one to change open, close, path, append, param symbols.
+Default symbols are:
+- open: `[`
+- close: `]`,
+- path: `.`
+- append: `|`
+- param: `:`
 
+and can be overriden by passing a symbols object to the constructor.

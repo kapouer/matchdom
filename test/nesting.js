@@ -1,6 +1,8 @@
 import assert from 'assert';
-import matchdom from 'matchdom';
-import dom from 'domify';
+import { Matchdom, HTML as dom } from 'matchdom';
+const matchdom = (node, data, filters) => {
+	return (new Matchdom({ filters })).merge(node, data);
+};
 
 describe('nesting', function() {
 	it('should not crash on empty expressions', function() {

@@ -1,6 +1,5 @@
 import assert from 'assert';
-import {Matchdom} from 'matchdom';
-import dom from 'domify';
+import { Matchdom, HTML as dom } from 'matchdom';
 
 const md = new Matchdom({
 	nodeFilter: function (node, iter) {
@@ -13,9 +12,8 @@ const md = new Matchdom({
 		}
 	}
 });
-const matchdom = function (node, data) {
-	return md.merge(node, data);
-};
+
+const matchdom = (node, data) => md.merge(node, data);
 
 describe('custom check', function() {
 	it('should append template content after template', function() {
