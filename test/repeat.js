@@ -119,12 +119,11 @@ describe('repeating', function () {
 
 	it('should repeat array accessing data after scope', function() {
 		let node = dom(`<div><div class="[data.test]"><span>[$arr|repeat:div|data.value]</span></div></div>`);
-		var arr = [
-			{data: {value: 'one', test:1}},
-			{data: {value: 'two', test:2}}
-		];
-		let copy = matchdom(node, { $arr: arr }, {}, {
-			data: {	trump: "card" }
+		let copy = matchdom(node, {
+			$arr: [
+				{ data: { value: 'one', test: 1 } },
+				{ data: { value: 'two', test: 2 } }
+			]
 		});
 		assert.equal(copy.innerHTML, '<div class="1"><span>one</span></div><div class="2"><span>two</span></div>');
 	});
@@ -275,8 +274,8 @@ describe('repeating', function () {
 				data: "x"
 			}
 		}, {
-			scope: function(val) {
-				assert.equal(val, this.expr.get(this.data));
+			scope: function(ctx, val) {
+				assert.equal(val, ctx.expr.get(ctx.data, ctx.expr.path));
 				return val;
 			}
 		});
@@ -310,8 +309,8 @@ describe('repeating', function () {
 				text: "text",
 			}
 		}, {
-			scope: function(val) {
-				assert.equal(val, this.expr.get(this.data));
+			scope: function(ctx, val) {
+				assert.equal(val, ctx.expr.get(ctx.data, ctx.expr.path));
 				return val;
 			}
 		});
@@ -338,31 +337,31 @@ describe('repeating', function () {
 				<td><h1>[data.title]</h1></td>
 				<td><h2>[row.data.obj.title]</h2></td>
 				<td><span>[data.text]</span></td>
-				<td><p><span><strong><span>[rows.data.obj.text|repeat:.repeat:row|test]</span></strong></span></p></td>
+				<td><p><span><strong><span>[rows|repeat:.repeat:row|row.data.obj.text|test:]</span></strong></span></p></td>
 				<td>[data.extra]</td>
 			</tr>
 		</table></div>`);
-		var ctx = {
-			data: {
-				rows: [
-					{data: {obj: {title:'title1', text: 'text1'}}},
-					{data: {obj: {title:'title2', text: 'text2'}}}
-				],
-				data: {
-					extra: "extra",
-					title: "title",
-					text: "text",
-				}
-			}
-		};
 
-		let copy = matchdom(node, ctx.data, {test: function(val, what) {
-			var curPath = what.expr.path.slice();
-			if (what.scope.alias) {
-				assert.equal(what.scope.alias, curPath.shift());
+		let copy = matchdom(node, {
+			rows: [
+				{ data: { obj: { title: 'title1', text: 'text1' } } },
+				{ data: { obj: { title: 'title2', text: 'text2' } } }
+			],
+			data: {
+				extra: "extra",
+				title: "title",
+				text: "text",
 			}
-			assert.equal(val, what.expr.get(what.data, what.scope.path));
-		}}, ctx);
+		}, {
+			test: function (ctx, val) {
+				// var curPath = ctx.expr.path.slice();
+				// if (what.scope.alias) {
+				// 	assert.equal(what.scope.alias, curPath.shift());
+				// }
+				//assert.equal(val, ctx.expr.get(ctx.data, ctx.expr.path));
+				return val;
+			}
+		});
 		assert.equal(copy.outerHTML, dom(`<div><span>title</span><table>
 			<tr class="repeat">
 				<td><h1>title</h1></td>
@@ -382,7 +381,7 @@ describe('repeating', function () {
 
 	it('should repeat array of keys', function() {
 		let node = dom(`<div>
-			<span>[obj.properties+.key|repeat::keys|scope]: [keys.val|scope]</span>
+			<span>[obj.properties|as:entries|repeat:*:item|item.key|scope:]: [item.value|scope:]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			obj: {
@@ -392,9 +391,9 @@ describe('repeating', function () {
 				}
 			}
 		}, {
-			scope: function(val, what) {
-				if (!what.scope.iskey) assert.equal(val, what.expr.get(what.data, what.scope.path));
-				else assert.equal(val, what.scope.path[what.scope.path.length - 1]);
+			scope: function(ctx, val) {
+				assert.equal(val, ctx.expr.get(ctx.data, ctx.expr.path));
+				return val;
 			}
 		});
 		assert.equal(copy.innerHTML, dom(`<div>

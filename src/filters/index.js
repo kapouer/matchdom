@@ -12,11 +12,22 @@ export default class Filters {
 			get: [null, 'path', (ctx, data, path) => {
 				return ctx.expr.get(data, path, true);
 			}],
-			alias: (ctx, data, alias) => {
-				// TODO this is under-specified
-				// val == what.expr.get(what.data, what.path) should always be true
-				throw new Error("TODO");
-			}
+			path({expr, symbols}, val, part) {
+				const path = expr.path;
+				if (part == "name") {
+					return path[path.length - 1];
+				} else if (part == "parent") {
+					return path[path.length - 2];
+				} else if (part == "dir") {
+					return path.slice(0, -1).join(symbols.path);
+				} else {
+					return path.join(symbols.path);
+				}
+			},
+			alias: [null, 'string', (ctx, data, alias) => {
+				ctx.data[alias] = data;
+				return data;
+			}]
 		});
 
 		Object.assign(this.map, StringFilters, DomFilters, ArrayFilters, FlowFilters, TypeFilters, OperatorFilters, filters);

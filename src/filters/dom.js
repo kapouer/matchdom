@@ -2,7 +2,7 @@ import { serializeUrl, parseUrl } from '../utils.js';
 
 export default {
 	widen(ctx, val, range) {
-		ctx.reduce();
+		ctx.ignoreHits();
 		let node = ctx.dest.node;
 		if (!node.parentNode || !range) return val;
 		delete ctx.dest.attr;
@@ -35,7 +35,7 @@ export default {
 		delete dest.attr;
 		delete dest.tag;
 		const parent = node.parentNode;
-		ctx.reduce();
+		ctx.ignoreHits();
 		if (!to) {
 			if (node.children) {
 				node.textContent = '';
@@ -83,17 +83,17 @@ export default {
 			node = el.closest(range);
 		}
 
-		// drop this hit from the expression
 		const expr = ctx.expr.clone();
+		ctx.expr.ignoreFilters();
 		expr.filters.splice(0, expr.filter);
 		expr.filter = 0;
-		let cur = ctx.get();
+		let cur = ctx.read();
 
 		if (cur != null) {
 			ctx.hits[ctx.index] = expr.toString();
 			const { open, close } = ctx.symbols;
 			cur = cur.replace(open + expr.initial + close, open + ctx.hits[ctx.index] + close);
-			ctx.set([cur]);
+			ctx.write([cur]);
 		}
 
 		const srcFrag = ctx.src.node.ownerDocument.createDocumentFragment();
@@ -139,9 +139,9 @@ export default {
 	},
 	url(ctx, value, to) {
 		if (value == null) return value;
-		const cur = parseUrl(ctx.get());
+		const cur = parseUrl(ctx.read());
 		ctx.run("to", value, to);
-		const tgt = parseUrl(ctx.get());
+		const tgt = parseUrl(ctx.read());
 		const val = parseUrl(value);
 		if (ctx.index == 0) {
 			if (!val.pathname) {
