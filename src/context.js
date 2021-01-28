@@ -10,6 +10,7 @@ export default class Context {
 		this.hooks = md.hooks;
 		this.symbols = md.symbols;
 		this.level = 0;
+		place.index = 0;
 		this.src = place;
 		this.dest = Object.assign({}, place);
 		this.dest.before = 0;
@@ -41,19 +42,19 @@ export default class Context {
 				return;
 			}
 			if (hit.length > 1 || typeof hit[0] != "string") {
-				hit = this.processHits(hit).join('');
+				this.processHits(hit);
+				hit = hit.join('');
 			} else {
 				hit = hit[0];
 			}
-			this.index = i;
+			this.src.index = this.dest.index = i;
 			const val = this.mutate(hit);
 			if (val !== undefined) {
-				hits[this.index] = val;
+				hits[this.dest.index] = val;
 			} else {
-				hits[this.index] = this.symbols.open + hit + this.symbols.close;
+				hits[this.dest.index] = this.symbols.open + hit + this.symbols.close;
 			}
 		});
-		return hits;
 	}
 
 	mutate(hit) {
@@ -79,12 +80,6 @@ export default class Context {
 		if (expr.last && val === undefined) val = null;
 		if (this.hooks.after) this.hooks.after.call(this, val);
 		return val;
-	}
-
-	ignoreHits() {
-		this.hits.splice(0, this.index);
-		this.hits.splice(1);
-		this.index = 0;
 	}
 
 	read() {
@@ -151,9 +146,9 @@ export default class Context {
 			} else {
 				let str = list.join('').trim();
 				let attrNode = node;
-				if (!src.attr && !node.children) {
-					attrNode = node.parentNode;
-					node.remove();
+				if (!src.attr) {
+					if (!node.children) attrNode = node.parentNode;
+					if (!src.node.children) src.node.nodeValue = src.hits.join('');
 				}
 				if (hits === false || hits == null || (attr == "class" && str === "")) {
 					clearAttr(attrNode, attr);

@@ -1,18 +1,21 @@
 import { serializeUrl, parseUrl } from '../utils.js';
 
 export default {
-	widen(ctx, val, range) {
-		ctx.ignoreHits();
-		let node = ctx.dest.node;
+	with(ctx, val, range) {
+		const { src, dest } = ctx;
+		dest.hits.splice(0, dest.index);
+		dest.hits.splice(1);
+		dest.index = 0;
+		let node = dest.node;
 		if (!node.parentNode || !range) return val;
-		delete ctx.dest.attr;
-		delete ctx.dest.tag;
+		delete dest.attr;
+		delete dest.tag;
 		while (range.startsWith('+')) {
-			ctx.dest.before++;
+			dest.before++;
 			range = range.slice(1);
 		}
 		while (range.endsWith('+')) {
-			ctx.dest.after++;
+			dest.after++;
 			range = range.slice(0, -1);
 		}
 
@@ -21,21 +24,29 @@ export default {
 			while (ups--) {
 				node = node.parentNode;
 			}
-			ctx.dest.node = node;
+			dest.node = node;
 		} else {
 			node = node.closest ? node : node.parentNode;
-			ctx.dest.node = node.closest(range);
+			dest.node = node.closest(range);
 		}
 		return val;
 	},
+	without(ctx, val, range) {
+		ctx.run('else', val, 'with', range);
+		return "";
+	},
 	to(ctx, val, to) {
 		if (val === undefined) return val;
-		const dest = ctx.dest;
+		const { src, dest } = ctx;
+		src.hits.splice(src.index, 1);
+		dest.hits.splice(0, dest.index);
+		dest.hits.splice(1);
+		dest.index = 0;
+
 		let node = dest.node;
 		delete dest.attr;
 		delete dest.tag;
 		const parent = node.parentNode;
-		ctx.ignoreHits();
 		if (!to) {
 			if (node.children) {
 				node.textContent = '';
@@ -57,13 +68,14 @@ export default {
 		} else {
 			dest.attr = to;
 		}
+
 		return val;
 	},
 	repeat(ctx, val, range, alias) {
 		if (!val || typeof val != "object") return val;
 
-		// build a template fragment with the range
-		let node = ctx.dest.node;
+		const { src, dest } = ctx;
+		let node = dest.node;
 		const el = node.children ? node : node.parentNode;
 		let prevs = 0;
 		let nexts = 0;
@@ -87,13 +99,12 @@ export default {
 		ctx.expr.ignoreFilters();
 		expr.filters.splice(0, expr.filter);
 		expr.filter = 0;
-		let cur = ctx.read();
+		const cur = ctx.read();
 
 		if (cur != null) {
-			ctx.hits[ctx.index] = expr.toString();
+			const hit = src.hits[src.index] = expr.toString();
 			const { open, close } = ctx.symbols;
-			cur = cur.replace(open + expr.initial + close, open + ctx.hits[ctx.index] + close);
-			ctx.write([cur]);
+			ctx.write([cur.replace(open + expr.initial + close, open + hit + close)]);
 		}
 
 		const srcFrag = ctx.src.node.ownerDocument.createDocumentFragment();
@@ -129,7 +140,7 @@ export default {
 			while (copy.firstChild) node.parentNode.insertBefore(copy.firstChild, node);
 		});
 		if (node.parentNode) {
-			if (ctx.dest.root == node) ctx.dest.root = node.parentNode;
+			if (dest.root == node) dest.root = node.parentNode;
 			node.parentNode.removeChild(node);
 		}
 		// the range replaces src.node so there's not point in returning a value

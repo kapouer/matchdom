@@ -31,8 +31,9 @@ export default class Matchdom {
 				const ctx = new Context(this, data, scope, place);
 				let hits = ctx.parse(str);
 				if (!hits) return;
-				ctx.hits = hits;
-				hits = ctx.processHits(hits);
+				ctx.dest.hits = hits;
+				ctx.src.hits = hits.slice();
+				ctx.processHits(hits);
 				let allNulls = true;
 				let allTrue = true;
 				let allBools = true;
