@@ -1,6 +1,6 @@
 # matchdom -- extensible declarative template expressions for the DOM
 
-Data merger
+DSL for merging data.
 
 Features:
 - traverses and mutates DOM attributes and nodes - no custom html parser
@@ -22,7 +22,7 @@ const md = new Matchdom({
 const mergedDom = md.merge(HTML(`<div id="model" class="[myclass]">
 	<h[n]>Header</h[n]>
 	<span>[data.text]</span>
-	<img src="[data.icon|else:widen:*]">
+	<img src="[data.icon|without:*]">
 </div>`)), {
 	n: 4,
 	myclass: "yes",
@@ -100,19 +100,18 @@ A filter function can have side effects on the document being merged.
 `ctx` has the following properties:
 - data: the data object available to expressions
 - path: the current path used to get current value from data
-  `this.get(this.data, this.path) == val`
+
 - src: initial place of expression
 - dest: target place of expression
+
   The initial place is either mutated or removed if the target place is different.
 - expr: expression instance
-- hits: the list of strings or expressions that will be concatenated
-- index: the current index of expression upon which the filter is called
-- cancel: if true, current expression is not merged
+`this.get(this.data, this.path) == val`
 
 And methods:
 - write(str): updates node or attr value
 - read(): returns node or attr value
-- ignoreHits(): ignore other hits
+- cancel(): drop merging these hits
 
 ### place
 
@@ -122,6 +121,8 @@ A place is an object with these properties related to where the expression sits:
 - tag: boolean wether the expression is in a tag name
   Since tag names	are case-insensitive, the expression must work in lowercase
 - root: the ancestor node passed to matchdom
+- hits: list of strings to process
+- index: the current index hits
 
 
 ### expression
@@ -220,7 +221,9 @@ else return the value.
 
 ### and:str
 
-Alias for `and:const:str`
+Alias for `then:const:str`
+
+Remember to use `required="[isrequired|and:]"` to get a "boolean attribute" right.
 
 
 ### else:name:param:...
@@ -341,7 +344,7 @@ Numeric or dates are compared as such, strings are compared using localeCompare.
 While repeat and magnet can be used as pure string filters in a limited fashion,
 they are meant to manipulate dom nodes.
 
-### widen:range
+### with:range
 
 By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
@@ -352,14 +355,23 @@ This filter widens what the expression will replace (or not) depending on `range
 - wildcard(s): the nth selected parent
 - plus sign(s): before or after a parent selector, previous and next siblings of parent
 
-If used in conjunction with the "to:" filter, widen allows one to replace an
+If used in conjunction with the "to:" filter, with allows one to replace an
 attribute on selected node(s), instead of replacing the nodes themselves.
 
 Examples:
-- `widen:div.card` selects `closest('div.card')`.
-- `widen:+div.card+` selects also the previous and next siblings of the ancestor.
-- `widen:+**++|to:class` selects one sibling before and two siblings after parent node,
+- `with:div.card` selects `closest('div.card')`.
+- `with:+div.card+` selects also the previous and next siblings of the ancestor.
+- `with:+**++|to:class` selects one sibling before and two siblings after parent node,
   and sets the class on them.
+
+
+### without:range
+
+This is a shortcut for `else:with:${range}|const:`.
+
+If the value is falsey, the range is removed.
+
+The value itself is not shown.
 
 
 ### to:attrName or *
@@ -371,8 +383,8 @@ Moves where the expression is merged:
 
 Examples:
 - `to:src` fills the src attribute of the current node
-- `widen:div|to:class` fills the class attribute of the closest `div`
-- `widen:p|then:to:class|else:to:*` fills the class attribute of closest `p` or remove it entirely
+- `with:div|to:class` fills the class attribute of the closest `div`
+- `with:p|then:to:class|else:to:*` fills the class attribute of closest `p` or remove it entirely
 
 
 ### repeat:range:alias

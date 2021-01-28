@@ -4,9 +4,9 @@ const matchdom = (node, data, filters) => {
 	return (new Matchdom({ filters })).merge(node, data);
 };
 
-describe('widen filter', function() {
+describe('with filter', function() {
 	it('should replace current node', function() {
-		let node = dom(`<div><span>[test|widen:*]</span></div>`);
+		let node = dom(`<div><span>[test|with:*]</span></div>`);
 		let copy = matchdom(node, {
 			test: "mydiv",
 			toto: 23
@@ -15,7 +15,7 @@ describe('widen filter', function() {
 	});
 
 	it('should remove current node and previous and next element siblings', function() {
-		let node = dom(`<div><br><br><span>[test|widen:+span+]</span><hr><hr></div>`);
+		let node = dom(`<div><br><br><span>[test|with:+span+]</span><hr><hr></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -23,7 +23,7 @@ describe('widen filter', function() {
 	});
 
 	it('should remove current node and previous and next element siblings with wildcard selector', function() {
-		let node = dom(`<div><br><br><span>[test|widen:+*+]</span><hr><hr></div>`);
+		let node = dom(`<div><br><br><span>[test|with:+*+]</span><hr><hr></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -32,7 +32,7 @@ describe('widen filter', function() {
 
 	it('should remove closest tr', function() {
 		let node = dom(`<table><tbody>
-			<th><td>Hello</td></tr><tr><td>[test|widen:tr]</td></tr>
+			<th><td>Hello</td></tr><tr><td>[test|with:tr]</td></tr>
 		</tbody></table>`);
 		let copy = matchdom(node, {
 			test: null // nothing is fine too
@@ -43,7 +43,7 @@ describe('widen filter', function() {
 	});
 
 	it('should remove current attribute', function() {
-		let node = dom(`<div><span class="some [test|widen:] [tata]">[tata]</span></div>`);
+		let node = dom(`<div><span class="some [test|with:] [tata]">[tata]</span></div>`);
 		let copy = matchdom(node, {
 			// test: null,
 			tata: "test"
@@ -52,7 +52,7 @@ describe('widen filter', function() {
 	});
 
 	it('should replace whole attribute', function () {
-		let node = dom(`<div><span class="some [test|widen:] [tata]">[tata]</span></div>`);
+		let node = dom(`<div><span class="some [test|with:] [tata]">[tata]</span></div>`);
 		let copy = matchdom(node, {
 			test: "toto",
 			tata: "test"
@@ -61,7 +61,7 @@ describe('widen filter', function() {
 	});
 
 	it('should move attribute from one node to its parent', function () {
-		let node = dom(`<section><div><span class="[test|widen:div|to:class]">test</span></div></section>`);
+		let node = dom(`<section><div><span class="[test|with:div|to:class]">test</span></div></section>`);
 		let copy = matchdom(node, {
 			test: "test"
 		});
@@ -70,7 +70,7 @@ describe('widen filter', function() {
 
 
 	it('should clobber other strings inside an attribute from one node to its parent', function () {
-		let node = dom(`<section><div><span class="some [test|widen:div|to:class]">test</span></div></section>`);
+		let node = dom(`<section><div><span class="some [test|with:div|to:class]">test</span></div></section>`);
 		let copy = matchdom(node, {
 			test: "test"
 		});
@@ -81,7 +81,7 @@ describe('widen filter', function() {
 	});
 
 	it('should move current node from attribute to parent node', function () {
-		let node = dom(`<section><div><span class="some [test|widen:div]">test</span></div></section>`);
+		let node = dom(`<section><div><span class="some [test|with:div]">test</span></div></section>`);
 		let copy = matchdom(node, {
 			test: "test"
 		});
@@ -89,7 +89,7 @@ describe('widen filter', function() {
 	});
 
 	it('should remove current node from attribute', function() {
-		let node = dom(`<div><span class="some [test|widen:div]">test</span></div>`);
+		let node = dom(`<div><span class="some [test|with:div]">test</span></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -97,7 +97,7 @@ describe('widen filter', function() {
 	});
 
 	it('should remove current node from attribute using wildcard selector', function() {
-		let node = dom(`<div><span class="[test|widen:*]">test</span></div>`);
+		let node = dom(`<div><span class="[test|with:*]">test</span></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -106,9 +106,9 @@ describe('widen filter', function() {
 
 });
 
-describe('bmagnet filter', function() {
+describe('without filter', function() {
 	it('should remove current node', function() {
-		let node = dom(`<div><span>test [test|widen:*|to:null]</span></div>`);
+		let node = dom(`<div><span>test [test|without:*]</span></div>`);
 		let copy = matchdom(node, {
 			test: false
 		});
@@ -116,7 +116,7 @@ describe('bmagnet filter', function() {
 	});
 
 	it('should not remove current node', function() {
-		let node = dom(`<div><span>test[test|widen:*|to:null]</span></div>`);
+		let node = dom(`<div><span>test[test|without:*]</span></div>`);
 		let copy = matchdom(node, {
 			test: true
 		});
@@ -124,7 +124,7 @@ describe('bmagnet filter', function() {
 	});
 
 	it('should remove current attribute', function() {
-		let node = dom(`<div><span class="some[test|widen:|to:null]">test</span></div>`);
+		let node = dom(`<div><span class="some[test|without:]">test</span></div>`);
 		let copy = matchdom(node, {
 			test: 0
 		});

@@ -21,18 +21,6 @@ describe('attributes', function() {
 		assert.equal(copy.outerHTML, '<span class="one 2 three 4">no?</span>');
 	});
 
-	it('should be merged with multiple values and class removes whitespaces', function() {
-		let node = dom(`<span class="one
-		[two]
-		three [four]
-		">no?</span>`);
-		let copy = matchdom(node, {
-			two: 2,
-			four: 4
-		});
-		assert.equal(copy.outerHTML, '<span class="one 2 three 4">no?</span>');
-	});
-
 	it('should do fine when filters are not defined', function() {
 		let node = dom(`<span data-test="[test|notfound:ff|notfound2:kk]">yes</span>`);
 		let copy = matchdom(node, {
@@ -112,7 +100,7 @@ describe('to filter', function() {
 	});
 
 	it('should set attribute of selected ancestor when defined in text node', function() {
-		let node = dom(`<div class="add"><span>test[myclass|attr:class:div]</span></div>`);
+		let node = dom(`<div class="add"><span>test[myclass|with:div|to:class]</span></div>`);
 		let copy = matchdom(node, {
 			myclass: "test product"
 		});
@@ -120,13 +108,13 @@ describe('to filter', function() {
 	});
 
 	it ('should set attribute of selected ancestor with undefined or filter', function() {
-		let node = dom(`<div><span>test[*|or:toto|attr:class:div]</span></div>`);
+		let node = dom(`<div><span>test[undef|or:toto|with:div|to:class]</span></div>`);
 		let copy = matchdom(node, {});
 		assert.equal(copy.outerHTML, '<div class="toto"><span>test</span></div>');
 	});
 
 	it('should add a class', function() {
-		let node = dom(`<span class="some">[label|attr:class]test</span>`);
+		let node = dom(`<span class="some">[label|to:class]test</span>`);
 		let copy = matchdom(node, {
 			label: "visible"
 		});
@@ -151,7 +139,7 @@ describe('boolean value in attribute filter', function() {
 		assert.equal(copy.outerHTML, '<textarea></textarea>');
 	});
 	it('should keep attribute empty', function() {
-		let node = dom(`<textarea required="[required]"></textarea>`);
+		let node = dom(`<textarea required="[required|and:]"></textarea>`);
 		let copy = matchdom(node, {
 			required: true
 		});
@@ -182,19 +170,19 @@ describe('boolean value in attribute filter', function() {
 	});
 });
 
-describe('boolean attribute filter', function() {
+describe('set a boolean attribute using and:', function() {
 	it('should drop attribute if value is falsey', function() {
-		let node = dom(`<textarea required="[val|battr]"></textarea>`);
+		let node = dom(`<textarea required="[val|and:]"></textarea>`);
 		let copy = matchdom(node, {
 			val: false
 		});
 		assert.equal(copy.outerHTML, '<textarea></textarea>');
 	});
 	it('should set attribute value to attribute name', function() {
-		let node = dom(`<textarea required="[val|battr]"></textarea>`);
+		let node = dom(`<textarea required="[val|and:]"></textarea>`);
 		let copy = matchdom(node, {
 			val: true
 		});
-		assert.equal(copy.outerHTML, '<textarea required="required"></textarea>');
+		assert.equal(copy.outerHTML, '<textarea required=""></textarea>');
 	});
 });
