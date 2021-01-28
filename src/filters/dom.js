@@ -134,9 +134,6 @@ export default {
 		}
 		// the range replaces src.node so there's not point in returning a value
 	},
-	class(ctx, val, method) {
-
-	},
 	url(ctx, value, to) {
 		if (value == null) return value;
 		const cur = parseUrl(ctx.read());
