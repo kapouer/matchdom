@@ -1,4 +1,34 @@
-export default {
+export const types = {
+	array(ctx, val) {
+		if (
+			Array.isArray(val) || typeof val.forEach != "function" || typeof val.item == "function" && typeof val.length == "number"
+		) {
+			// ok
+		} else {
+			val = [val];
+		}
+		return val;
+	}
+};
+
+export const formats = {
+	keys(ctx, val) {
+		if (typeof val != "object") return [];
+		return Object.keys(val);
+	},
+	values(ctx, val) {
+		if (typeof val != "object") return [];
+		return Object.values(val);
+	},
+	entries(ctx, val) {
+		if (typeof val != "object") return [];
+		return Object.entries(val).map(([key, value]) => {
+			return { key, value };
+		});
+	}
+};
+
+export const filters = {
 	filter: ['array', 'string', 'string?eq', 'path?', (ctx, list, str, op, path) => {
 		return list.filter((item) => {
 			const data = ctx.expr.get(item, path);

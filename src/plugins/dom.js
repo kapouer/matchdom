@@ -1,6 +1,64 @@
-import { serializeUrl, parseUrl } from '../utils.js';
+import { serializeUrl, parseUrl, HTML, XML } from '../utils.js';
 
-export default {
+export const formats = {
+	text(ctx, val) {
+		val = val.toString();
+		const doc = ctx.src.node.ownerDocument;
+		if (!doc) return val;
+		const frag = doc.createDocumentFragment();
+		const list = val.toString().split('\n');
+		for (let i = 0; i < list.length; i++) {
+			if (i > 0) frag.appendChild(doc.createElement('br'));
+			frag.appendChild(doc.createTextNode(list[i]));
+		}
+		return frag;
+	},
+	html(ctx, val) {
+		return ctx.own(HTML(val));
+	},
+	xml(ctx, val) {
+		return ctx.own(XML(val));
+	},
+	url(ctx, val) {
+		if (val == null) return val;
+		const cur = parseUrl(ctx.read());
+		const tgt = parseUrl(ctx.read());
+		const urlObj = parseUrl(val);
+		if (ctx.index == 0) {
+			if (!val.pathname) {
+				if (tgt.pathname) {
+					ctx.hits.unshift(tgt.pathname);
+					ctx.index++;
+				}
+			} else if (val.pathname) {
+				if (!val.query) {
+					ctx.hits.push(serializeUrl({ query: tgt.query }));
+				} else {
+					ctx.hits[0] = serializeUrl({
+						pathname: val.pathname,
+						query: Object.assign(tgt.query || {}, val.query)
+					});
+				}
+			}
+		} else if (!cur.query && tgt.query) {
+			ctx.hits.push(serializeUrl({ query: tgt.query }));
+		} else if (cur.query) {
+			if (!cur.pathname) ctx.hits[0] = tgt.pathname + ctx.hits[0];
+			if (tgt.query) {
+				for (let k in cur.query) delete tgt.query[k];
+				let tail = serializeUrl({
+					query: tgt.query
+				}).substring(1);
+				if (tail.length) ctx.hits.push('&' + tail);
+			}
+		}
+	},
+	class(ctx, val) {
+
+	}
+};
+
+export const filters = {
 	with(ctx, val, range) {
 		const { src, dest } = ctx;
 		dest.hits.splice(0, dest.index);
@@ -144,41 +202,6 @@ export default {
 			node.parentNode.removeChild(node);
 		}
 		// the range replaces src.node so there's not point in returning a value
-	},
-	url(ctx, value, to) {
-		if (value == null) return value;
-		const cur = parseUrl(ctx.read());
-		ctx.run("to", value, to);
-		const tgt = parseUrl(ctx.read());
-		const val = parseUrl(value);
-		if (ctx.index == 0) {
-			if (!val.pathname) {
-				if (tgt.pathname) {
-					ctx.hits.unshift(tgt.pathname);
-					ctx.index++;
-				}
-			} else if (val.pathname) {
-				if (!val.query) {
-					ctx.hits.push(serializeUrl({ query: tgt.query }));
-				} else {
-					ctx.hits[0] = serializeUrl({
-						pathname: val.pathname,
-						query: Object.assign(tgt.query || {}, val.query)
-					});
-				}
-			}
-		} else if (!cur.query && tgt.query) {
-			ctx.hits.push(serializeUrl({ query: tgt.query }));
-		} else if (cur.query) {
-			if (!cur.pathname) ctx.hits[0] = tgt.pathname + ctx.hits[0];
-			if (tgt.query) {
-				for (let k in cur.query) delete tgt.query[k];
-				let tail = serializeUrl({
-					query: tgt.query
-				}).substring(1);
-				if (tail.length) ctx.hits.push('&' + tail);
-			}
-		}
 	},
 	query(ctx, frag, sel) {
 		return frag.querySelector(sel);

@@ -15,6 +15,8 @@ Features:
 import {Matchdom, HTML, XML} from 'matchdom';
 const md = new Matchdom({
 	filters = {},
+	types = {},
+	formats = {},
 	hooks = {},
 	symbols = {},
 	filterNode = () => true
@@ -57,6 +59,32 @@ which is called before processing node, so this function can change it,
 or can append/remove next siblings.
 
 See tests for an example.
+
+## types and formats
+
+Types can be used by filters typings, or by "to:" and "is:" filters.
+
+Formats can be used by "to:" filter.
+
+Default types (and their shorthands):
+- undefined: none, undefined
+- null: null
+- integer: int, integer
+- string: str, string
+- boolean: bool, boolean
+- float
+- date
+- array
+
+Default formats:
+- text: converts string with newlines by a dom fragment with hard breaks
+- html: converts string to a dom fragment
+- xml: converts string to an xml fragment
+- url: merges source and destination - works well with to: filter.
+- class: uses destination classList to add values as classes
+- keys: array of keys
+- values: array of values
+- entries: arrays of {key, value}
 
 ## filters
 
@@ -261,28 +289,6 @@ Standard operations:
 
 
 ## type filters
-
-Some filters have a `type` parameter used to name a basic javascript type,
-or basic document format.
-
-available types (and their shorthands) are:
-- undefined: none, undefined
-- null: null
-- integer: int, integer
-- string: str, string
-- boolean: bool, boolean
-- float
-- date
-- array
-
-These default formats are supported:
-- text: converts string with newlines by a dom fragment with hard breaks
-- html: converts string to a dom fragment
-- xml: converts string to an xml fragment
-- keys: array of keys
-- values: array of values
-- entries: arrays of {key, value}
-
 ### is:<type>
 
 Checks value is of that type, and returns a boolean.
@@ -406,31 +412,6 @@ Compare:
 - `<div id="[items|repeat:*:my|my.id]" class="[my.style]">[my.title]</div>`
 
 The first case is shorter to write but overwrites current scope with iterated item keys.
-
-
-### class:method
-
-`node.classList[method](value)` where method is add, remove, toggle.
-
-
-### url:to
-
-Compose the value-as-url with the target-value-as-url.
-
-- reads the target url value
-- replaces target hostname with value hostname
-- replaces target pathname with value pathname
-- overwrites target query with value query
-
-The "to" attribute name autodetects the presence of src, href, srcset,
-so it can be omitted in most cases.
-
-Example:
-With a value `/api2?find=test`
-`<a href="https://test.com/api?find=str&sort=asc" data-tpl="[request|url]">`
-becomes
-`<a href="https://test.com/api2?find=testsort=asc">`
-
 
 ### query: selector
 

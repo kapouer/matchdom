@@ -1,4 +1,4 @@
-export default {
+export const filters = {
 	const(x, val, param) {
 		return param || "";
 	},

@@ -1,4 +1,4 @@
-export default {
+export const filters = {
 	eq(x, val, str) {
 		if (val == null || val == str) return val;
 		else return null;

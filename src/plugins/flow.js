@@ -1,4 +1,4 @@
-export default {
+export const filters = {
 	then: [null, 'filter', (ctx, val, name, ...params) => {
 		return val ? ctx.run(name, val, ...params) : val;
 	}],

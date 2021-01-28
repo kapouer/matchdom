@@ -1,15 +1,15 @@
 import './polyfills.js';
-import Filters from './filters/index.js';
+import Plugins from './plugins/index.js';
 import Symbols from './symbols.js';
 import Context from './context.js';
 import TextDocument from './fragment.js';
 
 export default class Matchdom {
-	constructor({ filters = {}, hooks = {}, symbols = {}, nodeFilter }) {
+	constructor({ filters = {}, formats = {}, types = {}, hooks = {}, symbols = {}, nodeFilter }) {
 		this.nodeFilter = nodeFilter;
 		this.hooks = hooks;
 		this.symbols = Object.assign({}, Symbols, symbols);
-		this.filters = new Filters(filters);
+		this.plugins = new Plugins({ filters, formats, types });
 	}
 
 	merge(list, data, scope) {

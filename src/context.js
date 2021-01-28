@@ -6,7 +6,7 @@ export default class Context {
 		this.data = data;
 		this.scope = Object.assign({}, scope);
 		this.matchdom = md;
-		this.filters = md.filters;
+		this.plugins = md.plugins;
 		this.hooks = md.hooks;
 		this.symbols = md.symbols;
 		this.level = 0;
@@ -193,7 +193,7 @@ export default class Context {
 	}
 
 	run(name, ...params) {
-		let it = this.filters.map[name];
+		let it = this.plugins.filters[name];
 		const val = params[0];
 		if (!it && val != null && val[name]) {
 			const meth = val[name];
@@ -228,7 +228,7 @@ export default class Context {
 		}
 		if (type) {
 			if (type == "filter") {
-				if (this.filters.map[str] == null && (!val[str] || typeof val[str] != "function")) {
+				if (this.plugins.filters[str] == null && (!val[str] || typeof val[str] != "function")) {
 					throw new ParamError(val, type);
 				}
 			} else if (type == "path") {
