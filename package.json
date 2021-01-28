@@ -39,7 +39,6 @@
     "@babel/plugin-syntax-class-properties": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "@kapouer/eslint-config": "^1.2.1",
-    "domify": "^1.4.0",
     "global-jsdom": "^7.0.0",
     "jsdom": "^16.4.0",
     "mocha": "^8.2.1"
