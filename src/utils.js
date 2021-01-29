@@ -1,10 +1,10 @@
-export function parseUrl(str) {
+export function parseUrl(str = '') {
 	const obj = {};
-	const parts = (str || '').split('?');
-	obj.pathname = parts[0];
-	if (parts.length > 1) {
+	const [pn, qu] = str.toString().split('?');
+	if (pn !== "") obj.pathname = pn;
+	if (qu != null && qu !== "") {
 		obj.query = {};
-		parts[1].split('&').forEach(function (pair) {
+		qu.split('&').forEach(function (pair) {
 			pair = pair.split('=');
 			obj.query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
 		});
@@ -12,7 +12,7 @@ export function parseUrl(str) {
 	return obj;
 }
 
-export function serializeUrl(obj) {
+export function serializeUrl(obj = {}) {
 	const str = obj.query && Object.keys(obj.query).map(function (key) {
 		return encodeURIComponent(key) + '=' + encodeURIComponent(obj.query[key]);
 	}).join('&');
@@ -38,4 +38,3 @@ export function XML(str) {
 	while (root.firstChild) frag.appendChild(root.firstChild);
 	return frag;
 }
-
