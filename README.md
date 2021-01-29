@@ -81,7 +81,6 @@ Default formats:
 - html: converts string to a dom fragment
 - xml: converts string to an xml fragment
 - url: merges source and destination - works well with to: filter.
-- class: uses destination classList to add values as classes
 - keys: array of keys
 - values: array of values
 - entries: arrays of {key, value}
