@@ -698,7 +698,7 @@ describe('to filter', function() {
 			field: 'word',
 			field2: 'myclass'
 		});
-		assert.equal(copy.outerHTML, '<div><p>word</p></div>');
+		assert.equal(copy.outerHTML, '<div><p>totowordaa</p></div>');
 	});
 });
 
