@@ -1,3 +1,10 @@
+export const types = {
+	date(ctx, val) {
+		const date = new Date(val);
+		if (Number.isNaN(date.getDate())) return null;
+		else return date;
+	}
+};
 export const filters = {
 	as(ctx, val, type) {
 		if (type == "none") {
@@ -27,10 +34,6 @@ export const filters = {
 			val = Number.parseFloat(val);
 			if (Number.isNaN(val)) val = null;
 			return val;
-		} else if (type == "date") {
-			const date = new Date(val);
-			if (Number.isNaN(date.getDate())) return null;
-			else return date;
 		} else {
 			const fn = ctx.plugins.types[type] || ctx.plugins.formats[type];
 			if (!fn) throw new Error(`Unknown type: ${type}`);

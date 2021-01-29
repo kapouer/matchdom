@@ -84,6 +84,19 @@ Default formats:
 - values: array of values
 - entries: arrays of {key, value}
 
+Additionnal types and formats can be added by passing functions:
+
+```
+import { DateTime } from 'luxon';
+// overrides default date type
+const types = {
+	date(ctx, val) {
+		return DateTime.fromISO(val);
+	}
+};
+const md = new Matchdom({types});
+```
+
 ## filters
 
 ### syntax
