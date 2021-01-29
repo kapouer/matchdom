@@ -5,9 +5,9 @@ const matchdom = (node, data, filters) => {
 };
 
 
-describe('scope path', function() {
-	it('should be set when merging a simple field', function() {
-		let node = dom(`<span>[path.test.to|test]</span>`);
+describe('scope path', function () {
+	it('should be set when merging a simple field', function () {
+		let node = dom(`<span>[path.test.to|test:]</span>`);
 		let copy = matchdom(node, {
 			path: {
 				test: {
@@ -15,23 +15,27 @@ describe('scope path', function() {
 				}
 			}
 		}, {
-			test: function(val, what) {
-				assert.equal(what.scope.path.join('.'), 'path.test.to');
+			test: function (ctx, val) {
+				assert.equal(ctx.expr.path.join('.'), 'path.test.to');
+				return val;
 			}
 		});
 		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
-	it('should be set when repeating an array', function() {
+	it('should be set when repeating an array', function () {
 		let node = dom(`<div>
-			<span>[arr|repeat:span:row|scope]</span>
+			<span>[arr|repeat:span:row|row|scope:]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			arr: ['one', 'two']
 		}, {
-			scope: function(val, what) {
-				assert.equal(what.scope.path[0], 'arr');
-				assert.ok(what.scope.path[1] === 0 || what.scope.path[1] === 1);
-				assert.equal(val, what.expr.get(what.data, what.scope.path));
+			scope: function (ctx, val) {
+				console.log(ctx.expr.path);
+
+				// assert.equal(what.scope.path[0], 'arr');
+				// assert.ok(what.scope.path[1] === 0 || what.scope.path[1] === 1);
+				// assert.equal(val, what.expr.get(what.data, what.scope.path));
+				return val;
 			}
 		});
 		assert.equal(copy.outerHTML, dom(`<div>
@@ -40,15 +44,17 @@ describe('scope path', function() {
 	});
 });
 
-describe('scope variables', function() {
-	it('should be kept', function() {
+describe('scope variables', function () {
+	it('should be kept', function () {
 		let node = dom(`<div>
 			<span>[$one|eq:[$two]:yes:no]</span>
 		</div>`);
-		let copy = matchdom(node, {}, {}, {data: {
-			$one: "one",
-			$two: "one"
-		}});
+		let copy = matchdom(node, {}, {}, {
+			data: {
+				$one: "one",
+				$two: "one"
+			}
+		});
 		assert.equal(copy.outerHTML, dom(`<div>
 			<span>yes</span>
 		</div>`).outerHTML);
