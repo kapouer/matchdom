@@ -82,8 +82,8 @@ export default class Context {
 		return val;
 	}
 
-	read() {
-		const { node, attr, tag } = this.dest;
+	read(place = this.dest) {
+		const { node, attr, tag } = place;
 		if (tag) return node.tagName;
 		else if (attr) return node.getAttribute(attr);
 		else return node.nodeValue;
