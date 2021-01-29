@@ -5,8 +5,8 @@ import Context from './context.js';
 import TextDocument from './fragment.js';
 
 export default class Matchdom {
-	constructor({ filters = {}, formats = {}, types = {}, hooks = {}, symbols = {}, nodeFilter }) {
-		this.nodeFilter = nodeFilter;
+	constructor({ filters = {}, formats = {}, types = {}, hooks = {}, symbols = {}, visitor }) {
+		this.visitor = visitor;
 		this.hooks = hooks;
 		this.symbols = Object.assign({}, Symbols, symbols);
 		this.plugins = new Plugins({ filters, formats, types });
@@ -92,10 +92,10 @@ export default class Matchdom {
 		const ctx = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
 		// old IE need all params
 		const it = root.ownerDocument.createNodeIterator(root, ctx, null, false);
-		const nf = this.nodeFilter;
+		const vr = this.visitor;
 		let node;
 		while ((node = it.nextNode())) {
-			if (!(nf ? nf(node, it, data, scope) : true)) continue;
+			if (!(vr ? vr(node, it, data, scope) : true)) continue;
 			const place = { node, root };
 			if (node.attributes) {
 				Array.from(node.attributes).forEach((att) => {

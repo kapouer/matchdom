@@ -45,14 +45,13 @@ assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
 - DOM parsing needs: `<template>` for HTML, DOMParser for XML
 
 
-## dom traversal
 
-A custom function allows advanced traversal:
+## dom traversal visitor
 
 This can be done by defining
 ```js
 new Matchdom({
-	nodeFilter(elementNode, iter, data, scope):boolean
+	visitor(elementNode, iter, data, scope):boolean
 })
 ```
 which is called before processing node, so this function can change it,

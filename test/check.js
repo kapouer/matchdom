@@ -2,7 +2,7 @@ import assert from 'assert';
 import { Matchdom, HTML as dom } from 'matchdom';
 
 const md = new Matchdom({
-	nodeFilter: function (node, iter) {
+	visitor(node, iter) {
 		if (node.content) {
 			node.after(node.content.cloneNode(true));
 			node.remove();
@@ -33,7 +33,7 @@ describe('custom check', function() {
 	});
 	it('should replace template content and repeat fragment', function() {
 		let node = dom(`<div>
-			<template><p>[list.a|repeat:p+:item]</p><p>[item.b]</p></template>
+			<template><p>[list|repeat:p+:item|item.a]</p><p>[item.b]</p></template>
 		</div>`);
 		let copy = matchdom(node, {
 			list: [{a: "aone", b: "atwo"}, {a: "bone", b: "btwo"}]
