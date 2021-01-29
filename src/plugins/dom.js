@@ -80,10 +80,12 @@ export const filters = {
 	to(ctx, val, to) {
 		if (val === undefined) return val;
 		const { src, dest } = ctx;
-		src.hits.splice(src.index, 1);
-		dest.hits.splice(0, dest.index);
-		dest.hits.splice(1);
-		dest.index = 0;
+		src.hits[src.index] = null;
+		if (!src.attr) {
+			for (let k = 0; k < dest.hits.length; k++) {
+				if (k !== dest.index) dest.hits[k] = null;
+			}
+		}
 
 		let node = dest.node;
 		delete dest.attr;
