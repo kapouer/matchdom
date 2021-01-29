@@ -39,36 +39,3 @@ export function XML(str) {
 	return frag;
 }
 
-export function findData(data, path) {
-	if (!data) return {};
-	path = path.slice();
-	const keys = [];
-	let inkeys = false;
-	let head;
-	while (path.length && inkeys == false) {
-		if (typeof data == "object" && data.length) {
-			break;
-		}
-		head = path.shift();
-		if (head.endsWith('+')) {
-			if (data[head]) {
-				// eslint-disable-next-line no-console
-				console.warn("repeat filter ignores", head, "because the key exists");
-			} else {
-				head = head.slice(0, -1);
-				inkeys = true;
-			}
-		}
-		data = data[head];
-		if (data == null) break;
-		keys.push(head);
-	}
-	return {
-		head: head,
-		path: path,
-		keys: keys,
-		inkeys: inkeys,
-		data: data
-	};
-}
-
