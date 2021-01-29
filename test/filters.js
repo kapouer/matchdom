@@ -488,9 +488,27 @@ describe('date filter', function() {
 	});
 });
 
-describe('url filter', function() {
-	it('should merge url query with target pathname', function() {
-		let node = dom(`<a href="/test" data-href="[href|url]">[title]</a>`);
+describe('url filter', function () {
+	it('should work in the same attribute with a query string', function () {
+		let node = dom(`<a href="/test?[href|as:url]">[title]</a>`);
+		let copy = matchdom(node, {
+			href: '?arg=1&val=2',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/test?arg=1&amp;val=2">anchor</a>');
+	});
+
+	it('should work in the same attribute with a full url', function () {
+		let node = dom(`<a href="[href|as:url]?toto=2">[title]</a>`);
+		let copy = matchdom(node, {
+			href: '/pathname?test=1',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/pathname?toto=2&amp;test=1">anchor</a>');
+	});
+
+	it('should merge url query with target pathname', function () {
+		let node = dom(`<a href="/test" data-href="[href|to:href|as:url]">[title]</a>`);
 		let copy = matchdom(node, {
 			href: '?arg=1&val=2',
 			title: 'anchor'
@@ -499,7 +517,7 @@ describe('url filter', function() {
 	});
 
 	it('should merge url pathname with target query', function() {
-		let node = dom(`<a href="/test?toto=1" data-href="[href|url]">[title]</a>`);
+		let node = dom(`<a href="/test?toto=1" data-href="[href|to:href|as:url]">[title]</a>`);
 		let copy = matchdom(node, {
 			href: '/path',
 			title: 'anchor'
@@ -507,17 +525,17 @@ describe('url filter', function() {
 		assert.equal(copy.outerHTML, '<a href="/path?toto=1">anchor</a>');
 	});
 
-	it('should overwrite target with url', function() {
-		let node = dom(`<a href="/test?toto=1" data-href="[href|url]">[title]</a>`);
+	it('should merge pathname and query', function() {
+		let node = dom(`<a href="/test?toto=1" data-href="[href|to:href|as:url]">[title]</a>`);
 		let copy = matchdom(node, {
 			href: '/path?a=1&b=2',
 			title: 'anchor'
 		});
-		assert.equal(copy.outerHTML, '<a href="/path?a=1&amp;b=2">anchor</a>');
+		assert.equal(copy.outerHTML, '<a href="/path?toto=1&amp;a=1&amp;b=2">anchor</a>');
 	});
 
 	it('should overwrite target query name with partial template', function() {
-		let node = dom(`<a href="/test?id=1" data-href="?id=[id|url]">[title]</a>`);
+		let node = dom(`<a href="/test?id=1" data-href="?id=[id|to:href|as:url]">[title]</a>`);
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor'
@@ -526,25 +544,25 @@ describe('url filter', function() {
 	});
 
 	it('should merge url query with partial template', function() {
-		let node = dom(`<a href="/test?toto=1" data-href="?id=[id|url]">[title]</a>`);
+		let node = dom(`<a href="/test?toto=1" data-href="?id=[id|to:href|as:url]">[title]</a>`);
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor'
 		});
-		assert.equal(copy.outerHTML, '<a href="/test?id=xx&amp;toto=1">anchor</a>');
+		assert.equal(copy.outerHTML, '<a href="/test?toto=1&amp;id=xx">anchor</a>');
 	});
 
 	it('should overwrite url pathname and query with partial template', function() {
-		let node = dom(`<a href="/test?toto=1" data-href="/this?id=[id|url]&amp;const=1">[title]</a>`);
+		let node = dom(`<a href="/test?toto=1" data-href="/this?id=[id|to:href|as:url]&amp;const=1">[title]</a>`);
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor'
 		});
-		assert.equal(copy.outerHTML, '<a href="/this?id=xx&amp;const=1&amp;toto=1">anchor</a>');
+		assert.equal(copy.outerHTML, '<a href="/this?toto=1&amp;id=xx&amp;const=1">anchor</a>');
 	});
 
 	it('should merge url query with partial template when repeated', function() {
-		let node = dom(`<div><a href="/test?id=1" data-href="?id=[id|repeat:*|url]">[title]</a></div>`);
+		let node = dom(`<div><a href="/test?id=1" data-href="?id=[repeat:*|id|to:href|as:url]">[title]</a></div>`);
 		let copy = matchdom(node, [{
 			id: 'xx',
 			title: 'anchor'
@@ -553,7 +571,7 @@ describe('url filter', function() {
 	});
 
 	it('should be able to be called multiple times for the same attribute', function() {
-		let node = dom(`<div><a href="/test?status=0" data-href="?id=[id|url]&amp;status=[status|url]">[title]</a></div>`);
+		let node = dom(`<div><a href="/test?status=0" data-href="?id=[id|to:href|as:url]&amp;status=[status|as:url]">[title]</a></div>`);
 		let copy = matchdom(node, {
 			id: 'xx',
 			title: 'anchor',
@@ -563,7 +581,7 @@ describe('url filter', function() {
 	});
 
 	it('should not crash when data is not string', function() {
-		let node = dom(`<div><a href="/test" data-href="?id=[id|url]">aaa</a></div>`);
+		let node = dom(`<div><a href="/test" data-href="?id=[id|to:href|as:url]">aaa</a></div>`);
 		let copy = matchdom(node, {
 			id: 12
 		});

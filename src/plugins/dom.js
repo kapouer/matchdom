@@ -21,40 +21,24 @@ export const formats = {
 	},
 	url(ctx, val) {
 		if (val == null) return val;
-		const cur = parseUrl(ctx.read());
-		const tgt = parseUrl(ctx.read());
-		const urlObj = parseUrl(val);
-		if (ctx.index == 0) {
-			if (!val.pathname) {
-				if (tgt.pathname) {
-					ctx.hits.unshift(tgt.pathname);
-					ctx.index++;
-				}
-			} else if (val.pathname) {
-				if (!val.query) {
-					ctx.hits.push(serializeUrl({ query: tgt.query }));
-				} else {
-					ctx.hits[0] = serializeUrl({
-						pathname: val.pathname,
-						query: Object.assign(tgt.query || {}, val.query)
-					});
-				}
-			}
-		} else if (!cur.query && tgt.query) {
-			ctx.hits.push(serializeUrl({ query: tgt.query }));
-		} else if (cur.query) {
-			if (!cur.pathname) ctx.hits[0] = tgt.pathname + ctx.hits[0];
-			if (tgt.query) {
-				for (let k in cur.query) delete tgt.query[k];
-				let tail = serializeUrl({
-					query: tgt.query
-				}).substring(1);
-				if (tail.length) ctx.hits.push('&' + tail);
-			}
+		const { src, dest } = ctx;
+		const same = src.attr === dest.attr && src.node === dest.node;
+		const valUrl = parseUrl(val);
+		const srcHits = src.hits.slice();
+		srcHits[src.index] = src.index > 0 ? val : '';
+		const srcVal = srcHits.join('');
+		if (src.index > 0 && valUrl.pathname) {
+			delete valUrl.pathname;
 		}
-	},
-	class(ctx, val) {
+		const srcUrl = parseUrl(srcVal);
+		const destUrl = same ? {} : parseUrl(ctx.read(dest));
+		const finalUrl = Object.assign({}, destUrl, srcUrl, valUrl);
+		finalUrl.query = Object.assign({}, destUrl.query, srcUrl.query, valUrl.query);
 
+		for (let k = 0; k < dest.hits.length; k++) {
+			if (k !== dest.index) dest.hits[k] = null;
+		}
+		return serializeUrl(finalUrl);
 	}
 };
 
