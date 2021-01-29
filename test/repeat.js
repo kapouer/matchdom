@@ -7,7 +7,7 @@ const matchdom = (node, data, filters, scope) => {
 
 describe('repeating', function () {
 	it('should repeat array of strings in string', function () {
-		let node = dom(`<div>[arr|repeat:|]</div>`);
+		let node = dom(`<div>[arr|repeat:]</div>`);
 		let copy = matchdom(node, {
 			arr: ['one', 'two']
 		});
@@ -15,7 +15,7 @@ describe('repeating', function () {
 	});
 	it('should repeat array-in-object over node', function () {
 		let node = dom(`<div>
-			<span>[arr|repeat:*|]</span>
+			<span>[arr|repeat:*]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			arr: ['one', 'two']

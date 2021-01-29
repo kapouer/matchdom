@@ -146,7 +146,7 @@ export const filters = {
 		const cur = ctx.read();
 
 		if (cur != null) {
-			const hit = src.hits[src.index] = expr.toString();
+			const hit = src.hits[src.index] = expr.toString() || 'get:';
 			const { open, close } = ctx.symbols;
 			ctx.write([cur.replace(open + expr.initial + close, open + hit + close)]);
 		}
