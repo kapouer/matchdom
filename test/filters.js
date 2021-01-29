@@ -656,6 +656,15 @@ describe('to filter', function() {
 		assert.equal(copy.outerHTML, '<p data-template="[field.it|to:*]">abb</p>');
 	});
 
+
+	it('should append to space-separated attribute', function () {
+		let node = dom(`<p class="test">[style|to:class]abb</p>`);
+		let copy = matchdom(node, {
+			style: 'word'
+		});
+		assert.equal(copy.outerHTML, '<p class="test word">abb</p>');
+	});
+
 	it('should fill current node and set an attribute using two separate expressions', function() {
 		let node = dom(`<p data-fill="[field|to:]" data-attr="[field2|to:class]">astuffb</p>`);
 		let copy = matchdom(node, {

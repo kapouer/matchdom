@@ -150,14 +150,16 @@ export default class Context {
 					if (!node.children) attrNode = node.parentNode;
 					if (!src.node.children) src.node.nodeValue = src.hits.join('');
 				}
-				if (hits === false || hits == null || (attr == "class" && str === "")) {
+				let attrList = attrNode[attr + 'List'];
+				if (!hits || !str) {
 					clearAttr(attrNode, attr);
+				} else if (typeof attrNode[attr] == "boolean") {
+					attrNode.setAttribute(attr, "");
+				} else if ((src.attr !== attr || src.node !== node) && attrList && typeof attrList.add == "function") {
+					str.replace(/[\n\t\s]+/g, ' ').trim().split(' ').forEach((name) => {
+						attrList.add(name);
+					});
 				} else {
-					if (hits === true) {
-						if (attr.startsWith('data-') == false) str = "";
-					} else if (attr == "class" && typeof str == "string") {
-						str = str.replace(/[\n\t\s]+/g, ' ').trim();
-					}
 					attrNode.setAttribute(attr, str);
 				}
 			}

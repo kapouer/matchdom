@@ -139,7 +139,7 @@ describe('boolean value in attribute filter', function() {
 		assert.equal(copy.outerHTML, '<textarea></textarea>');
 	});
 	it('should keep attribute empty', function() {
-		let node = dom(`<textarea required="[required|and:]"></textarea>`);
+		let node = dom(`<textarea required="[required]"></textarea>`);
 		let copy = matchdom(node, {
 			required: true
 		});
@@ -172,14 +172,14 @@ describe('boolean value in attribute filter', function() {
 
 describe('set a boolean attribute using and:', function() {
 	it('should drop attribute if value is falsey', function() {
-		let node = dom(`<textarea required="[val|and:]"></textarea>`);
+		let node = dom(`<textarea required="[val]"></textarea>`);
 		let copy = matchdom(node, {
 			val: false
 		});
 		assert.equal(copy.outerHTML, '<textarea></textarea>');
 	});
 	it('should set attribute value to attribute name', function() {
-		let node = dom(`<textarea required="[val|and:]"></textarea>`);
+		let node = dom(`<textarea required="[val]"></textarea>`);
 		let copy = matchdom(node, {
 			val: true
 		});
