@@ -143,13 +143,12 @@ And methods:
 
 A place is an object with these properties related to where the expression sits:
 - node: node or text node
-- attr: attribute name (if any)
+- attr: attribute name (boolean attributes and DOMTokenList are supported)
 - tag: boolean wether the expression is in a tag name
   Since tag names	are case-insensitive, the expression must work in lowercase
 - root: the ancestor node passed to matchdom
 - hits: list of strings to process
 - index: the current index hits
-
 
 ### expression
 

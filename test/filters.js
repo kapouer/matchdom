@@ -389,7 +389,7 @@ describe('gt', function() {
 
 describe('not', function() {
 	it('should set to null if empty', function() {
-		let node = dom(`<p class="[val]">test</p>`);
+		let node = dom(`<p class="[val|as:null]">test</p>`);
 		let copy = matchdom(node, {val: ''});
 		assert.equal(copy.outerHTML, '<p>test</p>');
 	});
