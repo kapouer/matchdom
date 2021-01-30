@@ -44,12 +44,13 @@ export const formats = {
 
 export const filters = {
 	with(ctx, val, range) {
-		const { src, dest } = ctx;
+		const { dest } = ctx;
 		dest.hits.splice(0, dest.index);
 		dest.hits.splice(1);
 		dest.index = 0;
 		let node = dest.node;
 		if (!node.parentNode || !range) return val;
+		const { attr, tag } = dest;
 		delete dest.attr;
 		delete dest.tag;
 		while (range.startsWith('+')) {
@@ -63,7 +64,8 @@ export const filters = {
 
 		if (/^\*+$/.test(range)) {
 			let ups = range.length;
-			while (ups--) {
+			if (attr || tag) ups += -1;
+			while (ups-- > 0) {
 				node = node.parentNode;
 			}
 			dest.node = node;
