@@ -97,11 +97,11 @@ describe('with filter', function() {
 	});
 
 	it('should remove current node from attribute using wildcard selector', function() {
-		let node = dom(`<div><span class="[test|with:*]">test</span></div>`);
+		let node = dom(`<div><div><span class="[test|with:*]">test</span></div></div>`);
 		let copy = matchdom(node, {
-			// test: null
+			test: null
 		});
-		assert.equal(copy.outerHTML, '<div></div>');
+		assert.equal(copy.outerHTML, '<div><div></div></div>');
 	});
 
 });
