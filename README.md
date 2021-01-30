@@ -66,14 +66,14 @@ Types can be used by filters typings, or by "to:" and "is:" filters.
 Formats can be used by "to:" filter.
 
 Default types (and their shorthands):
-- undefined: none, undefined
-- null: null
-- integer: int, integer
-- string: str, string
-- boolean: bool, boolean
-- float
-- date
-- array
+- undefined, none: converts null-ish to undefined, leave other values intact
+- null: converts falsey to null, leave other values intact
+- integer, int: try to parseInt, return null if NaN
+- string, str: toString
+- boolean, bool: "true", "1" and truey to true, "false", "0", and falsey to false
+- float, num, numeric: try to parseFloat, return null if NaN
+- date: try new Date(val), return null if not a date
+- array: wrap non-array-like values into an array
 
 Default formats:
 - text: converts string with newlines by a dom fragment with hard breaks
@@ -129,6 +129,12 @@ const filters = {
 	}
 };
 ```
+
+If a type is `null` (the keyword, not the string), then the matching param is not checked.
+
+If a type is an empty string, or '*' or 'any' then any type is valid and param is required (non-null).
+
+If a type is '?', '*?', 'any?' then any type is valid and default value is '' (empty string).
 
 Available types are the same as for the "as:" filter, with the addition of:
 - 'filter': checks the parameter is a filter name,

@@ -211,7 +211,8 @@ export default class Context {
 		const fn = it.pop();
 		try {
 			it.forEach((arg, i) => {
-				const [type, def] = (arg || '').split('?');
+				if (arg === null) return; // no check
+				const [type, def] = arg.split('?');
 				params[i] = this.check(val, params[i], type, def);
 			});
 			return fn(this, ...params);
@@ -235,6 +236,8 @@ export default class Context {
 				}
 			} else if (type == "path") {
 				str = this.toPath(str, val);
+			} else if (type == "any" || type == "*") {
+				// check nothing
 			} else {
 				str = this.run('as', str, type);
 			}

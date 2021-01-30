@@ -75,10 +75,115 @@ describe('parameters', function() {
 		let copy = matchdom(node, {size: 10});
 		assert.equal(copy.outerHTML, '<a>Size: 10 mm</a>');
 	});
-	it('should leave value untouched if not uri-decodable', function() {
+	it('should leave value untouched if not uri-decodable', function () {
 		let node = dom(`<a>Percent[pp|post: %|pre:%3A ]</a>`);
-		let copy = matchdom(node, {pp: 10});
+		let copy = matchdom(node, { pp: 10 });
 		assert.equal(copy.outerHTML, '<a>Percent: 10 %</a>');
+	});
+});
+
+describe('types', function () {
+	it('should cast value to int', function () {
+		let ok = false;
+		matchdom('[val|mycheck:]', { val: "10" }, {
+			mycheck: ['int', (ctx, val) => {
+				assert.strictEqual(val, 10);
+				ok = true;
+				return val;
+			}]
+		});
+		assert.strictEqual(ok, true);
+	});
+	it('should cast param to int', function () {
+		let ok = false;
+		matchdom('[val|mycheck:7]', { val: 10 }, {
+			mycheck: ['int', 'int', (ctx, val, cte) => {
+				assert.strictEqual(cte, 7);
+				ok = true;
+				return val + cte;
+			}]
+		});
+		assert.strictEqual(ok, true);
+	});
+	it('should cast param to boolean', function () {
+		let ok = false;
+		matchdom('[val|mycheck:7]', { val: 10 }, {
+			mycheck: ['int', 'bool', (ctx, val, cte) => {
+				assert.strictEqual(cte, true);
+				ok = true;
+				return val;
+			}]
+		});
+		assert.strictEqual(ok, true);
+	});
+	it('should not check value when type is null', function () {
+		let ok = false;
+		matchdom('[val|mycheck:false]', { val: 10 }, {
+			mycheck: [null, 'bool', (ctx, val, cte) => {
+				assert.strictEqual(val, 10);
+				assert.strictEqual(cte, false);
+				ok = true;
+				return val;
+			}]
+		});
+		assert.strictEqual(ok, true);
+	});
+	it('should allow null value when type is null', function () {
+		let ok = false;
+		matchdom('[val|mycheck:false]', { val: null }, {
+			mycheck: [null, 'bool', (ctx, val, cte) => {
+				assert.strictEqual(val, null);
+				assert.strictEqual(cte, false);
+				ok = true;
+				return val;
+			}]
+		});
+		assert.strictEqual(ok, true);
+	});
+
+	it('should allow any value when type is "any"', function () {
+		let ok = false;
+		matchdom('[val|mycheck:1]', { val: new Date() }, {
+			mycheck: ['any', 'bool', (ctx, val, cte) => {
+				assert.ok(val instanceof Date);
+				assert.strictEqual(cte, true);
+				ok = true;
+				return val;
+			}]
+		});
+		assert.strictEqual(ok, true);
+	});
+	it('should require any value when type is "any"', function () {
+		let ok = false;
+		matchdom('[val|mycheck:1]', { val: null }, {
+			mycheck: ['any', 'bool', (ctx, val, cte) => {
+				ok = true;
+				return val;
+			}]
+		});
+		assert.strictEqual(ok, false);
+	});
+	it('should get a default empty string value', function () {
+		let ok = false;
+		matchdom('[val|mycheck:1]', { val: null }, {
+			mycheck: ['any?', 'bool', (ctx, val, cte) => {
+				assert.strictEqual(val, "");
+				ok = true;
+				return val;
+			}]
+		});
+		assert.strictEqual(ok, true);
+	});
+	it('should get a default integer value', function () {
+		let ok = false;
+		matchdom('[val|mycheck:1]', { val: null }, {
+			mycheck: ['int?10', 'bool', (ctx, val, cte) => {
+				assert.strictEqual(val, 10);
+				ok = true;
+				return val;
+			}]
+		});
+		assert.strictEqual(ok, true);
 	});
 });
 
@@ -319,32 +424,6 @@ describe('pad', function() {
 			str: 'a'
 		});
 		assert.equal(copy.outerHTML, '<p>axx</p>');
-	});
-});
-
-describe('or', function() {
-	it('should not change value when true', function () {
-		let node = dom(`<p>[str|or:yes]</p>`);
-		let copy = matchdom(node, { str: "stuff" });
-		assert.equal(copy.outerHTML, '<p>stuff</p>');
-	});
-	it('should change value when false', function () {
-		let node = dom(`<p>[str|or:yes]</p>`);
-		let copy = matchdom(node, { });
-		assert.equal(copy.outerHTML, '<p>yes</p>');
-	});
-});
-
-describe('and', function () {
-	it('should change value when true', function () {
-		let node = dom(`<p>[str|and:yes]</p>`);
-		let copy = matchdom(node, {str: "stuff"});
-		assert.equal(copy.outerHTML, '<p>yes</p>');
-	});
-	it('should not change value when false', function () {
-		let node = dom(`<p>[str|and:yes]</p>`);
-		let copy = matchdom(node, { str: "" });
-		assert.equal(copy.outerHTML, '<p></p>');
 	});
 });
 

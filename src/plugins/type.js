@@ -17,8 +17,8 @@ export const filters = {
 			return val;
 		}
 		if (type == "bool" || type == "boolean") {
-			if (val === "true" || val === "1") val = true;
-			else if (val === "false" || val === "0") val = false;
+			if (val == "true" || val == "1") val = true;
+			else if (val == "false" || val == "0") val = false;
 			else val = !!val;
 			return val;
 		} else if (type == "str" || type == "string") {
