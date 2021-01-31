@@ -150,13 +150,12 @@ A filter function can have side effects on the document being merged.
 - dest: target place of expression
 
   The initial place is either mutated or removed if the target place is different.
-- expr: expression instance
-`this.get(this.data, this.path) == val`
+- expr: expression instance `this.get(this.data, this.path) == val`
+- cancel: boolean, cancels merging of expression
 
 And methods:
 - write(str): updates node or attr value
 - read(): returns node or attr value
-- cancel(): drop merging these hits
 
 ### place
 

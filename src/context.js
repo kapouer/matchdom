@@ -1,7 +1,7 @@
 import Expression from './expr.js';
 
 export default class Context {
-	#cancel = false
+	cancel = false
 	constructor(md, data, scope, place) {
 		this.data = data;
 		this.scope = Object.assign({}, scope);
@@ -29,10 +29,6 @@ export default class Context {
 		} else {
 			return;
 		}
-	}
-
-	cancel() {
-		this.#cancel = true;
 	}
 
 	processHits(hits) {
@@ -72,7 +68,7 @@ export default class Context {
 			if (befEach) befEach.call(this, val, filter);
 			val = this.run(filter.name, val, ...filter.params);
 			if (aftEach) aftEach.call(this, val, filter);
-			if (this.#cancel) {
+			if (this.cancel) {
 				expr.last = false;
 				val = undefined;
 			}

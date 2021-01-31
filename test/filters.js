@@ -194,7 +194,7 @@ describe('what', function() {
 			arr: ['word1', 'word2']
 		}, {
 			drop: function(ctx, val) {
-				ctx.cancel();
+				ctx.cancel = true;
 				return val;
 			}
 		});
@@ -205,7 +205,7 @@ describe('what', function() {
 		let node = dom(`<p>[arr|drop:]</p>`);
 		let copy = matchdom(node, {}, {
 			drop: function(ctx, val) {
-				ctx.cancel();
+				ctx.cancel = true;
 				return val;
 			}
 		});
@@ -216,7 +216,7 @@ describe('what', function() {
 		let node = dom(`<p>[obj.toto|drop:]</p>`);
 		let copy = matchdom(node, {obj: {toto:1}}, {
 			drop: function (ctx, val, what) {
-				ctx.cancel();
+				ctx.cancel = true
 				return val;
 			}
 		});
@@ -227,7 +227,7 @@ describe('what', function() {
 		let node = dom(`<p>[arr.toto|drop:]</p>`);
 		let copy = matchdom(node, {}, {
 			drop: function(ctx, val, what) {
-				ctx.cancel();
+				ctx.cancel = true;
 				return val;
 			}
 		});

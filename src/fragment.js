@@ -1,21 +1,15 @@
 class TextNode {
-	#str
+	nodeValue
 	constructor(str = "", doc) {
-		this.#str = str;
+		this.nodeValue = str;
 		this.nodeType = -1;
 		this.ownerDocument = doc;
 	}
-	get nodeValue() {
-		return this.#str;
-	}
-	set nodeValue(str) {
-		this.#str = str;
-	}
 	toString() {
-		return this.#str;
+		return this.nodeValue;
 	}
 	cloneNode() {
-		return new TextNode(this.#str, this.ownerDocument);
+		return new TextNode(this.nodeValue, this.ownerDocument);
 	}
 }
 
@@ -40,13 +34,13 @@ export default class TextDocument {
 }
 
 class TextNodeIterator {
-	#root
-	#index = 0
+	root
+	index = 0
 	constructor(root) {
-		this.#root = root;
+		this.root = root;
 	}
 	nextNode() {
-		return this.#root.childNodes[this.#index++];
+		return this.root.childNodes[this.index++];
 	}
 }
 
