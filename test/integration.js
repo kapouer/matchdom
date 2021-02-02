@@ -8,7 +8,7 @@ const matchdom = (node, data, filters) => {
 describe('integration', function() {
 	it('should repeat array over parent of attribute with url', function() {
 		let node = dom(`<div><div>
-			<img data-src="[arr|url|repeat:div]" />
+			<img data-src="[arr|repeat:div|to:src]" />
 		</div></div>`);
 		let copy = matchdom(node, {
 			arr: ['one', 'two']
@@ -21,7 +21,7 @@ describe('integration', function() {
 	});
 
 	it('should remove current attribute', function() {
-		let node = dom(`<div><a data-href="/test?[test|magnet|url]">test</a></div>`);
+		let node = dom(`<div><a data-href="/test?[test|with:|as:url]">test</a></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -29,7 +29,7 @@ describe('integration', function() {
 	});
 
 	it('should remove current attribute edge case', function() {
-		let node = dom(`<div><link rel="icon" href="[$site.favicon|magnet:*|url]?format=ico"></div>`);
+		let node = dom(`<div><link rel="icon" href="[$site.favicon|with:*|as:url]?format=ico"></div>`);
 		let copy = matchdom(node, {
 			$site: {}
 		});
@@ -37,7 +37,7 @@ describe('integration', function() {
 	});
 
 	it('should remove current node', function() {
-		let node = dom(`<div><a href="" data-href="[test|magnet:a|url]">test</a></div>`);
+		let node = dom(`<div><a href="" data-href="[test|with:a|as:url]">test</a></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -46,7 +46,7 @@ describe('integration', function() {
 
 	it('should remove currently repeated node if magnet kicks in', function() {
 		let node = dom(`<table>
-			<tr><td>[rows.val|repeat:tr]</td><td>[rows.val][rows.col|magnet:tr]</td></tr>
+			<tr><td>[rows|repeat:tr|val]</td><td>[val][col|else:with:tr]</td></tr>
 		</table>`);
 		let copy = matchdom(node, {
 			rows: [{
@@ -66,15 +66,15 @@ describe('integration', function() {
 	});
 
 	it('should remove current text node and previous node', function() {
-		let node = dom(`<div><br><span>test</span>[test|bmagnet:+*|]</div>`);
+		let node = dom(`<div><br><span>test</span>[test|without:+*]</div>`);
 		let copy = matchdom(node, {
 			test: false
 		});
 		assert.equal(copy.outerHTML, '<div><br></div>');
 	});
 
-	it('fill filter should work with br mode by default', function() {
-		let node = dom(`<div><span data-expr="[test|fill]">temp</span></div>`);
+	it('to: should work well with as:text', function() {
+		let node = dom(`<div><span data-expr="[test|to:|as:text]">temp</span></div>`);
 		let copy = matchdom(node, {
 			test: "a\nb"
 		});
@@ -117,7 +117,7 @@ describe('integration', function() {
 	});
 
 	it('nested fill filter', function() {
-		let node = dom(`<p>a[sub.[name]|fill]b</p>`);
+		let node = dom(`<p>a[sub.[name]|to:]b</p>`);
 		let copy = matchdom(node, {
 			sub: {
 				key: 'word'
