@@ -24,7 +24,7 @@ describe('scope path', function () {
 	});
 	it('should be set when repeating an array', function () {
 		let node = dom(`<div>
-			<span>[arr|repeat:span:row|row|scope:]</span>
+			<span>[arr|repeat:span:row|scope:]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			arr: ['one', 'two']

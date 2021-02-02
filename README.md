@@ -178,7 +178,8 @@ and methods:
 - clone() return a new expression with the not-yet processed filters
 - toString() the original expression with open and closing brackets
 - get(data, path, save) get current value and update this.path is save is true
-- add(name, params=[]) add a filter at the end of the chain
+- append(name, params=[]) a filter to the list
+- prepend(name, params=[]) a filter at current index
 - drop() stop processing following filters
 
 Expressions can be nested:
@@ -418,15 +419,10 @@ The keys in each item become available in the scope of each repeated range.
 
 The alias parameter can name repeated item, so that these two expressions
 are equivalent:
-- `[items|repeat:div|id]`
-- `[items|repeat:div:my|my.id]`
+- `[items|repeat:div|id] has some [text]`
+- `[items|repeat:div:my|id] has some [my.text]`
 
-However the alias is useful when merging several properties of the same item.
-Compare:
-- `<div id="[items|repeat:*|id]" class="[style]">[title]</div>`
-- `<div id="[items|repeat:*:my|my.id]" class="[my.style]">[my.title]</div>`
-
-The first case is shorter to write but overwrites current scope with iterated item keys.
+The first case is shorter to write but overwrites current scope with iterated item keys, while the alias allows to avoid that.
 
 ### query: selector
 

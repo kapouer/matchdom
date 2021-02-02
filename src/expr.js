@@ -20,12 +20,15 @@ export default class Expression {
 					return pt;
 				}
 			});
-			this.add(name, params);
+			this.append(name, params);
 		}
 		return this;
 	}
-	add(name, params = []) {
+	append(name, params = []) {
 		this.filters.push({ name, params });
+	}
+	prepend(name, params = []) {
+		this.filters.splice(this.filter, 0, { name, params });
 	}
 	clone() {
 		const expr = new Expression(this.symbols);

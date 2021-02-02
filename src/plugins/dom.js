@@ -145,7 +145,7 @@ export const filters = {
 
 		if (cur != null) {
 			const expr = ctx.expr.clone();
-			if (alias) expr.add({params: [alias]});
+			if (alias) expr.prepend("get", [alias]);
 			const hit = src.hits[src.index] = expr.toString();
 			ctx.write([cur.replace(expr.wrap(expr.initial), expr.wrap(hit))]);
 		}

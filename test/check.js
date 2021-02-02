@@ -33,7 +33,7 @@ describe('custom check', function() {
 	});
 	it('should replace template content and repeat fragment', function() {
 		let node = dom(`<div>
-			<template><p>[list|repeat:p+:item|item.a]</p><p>[item.b]</p></template>
+			<template><p>[list|repeat:p+:item|a]</p><p>[item.b]</p></template>
 		</div>`);
 		let copy = matchdom(node, {
 			list: [{a: "aone", b: "atwo"}, {a: "bone", b: "btwo"}]
