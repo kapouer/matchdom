@@ -1,24 +1,17 @@
 export default class Expression {
-	constructor(str, symbols) {
+	constructor(symbols) {
 		this.filter = 0;
-		if (str instanceof Expression) {
-			this.initial = str.initial;
-			this.path = str.path.slice();
-			this.filter = str.filter;
-			this.filters = str.filters.slice();
-			this.symbols = str.symbols;
-			return this;
-		} else {
-			this.path = [];
-			this.initial = str;
-			this.symbols = symbols;
-		}
-
-		const sa = symbols.append;
+		this.path = [];
+		this.symbols = symbols;
+	}
+	parse(str) {
+		const { append, param } = this.symbols;
+		this.initial = str;
+		const sa = append;
 		const list = str.split(sa);
 		this.filters = [];
 		for (let item of list) {
-			let parts = item.split(symbols.param);
+			let parts = item.split(param);
 			const name = parts.length == 1 ? 'get' : parts.shift();
 			const params = parts.map(function (pt) {
 				try {
@@ -27,22 +20,33 @@ export default class Expression {
 					return pt;
 				}
 			});
-			this.filters.push({ name, params });
+			this.add(name, params);
 		}
+		return this;
+	}
+	add(name, params = []) {
+		this.filters.push({ name, params });
 	}
 	clone() {
-		return new Expression(this);
+		const expr = new Expression(this.symbols);
+		expr.filter = 0;
+		expr.filters = this.filters.slice(this.filter);
+		expr.path = [];
+		expr.initial = this.initial;
+		return expr;
 	}
 	toString() {
-		const sp = this.symbols.param;
+		const { param, append } = this.symbols;
 		return this.filters.map(function (obj) {
-			let expr = obj.name;
-			if (expr.length) expr += sp;
-			if (obj.params.length) expr += obj.params.join(sp);
+			let expr = (obj.name || "get") + param;
+			if (obj.params.length) expr += obj.params.join(param);
 			return expr;
-		}).join(this.symbols.append);
+		}).join(append) || "get:";
 	}
-	ignoreFilters() {
+	wrap(str) {
+		return this.symbols.open + str + this.symbols.close;
+	}
+	drop() {
 		this.filter = this.filters.length;
 	}
 

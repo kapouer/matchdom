@@ -149,7 +149,6 @@ A filter function can have side effects on the document being merged.
 - src: initial place of expression
 - dest: target place of expression
 
-  The initial place is either mutated or removed if the target place is different.
 - expr: expression instance `this.get(this.data, this.path) == val`
 - cancel: boolean, cancels merging of expression
 
@@ -176,10 +175,11 @@ A parsed expression has properties:
 - filter (index of current filter being applied in filters)
 
 and methods:
-- clone()
-- toString()
-- get(data, path, save)
-- ignoreFilters() ignore following filters
+- clone() return a new expression with the not-yet processed filters
+- toString() the original expression with open and closing brackets
+- get(data, path, save) get current value and update this.path is save is true
+- add(name, params=[]) add a filter at the end of the chain
+- drop() stop processing following filters
 
 Expressions can be nested:
 

@@ -57,8 +57,7 @@ export default class Context {
 		let val = this.scope.data;
 		if (val === undefined) val = this.data;
 		if (this.symbols.recheck.test(hit) == false) return undefined;
-		const expr = new Expression(hit, this.symbols);
-		this.expr = expr;
+		const expr = this.expr = new Expression(this.symbols).parse(hit);
 		const befEach = this.hooks.beforeEach;
 		const aftEach = this.hooks.afterEach;
 

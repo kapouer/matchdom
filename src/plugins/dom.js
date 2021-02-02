@@ -141,17 +141,15 @@ export const filters = {
 			node = el.closest(range);
 		}
 
-		const expr = ctx.expr.clone();
-		ctx.expr.ignoreFilters();
-		expr.filters.splice(0, expr.filter);
-		expr.filter = 0;
 		const cur = ctx.read();
 
 		if (cur != null) {
-			const hit = src.hits[src.index] = expr.toString() || 'get:';
-			const { open, close } = ctx.symbols;
-			ctx.write([cur.replace(open + expr.initial + close, open + hit + close)]);
+			const expr = ctx.expr.clone();
+			if (alias) expr.add({params: [alias]});
+			const hit = src.hits[src.index] = expr.toString();
+			ctx.write([cur.replace(expr.wrap(expr.initial), expr.wrap(hit))]);
 		}
+		ctx.expr.drop();
 
 		const srcFrag = ctx.src.node.ownerDocument.createDocumentFragment();
 		const destNode = node.cloneNode(true);
