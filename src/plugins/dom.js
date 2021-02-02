@@ -84,9 +84,9 @@ export const filters = {
 		const { src, dest } = ctx;
 		src.hits[src.index] = null;
 		if (!src.attr) {
-			for (let k = 0; k < dest.hits.length; k++) {
-				if (k !== dest.index) dest.hits[k] = null;
-			}
+			dest.hits.splice(dest.index + 1);
+			dest.hits.splice(0, dest.index);
+			dest.index = 0;
 		}
 
 		let node = dest.node;
