@@ -212,7 +212,7 @@ export default class Context {
 			});
 			return fn(this, ...params);
 		} catch (ex) {
-			console.info(name, "filter throws", ex.toString(), params);
+			console.info(name, "filter throws", ex);
 			return null;
 		}
 	}
