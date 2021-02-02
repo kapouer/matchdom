@@ -40,7 +40,11 @@ class TextNodeIterator {
 		this.root = root;
 	}
 	nextNode() {
-		return this.root.childNodes[this.index++];
+		if (!this.root.childNodes) {
+			if (this.index++ == 0) return this.root;
+		} else {
+			return this.root.childNodes[this.index++];
+		}
 	}
 }
 
@@ -50,12 +54,19 @@ class TextFragment {
 		this.ownerDocument = doc;
 		if (str != null) this.appendChild(this.ownerDocument.createTextNode(str));
 	}
+	replaceChild(node, old) {
+		this.insertBefore(node, old);
+		this.removeChild(old);
+		return node;
+	}
 	appendChild(node) {
 		this.childNodes.push(this.adopt(node));
+		return node;
 	}
 	insertBefore(node, bef) {
 		const pos = this.childNodes.indexOf(bef);
 		this.childNodes.splice(pos, 0, this.adopt(node));
+		return node;
 	}
 	removeChild(node) {
 		const pos = this.childNodes.indexOf(node);
@@ -63,6 +74,7 @@ class TextFragment {
 			this.childNodes.splice(pos, 1);
 			node.parentNode = null;
 		}
+		return node;
 	}
 	get firstChild() {
 		return this.childNodes[0];
@@ -74,7 +86,7 @@ class TextFragment {
 	}
 	adopt(node) {
 		const parent = node.parentNode;
-		if (parent) parent.childNodes.splice(parent.childNodes.indexOf(node), 1);
+		if (parent && parent != this) parent.removeChild(node);
 		node.parentNode = this;
 		return node;
 	}

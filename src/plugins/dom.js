@@ -150,10 +150,12 @@ export const filters = {
 			ctx.write([cur.replace(expr.wrap(expr.initial), expr.wrap(hit))]);
 		}
 		ctx.expr.drop();
+		const doc = ctx.src.node.ownerDocument;
 
-		const srcFrag = ctx.src.node.ownerDocument.createDocumentFragment();
+		const srcFrag = doc.createDocumentFragment();
 		const destNode = node.cloneNode(true);
 		srcFrag.appendChild(destNode);
+
 		let n = prevs;
 		let destSib = destNode;
 		let sib;
@@ -170,6 +172,10 @@ export const filters = {
 			destSib = srcFrag.insertBefore(sib, destSib.nextSibling);
 		}
 
+		const cursor = doc.createTextNode("");
+		const parent = node.parentNode;
+		parent.replaceChild(cursor, node);
+
 		Array.prototype.forEach.call(val, (item, i) => {
 			let obj = Object.assign({}, ctx.data);
 
@@ -180,13 +186,15 @@ export const filters = {
 			} else {
 				Object.assign(obj, item);
 			}
-			const copy = ctx.matchdom.merge(srcFrag.cloneNode(true), obj, ctx.scope);
-			while (copy.firstChild) node.parentNode.insertBefore(copy.firstChild, node);
+			const list = [];
+			const copy = srcFrag.cloneNode(true);
+			while (copy.firstChild) {
+				list.push(parent.insertBefore(copy.firstChild, cursor));
+			}
+			ctx.matchdom.merge(list, obj, ctx.scope);
 		});
-		if (node.parentNode) {
-			if (dest.root == node) dest.root = node.parentNode;
-			node.parentNode.removeChild(node);
-		}
+		if (dest.root == node) dest.root = parent;
+		parent.removeChild(cursor);
 		// the range replaces src.node so there's not point in returning a value
 	},
 	query(ctx, frag, sel) {
