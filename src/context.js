@@ -89,9 +89,8 @@ export default class Context {
 		const { node, attr, tag, root } = this.dest;
 		this.src = { node, attr, tag, root };
 
-		const doc = node.ownerDocument;
+		const doc = src.node.ownerDocument;
 		const list = Array.isArray(hits) ? hits : [hits];
-		const parent = node.parentNode;
 
 		if (tag) {
 			const tagName = list.join('');
@@ -99,20 +98,27 @@ export default class Context {
 			let tag = doc.createElement(tagName, is ? { is } : null);
 			this.replacement = [this.own(tag), node];
 		} else {
+			const parent = node ? node.parentNode : null;
 			let { before, after } = this.dest;
 			let mutates = false;
-			while (before-- > 0) {
+			while (node && before-- > 0) {
 				if (!node.previousSibling) break;
 				parent.removeChild(node.previousSibling);
 			}
-			while (after-- > 0) {
+			while (node && after-- > 0) {
 				if (!node.nextSibling) break;
 				parent.removeChild(node.nextSibling);
 			}
 			if (src.attr && (attr != src.attr || node != src.node)) {
 				clearAttr(src.node, src.attr);
 			}
-			if (!attr) {
+			if (src.node && src.node != node && (!node || !src.node.contains(node)) && src.node.parentNode && !attr) {
+				// dest node is a node and is replaced by another node
+				src.node.parentNode.removeChild(src.node);
+			}
+			if (!node) {
+				// do nothing more
+			} else if (!attr) {
 				for (let i = 0; i < list.length; i++) {
 					let item = list[i];
 					if (node.nodeType > 0 && item == null) continue;
@@ -129,10 +135,6 @@ export default class Context {
 					if (parent && item != node) {
 						node.parentNode.insertBefore(this.own(item), node);
 					}
-				}
-				if (src.node != node && src.node && !src.node.contains(node) && src.node.parentNode) {
-					// dest node is a node and is replaced by another node
-					src.node.parentNode.removeChild(src.node);
 				}
 				if (!mutates) {
 					if (node.children) parent.removeChild(node);

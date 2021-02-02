@@ -146,8 +146,10 @@ A filter function can have side effects on the document being merged.
 - data: the data object available to expressions
 - path: the current path used to get current value from data
 
-- src: initial place of expression
+- src: initial place of expression (should not be changed by a filter)
 - dest: target place of expression
+	if dest.node is different than src.node, src.node is removed
+	likewise for dest.attr and src.attr.
 
 - expr: expression instance `this.get(this.data, this.path) == val`
 - cancel: boolean, cancels merging of expression
