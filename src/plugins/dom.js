@@ -43,7 +43,7 @@ export const formats = {
 };
 
 export const filters = {
-	with(ctx, val, range) {
+	at(ctx, val, range) {
 		const { dest } = ctx;
 		dest.hits.splice(0, dest.index);
 		dest.hits.splice(1);
@@ -75,8 +75,11 @@ export const filters = {
 		}
 		return val;
 	},
-	without(ctx, val, range) {
-		ctx.run('else', val, 'with', range);
+	orat(ctx, val, range) {
+		return ctx.run('else', val, 'at', range);
+	},
+	ifat(ctx, val, range) {
+		ctx.run('else', val, 'at', range);
 		return "";
 	},
 	to(ctx, val, to) {

@@ -26,7 +26,7 @@ md.extend({
 const mergedDom = md.merge(HTML(`<div id="model" class="[myclass]">
 	<h[n]>Header</h[n]>
 	<span>[data.text]</span>
-	<img src="[data.icon|without:*]">
+	<img src="[data.icon|orat:*]">
 </div>`)), {
 	n: 4,
 	myclass: "yes",
@@ -370,12 +370,12 @@ Numeric or dates are compared as such, strings are compared using localeCompare.
 While repeat and magnet can be used as pure string filters in a limited fashion,
 they are meant to manipulate dom nodes.
 
-### with:range
+### at:range
 
 By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
 
-This filter widens what the expression will replace (or not) depending on `range`:
+This filter widens the `range` the expression will replace:
 - empty range: the whole string, attribute, or text node.
 - selector range: the closest selected parent
 - wildcard(s): the nth selected parent
@@ -385,19 +385,21 @@ If used in conjunction with the "to:" filter, with allows one to replace an
 attribute on selected node(s), instead of replacing the nodes themselves.
 
 Examples:
-- `with:div.card` selects `closest('div.card')`.
-- `with:+div.card+` selects also the previous and next siblings of the ancestor.
-- `with:+**++|to:class` selects one sibling before and two siblings after parent node,
-  and sets the class on them.
+- `at:div.card` selects `closest('div.card')`.
+- `at:+div.card+` selects also the previous and next siblings of the ancestor.
+- `at:+**++|to:class` selects one sibling before and two siblings after parent node, and sets the class on them #FIXME
 
+### orat:range
 
-### without:range
+A shortcut for `else:at:${range}` removes a range when value is null-ish.
 
-This is a shortcut for `else:with:${range}|const:`.
+### ifat:range
+
+This is a shortcut for `orat:${range}|const:`.
 
 If the value is falsey, the range is removed.
 
-The value itself is not shown.
+The value is never shown.
 
 
 ### to:attrName or *
@@ -409,8 +411,8 @@ Moves where the expression is merged:
 
 Examples:
 - `to:src` fills the src attribute of the current node
-- `with:div|to:class` fills the class attribute of the closest `div`
-- `with:p|then:to:class|else:to:*` fills the class attribute of closest `p` or remove it entirely
+- `at:div|to:class` fills the class attribute of the closest `div`
+- `at:p|then:to:class|else:to:*` fills the class attribute of closest `p` or remove it entirely
 
 
 ### repeat:range:alias

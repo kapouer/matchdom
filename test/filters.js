@@ -279,7 +279,7 @@ describe('html filter', function() {
 	it('should support magnet in xml', function() {
 		const xml = `<?xml version="1.0" encoding="utf-8"?>
 		<root><content>
-			[content|with:content]
+			[content|orat:content]
 		</content></root>`;
 		var node = (new DOMParser()).parseFromString(xml, "application/xml");
 		let copy = matchdom(node, {
@@ -754,7 +754,7 @@ describe('to filter', function() {
 	});
 
 	it('should fill current node and set an attribute on parent node using two separate expressions', function() {
-		let node = dom(`<div><p data-fill="[field|to:]" data-attr="[field2|with:div|to:class]">astuffb</p></div>`);
+		let node = dom(`<div><p data-fill="[field|to:]" data-attr="[field2|at:div|to:class]">astuffb</p></div>`);
 		let copy = matchdom(node, {
 			field: 'word',
 			field2: 'myclass'
