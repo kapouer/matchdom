@@ -132,11 +132,15 @@ const filters = {
 };
 ```
 
-If a type is `null` (the keyword, not the string), then the matching param is not checked.
+If a type is empty or 'any', a value of any type (except undefined) is allowed.
 
-If a type is an empty string, or '*' or 'any' then any type is valid and param is required (non-null).
+If a type is '?' or 'any?' then even an undefined value is allowed and converted to null.
 
-If a type is '?', '*?', 'any?' then any type is valid and default value is '' (empty string).
+If a type ends with '*' then an unknown amount of parameters is allowed,
+of that type:
+- '*' allows any non-null parameters
+- '?*' allows any parameters, even null
+- 'int?0*' allows integers with a default value of zero
 
 Available types are the same as for the "as:" filter, with the addition of:
 - 'filter': checks the parameter is a filter name,
@@ -166,7 +170,8 @@ A place is an object with these properties related to where the expression sits:
 - node: node or text node
 - attr: attribute name (boolean attributes and DOMTokenList are supported)
 - tag: boolean wether the expression is in a tag name
-  Since tag names	are case-insensitive, the expression must work in lowercase
+  Since tag names are case-insensitive, the expression must work in lowercase,
+	some filters cannot be used in tag names - it's usually avoidable.
 - root: the ancestor node passed to matchdom
 - hits: list of strings to process
 - index: the current index hits

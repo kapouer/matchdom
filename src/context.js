@@ -205,42 +205,70 @@ export default class Context {
 			console.info(name, "filter is missing");
 			return val;
 		}
-		it = Array.isArray(it) ? it.slice() : [it];
+		const typed = Array.isArray(it);
+		it = typed ? it.slice() : [it];
 		const fn = it.pop();
 		try {
-			it.forEach((arg, i) => {
-				if (arg === null) return; // no check
-				const [type, def] = arg.split('?');
-				params[i] = this.check(val, params[i], type, def);
-			});
+			let mtype;
+			for (let i = 0; i < it.length; i++) {
+				let arg = it[i];
+				if (arg == null) {
+					throw new Error("missing type");
+				}
+				if (arg.endsWith('*')) {
+					if (mtype) {
+						throw new Error("cannot check multiple lists");
+					}
+					arg = arg.slice(0, -1);
+					mtype = arg;
+				}
+				params[i] = this.check(val, params[i], arg);
+			}
+			if (typed && it.length < params.length) {
+				if (params.length == 2 && params[1] === null) {
+					// [myfilter:] has a mandatory empty param
+				} else if (!mtype) {
+					throw new ParamError("length");
+				} else {
+					for (let i = it.length; i < params.length; i++) {
+						params[i] = this.check(val, params[i], mtype);
+					}
+				}
+			}
 			return fn(this, ...params);
 		} catch (ex) {
+			console.error(ex);
+			if (this.matchdom.debug) throw ex;
 			// eslint-disable-next-line no-console
 			console.warn(name, "filter throws", ex);
 			return null;
 		}
 	}
-	check(val, str, type, def) {
+	check(val, str, arg) {
+		let [type, def] = arg.split("?");
+		if (type === "") type = "any";
 		if (str == null) {
 			if (def == null) {
-				throw new ParamError();
-			} else if (type) {
+				throw new ParamError("");
+			} else if (type == "any") {
+				return null;
+			} else {
 				str = def;
 			}
 		}
-		if (type) {
-			if (type == "filter") {
-				if (this.plugins.filters[str] == null && (!val[str] || typeof val[str] != "function")) {
-					throw new ParamError(val, type);
-				}
-			} else if (type == "path") {
-				str = this.toPath(str, val);
-			} else if (type == "any" || type == "*") {
-				// check nothing
-			} else {
-				str = this.run('as', str, type);
+
+		if (type == "filter") {
+			if (this.plugins.filters[str] == null && (!val[str] || typeof val[str] != "function")) {
+				throw new ParamError(val, type);
 			}
+		} else if (type == "path") {
+			str = this.toPath(str, val);
+		} else if (type == "any") {
+			// check nothing
+		} else {
+			str = this.run('as', str, type);
 		}
+
 		return str;
 	}
 	isSimpleValue(val) {
@@ -269,14 +297,15 @@ function clearAttr(node, attr) {
 class ParamError extends Error {
 	constructor(type, val) {
 		super();
+		this.name = "ParamError";
 		this.type = type;
 		this.val = val;
 	}
 	toString() {
 		if (!this.type && this.val == null) {
-			return "ParamError: missing param";
+			return `${this.name}: missing param`;
 		} else {
-			return `ParamError: ${this.val} is not of type ${this.type}`;
+			return `${this.name}: ${this.val} is not of type ${this.type}`;
 		}
 	}
 }

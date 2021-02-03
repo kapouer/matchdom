@@ -36,7 +36,7 @@ export const filters = {
 			return ctx.run(op, str, data);
 		});
 	}],
-	map: ['array', 'string', (ctx, list, name, ...params) => {
+	map: ['array', 'string', '?*', (ctx, list, name, ...params) => {
 		return list.map((item) => {
 			return ctx.run(name, item, ...params);
 		});
@@ -52,7 +52,7 @@ export const filters = {
 	nth: ['array', 'int?1', 'int?0', (ctx, list, step, off) => {
 		return list.filter((item, i) => (i - off) % step == 0);
 	}],
-	sort: ['array', 'path', 'bool?false', ({expr}, list, path, nullsFirst) => {
+	sort: ['array', 'path?', 'bool?false', ({expr}, list, path, nullsFirst) => {
 		return list.sort((ia, ib) => {
 			let a = expr.get(ia, path);
 			let b = expr.get(ib, path);

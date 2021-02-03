@@ -7,7 +7,7 @@ import * as Operator from "./operator.js";
 
 const Base = {
 	filters: {
-		get: [null, 'path', (ctx, data, path) => {
+		get: ['any', 'path?', (ctx, data, path) => {
 			return ctx.expr.get(data, path, true);
 		}],
 		path({ expr, symbols }, val, part) {
@@ -22,7 +22,7 @@ const Base = {
 				return path.join(symbols.path);
 			}
 		},
-		alias: [null, 'string', (ctx, data, alias) => {
+		alias: ['any', 'string', (ctx, data, alias) => {
 			ctx.data[alias] = data;
 			return data;
 		}]

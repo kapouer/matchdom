@@ -119,7 +119,7 @@ describe('types', function () {
 	it('should not check value when type is null', function () {
 		let ok = false;
 		matchdom('[val|mycheck:false]', { val: 10 }, {
-			mycheck: [null, 'bool', (ctx, val, cte) => {
+			mycheck: ['any', 'bool', (ctx, val, cte) => {
 				assert.strictEqual(val, 10);
 				assert.strictEqual(cte, false);
 				ok = true;
@@ -131,7 +131,7 @@ describe('types', function () {
 	it('should allow null value when type is null', function () {
 		let ok = false;
 		matchdom('[val|mycheck:false]', { val: null }, {
-			mycheck: [null, 'bool', (ctx, val, cte) => {
+			mycheck: ['any?', 'bool', (ctx, val, cte) => {
 				assert.strictEqual(val, null);
 				assert.strictEqual(cte, false);
 				ok = true;
@@ -155,7 +155,7 @@ describe('types', function () {
 	});
 	it('should require any value when type is "any"', function () {
 		let ok = false;
-		matchdom('[val|mycheck:1]', { val: null }, {
+		matchdom('[val|mycheck:1]', { val: undefined }, {
 			mycheck: ['any', 'bool', (ctx, val, cte) => {
 				ok = true;
 				return val;
@@ -167,7 +167,7 @@ describe('types', function () {
 		let ok = false;
 		matchdom('[val|mycheck:1]', { val: null }, {
 			mycheck: ['any?', 'bool', (ctx, val, cte) => {
-				assert.strictEqual(val, "");
+				assert.strictEqual(val, null);
 				ok = true;
 				return val;
 			}]

@@ -120,7 +120,7 @@ export const filters = {
 
 		return val;
 	},
-	repeat(ctx, val, range, alias) {
+	repeat: ['?', 'string?', 'string?', (ctx, val, range, alias) => {
 		if (!val || typeof val != "object") return val;
 
 		const { src, dest } = ctx;
@@ -199,11 +199,11 @@ export const filters = {
 		if (dest.root == node) dest.root = parent;
 		parent.removeChild(cursor);
 		// the range replaces src.node so there's not point in returning a value
-	},
+	}],
 	query(ctx, frag, sel) {
 		return frag.querySelector(sel);
 	},
-	queryall(ctx, frag, sel) {
+	queryAll(ctx, frag, sel) {
 		const nf = frag.ownerDocument.createDocumentFragment();
 		frag.querySelectorAll(sel).forEach((node) => nf.appendChild(node));
 		return nf;

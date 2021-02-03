@@ -14,6 +14,7 @@ export default class Expression {
 			let parts = item.split(param);
 			const name = parts.length == 1 ? 'get' : parts.shift();
 			const params = parts.map(function (pt) {
+				if (pt === "") return null;
 				try {
 					return decodeURIComponent(pt);
 				} catch (ex) {

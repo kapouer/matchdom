@@ -12,7 +12,7 @@ export const filters = {
 		if (val.includes(str)) return val;
 		else return null;
 	}],
-	in: ['?', 'array', (x, val, ...list) => {
+	in: ['?', 'any*', (x, val, ...list) => {
 		if (list.includes(val)) return val;
 		else return null;
 	}],
