@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { Matchdom, HTML as dom } from 'matchdom';
-const matchdom = (node, data, filters) => new Matchdom().extend({ filters }).merge(node, data);
+const matchdom = (node, data, filters) => new Matchdom({debug:true}).extend({ filters }).merge(node, data);
 
 describe('flow filters', function () {
 	describe('then', function () {
@@ -51,6 +51,15 @@ describe('flow filters', function () {
 			let node = dom(`<p>[str|or:yes]</p>`);
 			let copy = matchdom(node, {});
 			assert.equal(copy.outerHTML, '<p>yes</p>');
+		});
+		it('should fail with additional parameters', function () {
+			let node = dom(`<p>[str|or:yes:oui]</p>`);
+			assert.throws(() => {
+				matchdom(node, {});
+			}, {
+				name: 'ParamError',
+				type: 'length'
+			});
 		});
 	});
 

@@ -5,9 +5,10 @@ import Context from './context.js';
 import TextDocument from './fragment.js';
 
 export default class Matchdom {
-	constructor({ hooks = {}, symbols = {}, visitor } = {}) {
+	constructor({ debug = false, hooks = {}, symbols = {}, visitor } = {}) {
 		this.visitor = visitor;
 		this.hooks = hooks;
+		this.debug = debug;
 		this.symbols = Object.assign({}, Symbols, symbols);
 		this.plugins = new Plugins();
 	}
