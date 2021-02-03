@@ -5,11 +5,16 @@ import Context from './context.js';
 import TextDocument from './fragment.js';
 
 export default class Matchdom {
-	constructor({ filters = {}, formats = {}, types = {}, hooks = {}, symbols = {}, visitor }) {
+	constructor({ hooks = {}, symbols = {}, visitor } = {}) {
 		this.visitor = visitor;
 		this.hooks = hooks;
 		this.symbols = Object.assign({}, Symbols, symbols);
-		this.plugins = new Plugins({ filters, formats, types });
+		this.plugins = new Plugins();
+	}
+
+	extend(plugin) {
+		this.plugins.add(plugin);
+		return this;
 	}
 
 	merge(list, data, scope) {

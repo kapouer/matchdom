@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import { Matchdom, HTML as dom } from 'matchdom';
 const matchdom = (node, data, filters) => {
-	return (new Matchdom({ filters })).merge(node, data);
+	return (new Matchdom()).extend({ filters }).merge(node, data);
 };
 
 describe('integration', function() {

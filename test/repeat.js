@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Matchdom, HTML as dom } from 'matchdom';
 const matchdom = (node, data, filters, scope) => {
-	return (new Matchdom({ filters })).merge(node, data, scope);
+	return (new Matchdom()).extend({ filters }).merge(node, data, scope);
 };
 
 

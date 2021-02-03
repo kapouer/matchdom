@@ -34,15 +34,18 @@ const Defaults = [
 ];
 
 export default class Plugins {
-	constructor(plugin) {
+	constructor() {
 		this.filters = Object.create(null);
 		this.types = Object.create(null);
 		this.formats = Object.create(null);
 
-		Defaults.concat(plugin).forEach((plugin) => {
-			Object.assign(this.filters, plugin.filters);
-			Object.assign(this.types, plugin.types);
-			Object.assign(this.formats, plugin.formats);
+		Defaults.forEach((plugin) => {
+			this.add(plugin);
 		});
+	}
+	add(plugin) {
+		Object.assign(this.filters, plugin.filters);
+		Object.assign(this.types, plugin.types);
+		Object.assign(this.formats, plugin.formats);
 	}
 }

@@ -14,12 +14,14 @@ Features:
 ```js
 import {Matchdom, HTML, XML} from 'matchdom';
 const md = new Matchdom({
-	filters = {},
-	types = {},
-	formats = {},
 	hooks = {},
 	symbols = {},
-	filterNode = () => true
+	visitor = () => true
+});
+md.extend({
+	filters = {},
+	types = {},
+	formats = {}
 });
 const mergedDom = md.merge(HTML(`<div id="model" class="[myclass]">
 	<h[n]>Header</h[n]>
