@@ -203,7 +203,7 @@ export const filters = {
 	query(ctx, frag, sel) {
 		return frag.querySelector(sel);
 	},
-	queryAll(ctx, frag, sel) {
+	queryall(ctx, frag, sel) {
 		const nf = frag.ownerDocument.createDocumentFragment();
 		frag.querySelectorAll(sel).forEach((node) => nf.appendChild(node));
 		return nf;
