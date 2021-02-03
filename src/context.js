@@ -237,7 +237,6 @@ export default class Context {
 			}
 			return fn(this, ...params);
 		} catch (ex) {
-			console.error(ex);
 			if (this.matchdom.debug) throw ex;
 			// eslint-disable-next-line no-console
 			console.warn(name, "filter throws", ex);
