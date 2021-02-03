@@ -216,7 +216,7 @@ describe('what', function() {
 		let node = dom(`<p>[obj.toto|drop:]</p>`);
 		let copy = matchdom(node, {obj: {toto:1}}, {
 			drop: function (ctx, val, what) {
-				ctx.cancel = true
+				ctx.cancel = true;
 				return val;
 			}
 		});
