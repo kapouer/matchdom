@@ -201,6 +201,7 @@ export default class Context {
 			};
 		}
 		if (it == null) {
+			// eslint-disable-next-line no-console
 			console.info(name, "filter is missing");
 			return val;
 		}
@@ -214,6 +215,7 @@ export default class Context {
 			});
 			return fn(this, ...params);
 		} catch (ex) {
+			// eslint-disable-next-line no-console
 			console.warn(name, "filter throws", ex);
 			return null;
 		}
