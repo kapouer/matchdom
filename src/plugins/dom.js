@@ -75,10 +75,10 @@ export const filters = {
 		}
 		return val;
 	},
-	orat(ctx, val, range) {
+	orAt(ctx, val, range) {
 		return ctx.run('else', val, 'at', range);
 	},
-	ifat(ctx, val, range) {
+	ifAt(ctx, val, range) {
 		ctx.run('else', val, 'at', range);
 		return "";
 	},

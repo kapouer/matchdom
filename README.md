@@ -26,7 +26,7 @@ md.extend({
 const mergedDom = md.merge(HTML(`<div id="model" class="[myclass]">
 	<h[n]>Header</h[n]>
 	<span>[data.text]</span>
-	<img src="[data.icon|orat:*]">
+	<img src="[data.icon|orAt:*]">
 </div>`)), {
 	n: 4,
 	myclass: "yes",
@@ -389,13 +389,13 @@ Examples:
 - `at:+div.card+` selects also the previous and next siblings of the ancestor.
 - `at:+**++|to:class` selects one sibling before and two siblings after parent node, and sets the class on them #FIXME
 
-### orat:range
+### orAt:range
 
 A shortcut for `else:at:${range}` removes a range when value is null-ish.
 
-### ifat:range
+### ifAt:range
 
-This is a shortcut for `orat:${range}|const:`.
+This is a shortcut for `orAt:${range}|const:`.
 
 If the value is falsey, the range is removed.
 

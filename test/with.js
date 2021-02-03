@@ -106,9 +106,9 @@ describe('at filter', function() {
 
 });
 
-describe('ifat filter', function() {
+describe('ifAt filter', function() {
 	it('should remove current node', function() {
-		let node = dom(`<div><span>test [test|ifat:*]</span></div>`);
+		let node = dom(`<div><span>test [test|ifAt:*]</span></div>`);
 		let copy = matchdom(node, {
 			test: false
 		});
@@ -116,7 +116,7 @@ describe('ifat filter', function() {
 	});
 
 	it('should not remove current node', function() {
-		let node = dom(`<div><span>test[test|ifat:*]</span></div>`);
+		let node = dom(`<div><span>test[test|ifAt:*]</span></div>`);
 		let copy = matchdom(node, {
 			test: true
 		});
@@ -124,7 +124,7 @@ describe('ifat filter', function() {
 	});
 
 	it('should remove current attribute', function() {
-		let node = dom(`<div><span class="some[test|ifat:]">test</span></div>`);
+		let node = dom(`<div><span class="some[test|ifAt:]">test</span></div>`);
 		let copy = matchdom(node, {
 			test: 0
 		});

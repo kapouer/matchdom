@@ -279,7 +279,7 @@ describe('html filter', function() {
 	it('should support magnet in xml', function() {
 		const xml = `<?xml version="1.0" encoding="utf-8"?>
 		<root><content>
-			[content|orat:content]
+			[content|orAt:content]
 		</content></root>`;
 		var node = (new DOMParser()).parseFromString(xml, "application/xml");
 		let copy = matchdom(node, {

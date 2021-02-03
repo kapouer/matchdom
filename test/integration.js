@@ -29,7 +29,7 @@ describe('integration', function() {
 	});
 
 	it('should remove current attribute edge case', function() {
-		let node = dom(`<div><link rel="icon" href="[$site.favicon|orat:*|as:url]?format=ico"></div>`);
+		let node = dom(`<div><link rel="icon" href="[$site.favicon|orAt:*|as:url]?format=ico"></div>`);
 		let copy = matchdom(node, {
 			$site: {}
 		});
@@ -37,7 +37,7 @@ describe('integration', function() {
 	});
 
 	it('should remove current node', function() {
-		let node = dom(`<div><a href="" data-href="[test|orat:a|as:url]">test</a></div>`);
+		let node = dom(`<div><a href="" data-href="[test|orAt:a|as:url]">test</a></div>`);
 		let copy = matchdom(node, {
 			// test: null
 		});
@@ -46,7 +46,7 @@ describe('integration', function() {
 
 	it('should remove currently repeated node if magnet kicks in', function() {
 		let node = dom(`<table>
-			<tr><td>[rows|repeat:tr|val]</td><td>[val][col|orat:tr]</td></tr>
+			<tr><td>[rows|repeat:tr|val]</td><td>[val][col|orAt:tr]</td></tr>
 		</table>`);
 		let copy = matchdom(node, {
 			rows: [{
@@ -66,7 +66,7 @@ describe('integration', function() {
 	});
 
 	it('should remove current text node and previous node', function() {
-		let node = dom(`<div><br><span>test</span>[test|orat:+*]</div>`);
+		let node = dom(`<div><br><span>test</span>[test|orAt:+*]</div>`);
 		let copy = matchdom(node, {
 			test: false
 		});
