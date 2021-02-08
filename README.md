@@ -67,15 +67,18 @@ Types can be used by filters typings, or by "to:" and "is:" filters.
 
 Formats can be used by "to:" filter.
 
-Default types (and their shorthands):
+Basic types (and their shorthands):
 - undefined, none: converts null-ish to undefined, leave other values intact
 - null: converts falsey to null, leave other values intact
 - integer, int: try to parseInt, return null if NaN
 - string, str: toString
 - boolean, bool: "true", "1" and truey to true, "false", "0", and falsey to false
 - float, num, numeric: try to parseFloat, return null if NaN
+
+Custom types (these can be overriden by plugins):
 - date: try new Date(val), return null if not a date
 - array: wrap non-array-like values into an array
+- json: parse json string
 
 Default formats:
 - text: converts string with newlines by a dom fragment with hard breaks

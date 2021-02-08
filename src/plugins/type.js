@@ -3,6 +3,15 @@ export const types = {
 		const date = new Date(val);
 		if (Number.isNaN(date.getDate())) return null;
 		else return date;
+	},
+	json(ctx, val) {
+		if (typeof val != "string") return null;
+		try {
+			val = JSON.parse(val);
+		} catch (ex) {
+			return null;
+		}
+		return val;
 	}
 };
 export const filters = {

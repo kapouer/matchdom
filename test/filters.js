@@ -549,7 +549,7 @@ describe('post', function() {
 	});
 });
 
-describe('date filter', function() {
+describe('date type', function() {
 	it('toLocaleString', function() {
 		let node = dom(`<p>[str|as:date|toLocaleString:en]</p>`);
 		let copy = matchdom(node, {
@@ -564,6 +564,25 @@ describe('date filter', function() {
 			str: '2018-03-09T11:12:56.739Z'
 		});
 		assert.equal(copy.outerHTML, '<p>2018</p>');
+	});
+});
+
+
+describe('json type', function () {
+	it('should parse string', function () {
+		let node = dom(`<p>[str|as:json|test]</p>`);
+		let copy = matchdom(node, {
+			str: '{"test":10}'
+		});
+		assert.equal(copy.outerHTML, '<p>10</p>');
+	});
+
+	it('should fail to parse', function () {
+		let node = dom(`<p>[str|as:json|test]</p>`);
+		let copy = matchdom(node, {
+			str: '{test:10}'
+		});
+		assert.equal(copy.outerHTML, '<p></p>');
 	});
 });
 
