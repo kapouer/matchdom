@@ -124,7 +124,7 @@ export const filters = {
 
 		return val;
 	},
-	repeat: ['?', 'string?', 'string?', (ctx, val, range, alias) => {
+	repeat: ['?', 'string?', 'string?', 'filter?', (ctx, val, range, alias, place) => {
 		if (!val || typeof val != "object") return val;
 
 		const { src, dest } = ctx;
@@ -193,12 +193,26 @@ export const filters = {
 			} else {
 				Object.assign(obj, item);
 			}
-			const list = [];
-			const copy = srcFrag.cloneNode(true);
-			while (copy.firstChild) {
-				list.push(parent.insertBefore(copy.firstChild, cursor));
+			const dstFrag = ctx.matchdom.merge(srcFrag.cloneNode(true), obj, ctx.scope);
+			let child;
+			while ((child = dstFrag.firstChild)) {
+				if (place) {
+					ctx.src = {
+						node: cursor,
+						root: parent
+					};
+					ctx.dest = {
+						node: child,
+						root: dstFrag
+					};
+					ctx.run(place, item);
+					if (child.parentNode == dstFrag) dstFrag.removeChild(child);
+				} else {
+					parent.insertBefore(dstFrag.firstChild, cursor);
+				}
 			}
-			ctx.matchdom.merge(list, obj, ctx.scope);
+			ctx.src = src;
+			ctx.dest = dest;
 		});
 		if (dest.root == node) dest.root = parent;
 		parent.removeChild(cursor);

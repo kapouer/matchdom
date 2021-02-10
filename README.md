@@ -423,7 +423,7 @@ Examples:
 - `at:p|then:to:class|else:to:*` fills the class attribute of closest `p` or remove it entirely
 
 
-### repeat:range:alias
+### repeat:range:alias:place
 
 Expect the value to be iterable (array, collection, etc...).
 
@@ -437,6 +437,19 @@ are equivalent:
 - `[items|repeat:div:my|id] has some [my.text]`
 
 The first case is shorter to write but overwrites current scope with iterated item keys, while the alias allows to avoid that.
+
+The place parameter may be a custom filter name called *after* the iterated range
+has been merged:
+- value is iterated item,
+- ctx.src.node is the insertion cursor (an empty text node) in ctx.src.root
+- ctx.dest.root the fragment containing the merged range
+- ctx.dest.node the current node in the fragment.
+
+The place filter may choose to:
+- insert ctx.dest.node before ctx.src.node (default behavior)
+- insert it somewhere else
+- do nothing in which case the node is dropped
+
 
 ### query: selector
 
