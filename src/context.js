@@ -257,7 +257,7 @@ export default class Context {
 		}
 
 		if (type == "filter") {
-			if (this.plugins.filters[str] == null && (!val[str] || typeof val[str] != "function")) {
+			if (str && this.plugins.filters[str] == null && (!val[str] || typeof val[str] != "function")) {
 				throw new ParamError(val, type);
 			}
 		} else if (type == "path") {
