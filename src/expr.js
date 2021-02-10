@@ -51,7 +51,12 @@ export default class Expression {
 		return this.symbols.open + str + this.symbols.close;
 	}
 	drop() {
-		this.filter = this.filters.length;
+		if (this.filter != this.filters.length) {
+			this.filter = this.filters.length;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	get(data, path, save) {

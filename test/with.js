@@ -131,5 +131,13 @@ describe('ifAt filter', function() {
 		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
 	});
 
+	it('should not process following filters', function () {
+		let node = dom(`<div><span class="some[test|ifAt:|ifAt:*]">test</span></div>`);
+		let copy = matchdom(node, {
+			test: 0
+		});
+		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
+	});
+
 });
 

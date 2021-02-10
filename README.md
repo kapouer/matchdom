@@ -192,7 +192,7 @@ and methods:
 - get(data, path, save) get current value and update this.path is save is true
 - append(name, params=[]) a filter to the list
 - prepend(name, params=[]) a filter at current index
-- drop() stop processing following filters
+- drop() stop processing following filters, return true if there was any
 
 Expressions can be nested:
 

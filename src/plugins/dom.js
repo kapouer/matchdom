@@ -80,6 +80,10 @@ export const filters = {
 	},
 	ifAt(ctx, val, range) {
 		ctx.run('else', val, 'at', range);
+		if (ctx.expr.drop()) {
+			// eslint-disable-next-line no-console
+			console.info("ifAt should not be followed by other filters");
+		}
 		return "";
 	},
 	to(ctx, val, to) {
