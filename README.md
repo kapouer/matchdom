@@ -81,7 +81,7 @@ Basic types (and their shorthands):
 - float, num, numeric: try to parseFloat, return null if NaN
 
 Custom types (these can be overriden by plugins):
-- date: try new Date(val), return null if not a date
+- date: try new Date(val), return null if not a date, accepts 'now'
 - array: wrap non-array-like values into an array
 - json: parse json string
 

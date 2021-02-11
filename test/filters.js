@@ -558,6 +558,15 @@ describe('date type', function() {
 		assert.equal(copy.outerHTML, '<p>3/9/2018, 12:12:56 PM</p>');
 	});
 
+	it('accepts "now" as keyword', function() {
+		let node = dom(`<p>[str|as:date|toLocaleTimeString:fr-FR]</p>`);
+		let now = new Date();
+		let copy = matchdom(node, {
+			str: 'now'
+		});
+		assert.equal(copy.outerHTML, `<p>${now.toLocaleTimeString('fr-FR')}</p>`);
+	});
+
 	it('getYear', function() {
 		let node = dom(`<p>[str|as:date|getFullYear:]</p>`);
 		let copy = matchdom(node, {

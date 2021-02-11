@@ -1,6 +1,7 @@
 export const types = {
 	date(ctx, val) {
-		const date = new Date(val);
+		if (val == null) return val;
+		const date = val == "now" ? new Date() : new Date(val);
 		if (Number.isNaN(date.getDate())) return null;
 		else return date;
 	},
