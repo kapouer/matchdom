@@ -1,4 +1,3 @@
-import './polyfills.js';
 import Plugins from './plugins/index.js';
 import Symbols from './symbols.js';
 import Context from './context.js';
