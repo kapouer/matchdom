@@ -2,6 +2,7 @@ import { serializeUrl, parseUrl, HTML, XML } from '../utils.js';
 
 export const formats = {
 	text(ctx, val) {
+		if (val == null) return val;
 		val = val.toString();
 		const doc = ctx.src.node.ownerDocument;
 		if (!doc) return val;
@@ -14,9 +15,11 @@ export const formats = {
 		return frag;
 	},
 	html(ctx, val) {
+		if (val == null) return val;
 		return ctx.own(HTML(val));
 	},
 	xml(ctx, val) {
+		if (val == null) return val;
 		return ctx.own(XML(val));
 	},
 	url(ctx, val) {
@@ -124,9 +127,7 @@ export const filters = {
 
 		return val;
 	},
-	repeat: ['?', 'string?', 'string?', 'filter?', (ctx, val, range, alias, place) => {
-		if (!val || typeof val != "object") return val;
-
+	repeat: ['array?', 'string?', 'string?', 'filter?', (ctx, val, range, alias, place) => {
 		const { src, dest } = ctx;
 		let node = dest.node;
 		const el = node.children ? node : node.parentNode;

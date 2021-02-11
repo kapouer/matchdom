@@ -252,7 +252,7 @@ export default class Context {
 			} else if (type == "any") {
 				return null;
 			} else {
-				str = def;
+				str = def === "" ? null : def;
 			}
 		}
 
@@ -282,8 +282,8 @@ export default class Context {
 	}
 
 	toPath(str, ctxValue) {
-		if (str == null) return [];
-		if (str === "" && ctxValue !== undefined && this.isSimpleValue(ctxValue)) return [];
+		if (str == null) str = "";
+		if (!str && ctxValue !== undefined && this.isSimpleValue(ctxValue)) return [];
 		return str.split(this.symbols.path);
 	}
 }

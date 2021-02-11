@@ -83,6 +83,14 @@ describe('repeating', function () {
 		</div>`).outerHTML);
 	});
 
+	it('should not repeat empty array', function () {
+		let node = dom(`<div><span>[arr|repeat:*|value]</span></div>`);
+		let copy = matchdom(node, {
+			arr: []
+		});
+		assert.equal(copy.outerHTML, dom(`<div></div>`).outerHTML);
+	});
+
 	it('should repeat array every odd item', function () {
 		let node = dom(`<div>
 			<span>[arr|nth:2:1|repeat:*|]</span>

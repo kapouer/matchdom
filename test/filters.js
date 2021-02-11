@@ -235,13 +235,21 @@ describe('what', function() {
 	});
 });
 
-describe('html filter', function() {
+describe('html type', function() {
 	it('should select nodes', function() {
 		let node = dom(`<p>[str|as:html|queryAll:span]</p>`);
 		let copy = matchdom(node, {
 			str: '<img src="toto"><span>test</span><i>test</i><span>toto</span>'
 		});
 		assert.equal(copy.outerHTML, '<p><span>test</span><span>toto</span></p>');
+	});
+
+	it('should allow null val', function() {
+		let node = dom(`<p>[str|as:html]</p>`);
+		let copy = matchdom(node, {
+			str: null
+		});
+		assert.equal(copy.outerHTML, '<p></p>');
 	});
 
 	it('should support xml', function() {

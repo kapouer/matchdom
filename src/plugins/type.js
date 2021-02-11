@@ -34,13 +34,13 @@ export const filters = {
 		} else if (type == "str" || type == "string") {
 			if (val == null) return "";
 			else return val.toString();
-		} else if (val == null) {
-			return val;
 		} else if (type == "int" || type == "integer") {
+			if (val == null) return val;
 			val = Number.parseInt(val);
 			if (Number.isNaN(val)) val = null;
 			return val;
 		} else if (type == "float" || type == "num" || type == "numeric") {
+			if (val == null) return val;
 			val = Number.parseFloat(val);
 			if (Number.isNaN(val)) val = null;
 			return val;
