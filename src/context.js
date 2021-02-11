@@ -248,7 +248,7 @@ export default class Context {
 		if (type === "") type = "any";
 		if (str == null) {
 			if (def == null) {
-				throw new ParamError("");
+				throw new ParamError("Missing required parameter of type " + arg);
 			} else if (type == "any") {
 				return null;
 			} else {
