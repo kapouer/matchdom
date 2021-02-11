@@ -41,10 +41,15 @@ const expectedHTML = `<div id="model" class="yes">
 assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
 ```
 
+- merge(dom, data, scope)
+- extend({filters, types, formats} or an array of plugins)
+
 
 ## compatibility
 
-- DOM parsing needs: `<template>` for HTML, DOMParser for XML
+- there is a crucial dependency on `<template>` for the html fragment parser.
+
+Consider using a service like polyfill.io for older browsers support.
 
 
 
@@ -99,7 +104,7 @@ const types = {
 		return DateTime.fromISO(val);
 	}
 };
-const md = new Matchdom({types});
+const md = new Matchdom().extend(types)
 ```
 
 ## filters

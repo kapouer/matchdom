@@ -12,8 +12,9 @@ export default class Matchdom {
 		this.plugins = new Plugins();
 	}
 
-	extend(plugin) {
-		this.plugins.add(plugin);
+	extend(plugins) {
+		plugins = Array.isArray(plugins) ? plugins : [plugins];
+		plugins.forEach(plugin => this.plugins.add(plugin));
 		return this;
 	}
 
