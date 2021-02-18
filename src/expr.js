@@ -59,9 +59,18 @@ export default class Expression {
 		}
 	}
 
-	get(data, path, save) {
+	get(data, path, root) {
 		if (path.length == 0) return data;
-		if (save) this.path.push(...path);
+		if (root) {
+			if (path[0] !== "") {
+				// absolute path
+				data = root;
+				this.path = path.slice();
+			} else {
+				path = path.slice(1);
+				this.path.push(...path);
+			}
+		}
 		let n = 0;
 		for (let i = 0; i < path.length; i++) {
 			if (data == null) break;

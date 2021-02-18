@@ -195,7 +195,7 @@ describe('repeating', function () {
 
 	it('should repeat array when filter is not the first one and data is array and first one is in attribute', function () {
 		let node = dom(`<div>
-			<span data-class="[it.style|to:class]">[it.key] [repeat:*:it|value]</span>
+			<span data-class="[it.style|to:class]">[it.key] [repeat:*:it|.value]</span>
 		</div>`);
 		let copy = matchdom(node, [
 			{ key: 1, value: 'one', style: 'a' },
@@ -251,7 +251,7 @@ describe('repeating', function () {
 	it('should repeat aliased array items', function () {
 		let node = dom(`<table>
 			<tr>
-				<td>[cells|repeat:td:cell|txt] [cell.txt]</td>
+				<td>[cells|repeat:td:cell|.txt] [cell.txt]</td>
 			</tr>
 		</table>`);
 		let copy = matchdom(node, {
@@ -302,7 +302,7 @@ describe('repeating', function () {
 				<td><h1>[data.title|scope:]</h1></td>
 				<td><h2>[row.data.obj.title|scope:]</h2></td>
 				<td><span>[data.text|scope:]</span></td>
-				<td><p><span><strong><span>[rows|repeat:.repeat:row|data.obj.text|scope:]</span></strong></span></p></td>
+				<td><p><span><strong><span>[rows|repeat:.repeat:row|.data.obj.text|scope:]</span></strong></span></p></td>
 				<td>[data.extra|scope:]</td>
 			</tr>
 		</table></div>`);
@@ -345,7 +345,7 @@ describe('repeating', function () {
 				<td><h1>[data.title]</h1></td>
 				<td><h2>[row.data.obj.title]</h2></td>
 				<td><span>[data.text]</span></td>
-				<td><p><span><strong><span>[rows|repeat:.repeat:row|data.obj.text|test:]</span></strong></span></p></td>
+				<td><p><span><strong><span>[rows|repeat:.repeat:row|.data.obj.text|test:]</span></strong></span></p></td>
 				<td>[data.extra]</td>
 			</tr>
 		</table></div>`);
@@ -389,7 +389,7 @@ describe('repeating', function () {
 
 	it('should repeat array of keys', function () {
 		let node = dom(`<div>
-			<span>[obj.properties|as:entries|repeat:*:item|key|scope:]: [item.value|scope:]</span>
+			<span>[obj.properties|as:entries|repeat:*:item|item.key|scope:]: [item.value|scope:]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			obj: {
@@ -438,7 +438,7 @@ describe('repeating', function () {
 
 	it('should repeat array of keys and access nested value', function () {
 		let node = dom(`<div>
-			<span>[obj.properties|as:entries|repeat:*:item|key|scope:]: [item.value.nested|scope:]</span>
+			<span>[obj.properties|as:entries|repeat:*:item|.key|scope:]: [item.value.nested|scope:]</span>
 		</div>`);
 		let copy = matchdom(node, {
 			obj: {

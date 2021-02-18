@@ -224,17 +224,22 @@ However in some cases brackets that are not expressions must be escaped.
 
 The `get:` filter has a special syntax without colon, instead of
 
-`[get:path.to.data|myFilter:param|get:sub.data]`
+`[get:path.to.data|myFilter:param|get:.prop]`
 
 one can write:
 
-`[path.to.data|myFilter:param|sub.data]`
+`[path.to.data|myFilter:param|.prop]`
 
 When the last item of the path of an expression refers to an `undefined` value,
 the value is converted to `null`, so the expression is merged.
 
 When the path refers to an `undefined` value before the last item, the expression
 is not merged.
+
+A path starting with a dot continues the path started in the expression:
+- `[path.to|.data]` is equivalent to `[path.to.data]`
+- `[path.prop1|path.prop2]` will just output the last value - this is more meaningful with
+- `[path.prop1|else:get:path.prop2]` which outputs prop2 if prop1 is falsey (see else: filter).
 
 
 ## canonical methods filter

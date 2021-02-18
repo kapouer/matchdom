@@ -44,18 +44,18 @@ describe('get is a filter', function () {
 		let copy = matchdom(node, { a: "ze" });
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
-	it('should get empty path', function () {
-		let node = dom(`<a>Si[get:]</a>`);
-		let copy = matchdom(node, { "": "ze" });
+	it('should get current value', function () {
+		let node = dom(`<a>Si[get:|]</a>`);
+		let copy = matchdom(node, { toString: () => "ze" });
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
-	it('should get empty path when given a tring', function () {
+	it('should get current value as string', function () {
 		let node = dom(`<a>Si[get:]</a>`);
 		let copy = matchdom(node, "ze");
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
 	it('should access path in several filters', function () {
-		let node = dom(`<p>[a.b|c.d]</p>`);
+		let node = dom(`<p>[a.b|.c.d]</p>`);
 		let copy = matchdom(node, {
 			a: {
 				b: {
@@ -66,6 +66,23 @@ describe('get is a filter', function () {
 			}
 		});
 		assert.equal(copy.outerHTML, '<p>test</p>');
+	});
+	it('should allow up operator in path', function () {
+		let node = dom(`<p>[a.b|a.b1|test:]</p>`);
+		let path;
+		let copy = matchdom(node, {
+			a: {
+				b: "test",
+				b1: "toast"
+			}
+		}, {
+			test(ctx, val) {
+				path = ctx.expr.path;
+				return val;
+			}
+		});
+		assert.deepStrictEqual(path, ['a', 'b1']);
+		assert.strictEqual(copy.outerHTML, '<p>toast</p>');
 	});
 });
 
@@ -587,7 +604,7 @@ describe('date type', function() {
 
 describe('json type', function () {
 	it('should parse string', function () {
-		let node = dom(`<p>[str|as:json|test]</p>`);
+		let node = dom(`<p>[str|as:json|.test]</p>`);
 		let copy = matchdom(node, {
 			str: '{"test":10}'
 		});
