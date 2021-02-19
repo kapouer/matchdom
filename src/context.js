@@ -228,7 +228,7 @@ export default class Context {
 				if (params.length == 2 && params[1] === null) {
 					// [myfilter:] has a mandatory empty param
 				} else if (!mtype) {
-					throw new ParamError("length");
+					throw new ParamError("wrong number of parameters");
 				} else {
 					for (let i = it.length; i < params.length; i++) {
 						params[i] = this.check(val, params[i], mtype);
@@ -248,7 +248,7 @@ export default class Context {
 		if (type === "") type = "any";
 		if (str == null) {
 			if (def == null) {
-				throw new ParamError("Missing required parameter of type " + arg);
+				throw new ParamError("Missing required type " + arg);
 			} else if (type == "any") {
 				return null;
 			} else {
@@ -258,7 +258,7 @@ export default class Context {
 
 		if (type == "filter") {
 			if (str && this.plugins.filters[str] == null && (!val[str] || typeof val[str] != "function")) {
-				throw new ParamError(val, type);
+				throw new ParamError(`"${val}" is not of type ${type}`);
 			}
 		} else if (type == "path") {
 			str = this.toPath(str, val);
@@ -294,17 +294,8 @@ function clearAttr(node, attr) {
 }
 
 class ParamError extends Error {
-	constructor(type, val) {
-		super();
+	constructor(msg) {
+		super(msg);
 		this.name = "ParamError";
-		this.type = type;
-		this.val = val;
-	}
-	toString() {
-		if (!this.type && this.val == null) {
-			return `${this.name}: missing param`;
-		} else {
-			return `${this.name}: ${this.val} is not of type ${this.type}`;
-		}
 	}
 }

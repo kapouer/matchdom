@@ -57,8 +57,7 @@ describe('flow filters', function () {
 			assert.throws(() => {
 				matchdom(node, {});
 			}, {
-				name: 'ParamError',
-				type: 'length'
+				name: 'ParamError'
 			});
 		});
 	});
