@@ -71,7 +71,7 @@ describe('string', function() {
 		assert.equal(copy, "--one----two--");
 	});
 
-	it('should repeat array using chars around', function() {
+	it('should repeat array using chars around ???', function() {
 		let copy = matchdom("-X[arr.value|repeat:+*++]YY-", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
