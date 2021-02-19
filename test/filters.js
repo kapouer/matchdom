@@ -67,7 +67,7 @@ describe('get is a filter', function () {
 		});
 		assert.equal(copy.outerHTML, '<p>test</p>');
 	});
-	it('should allow up operator in path', function () {
+	it('should allow to get path from root', function () {
 		let node = dom(`<p>[a.b|a.b1|test:]</p>`);
 		let path;
 		let copy = matchdom(node, {
@@ -82,6 +82,27 @@ describe('get is a filter', function () {
 			}
 		});
 		assert.deepStrictEqual(path, ['a', 'b1']);
+		assert.strictEqual(copy.outerHTML, '<p>toast</p>');
+	});
+
+	it('should work with then', function () {
+		let node = dom(`<p>[a.b|then:get:a.b1]</p>`);
+		let copy = matchdom(node, {
+			a: {
+				b: "test",
+				b1: "toast"
+			}
+		});
+		assert.strictEqual(copy.outerHTML, '<p>toast</p>');
+	});
+	it('should work with else', function () {
+		let node = dom(`<p>[a.b|else:get:a.b1]</p>`);
+		let copy = matchdom(node, {
+			a: {
+				c: "test",
+				b1: "toast"
+			}
+		});
 		assert.strictEqual(copy.outerHTML, '<p>toast</p>');
 	});
 });
@@ -702,7 +723,7 @@ describe('url filter', function () {
 		assert.equal(copy.outerHTML, '<div><a href="/test?id=xx">anchor</a></div>');
 	});
 
-	it('should be able to be called multiple times for the same attribute', function() {
+	it('should be able to be called multiple times for the same attribute ???', function() {
 		let node = dom(`<div><a href="/test?status=0" data-href="?id=[id|to:href|as:url]&amp;status=[status|as:url]">[title]</a></div>`);
 		let copy = matchdom(node, {
 			id: 'xx',

@@ -7,7 +7,7 @@ import * as Operator from "./operator.js";
 
 const Base = {
 	filters: {
-		get: ['any', 'path?', (ctx, data, path) => {
+		get: ['?', 'path?', (ctx, data, path) => {
 			return ctx.expr.get(data, path, ctx.data);
 		}],
 		path({ expr, symbols }, val, part) {
