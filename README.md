@@ -3,6 +3,7 @@
 DSL for merging data.
 
 Features:
+
 - traverses and mutates DOM attributes and nodes - no custom html parser
 - powerful accessors and filters syntax
 - bundled with filters: attr, magnet, repeat, join, and much more.
@@ -14,29 +15,29 @@ Features:
 ```js
 import {Matchdom, HTML, XML} from 'matchdom';
 const md = new Matchdom({
-	hooks = {},
-	symbols = {},
-	visitor = () => true
+ hooks = {},
+ symbols = {},
+ visitor = () => true
 });
 md.extend({
-	filters = {},
-	types = {},
-	formats = {}
+ filters = {},
+ types = {},
+ formats = {}
 });
 const mergedDom = md.merge(HTML(`<div id="model" class="[myclass]">
-	<h[n]>Header</h[n]>
-	<span>[data.text]</span>
-	<img src="[data.icon|orAt:*]">
+ <h[n]>Header</h[n]>
+ <span>[data.text]</span>
+ <img src="[data.icon|orAt:*]">
 </div>`)), {
-	n: 4,
-	myclass: "yes",
-	data: {
-		text: "test"
-	}
+ n: 4,
+ myclass: "yes",
+ data: {
+  text: "test"
+ }
 });
 const expectedHTML = `<div id="model" class="yes">
-	<h4>Header</h4>
-	<span>test</span>
+ <h4>Header</h4>
+ <span>test</span>
 </div>`;
 assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
 ```
@@ -44,23 +45,22 @@ assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
 - merge(dom, data, scope)
 - extend({filters, types, formats} or an array of plugins)
 
-
 ## compatibility
 
 - there is a crucial dependency on `<template>` for the html fragment parser.
 
 Consider using a service like polyfill.io for older browsers support.
 
-
-
 ## dom traversal visitor
 
 This can be done by defining
+
 ```js
 new Matchdom({
-	visitor(elementNode, iter, data, scope):boolean
+ visitor(elementNode, iter, data, scope):boolean
 })
 ```
+
 which is called before processing node, so this function can change it,
 or can append/remove next siblings.
 
@@ -73,6 +73,7 @@ Types can be used by filters typings, or by "to:" and "is:" filters.
 Formats can be used by "to:" filter.
 
 Basic types (and their shorthands):
+
 - undefined, none: converts null-ish to undefined, leave other values intact
 - null: converts falsey to null, leave other values intact
 - integer, int: try to parseInt, return null if NaN
@@ -81,11 +82,13 @@ Basic types (and their shorthands):
 - float, num, numeric: try to parseFloat, return null if NaN
 
 Custom types (these can be overriden by plugins):
+
 - date: try new Date(val), return null if not a date, accepts 'now'
 - array: wrap non-array-like values into an array
 - json: parse json string
 
 Default formats:
+
 - text: converts string with newlines by a dom fragment with hard breaks
 - html: converts string to a dom fragment
 - xml: converts string to an xml fragment
@@ -96,13 +99,13 @@ Default formats:
 
 Additionnal types and formats can be added by passing functions:
 
-```
+```js
 import { DateTime } from 'luxon';
 // overrides default date type
 const types = {
-	date(ctx, val) {
-		return DateTime.fromISO(val);
-	}
+ date(ctx, val) {
+  return DateTime.fromISO(val);
+ }
 };
 const md = new Matchdom().extend(types)
 ```
@@ -127,16 +130,16 @@ Parameters are uri-decoded.
 
 The parameters received by a filter function can be checked/coerced automatically:
 
-```
+```js
 const filters = {
-	myTypedFilter: ['int', 'int?1', 'bool?false', (val, cte, sub) => {
-		// val and cte are guaranteed to be integers, sub a boolean
-		// if val is missing or NaN this filter is not called
-		return val + sub ? (-cte) : cte;
-	}],
-	myUntypedFilter(val) {
-		return val + 1; // anything can happen here
-	}
+ myTypedFilter: ['int', 'int?1', 'bool?false', (val, cte, sub) => {
+  // val and cte are guaranteed to be integers, sub a boolean
+  // if val is missing or NaN this filter is not called
+  return val + sub ? (-cte) : cte;
+ }],
+ myUntypedFilter(val) {
+  return val + 1; // anything can happen here
+ }
 };
 ```
 
@@ -146,40 +149,45 @@ If a type is '?' or 'any?' then even an undefined value is allowed and converted
 
 If a type ends with '*' then an unknown amount of parameters is allowed,
 of that type:
+
 - '*' allows any non-null parameters
 - '?*' allows any parameters, even null
 - 'int?0*' allows integers with a default value of zero
 
 Available types are the same as for the "as:" filter, with the addition of:
+
 - 'filter': checks the parameter is a filter name,
 - 'path': converts parameter to a path array
 
 A filter function can have side effects on the document being merged.
 
 `ctx` has the following properties:
+
 - data: the data object available to expressions
 - path: the current path used to get current value from data
 
 - src: initial place of expression (should not be changed by a filter)
 - dest: target place of expression
-	if dest.node is different than src.node, src.node is removed
-	likewise for dest.attr and src.attr.
+ if dest.node is different than src.node, src.node is removed
+ likewise for dest.attr and src.attr.
 
 - expr: expression instance `this.get(this.data, this.path) == val`
 - cancel: boolean, cancels merging of expression
 
 And methods:
+
 - write(str): updates node or attr value
 - read(): returns node or attr value
 
 ### place
 
 A place is an object with these properties related to where the expression sits:
+
 - node: node or text node
 - attr: attribute name (boolean attributes and DOMTokenList are supported)
 - tag: boolean wether the expression is in a tag name
   Since tag names are case-insensitive, the expression must work in lowercase,
-	some filters cannot be used in tag names - it's usually avoidable.
+ some filters cannot be used in tag names - it's usually avoidable.
 - root: the ancestor node passed to matchdom
 - hits: list of strings to process
 - index: the current index hits
@@ -187,11 +195,13 @@ A place is an object with these properties related to where the expression sits:
 ### expression
 
 A parsed expression has properties:
+
 - path (array of strings)
 - filters (array of {name, fn, params} objects where params is an array)
 - filter (index of current filter being applied in filters)
 
 and methods:
+
 - clone() return a new expression with the not-yet processed filters
 - toString() the original expression with open and closing brackets
 - get(data, path, save) get current value and update this.path is save is true
@@ -201,11 +211,11 @@ and methods:
 
 Expressions can be nested:
 
-```
+```js
 <span>[val|or:[otherval]]</span>
 ```
-(see examples in tests).
 
+(see examples in tests).
 
 ### escaping brackets
 
@@ -214,11 +224,10 @@ in a text won't be merged.
 However in some cases brackets that are not expressions must be escaped.
 
 - a couple of bracketed expressions must be escaped:
-	Use `[const:%5B]brackets[const:%5D]`
+ Use `[const:%5B]brackets[const:%5D]`
 
 - the document contains lots of bracketed expressions:
-	Use custom symbols, see below.
-
+ Use custom symbols, see below.
 
 ## path accessor filter
 
@@ -237,21 +246,20 @@ When the path refers to an `undefined` value before the last item, the expressio
 is not merged.
 
 A path starting with a dot continues the path started in the expression:
+
 - `[path.to|.data]` is equivalent to `[path.to.data]`
 - `[path.prop1|path.prop2]` will just output the last value - this is more meaningful with
 - `[path.prop1|else:get:path.prop2]` which outputs prop2 if prop1 is falsey (see else: filter).
 
-
 ## canonical methods filter
 
-### name:param...
+### name:param(...)
 
 If the value has a method with that name, call it with the given parameters.
 
 Think about toLowerCase, toUpperCase, toISOString, split, join, slice etc...
 
 This has many limitations and corner cases: for correct handling of parameters, define a custom filter.
-
 
 ## string filters
 
@@ -276,7 +284,7 @@ Caps means: capitalize each sentence separated by a dot and whitespace (requires
 
 ## flow control filters
 
-### then:name:param:...
+### then:name:param:(...)
 
 When value is loosely true, return the value of running the given named filter;
 else return the value.
@@ -287,15 +295,13 @@ Alias for `then:const:str`
 
 Remember to use `required="[isrequired|and:]"` to get a "boolean attribute" right.
 
-
-### else:name:param:...
+### else:name:param:(...)
 
 Same as then but when value is falsey.
 
 ### or:str
 
 Alias for `else:const:str`
-
 
 ## boolean operators
 
@@ -321,21 +327,21 @@ Standard operations:
 - mod:num
 - pow:num
 
-
 ## type filters
-### is:<type>
+
+### is:(type)
 
 Checks value is of that type, and returns a boolean.
 
-### as:<type|format>
+### as:(type|format)
 
 Coerces value to type, or converts string to format.
 
 Returns null when it fails to coerce or format:
+
 - cannot coerce a string (empty or not), or false, or 0, to undefined or null
 - cannot coerce a date or number (NaN)
 - cannot format to dom for any reason
-
 
 ## array filters
 
@@ -350,7 +356,7 @@ Keep items of a list that satisfy `this.get(item, path) <op> str`.
 and defaults to eq
 - path is relative to each item, and can be omitted
 
-### map:name:param:...
+### map:name:param:(...)
 
 Map an array with the filter `name` and its parameters.
 
@@ -378,7 +384,6 @@ nullsFirst can be "1" or "true".
 
 Numeric or dates are compared as such, strings are compared using localeCompare.
 
-
 ## html filters
 
 While repeat and magnet can be used as pure string filters in a limited fashion,
@@ -390,6 +395,7 @@ By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
 
 This filter widens the `range` the expression will replace:
+
 - empty range: the whole string, attribute, or text node.
 - selector range: the closest selected parent
 - wildcard(s): the nth selected parent
@@ -399,6 +405,7 @@ If used in conjunction with the "to:" filter, with allows one to replace an
 attribute on selected node(s), instead of replacing the nodes themselves.
 
 Examples:
+
 - `at:div.card` selects `closest('div.card')`.
 - `at:+div.card+` selects also the previous and next siblings of the ancestor.
 - `at:+**++|to:class` selects one sibling before and two siblings after parent node, and sets the class on them #FIXME
@@ -415,15 +422,16 @@ If the value is falsey, the range is removed.
 
 The value is never shown.
 
-
 ### to:attrName or *
 
 Moves where the expression is merged:
+
 - `to:` fills the content of the node
 - `to:*` replaces the node
 - `to:attr` replaces the attribute of the node(s)
 
 Examples:
+
 - `to:src` fills the src attribute of the current node
 - `at:div|to:class` fills the class attribute of the closest `div`
 - `at:p|then:to:class|else:to:*` fills the class attribute of closest `p` or remove it entirely
@@ -438,6 +446,7 @@ The keys in each item become available in the scope of each repeated range.
 
 The alias parameter can name repeated item, so that these two expressions
 are equivalent:
+
 - `[items|repeat:div|id] has some [text]`
 - `[items|repeat:div:my|id] has some [my.text]`
 
@@ -452,10 +461,10 @@ has been merged:
 - ctx.dest.node the current node in the fragment.
 
 The place filter may choose to:
+
 - insert ctx.dest.node before ctx.src.node (default behavior)
 - insert it somewhere else
 - do nothing in which case the node is dropped
-
 
 ### query: selector
 
@@ -466,31 +475,31 @@ If the current value is a dom node or fragment, runs querySelector(selector) on 
 If the current value is a dom node or fragment, runs querySelectorAll(selector) on it,
 and return a fragment of the selected nodes.
 
-
 ## Hooks
 
 Hooks are called before applying filters, or after.
 
-```
+```js
 hooks: {
-	before: (val) => {},
-	beforeEach: (val, filter) => {},
-	afterEach: (val, filter) => {},
-	after: (val) => {}
+  before: (val) => {},
+  beforeEach: (val, filter) => {},
+  afterEach: (val, filter) => {},
+  after: (val) => {}
 }
 ```
 
 In hooks, `this` is the same object as in filters.
 
 The `filter` parameter contains:
+
 - name:string
 - params:array
 and can be modified.
 
-
 ## Custom symbols
 
 Default symbols are:
+
 - open: `[`
 - close: `]`,
 - path: `.`
