@@ -248,6 +248,26 @@ describe('repeating', function () {
 		</table>`).outerHTML);
 	});
 
+	it('should repeat and call custom filter for placement', function () {
+		let node = dom(`<ul>
+			<li>[list|repeat:li:item:custom:myparam|.txt]</li>
+		</ul>`);
+		let copy = matchdom(node, {
+			list: [
+				{ txt: 'a' },
+				{ txt: 'b' }
+			]
+		}, {
+			custom(ctx, item, param) {
+				assert.strictEqual(param, "myparam");
+				ctx.src.node.before(ctx.dest.node);
+			}
+		});
+		assert.equal(copy.outerHTML, dom(`<ul>
+			<li>a</li><li>b</li>
+		</ul>`).outerHTML);
+	});
+
 	it('should repeat aliased array items', function () {
 		let node = dom(`<table>
 			<tr>

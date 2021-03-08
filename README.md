@@ -428,8 +428,7 @@ Examples:
 - `at:div|to:class` fills the class attribute of the closest `div`
 - `at:p|then:to:class|else:to:*` fills the class attribute of closest `p` or remove it entirely
 
-
-### repeat:range:alias:place
+### repeat:range:alias:place:(...)
 
 Expect the value to be iterable (array, collection, etc...).
 
@@ -446,7 +445,8 @@ The first case is shorter to write but overwrites current scope with iterated it
 
 The place parameter may be a custom filter name called *after* the iterated range
 has been merged:
-- value is iterated item,
+
+- value is iterated item, additional parameters are passed
 - ctx.src.node is the insertion cursor (an empty text node) in ctx.src.root
 - ctx.dest.root the fragment containing the merged range
 - ctx.dest.node the current node in the fragment.

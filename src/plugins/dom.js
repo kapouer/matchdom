@@ -127,7 +127,7 @@ export const filters = {
 
 		return val;
 	},
-	repeat: ['array?', 'string?', 'string?', 'filter?', (ctx, val, range, alias, place) => {
+	repeat: ['array?', 'string?', 'string?', 'filter?', '?*', (ctx, val, range, alias, place, ...params) => {
 		const { src, dest } = ctx;
 		let node = dest.node;
 		const el = node.children ? node : node.parentNode;
@@ -206,7 +206,7 @@ export const filters = {
 						node: child,
 						root: dstFrag
 					};
-					ctx.run(place, item);
+					ctx.run(place, item, ...params);
 					if (child.parentNode == dstFrag) dstFrag.removeChild(child);
 				} else {
 					parent.insertBefore(dstFrag.firstChild, cursor);
