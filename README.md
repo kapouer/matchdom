@@ -269,14 +269,10 @@ Prepends string if value is not null or not empty.
 
 Appends string if value is not null or not empty.
 
-### lower: and upper:
+### case:low|up|caps
 
-Shorthands for toLowerCase, toUpperCase string methods.
-
-### cap
-
-Capitalizes the string value.
-
+Shorthands for lowercase, uppercase.
+Caps means: capitalize each sentence separated by a dot and whitespace (requires unicode support in regexp).
 
 ## flow control filters
 

@@ -255,6 +255,11 @@ export default class Context {
 				str = def === "" ? null : def;
 			}
 		}
+		const alts = type.split('|');
+		if (alts.length > 1) {
+			if (alts.includes(str)) return str;
+			else throw new ParamError(`"${val}" is not of in enum ${type}`);
+		}
 
 		if (type == "filter") {
 			if (str && this.plugins.filters[str] == null && (!val[str] || typeof val[str] != "function")) {

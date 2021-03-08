@@ -2,19 +2,19 @@ export const filters = {
 	const(x, val, param) {
 		return param || "";
 	},
-	lower(x, val) {
+	case: ['?', 'up|low|caps', (x, val, how) => {
 		if (!val) return val;
-		return val.toString().toLowerCase();
-	},
-	upper(x, val) {
-		if (!val) return val;
-		return val.toString().toUpperCase();
-	},
-	cap(x, val) {
-		if (!val) return val;
-		const str = val.toString();
-		return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
-	},
+		val = val.toString();
+		if (how == "up") {
+			return val.toUpperCase();
+		} else if (how == "low") {
+			return val.toLowerCase();
+		} else if (how == "caps") {
+			return val.split(/\.\s+/).map((s) => {
+				return s.replace(/^\p{Letter}/u, (c) => c.toUpperCase());
+			}).join('. ');
+		}
+	}],
 	pre(x, val, str) {
 		if (val == null || val === '') return val;
 		if (val && str != null) val = str + val;

@@ -595,6 +595,24 @@ describe('post', function() {
 	});
 });
 
+describe('case', function() {
+	it('should upper case', function () {
+		const str = 'minusculés';
+		let copy = matchdom("[str|case:up]", { str });
+		assert.equal(copy, str.toUpperCase());
+	});
+	it('should lower case', function() {
+		const str = 'ÉCRASÉS';
+		let copy = matchdom("[str|case:low]", { str });
+		assert.equal(copy, str.toLowerCase());
+	});
+	it('should capitalize sentences', function() {
+		const str = 'à 0.5° il ne gèle pas.\nmais à .0 il gèle.';
+		let copy = matchdom("[str|case:caps]", { str });
+		assert.equal(copy, 'À 0.5° il ne gèle pas. Mais à .0 il gèle.');
+	});
+});
+
 describe('date type', function() {
 	it('toLocaleString', function() {
 		let node = dom(`<p>[str|as:date|toLocaleString:en]</p>`);
