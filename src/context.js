@@ -239,7 +239,7 @@ export default class Context {
 		} catch (ex) {
 			if (this.matchdom.debug) throw ex;
 			// eslint-disable-next-line no-console
-			console.warn(name, "filter throws", ex);
+			console.warn(name, "filter throws", ex.toString(), "in", this.expr.initial);
 			return null;
 		}
 	}
