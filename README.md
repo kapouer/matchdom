@@ -2,13 +2,16 @@
 
 DSL for merging data.
 
-Features:
+A matchdom expression describes a chain of "filter" functions:
+`[mymodifier:myparam|othermodifier:otherparam]`.
 
-- traverses and mutates DOM attributes and nodes - no custom html parser
-- powerful accessors and filters syntax
-- bundled with filters: attr, magnet, repeat, join, and much more.
-- handles nested expressions
-- able to merge pure text too (though some filters won't apply)
+Each filter gets the context object, the current value,
+and can change the context and the return a new value.
+
+The context object describes source and destination nodes,
+and the parsed expression from which the filter is called, see below.
+
+To parse a fragment to DOM, internal HTML, XML methods are exported.
 
 ## usage
 
@@ -26,18 +29,18 @@ md.extend({
 });
 const mergedDom = md.merge(HTML(`<div id="model" class="[myclass]">
  <h[n]>Header</h[n]>
- <span>[data.text]</span>
+ <span>[data.text|as:html]</span>
  <img src="[data.icon|orAt:*]">
 </div>`)), {
  n: 4,
  myclass: "yes",
  data: {
-  text: "test"
+  text: "<em>test</em>"
  }
 });
 const expectedHTML = `<div id="model" class="yes">
  <h4>Header</h4>
- <span>test</span>
+ <span><em>test</em></span>
 </div>`;
 assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
 ```
