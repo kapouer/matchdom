@@ -3,20 +3,25 @@
 DSL for merging data.
 
 A matchdom expression describes a chain of "filter" functions:
-`[mymodifier:myparam|othermodifier:otherparam]`.
+`[func1:param1|func2:param2]`.
 
 Each filter gets the context object, the current value,
-and can change the context and the return a new value.
+can change the context, and returns a new value or current value.
 
 The context object describes source and destination nodes,
 and the parsed expression from which the filter is called, see below.
 
-To parse a fragment to DOM, internal HTML, XML methods are exported.
+`md.merge(node, data)` mutates `node`.
+If `node` is a string that starts with '<' and ends with '>',
+it is converted to a DOM fragment (or single node) if `document` is available.
+
+However, explicit parsing can be done through exported `HTML` and `XML` methods.
+
 
 ## usage
 
 ```js
-import {Matchdom, HTML, XML} from 'matchdom';
+import { Matchdom, HTML, XHTML } from 'matchdom';
 const md = new Matchdom({
  hooks = {},
  symbols = {},
@@ -27,11 +32,11 @@ md.extend({
  types = {},
  formats = {}
 });
-const mergedDom = md.merge(HTML(`<div id="model" class="[myclass]">
+const mergedDom = md.merge(`<div id="model" class="[myclass]">
  <h[n]>Header</h[n]>
  <span>[data.text|as:html]</span>
  <img src="[data.icon|orAt:*]">
-</div>`)), {
+</div>`, {
  n: 4,
  myclass: "yes",
  data: {
@@ -47,6 +52,7 @@ assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
 
 - merge(dom, data, scope)
 - extend({filters, types, formats} or an array of plugins)
+- Matchdom.HTML, Matchdom.XML parses strings to DOM fragments.
 
 ## compatibility
 
