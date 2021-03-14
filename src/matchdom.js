@@ -2,8 +2,11 @@ import Plugins from './plugins/index.js';
 import Symbols from './symbols.js';
 import Context from './context.js';
 import TextDocument from './fragment.js';
+import { XML, HTML } from './utils.js';
 
-export default class Matchdom {
+export { XML, HTML };
+
+export class Matchdom {
 	constructor({ debug = false, hooks = {}, symbols = {}, visitor } = {}) {
 		this.visitor = visitor;
 		this.hooks = hooks;
@@ -23,8 +26,12 @@ export default class Matchdom {
 		let wasText = false;
 		let wasArray = false;
 		if (typeof list == "string") {
-			list = [TextDocument.from(list)];
-			wasText = true;
+			if (document && list.startsWith('<') && list.endsWith('>')) {
+				list = [HTML(list)];
+			} else {
+				list = [TextDocument.from(list)];
+				wasText = true;
+			}
 		} else if (typeof list.forEach == "function") {
 			wasArray = true;
 		} else {
