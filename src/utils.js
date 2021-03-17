@@ -21,11 +21,16 @@ export function serializeUrl(obj = {}) {
 
 let doc;
 export function HTML(str) {
-	if (!doc) doc = document.cloneNode();
-	const tpl = doc.createElement('template');
-	tpl.innerHTML = str.trim();
-	const frag = tpl.content;
-	return frag.childNodes.length == 1 ? frag.childNodes[0] : frag;
+	if (str.startsWith('<html') && str.endsWith('</html>')) {
+		if (!parser) parser = new DOMParser();
+		return parser.parseFromString(str, "text/html");
+	} else {
+		if (!doc) doc = document.cloneNode();
+		const tpl = doc.createElement('template');
+		tpl.innerHTML = str.trim();
+		const frag = tpl.content;
+		return frag.childNodes.length == 1 ? frag.childNodes[0] : frag;
+	}
 }
 
 let parser;
