@@ -33,11 +33,11 @@
   "devDependencies": {
     "dom4": "^2.0.1",
     "domify": "^1.4.0",
-    "global-jsdom": "^6.0.0",
-    "jsdom": "^15.2.1",
-    "mocha": "^6.2.2"
+    "global-jsdom": "^7.0.0",
+    "jsdom": "^16.4.0",
+    "mocha": "^8.2.1"
   },
   "mocha": {
-    "require": "global-jsdom/lib/register"
+    "require": "global-jsdom/register"
   }
 }
