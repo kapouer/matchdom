@@ -15,14 +15,12 @@ export const filters = {
 			}).join('. ');
 		}
 	}],
-	pre(x, val, str) {
+	pre: ['?', 'str', (x, val, str) => {
+		if (val == null || val === "") return val;
+		return str + val;
+	}],
+	post: ['?', 'str', (x, val, str) => {
 		if (val == null || val === '') return val;
-		if (val && str != null) val = str + val;
-		return val;
-	},
-	post(x, val, str) {
-		if (val == null || val === '') return val;
-		if (val && str != null) val += str;
-		return val;
-	}
+		return val + str;
+	}]
 };
