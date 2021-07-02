@@ -893,6 +893,14 @@ function clearAttr(node, attr) {
 	node.removeAttribute(attr);
 }
 
+function tryDecode(str) {
+	try {
+		return decodeURIComponent(str);
+	} catch(ex) {
+		return str;
+	}
+}
+
 function Expression(str, filters) {
 	this.filter = 0;
 	if (str instanceof Expression) {
@@ -906,7 +914,7 @@ function Expression(str, filters) {
 	var list = str.split(sa);
 	var path = list.shift();
 	if (path == "") this.path = [];
-	else this.path = path.split(Symbols.path);
+	else this.path = path.split(Symbols.path).map(tryDecode);
 	this.filters = [];
 	var parts, fn;
 	var name = sa;
@@ -919,13 +927,7 @@ function Expression(str, filters) {
 	for (var i=0; i < list.length; i++) {
 		parts = list[i].split(Symbols.param);
 		name = parts.shift();
-		parts = parts.map(function(pt) {
-			try {
-				return decodeURIComponent(pt);
-			} catch(ex) {
-				return pt;
-			}
-		});
+		parts = parts.map(tryDecode);
 		fn = filters[name];
 		if (!fn) continue;
 		this.filters.push({

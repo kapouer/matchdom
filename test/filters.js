@@ -27,7 +27,12 @@ describe('value', function() {
 	});
 });
 
-describe('parameters', function() {
+describe('parameters', function () {
+	it('should uri-decode filter name', function() {
+		let node = dom(`<a>Size[siz%2Ee]</a>`);
+		let copy = matchdom(node, {"siz.e": 10});
+		assert.equal(copy.outerHTML, '<a>Size10</a>');
+	});
 	it('should uri-decode value', function() {
 		let node = dom(`<a>Size[size|pre:%3A |post: mm]</a>`);
 		let copy = matchdom(node, {size: 10});
