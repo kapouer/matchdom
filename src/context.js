@@ -224,15 +224,17 @@ export default class Context {
 				}
 				params[i] = this.check(val, params[i], arg);
 			}
-			if (typed && it.length < params.length) {
-				if (params.length == 2 && params[1] === null) {
-					// [myfilter:] has a mandatory empty param
-				} else if (!mtype) {
-					throw new ParamError("wrong number of parameters");
-				} else {
-					for (let i = it.length; i < params.length; i++) {
-						params[i] = this.check(val, params[i], mtype);
+			if (it.length < params.length) {
+				if (typed) {
+					if (params.length == 2 && params[1] === null) {
+						// [myfilter:] has a mandatory empty param
+						params.length = 1;
+					} else if (!mtype) {
+						throw new ParamError("wrong number of parameters");
 					}
+				}
+				for (let i = it.length; i < params.length; i++) {
+					params[i] = this.check(val, params[i], mtype || '?');
 				}
 			}
 			return fn(this, ...params);
@@ -272,6 +274,7 @@ export default class Context {
 		} else {
 			str = this.run('as', str, type);
 		}
+		if (typeof str == "string") str = this.decode(str);
 
 		return str;
 	}
@@ -289,7 +292,15 @@ export default class Context {
 	toPath(str, ctxValue) {
 		if (str == null) str = "";
 		if (!str && ctxValue !== undefined && this.isSimpleValue(ctxValue)) return [];
-		return str.split(this.symbols.path);
+		return str.split(this.symbols.path).map(str => this.decode(str));
+	}
+
+	decode(str) {
+		try {
+			return decodeURIComponent(str);
+		} catch (ex) {
+			return str;
+		}
 	}
 }
 

@@ -135,7 +135,7 @@ Signature: `(ctx, val, param1, param2, ...)`
 
 Returns the new value.
 
-Parameters are uri-decoded.
+Once type-checked, parameters are uri-decoded.
 
 The parameters received by a filter function can be checked/coerced automatically:
 
