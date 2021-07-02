@@ -44,8 +44,13 @@ describe('get is a filter', function () {
 		let copy = matchdom(node, { a: "ze" });
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
-	it('should get current value', function () {
-		let node = dom(`<a>Si[get:|]</a>`);
+	it('should allow escaped path', function () {
+		let node = dom(`<a>Si[get:a%2eb]</a>`);
+		let copy = matchdom(node, { "a.b": "ze" });
+		assert.equal(copy.outerHTML, '<a>Size</a>');
+	});
+	it('should get top value', function () {
+		let node = dom(`<a>Si[get:]</a>`);
 		let copy = matchdom(node, { toString: () => "ze" });
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
