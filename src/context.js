@@ -194,7 +194,7 @@ export default class Context {
 	run(name, ...params) {
 		let it = this.plugins.filters[name];
 		const val = params[0];
-		if (!it && val != null && val[name]) {
+		if (!it && val != null && typeof val[name] == "function") {
 			const meth = val[name];
 			it = (ctx, val, ...args) => {
 				return meth.apply(val, args);
