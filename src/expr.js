@@ -11,16 +11,8 @@ export default class Expression {
 		const list = str.split(sa);
 		this.filters = [];
 		for (let item of list) {
-			let parts = item.split(param);
-			const name = parts.length == 1 ? 'get' : parts.shift();
-			const params = parts.map(function (pt) {
-				if (pt === "") return null;
-				try {
-					return decodeURIComponent(pt);
-				} catch (ex) {
-					return pt;
-				}
-			});
+			let params = item.split(param);
+			const name = params.length == 1 ? 'get' : params.shift();
 			this.append(name, params);
 		}
 		return this;
