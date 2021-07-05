@@ -33,6 +33,17 @@ describe('parameters', function () {
 		let copy = matchdom(node, {"siz.e": 10});
 		assert.equal(copy.outerHTML, '<a>Size10</a>');
 	});
+	it('should uri-encode expression path', function() {
+		let node = dom(`<a>Size[siz%2Ee]</a>`);
+		let expr;
+		let copy = matchdom(node, { "siz.e": 10 }, {
+			"||": function (val, what) {
+				expr = what.expr.toString();
+			}
+		});
+		assert.equal(expr, 'siz%2Ee');
+		assert.equal(copy.outerHTML, '<a>Size10</a>');
+	});
 	it('should uri-decode value', function() {
 		let node = dom(`<a>Size[size|pre:%3A |post: mm]</a>`);
 		let copy = matchdom(node, {size: 10});

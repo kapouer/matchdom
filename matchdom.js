@@ -963,8 +963,10 @@ Expression.prototype.check = function() {
 	return true;
 };
 
-Expression.prototype.toString = function() {
-	var str = this.path.join(Symbols.path);
+Expression.prototype.toString = function () {
+	var str = this.path.map(function (str) {
+		return str.split(Symbols.path).join('%2E');
+	}).join(Symbols.path);
 	if (this.filters.length) str += Symbols.append + this.filters.map(function(obj) {
 		var expr = obj.name;
 		if (obj.params.length) expr += Symbols.param + obj.params.join(Symbols.param);
