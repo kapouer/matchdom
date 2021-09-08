@@ -277,7 +277,6 @@ export default class Context {
 				str = def === "" ? null : def;
 			}
 		}
-
 		const alts = type.split('|');
 		if (alts.length > 1) {
 			if (alts.includes(str)) return str;
