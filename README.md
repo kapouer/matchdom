@@ -240,6 +240,19 @@ However in some cases brackets that are not expressions must be escaped.
 
 ## path accessor filter
 
+### get:path
+
+Returns data as found from path accessor.
+
+FIXME HERE see context.js
+When the last item of the path of an expression refers to an `undefined` value,
+the value is converted to `null`, so the expression is merged.
+
+When the path refers to an `undefined` value before the last item, the expression
+is not merged.
+
+### short syntax
+
 The `get:` filter has a special syntax without colon, instead of
 
 `[get:path.to.data|myFilter:param|get:.prop]`
@@ -248,17 +261,19 @@ one can write:
 
 `[path.to.data|myFilter:param|.prop]`
 
-When the last item of the path of an expression refers to an `undefined` value,
-the value is converted to `null`, so the expression is merged.
-
-When the path refers to an `undefined` value before the last item, the expression
-is not merged.
+### use multiple times
 
 A path starting with a dot continues the path started in the expression:
 
 - `[path.to|.data]` is equivalent to `[path.to.data]`
 - `[path.prop1|path.prop2]` will just output the last value - this is more meaningful with
 - `[path.prop1|else:get:path.prop2]` which outputs prop2 if prop1 is falsey (see else: filter).
+
+### alias:path
+
+Returns an object in which current value can be accessed using this path.
+
+Useful when another filter expects data to be accessible under a specific path.
 
 ## canonical methods filter
 
@@ -346,11 +361,12 @@ Checks value is of that type, and returns a boolean.
 
 Coerces value to type, or converts string to format.
 
-Returns null when it fails to coerce or format:
-
-- cannot coerce a string (empty or not), or false, or 0, to undefined or null
-- cannot coerce a date or number (NaN)
-- cannot format to dom for any reason
+- as:null, as:undefined
+  returns null, or undefined, if value is falsey - otherwise returns value
+- as:date, as:number
+  return value as date, or number, or null if it cannot be converted
+- as:html
+  return value as a DOM node or null if it fails
 
 ## array filters
 
