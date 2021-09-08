@@ -31,45 +31,33 @@
   },
   "homepage": "https://github.com/kapouer/matchdom#readme",
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/eslint-parser": "^7.12.1",
-    "@babel/eslint-plugin": "^7.12.1",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/plugin-syntax-class-properties": "^7.12.1",
-    "@babel/preset-env": "^7.12.1",
-    "@kapouer/eslint-config": "^1.2.1",
     "global-jsdom": "^7.0.0",
     "jsdom": "^16.4.0",
     "mocha": "^8.2.1"
+    "@kapouer/eslint-config": "^1.5.1",
   },
   "mocha": {
     "require": "global-jsdom/register"
   },
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
-    "env": {
-      "browser": true,
-      "mocha": true
-    },
-    "parser": "@babel/eslint-parser",
-    "plugins": [
-      "@babel"
-    ],
-    "parserOptions": {
-      "requireConfigFile": false,
-      "babelOptions": {
-        "plugins": [
-          "@babel/plugin-syntax-class-properties"
+    "overrides": [
+      {
+        "files": [
+          "src/**.js"
         ],
-        "presets": [
-          [
-            "@babel/env",
-            {
-              "targets": "supports es6-module and supports private-class-fields"
-            }
-          ]
-        ]
+        "env": {
+          "es6": true
+        }
+      },
+      {
+        "files": [
+          "test/*.js"
+        ],
+        "env": {
+          "mocha": true
+        }
       }
-    }
+    ]
   }
 }
