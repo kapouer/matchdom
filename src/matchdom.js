@@ -17,7 +17,7 @@ export class Matchdom {
 
 	extend(plugins) {
 		plugins = Array.isArray(plugins) ? plugins : [plugins];
-		plugins.forEach(plugin => this.plugins.add(plugin));
+		for (const plugin of plugins) this.plugins.add(plugin);
 		return this;
 	}
 
@@ -69,10 +69,9 @@ export class Matchdom {
 				if (ctx.dest.root && ctx.dest.root != root) root = ctx.dest.root;
 				if (ctx.replacement) replacements.unshift(ctx.replacement);
 			});
-			replacements.forEach(function (pair) {
-				const old = pair[1];
-				const tag = pair[0];
-				for (let att of old.attributes) {
+			for (const pair of replacements) {
+				const [tag, old] = pair;
+				for (const att of Array.from(old.attributes)) {
 					tag.setAttribute(att.name, att.value);
 				}
 				while (old.firstChild) {
@@ -84,7 +83,7 @@ export class Matchdom {
 				if (old == root) {
 					root = tag;
 				}
-			});
+			}
 			return root;
 		});
 		if (wasText) {
@@ -111,11 +110,11 @@ export class Matchdom {
 			if (!(vr ? vr(node, it, data, scope) : true)) continue;
 			const place = { node, root };
 			if (node.attributes) {
-				Array.from(node.attributes).forEach((att) => {
-					if (!att.value) return;
+				for (const att of Array.from(node.attributes)) {
+					if (!att.value) continue;
 					place.attr = att.name;
 					fn(place, att.value);
-				});
+				}
 				place.tag = true;
 				fn(place, node.tagName.toLowerCase());
 			} else if (node.nodeValue != null) {

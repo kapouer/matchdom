@@ -10,8 +10,8 @@ export default class Expression {
 		const sa = append;
 		const list = str.split(sa);
 		this.filters = [];
-		for (let item of list) {
-			let params = item.split(param);
+		for (const item of list) {
+			const params = item.split(param);
 			const name = params.length == 1 ? 'get' : params.shift();
 			this.append(name, params);
 		}

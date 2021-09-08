@@ -22,9 +22,16 @@ const Base = {
 				return path.join(symbols.path);
 			}
 		},
-		alias: ['any', 'string', (ctx, data, alias) => {
-			ctx.data[alias] = data;
-			return data;
+		alias: ['any', 'path', (ctx, data, path) => {
+			const obj = {};
+			let cur = obj;
+			const len = path.length - 1;
+			for (let i = 0; i <= len; i++) {
+				const item = path[i];
+				if (i == len) cur[item] = data;
+				else cur = cur[item] = {};
+			}
+			return obj;
 		}]
 	}
 };
@@ -39,9 +46,9 @@ export default class Plugins {
 		this.types = Object.create(null);
 		this.formats = Object.create(null);
 
-		Defaults.forEach((plugin) => {
+		for (const plugin of Defaults) {
 			this.add(plugin);
-		});
+		}
 	}
 	add(plugin) {
 		Object.assign(this.filters, plugin.filters);

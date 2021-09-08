@@ -7,8 +7,8 @@ const matchdom = (node, data, filters) => {
 
 describe('scope path', function () {
 	it('should be set when merging a simple field', function () {
-		let node = dom(`<span>[path.test.to|test:]</span>`);
-		let copy = matchdom(node, {
+		const node = dom(`<span>[path.test.to|test:]</span>`);
+		const copy = matchdom(node, {
 			path: {
 				test: {
 					to: "yes"
@@ -23,10 +23,10 @@ describe('scope path', function () {
 		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
 	it('should be set when repeating an array', function () {
-		let node = dom(`<div>
+		const node = dom(`<div>
 			<span>[arr|repeat:span:row|scope:]</span>
 		</div>`);
-		let copy = matchdom(node, {
+		const copy = matchdom(node, {
 			arr: ['one', 'two']
 		}, {
 			scope: function (ctx, val) {
@@ -46,10 +46,10 @@ describe('scope path', function () {
 
 describe('scope variables', function () {
 	it('should be kept', function () {
-		let node = dom(`<div>
+		const node = dom(`<div>
 			<span>[$one|eq:[$two]:yes:no]</span>
 		</div>`);
-		let copy = matchdom(node, {}, {}, {
+		const copy = matchdom(node, {}, {}, {
 			data: {
 				$one: "one",
 				$two: "one"

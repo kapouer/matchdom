@@ -17,8 +17,8 @@ export const types = {
 };
 export const filters = {
 	as(ctx, val, type) {
-		if (type == "none") {
-			if (val == null) return undefined;
+		if (type == "none" || type == "undefined") {
+			if (!val) return undefined;
 			else return val;
 		} else if (type == "null") {
 			if (!val) return null;
@@ -29,7 +29,7 @@ export const filters = {
 		if (type == "bool" || type == "boolean") {
 			if (val == "true" || val == "1") val = true;
 			else if (val == "false" || val == "0") val = false;
-			else val = !!val;
+			else val = Boolean(val);
 			return val;
 		} else if (type == "str" || type == "string") {
 			if (val == null) return "";

@@ -13,26 +13,6 @@ class TextNode {
 	}
 }
 
-export default class TextDocument {
-	static from(str) {
-		const doc = new TextDocument();
-		const frag = new TextFragment(str, doc);
-		return frag;
-	}
-	createDocumentFragment() {
-		return new TextFragment(null, this);
-	}
-	createNodeIterator(root) {
-		return new TextNodeIterator(root);
-	}
-	createTextNode(str) {
-		return new TextNode(str, this);
-	}
-	importNode(node) {
-		return node;
-	}
-}
-
 class TextNodeIterator {
 	root
 	index = 0
@@ -81,13 +61,35 @@ class TextFragment {
 	}
 	cloneNode(deep) {
 		const frag = new TextFragment(null, this.ownerDocument);
-		if (deep) this.childNodes.forEach((node) => frag.appendChild(node.cloneNode(true)));
+		if (deep) for (const node of this.childNodes) {
+			frag.appendChild(node.cloneNode(true));
+		}
 		return frag;
 	}
 	adopt(node) {
 		const parent = node.parentNode;
 		if (parent && parent != this) parent.removeChild(node);
 		node.parentNode = this;
+		return node;
+	}
+}
+
+export default class TextDocument {
+	static from(str) {
+		const doc = new TextDocument();
+		const frag = new TextFragment(str, doc);
+		return frag;
+	}
+	createDocumentFragment() {
+		return new TextFragment(null, this);
+	}
+	createNodeIterator(root) {
+		return new TextNodeIterator(root);
+	}
+	createTextNode(str) {
+		return new TextNode(str, this);
+	}
+	importNode(node) {
 		return node;
 	}
 }

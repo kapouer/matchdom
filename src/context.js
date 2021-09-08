@@ -1,5 +1,11 @@
 import Expression from './expr.js';
 
+class ParamError extends Error {
+	constructor(msg) {
+		super(msg);
+		this.name = "ParamError";
+	}
+}
 export default class Context {
 	cancel = false
 	constructor(md, data, scope, place) {
@@ -33,9 +39,10 @@ export default class Context {
 
 	processHits(hits) {
 		this.level++;
-		hits.forEach((hit, i) => {
+		for (let i = 0; i < hits.length; i++) {
+			let hit = hits[i];
 			if (hit === null || typeof hit == "string") {
-				return;
+				continue;
 			}
 			if (hit.length > 1 || typeof hit[0] != "string") {
 				this.processHits(hit);
@@ -50,13 +57,14 @@ export default class Context {
 			} else {
 				hits[this.dest.index] = this.symbols.open + hit + this.symbols.close;
 			}
-		});
+		}
 	}
 
 	mutate(hit) {
 		let val = this.scope.data;
 		if (val === undefined) val = this.data;
 		if (/^[^\\]+$/.test(hit) == false) {
+			// TODO this regexp seems odd
 			return undefined;
 		}
 		const expr = this.expr = new Expression(this.symbols).parse(hit);
@@ -65,12 +73,22 @@ export default class Context {
 
 		if (this.hooks.before) this.hooks.before.call(this, val);
 		while (expr.filter < expr.filters.length) {
-			let filter = expr.filters[expr.filter++];
+			if (val === undefined && !expr.last) break;
+			const filter = expr.filters[expr.filter++];
 			if (befEach) befEach.call(this, val, filter);
+			// FIXME cancel or return undefined ?
+			// we don't want to assume this.run() || val
+			// because it doesn't allow one to return undefined
+			// however default behavior is to not merge unless expr.last is set
+			// -> in some way it's legit...
+			// -> default behavior of not merging undefined, unless last in the path, might be bad. Better would be to stop merging undefined at all in any case
+			// -> return undefined -> cancels merge
+			// -> return ctx.val to return uncasted value ?
 			val = this.run(filter.name, val, ...filter.params);
 			if (aftEach) aftEach.call(this, val, filter);
 			if (this.cancel) {
-				expr.last = false;
+				expr.last = false; // probably a bad idea
+				// FIXME skip = true -rename "last" to "skip" and invert the meaning
 				val = undefined;
 			}
 		}
@@ -97,7 +115,7 @@ export default class Context {
 		if (tag) {
 			const tagName = list.join('');
 			const is = node.getAttribute('is');
-			let tag = doc.createElement(tagName, is ? { is } : null);
+			const tag = doc.createElement(tagName, is ? { is } : null);
 			this.replacement = [this.own(tag), node];
 		} else {
 			const parent = node ? node.parentNode : null;
@@ -143,21 +161,21 @@ export default class Context {
 					else node.nodeValue = "";
 				}
 			} else {
-				let str = list.join('').trim();
+				const str = list.join('').trim();
 				let attrNode = node;
 				if (!src.attr) {
 					if (!node.children) attrNode = node.parentNode;
 					if (!src.node.children) src.node.nodeValue = src.hits.join('');
 				}
-				let attrList = attrNode[attr + 'List'];
+				const attrList = attrNode[attr + 'List'];
 				if (!hits || !str) {
 					clearAttr(attrNode, attr);
 				} else if (typeof attrNode[attr] == "boolean") {
 					attrNode.setAttribute(attr, "");
 				} else if ((src.attr !== attr || src.node !== node) && attrList && typeof attrList.add == "function") {
-					str.replace(/[\n\t\s]+/g, ' ').trim().split(' ').forEach((name) => {
+					for (const name of str.replace(/[\n\t\s]+/g, ' ').trim().split(' ')) {
 						attrList.add(name);
-					});
+					}
 				} else {
 					attrNode.setAttribute(attr, str);
 				}
@@ -248,8 +266,8 @@ export default class Context {
 		}
 	}
 	check(val, str, arg) {
-		let [type, def] = arg.split("?");
-		if (type === "") type = "any";
+		if (!arg || arg.startsWith('?')) arg = "any";
+		const [type, def] = arg.split("?");
 		if (str == null) {
 			if (def == null) {
 				throw new ParamError("Missing required type " + arg);
@@ -259,6 +277,7 @@ export default class Context {
 				str = def === "" ? null : def;
 			}
 		}
+
 		const alts = type.split('|');
 		if (alts.length > 1) {
 			if (alts.includes(str)) return str;
@@ -311,9 +330,3 @@ function clearAttr(node, attr) {
 	node.removeAttribute(attr);
 }
 
-class ParamError extends Error {
-	constructor(msg) {
-		super(msg);
-		this.name = "ParamError";
-	}
-}

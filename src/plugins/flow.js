@@ -1,14 +1,17 @@
 export const filters = {
-	then: ['?', 'filter', '?*', (ctx, val, name, ...params) => {
+	// FIXME "?" semantics with boolean, "", 0
+	// FIXME val is mapped to bool but we want to return the uncasted val
+	// e.g. [toto|or:tata] currently gives 'true'
+	then: ['bool?', 'filter', '?*', (ctx, val, name, ...params) => {
 		return val ? ctx.run(name, val, ...params) : val;
 	}],
-	and: ['?', '?', (ctx, val, str) => {
+	and: ['bool?', '?', (ctx, val, str) => {
 		return val ? str : val;
 	}],
-	else: ['?', 'filter', '?*', (ctx, val, name, ...params) => {
-		return val ? val : ctx.run(name, val, ...params);
+	else: ['bool?', 'filter', '?*', (ctx, val, name, ...params) => {
+		return !val ? ctx.run(name, val, ...params) : val;
 	}],
-	or: ['?', '?', (ctx, val, str) => {
-		return val ? val : str;
+	or: ['bool?', '?', (ctx, val, str) => {
+		return !val ? str : val;
 	}]
 };

@@ -4,10 +4,10 @@ export function parseUrl(str = '') {
 	if (pn !== "") obj.pathname = pn;
 	if (qu != null && qu !== "") {
 		obj.query = {};
-		qu.split('&').forEach(function (pair) {
-			pair = pair.split('=');
+		for (const part of qu.split('&')) {
+			const pair = part.split('=');
 			obj.query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
-		});
+		}
 	}
 	return obj;
 }
@@ -19,7 +19,7 @@ export function serializeUrl(obj = {}) {
 	return (obj.pathname || '') + (str && '?' + str || '');
 }
 
-let doc;
+let doc, parser;
 export function HTML(str) {
 	if (str.startsWith('<html') && str.endsWith('</html>')) {
 		if (!parser) parser = new DOMParser();
@@ -33,7 +33,6 @@ export function HTML(str) {
 	}
 }
 
-let parser;
 export function XML(str) {
 	if (!parser) parser = new DOMParser();
 	const doc = parser.parseFromString(`<root>${str.trim()}</root>`, "text/xml");

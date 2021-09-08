@@ -99,7 +99,7 @@ export const filters = {
 			dest.index = 0;
 		}
 
-		let node = dest.node;
+		const node = dest.node;
 		delete dest.attr;
 		delete dest.tag;
 		const parent = node.parentNode;
@@ -127,7 +127,7 @@ export const filters = {
 
 		return val;
 	},
-	repeat: ['array?', 'string?', 'string?', 'filter?', '?*', (ctx, val, range, alias, place, ...params) => {
+	repeat: ['array?', 'string?', 'string?', 'filter?', '?*', (ctx, list, range, alias, place, ...params) => {
 		const { src, dest } = ctx;
 		let node = dest.node;
 		const el = node.children ? node : node.parentNode;
@@ -184,7 +184,7 @@ export const filters = {
 		const parent = node.parentNode;
 		parent.replaceChild(cursor, node);
 
-		Array.prototype.forEach.call(val, (item, i) => {
+		for (const item of Array.from(list)) {
 			let obj = Object.assign({}, ctx.data);
 
 			if (alias) {
@@ -214,7 +214,7 @@ export const filters = {
 			}
 			ctx.src = src;
 			ctx.dest = dest;
-		});
+		}
 		if (dest.root == node) dest.root = parent;
 		parent.removeChild(cursor);
 		// the range replaces src.node so there's not point in returning a value
@@ -224,7 +224,9 @@ export const filters = {
 	},
 	queryAll(ctx, frag, sel) {
 		const nf = frag.ownerDocument.createDocumentFragment();
-		frag.querySelectorAll(sel).forEach((node) => nf.appendChild(node));
+		for (const node of frag.querySelectorAll(sel)) {
+			nf.appendChild(node);
+		}
 		return nf;
 	}
 };
