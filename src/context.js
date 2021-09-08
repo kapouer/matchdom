@@ -266,7 +266,7 @@ export default class Context {
 		}
 	}
 	check(val, str, arg) {
-		if (!arg || arg.startsWith('?')) arg = "any";
+		if (!arg || arg.startsWith('?')) arg = "any" + arg;
 		const [type, def] = arg.split("?");
 		if (str == null) {
 			if (def == null) {
