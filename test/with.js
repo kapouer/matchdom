@@ -139,5 +139,17 @@ describe('ifAt filter', function() {
 		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
 	});
 
+	it('should remove attr if prop is undefined', function() {
+		const node = dom(`<div><p class="[obj.val|ifAt:|const:]test">test</p></div>`);
+		const copy = matchdom(node, { obj: {}});
+		assert.equal(copy.outerHTML, '<div><p>test</p></div>');
+	});
+
+	it('should not change attr if prop is defined', function() {
+		const node = dom(`<div><p class="[obj.val|ifAt:|const:]test">test</p></div>`);
+		const copy = matchdom(node, { obj: {val: 1}});
+		assert.equal(copy.outerHTML, '<div><p class="test">test</p></div>');
+	});
+
 });
 
