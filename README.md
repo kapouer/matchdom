@@ -435,6 +435,10 @@ Examples:
 - `at:+div.card+` selects also the previous and next siblings of the ancestor.
 - `at:+**++|to:class` selects one sibling before and two siblings after parent node, and sets the class on them #FIXME
 
+### andAt:range
+
+A shortcut for `then:at:${range}` removes a range when value is not null-ish.
+
 ### orAt:range
 
 A shortcut for `else:at:${range}` removes a range when value is null-ish.
@@ -445,7 +449,15 @@ This is a shortcut for `orAt:${range}|const:`.
 
 If the value is falsey, the range is removed.
 
-The value is never shown.
+The value is merged as empty string.
+
+### notAt:range
+
+This is a shortcut for `orAt:${range}|const:`.
+
+If the value is truey, the range is removed.
+
+The value is merged as empty string.
 
 ### to:attrName or *
 

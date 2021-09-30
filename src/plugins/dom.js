@@ -78,6 +78,9 @@ export const filters = {
 		}
 		return val;
 	},
+	andAt(ctx, val, range) {
+		return ctx.run('then', val, 'at', range);
+	},
 	orAt(ctx, val, range) {
 		return ctx.run('else', val, 'at', range);
 	},
@@ -86,6 +89,14 @@ export const filters = {
 		if (ctx.expr.drop()) {
 			// eslint-disable-next-line no-console
 			console.info("ifAt should not be followed by other filters");
+		}
+		return "";
+	},
+	notAt(ctx, val, range) {
+		ctx.run('then', val, 'at', range);
+		if (ctx.expr.drop()) {
+			// eslint-disable-next-line no-console
+			console.info("notAt should not be followed by other filters");
 		}
 		return "";
 	},
