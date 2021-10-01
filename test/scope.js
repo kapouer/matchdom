@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Matchdom, HTML as dom } from 'matchdom';
-const matchdom = (node, data, filters) => {
-	return (new Matchdom()).extend({ filters }).merge(node, data);
+const matchdom = (node, data, filters, scope) => {
+	return (new Matchdom()).extend({ filters }).merge(node, data, scope);
 };
 
 
@@ -47,7 +47,7 @@ describe('scope path', function () {
 describe('scope variables', function () {
 	it('should be kept', function () {
 		const node = dom(`<div>
-			<span>[$one|eq:[$two]:yes:no]</span>
+			<span>[.$one|eq:[.$two]|and:yes]</span>
 		</div>`);
 		const copy = matchdom(node, {}, {}, {
 			data: {
