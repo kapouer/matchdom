@@ -1,15 +1,15 @@
 export const filters = {
 	eq(x, val, str) {
-		if (val == null || val == str) return val;
+		if (val == str) return val;
 		else return null;
 	},
 	neq(x, val, str) {
-		if (val == null || val != str) return val;
+		if (val != str) return val;
 		else return null;
 	},
 	has: ['array', (x, val, str) => {
 		if (val == null) return val;
-		if (val.includes(str)) return val;
+		if (val.includes(str)) return str;
 		else return null;
 	}],
 	in: ['?', 'any*', (x, val, ...list) => {
