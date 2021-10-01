@@ -334,8 +334,8 @@ These filters return the value if the condition is true, or null if the conditio
 
 - eq:str
 - neq:str
-- has:str (contains str)
-- in:str (contained in str)
+- has:str (contains str and returns str)
+- in:str1:... (contained in list of strings)
 - gt:num
 - lt:num
 - gte:num
