@@ -84,19 +84,19 @@ export const filters = {
 	orAt(ctx, val, range) {
 		return ctx.run('else', val, 'at', range);
 	},
-	ifAt(ctx, val, range) {
+	elseAt(ctx, val, range) {
 		ctx.run('else', val, 'at', range);
 		if (ctx.expr.drop()) {
 			// eslint-disable-next-line no-console
-			console.info("ifAt should not be followed by other filters");
+			console.info("elseAt should not be followed by other filters");
 		}
 		return "";
 	},
-	notAt(ctx, val, range) {
+	thenAt(ctx, val, range) {
 		ctx.run('then', val, 'at', range);
 		if (ctx.expr.drop()) {
 			// eslint-disable-next-line no-console
-			console.info("notAt should not be followed by other filters");
+			console.info("thenAt should not be followed by other filters");
 		}
 		return "";
 	},

@@ -440,23 +440,23 @@ Examples:
 
 A shortcut for `then:at:${range}` removes a range when value is not null-ish.
 
+### thenAt:range
+
+This is a shortcut for `andAt:${range}|const:`.
+
+If the value is truey, the range is removed.
+
+The value is merged as empty string.
+
 ### orAt:range
 
 A shortcut for `else:at:${range}` removes a range when value is null-ish.
 
-### ifAt:range
+### elseAt:range
 
 This is a shortcut for `orAt:${range}|const:`.
 
 If the value is falsey, the range is removed.
-
-The value is merged as empty string.
-
-### notAt:range
-
-This is a shortcut for `orAt:${range}|const:`.
-
-If the value is truey, the range is removed.
 
 The value is merged as empty string.
 

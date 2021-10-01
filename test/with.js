@@ -106,9 +106,9 @@ describe('at filter', function() {
 
 });
 
-describe('ifAt filter', function() {
+describe('thenAt filter', function() {
 	it('should remove current node', function() {
-		const node = dom(`<div><span>test [test|ifAt:*]</span></div>`);
+		const node = dom(`<div><span>test [test|elseAt:*]</span></div>`);
 		const copy = matchdom(node, {
 			test: false
 		});
@@ -116,7 +116,7 @@ describe('ifAt filter', function() {
 	});
 
 	it('should not remove current node', function() {
-		const node = dom(`<div><span>test[test|ifAt:*]</span></div>`);
+		const node = dom(`<div><span>test[test|elseAt:*]</span></div>`);
 		const copy = matchdom(node, {
 			test: true
 		});
@@ -124,7 +124,7 @@ describe('ifAt filter', function() {
 	});
 
 	it('should remove current attribute', function() {
-		const node = dom(`<div><span class="some[test|ifAt:]">test</span></div>`);
+		const node = dom(`<div><span class="some[test|elseAt:]">test</span></div>`);
 		const copy = matchdom(node, {
 			test: 0
 		});
@@ -132,7 +132,7 @@ describe('ifAt filter', function() {
 	});
 
 	it('should not process following filters', function () {
-		const node = dom(`<div><span class="some[test|ifAt:|ifAt:*]">test</span></div>`);
+		const node = dom(`<div><span class="some[test|elseAt:|elseAt:*]">test</span></div>`);
 		const copy = matchdom(node, {
 			test: 0
 		});
@@ -140,13 +140,13 @@ describe('ifAt filter', function() {
 	});
 
 	it('should remove attr if prop is undefined', function() {
-		const node = dom(`<div><p class="[obj.val|ifAt:|const:]test">test</p></div>`);
+		const node = dom(`<div><p class="[obj.val|elseAt:]test">test</p></div>`);
 		const copy = matchdom(node, { obj: {}});
 		assert.equal(copy.outerHTML, '<div><p>test</p></div>');
 	});
 
 	it('should not change attr if prop is defined', function() {
-		const node = dom(`<div><p class="[obj.val|ifAt:|const:]test">test</p></div>`);
+		const node = dom(`<div><p class="[obj.val|elseAt:]test">test</p></div>`);
 		const copy = matchdom(node, { obj: {val: 1}});
 		assert.equal(copy.outerHTML, '<div><p class="test">test</p></div>');
 	});

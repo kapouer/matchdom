@@ -35,7 +35,7 @@ describe('flow filters', function () {
 		});
 
 		it('should run without filter when false', function () {
-			const node = dom(`<div><p>[val|else:ifAt:*]</p>test</div>`);
+			const node = dom(`<div><p>[val|elseAt:*]</p>test</div>`);
 			const copy = matchdom(node, { val: false });
 			assert.equal(copy.outerHTML, '<div>test</div>');
 		});
