@@ -172,6 +172,7 @@ A filter function can have side effects on the document being merged.
 
 `ctx` has the following properties:
 
+- raw: the current value before being casted as a filter parameter
 - data: the data object available to expressions
 - path: the current path used to get current value from data
 

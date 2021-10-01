@@ -248,6 +248,7 @@ export default class Context {
 					params[i] = this.check(val, params[i], mtype || '?');
 				}
 			}
+			this.raw = val;
 			return fn(this, ...params);
 		} catch (ex) {
 			if (this.matchdom.debug) throw ex;
