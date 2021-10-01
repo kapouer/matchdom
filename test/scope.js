@@ -24,18 +24,15 @@ describe('scope path', function () {
 	});
 	it('should be set when repeating an array', function () {
 		const node = dom(`<div>
-			<span>[arr|repeat:span:row|scope:]</span>
+			<span>[arr|as:entries|repeat:span:row|scope:|.value]</span>
 		</div>`);
 		const copy = matchdom(node, {
 			arr: ['one', 'two']
 		}, {
-			scope: function (ctx, val) {
-				console.log(ctx.expr.path);
-
-				// assert.equal(what.scope.path[0], 'arr');
-				// assert.ok(what.scope.path[1] === 0 || what.scope.path[1] === 1);
-				// assert.equal(val, what.expr.get(what.data, what.scope.path));
-				return val;
+			scope: function (ctx, entry) {
+				assert.equal(ctx.expr.path[0], 'row');
+				assert.ok([0, 1].includes(entry.key));
+				return entry;
 			}
 		});
 		assert.equal(copy.outerHTML, dom(`<div>

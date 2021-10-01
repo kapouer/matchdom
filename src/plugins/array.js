@@ -24,7 +24,9 @@ export const formats = {
 	},
 	entries(ctx, val) {
 		if (typeof val != "object") return [];
+		const cast = Array.isArray(val);
 		return Object.entries(val).map(([key, value]) => {
+			if (cast) key = parseInt(key);
 			return { key, value };
 		});
 	}
