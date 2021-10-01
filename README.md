@@ -518,20 +518,20 @@ Hooks are called before applying filters, or after.
 
 ```js
 hooks: {
-  before: (val) => {},
-  beforeEach: (val, filter) => {},
-  afterEach: (val, filter) => {},
-  after: (val) => {}
+  beforeAll: (ctx, val) => {},
+  beforeEach: (ctx, val, filter) => {},
+  afterEach: (ctx, val, filter) => {},
+  afterAll: (ctx, val) => {}
 }
 ```
-
-In hooks, `this` is the same object as in filters.
 
 The `filter` parameter contains:
 
 - name:string
 - params:array
+
 and can be modified.
+Also `filter.name` is useful to hook into a specific filter at runtime.
 
 ## Custom symbols
 

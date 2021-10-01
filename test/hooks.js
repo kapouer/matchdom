@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { Matchdom, HTML as dom } from 'matchdom';
 
-const matchdom = (node, data, filters) => new Matchdom().extend({ filters }).merge(node, data);
+const matchdom = (node, data, hooks) => new Matchdom({ hooks }).merge(node, data);
 
 describe('hooks filter', function() {
 	it('should be called after this filter', function() {
@@ -9,9 +9,13 @@ describe('hooks filter', function() {
 		const copy = matchdom(node, {
 			arr: ['word1', 'word2']
 		}, {
-			'join|': function(val, what) {
-				assert.equal(val, 'word1 word2');
-				return ' it ' + val;
+			afterEach(ctx, val, filter) {
+				if (filter.name == "join") {
+					assert.strictEqual(val, 'word1 word2');
+					return ' it ' + val;
+				} else {
+					return val;
+				}
 			}
 		});
 		assert.equal(copy.outerHTML, '<p>now it word1 word2</p>');
@@ -22,9 +26,11 @@ describe('hooks filter', function() {
 		const copy = matchdom(node, {
 			arr: arr
 		}, {
-			'|': function(val, what) {
-				assert.equal(val, undefined);
-				if (what.expr.path[0] == "arr2") return arr;
+			beforeAll(ctx, val, filters) {
+				assert.deepStrictEqual(val, { arr });
+				assert.strictEqual(filters[0].params[0], "arr2");
+				ctx.data.arr2 = arr;
+				return val;
 			}
 		});
 		assert.equal(copy.outerHTML, '<p>now word1 word2</p>');
@@ -34,22 +40,20 @@ describe('hooks filter', function() {
 		const copy = matchdom(node, {
 			arr: ['word1', 'word2']
 		}, {
-			'||': function(val, what) {
+			afterAll(ctx, val, filters) {
 				assert.equal(val, 'now word1 word2');
 				return 'it ' + val;
 			}
 		});
 		assert.equal(copy.outerHTML, '<p>it now word1 word2</p>');
 	});
-	it('should not be written in repeated block', function() {
-		const node = dom(`<p><span>[arr.val|repeat]</span></p>`);
+	it('should work in repeated block', function() {
+		const node = dom(`<p><span>[arr|repeat:*|.val]</span></p>`);
 		const copy = matchdom(node, {
 			arr: [{val: 'word1'}, {val: 'word2'}]
 		}, {
-			'||': function(val, what) {
-				const len = what.scope.path.length;
-				assert.ok((val == "word1" || val == "word2") && len == 3 || len == 2);
-				if (len == 3) return "it " + val;
+			afterAll(ctx, val, filters) {
+				return "it " + val;
 			}
 		});
 		assert.equal(copy.outerHTML, '<p><span>it word1</span><span>it word2</span></p>');

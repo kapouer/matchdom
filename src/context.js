@@ -68,24 +68,15 @@ export default class Context {
 			return undefined;
 		}
 		const expr = this.expr = new Expression(this.symbols).parse(hit);
-		const befEach = this.hooks.beforeEach;
-		const aftEach = this.hooks.afterEach;
+		const { beforeAll, beforeEach, afterEach, afterAll } = this.hooks;
 
-		if (this.hooks.before) this.hooks.before.call(this, val);
+		if (beforeAll) val = beforeAll(this, val, expr.filters);
 		while (expr.filter < expr.filters.length) {
 			if (val === undefined && !expr.last) break;
 			const filter = expr.filters[expr.filter++];
-			if (befEach) befEach.call(this, val, filter);
-			// FIXME cancel or return undefined ?
-			// we don't want to assume this.run() || val
-			// because it doesn't allow one to return undefined
-			// however default behavior is to not merge unless expr.last is set
-			// -> in some way it's legit...
-			// -> default behavior of not merging undefined, unless last in the path, might be bad. Better would be to stop merging undefined at all in any case
-			// -> return undefined -> cancels merge
-			// -> return ctx.val to return uncasted value ?
+			if (beforeEach) val = beforeEach(this, val, filter);
 			val = this.run(filter.name, val, ...filter.params);
-			if (aftEach) aftEach.call(this, val, filter);
+			if (afterEach) val = afterEach(this, val, filter);
 			if (this.cancel) {
 				expr.last = false; // probably a bad idea
 				// FIXME skip = true -rename "last" to "skip" and invert the meaning
@@ -93,7 +84,7 @@ export default class Context {
 			}
 		}
 		if (expr.last && val === undefined) val = null;
-		if (this.hooks.after) this.hooks.after.call(this, val);
+		if (afterAll) val = afterAll(this, val, expr.filters);
 		return val;
 	}
 
