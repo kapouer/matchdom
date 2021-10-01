@@ -237,7 +237,7 @@ export default class Context {
 			}
 			if (it.length < params.length) {
 				if (typed) {
-					if (params.length == 2 && params[1] === null) {
+					if (params.length == 2 && params[1] === "") {
 						// [myfilter:] has a mandatory empty param
 						params.length = 1;
 					} else if (!mtype) {
