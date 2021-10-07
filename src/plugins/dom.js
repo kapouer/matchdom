@@ -93,7 +93,7 @@ export const filters = {
 			dest.parse("*");
 			dest.extend();
 		}
-		const [frag, cursor] = dest.extract();
+		const [fragment, cursor] = dest.extract();
 		const parent = cursor.parentNode;
 
 		for (const item of Array.from(list)) {
@@ -106,11 +106,14 @@ export const filters = {
 			} else {
 				Object.assign(obj, item);
 			}
-			const dstFrag = ctx.matchdom.merge(frag.cloneNode(true), obj, ctx.scope);
+			const fg = ctx.matchdom.merge(fragment.cloneNode(true), obj, ctx.scope);
+			if (fg == null || fg == "" || fg.childNodes && fg.childNodes.length == 0) {
+				continue;
+			}
 			if (placer) {
-				ctx.run(placer, item, cursor, dstFrag, ...params);
+				ctx.run(placer, item, cursor, fg, ...params);
 			} else {
-				parent.insertBefore(dstFrag, cursor);
+				parent.insertBefore(fg, cursor);
 			}
 		}
 		// dropped expr so no return value
