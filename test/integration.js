@@ -5,10 +5,10 @@ const matchdom = (node, data, filters) => {
 	return (new Matchdom()).extend({ filters }).merge(node, data);
 };
 
-describe('integration', function() {
-	it('should repeat array over parent of attribute with url', function() {
+describe('integration', () => {
+	it('should repeat array over parent of attribute with url', () => {
 		const node = dom(`<div><div>
-			<img data-src="[arr|repeat:div|to:src]" />
+			<img data-src="[arr|at:div|repeat:|to:src]" />
 		</div></div>`);
 		const copy = matchdom(node, {
 			arr: ['one', 'two']
@@ -20,33 +20,33 @@ describe('integration', function() {
 		</div></div>`).innerHTML);
 	});
 
-	it('should remove current attribute', function() {
-		const node = dom(`<div><a data-href="/test?[test|at:|as:url]">test</a></div>`);
+	it('should remove current attribute', () => {
+		const node = dom(`<div><a data-href="/test?[test|at:-|as:url]">test</a></div>`);
 		const copy = matchdom(node, {
 			// test: null
 		});
 		assert.equal(copy.outerHTML, '<div><a>test</a></div>');
 	});
 
-	it('should remove current attribute edge case', function() {
-		const node = dom(`<div><link rel="icon" href="[$site.favicon|orAt:*|as:url]?format=ico"></div>`);
+	it('should remove current attribute edge case', () => {
+		const node = dom(`<div><link rel="icon" href="[$site.favicon|at:-|as:url]?format=ico"></div>`);
 		const copy = matchdom(node, {
 			$site: {}
 		});
-		assert.equal(copy.outerHTML, '<div></div>');
+		assert.equal(copy.outerHTML, '<div><link rel="icon"></div>');
 	});
 
-	it('should remove current node', function() {
-		const node = dom(`<div><a href="" data-href="[test|orAt:a|as:url]">test</a></div>`);
+	it('should remove current node', () => {
+		const node = dom(`<div><a href="" data-href="[test|prune:a|as:url]">test</a></div>`);
 		const copy = matchdom(node, {
 			// test: null
 		});
 		assert.equal(copy.outerHTML, '<div></div>');
 	});
 
-	it('should remove currently repeated node if magnet kicks in', function() {
+	it('should remove currently repeated node if magnet kicks in', () => {
 		const node = dom(`<table>
-			<tr><td>[rows|repeat:tr|val]</td><td>[val][col|orAt:tr]</td></tr>
+			<tr><td>[rows|at:tr|repeat:|val]</td><td>[val][col|else:prune:tr]</td></tr>
 		</table>`);
 		const copy = matchdom(node, {
 			rows: [{
@@ -65,48 +65,40 @@ describe('integration', function() {
 		</table>`).outerHTML);
 	});
 
-	it('should remove current text node and previous node', function() {
-		const node = dom(`<div><br><span>test</span>[test|orAt:+*]</div>`);
+	it('should remove current node and previous node', () => {
+		const node = dom(`<div><br><span>test</span><span>[test|prune:+*]</span></div>`);
 		const copy = matchdom(node, {
 			test: false
 		});
 		assert.equal(copy.outerHTML, '<div><br></div>');
 	});
 
-	it('to: should work well with as:text', function() {
-		const node = dom(`<div><span data-expr="[test|to:|as:text]">temp</span></div>`);
+	it('to: should work well with as:text', () => {
+		const node = dom(`<div><span data-expr="[test|to:-|as:text]">temp</span></div>`);
 		const copy = matchdom(node, {
 			test: "a\nb"
 		});
 		assert.equal(copy.outerHTML, '<div><span>a<br>b</span></div>');
 	});
 
-	it('attr and fill filters should work on same node', function() {
-		const node = dom(`<div><a data-expr="[test|attr|fill]">temp</a></div>`);
+	it('at and to should work on closest node', () => {
+		const node = dom(`<div><a data-expr="[test|at:div|to:class]">temp</a></div>`);
 		const copy = matchdom(node, {
 			test: "toto"
 		});
-		assert.equal(copy.outerHTML, '<div><a expr="toto">toto</a></div>');
+		assert.equal(copy.outerHTML, '<div class="toto"><a>temp</a></div>');
 	});
 
-	it('attr and fill filters should work on closest node', function() {
-		const node = dom(`<div><a data-expr="[test|attr:class:div|fill]">temp</a></div>`);
-		const copy = matchdom(node, {
-			test: "toto"
-		});
-		assert.equal(copy.outerHTML, '<div class="toto"><a>toto</a></div>');
-	});
-
-	it('attr and fill filters should not work on same node from text node', function() {
-		const node = dom(`<div><a href="/test">b[test|url:href|fill]a</a></div>`);
+	it('at and to should select parent attribute from text node', () => {
+		const node = dom(`<div><a href="/test">b[test|to:href]anchor</a></div>`);
 		const copy = matchdom(node, {
 			test: "?toto=1"
 		});
-		assert.equal(copy.outerHTML, '<div><a href="?toto=1">?toto=1</a></div>');
+		assert.equal(copy.outerHTML, '<div><a href="?toto=1">banchor</a></div>');
 	});
 
-	it('should repeat parent node and fill current node and set an attribute on parent node using two separate expressions', function() {
-		const node = dom(`<section><div class="ui toto grid"><div><p data-fill="[list.field|repeat:.ui.grid|fill]" data-attr="[list.field2|attr:data-test:.ui.grid]">astuffb</p></div></div></section>`);
+	it('should repeat parent node and fill current node and set an attribute on parent node using two separate expressions', () => {
+		const node = dom(`<section><div class="ui toto grid"><div><p data-fill="[list|at:.ui.grid|repeat:|field|to:-]" data-attr="[field2|at:.ui.grid|to:data-test]">astuffb</p></div></div></section>`);
 		const copy = matchdom(node, {
 			list: [
 				{field: 'bluew', field2: 'blue'},
@@ -116,8 +108,8 @@ describe('integration', function() {
 		assert.equal(copy.innerHTML, '<div class="ui toto grid" data-test="blue"><div><p>bluew</p></div></div><div class="ui toto grid" data-test="red"><div><p>redw</p></div></div>');
 	});
 
-	it('nested fill filter', function() {
-		const node = dom(`<p>a[sub.[name]|to:]b</p>`);
+	it('nested merge and to:', () => {
+		const node = dom(`<p>a[sub.[name]|to:-]b</p>`);
 		const copy = matchdom(node, {
 			sub: {
 				key: 'word'

@@ -4,8 +4,8 @@ const matchdom = (node, data, filters) => {
 	return (new Matchdom()).extend({ filters }).merge(node, data);
 };
 
-describe('text nodes', function() {
-	it('should be merged with simple value', function() {
+describe('text nodes', () => {
+	it('should be merged with simple value', () => {
 		const node = dom(`<span>no? [test]!</span>`);
 		const copy = matchdom(node, {
 			test: "yes"
@@ -13,7 +13,7 @@ describe('text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>no? yes!</span>');
 	});
 
-	it('should be merged with nested path accessor', function() {
+	it('should be merged with nested path accessor', () => {
 		const node = dom(`<span>[path.test.to]</span>`);
 		const copy = matchdom(node, {
 			path: {
@@ -25,7 +25,7 @@ describe('text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
 
-	it('should not be merged as html', function() {
+	it('should not be merged as html', () => {
 		const node = dom(`<span>[str|as:text]</span>`);
 		const copy = matchdom(node, {
 			str: "<b>bold</b>"
@@ -33,7 +33,7 @@ describe('text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>&lt;b&gt;bold&lt;/b&gt;</span>');
 	});
 
-	it('should be merged as html', function() {
+	it('should be merged as html', () => {
 		const node = dom(`<span>[str|as:html]</span>`);
 		const copy = matchdom(node, {
 			str: "test<b>bold</b><i>italic</i>test"
@@ -41,7 +41,7 @@ describe('text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>test<b>bold</b><i>italic</i>test</span>');
 	});
 
-	it('should replace newlines with br', function() {
+	it('should replace newlines with br', () => {
 		const node = dom(`<p>[str|as:text]</p>`);
 		const copy = matchdom(node, {
 			str: "test\n\ntest\n"
@@ -49,7 +49,7 @@ describe('text nodes', function() {
 		assert.equal(copy.outerHTML, '<p>test<br><br>test<br></p>');
 	});
 
-	it('should be merged as if empty when undefined and first level', function() {
+	it('should be merged as if empty when undefined and first level', () => {
 		const node = dom(`<span>no? [test]!</span>`);
 		const copy = matchdom(node, {
 			toto: 'me'
@@ -57,7 +57,7 @@ describe('text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>no? !</span>');
 	});
 
-	it('should be merged as if empty when undefined and second level', function() {
+	it('should be merged as if empty when undefined and second level', () => {
 		const node = dom(`<span>no? [test.it]!</span>`);
 		const copy = matchdom(node, {
 			test: {
@@ -67,7 +67,7 @@ describe('text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>no? !</span>');
 	});
 
-	it('should be left unmerged when first-level is undefined on a two-level path', function() {
+	it('should be left unmerged when first-level is undefined on a two-level path', () => {
 		const node = dom(`<span>no? [test.it]!</span>`);
 		const copy = matchdom(node, {
 			tost: {
@@ -77,7 +77,7 @@ describe('text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>no? [test.it]!</span>');
 	});
 
-	it('should not replace newlines of contiguous text nodes with br', function() {
+	it('should not replace newlines of contiguous text nodes with br', () => {
 		const node = dom(`<div>
 		<span>[inside]</span>[outside]at
 		</div>`);
@@ -91,8 +91,8 @@ describe('text nodes', function() {
 	});
 });
 
-describe('filters on text nodes', function() {
-	it('should do nothing if missing', function() {
+describe('filters on text nodes', () => {
+	it('should do nothing if missing', () => {
 		const node = dom(`<span>[test|notfound:]</span>`);
 		const copy = matchdom(node, {
 			test: "yes"
@@ -100,7 +100,7 @@ describe('filters on text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
 
-	it('should do nothing if multiple filters are missing', function() {
+	it('should do nothing if multiple filters are missing', () => {
 		const node = dom(`<span>[test|notfound:|notfound2:]</span>`);
 		const copy = matchdom(node, {
 			test: "yes"
@@ -108,7 +108,7 @@ describe('filters on text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
 
-	it('should do nothing if multiple filters with parameters are missing', function() {
+	it('should do nothing if multiple filters with parameters are missing', () => {
 		const node = dom(`<span>[test|notfound:ff|notfound2:kk]</span>`);
 		const copy = matchdom(node, {
 			test: "yes"
@@ -116,7 +116,7 @@ describe('filters on text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
 
-	it('should receive parameter', function() {
+	it('should receive parameter', () => {
 		const node = dom(`<span>[test|prefix:me]</span>`);
 		const copy = matchdom(node, {
 			test: "yes"
@@ -128,7 +128,7 @@ describe('filters on text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>meyes</span>');
 	});
 
-	it('should receive parameter when multiple filters are applied', function() {
+	it('should receive parameter when multiple filters are applied', () => {
 		const node = dom(`<span>[test|prefix:me|postfix:you]</span>`);
 		const copy = matchdom(node, {
 			test: " and "
@@ -143,7 +143,7 @@ describe('filters on text nodes', function() {
 		assert.equal(copy.outerHTML, '<span>me and you</span>');
 	});
 
-	it('should be merge list of nodes', function() {
+	it('should be merge list of nodes', () => {
 		const node = dom(`<div>
 			<span>no? [test]!</span>
 			<div><span>no? [test2]!</span></div>

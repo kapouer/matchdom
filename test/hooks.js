@@ -3,8 +3,8 @@ import { Matchdom, HTML as dom } from 'matchdom';
 
 const matchdom = (node, data, hooks) => new Matchdom({ hooks }).merge(node, data);
 
-describe('hooks filter', function() {
-	it('should be called after this filter', function() {
+describe('hooks filter', () => {
+	it('should be called after this filter', () => {
 		const node = dom(`<p>[arr|join: |pre:now]</p>`);
 		const copy = matchdom(node, {
 			arr: ['word1', 'word2']
@@ -20,7 +20,7 @@ describe('hooks filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<p>now it word1 word2</p>');
 	});
-	it('should be called before all filters', function() {
+	it('should be called before all filters', () => {
 		const node = dom(`<p>[arr2|join: |pre:now ]</p>`);
 		const arr = ['word1', 'word2'];
 		const copy = matchdom(node, {
@@ -35,7 +35,7 @@ describe('hooks filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<p>now word1 word2</p>');
 	});
-	it('should be called after all filters', function() {
+	it('should be called after all filters', () => {
 		const node = dom(`<p>[arr|join: |pre:now ]</p>`);
 		const copy = matchdom(node, {
 			arr: ['word1', 'word2']
@@ -47,7 +47,7 @@ describe('hooks filter', function() {
 		});
 		assert.equal(copy.outerHTML, '<p>it now word1 word2</p>');
 	});
-	it('should work in repeated block', function() {
+	it('should work in repeated block', () => {
 		const node = dom(`<p><span>[arr|repeat:*|.val]</span></p>`);
 		const copy = matchdom(node, {
 			arr: [{val: 'word1'}, {val: 'word2'}]
