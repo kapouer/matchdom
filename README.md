@@ -443,6 +443,11 @@ Examples:
 Like "at", without actually writing the value,
 this is a shortcut for `at:${range}|const:`.
 
+Useful to test a value and remove selected range if falsey.
+
+To remove selected range but actually merge the value if truey,
+use instead `else:at:*`.
+
 ### to:target
 
 While `at` filter widens the range around the expression,
