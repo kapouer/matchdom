@@ -76,15 +76,11 @@ export const filters = {
 	repeat: ['array?', 'string?', 'filter?', '?*', (ctx, list, alias, placer, ...params) => {
 		const { src, dest } = ctx;
 
-		// rewrite expression without repeat and with alias if any
 		const cur = src.read();
 		if (cur != null) {
 			const expr = ctx.expr.clone();
 			if (alias) expr.prepend("get", [alias]);
 			const hit = dest.hits[dest.index] = expr.wrap(expr.toString());
-			// this call fucks up everything
-			// we just want to write back the expression where it was,
-			// probably on the *source* place
 			src.write([cur.replace(expr.wrap(expr.initial), hit)]);
 		}
 		ctx.expr.drop();
