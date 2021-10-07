@@ -17,7 +17,6 @@ it is converted to a DOM fragment (or single node) if `document` is available.
 
 However, explicit parsing can be done through exported `HTML` and `XML` methods.
 
-
 ## usage
 
 ```js
@@ -35,7 +34,7 @@ md.extend({
 const mergedDom = md.merge(`<div id="model" class="[myclass]">
  <h[n]>Header</h[n]>
  <span>[data.text|as:html]</span>
- <img src="[data.icon|orAt:*]">
+ <img src="[data.icon|prune:*]">
 </div>`, {
  n: 4,
  myclass: "yes",
@@ -77,9 +76,7 @@ See tests for an example.
 
 ## types and formats
 
-Types can be used by filters typings, or by "to:" and "is:" filters.
-
-Formats can be used by "to:" filter.
+Types can be used by filters typings, or by "as:" and "is:" filters.
 
 Basic types (and their shorthands):
 
@@ -101,7 +98,7 @@ Default formats:
 - text: converts string with newlines by a dom fragment with hard breaks
 - html: converts string to a dom fragment
 - xml: converts string to an xml fragment
-- url: merges source and destination - works well with to: filter.
+- url: merges source and destination - works well with as: filter.
 - keys: array of keys
 - values: array of values
 - entries: arrays of {key, value}
@@ -309,6 +306,10 @@ Caps means: capitalize each sentence separated by a dot and whitespace (requires
 
 ## flow control filters
 
+### not:name:params:(...)
+
+Runs the named filter with !val instead of val.
+
 ### then:name:param:(...)
 
 When value is loosely true, return the value of running the given named filter;
@@ -420,73 +421,62 @@ they are meant to manipulate dom nodes.
 By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
 
-This filter widens the `range` the expression will replace:
+The filter allows one to extend the current selection with:
 
-- empty range: the whole string, attribute, or text node.
-- selector range: the closest selected parent
-- wildcard(s): the nth selected parent
-- plus sign(s): before or after a parent selector, previous and next siblings of parent
+- empty range: default behavior replaces the expression itself
+- `-`: selects the whole text node or attribute surrounding the expression
+- selector: the closest selected parent
+- `*`: the nth selected parent (one wildcard goes up one parent)
+- B+selector+A: selects B siblings before and A siblings after (B and A integers).
+  When the integer is 1, it is optional: +parent selects one sibling before.
 
-If used in conjunction with the "to:" filter, with allows one to replace an
-attribute on selected node(s), instead of replacing the nodes themselves.
+Using at, prune, then, else, to filters, one can control how a value affects selection.
 
 Examples:
 
 - `at:div.card` selects `closest('div.card')`.
 - `at:+div.card+` selects also the previous and next siblings of the ancestor.
-- `at:+**++|to:class` selects one sibling before and two siblings after parent node, and sets the class on them #FIXME
+- `at:+**+2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them #FIXME
 
-### andAt:range
+### prune:range
 
-A shortcut for `then:at:${range}` removes a range when value is not null-ish.
+Like "at", without actually writing the value,
+this is a shortcut for `at:${range}|const:`.
 
-### thenAt:range
+### to:target
 
-This is a shortcut for `andAt:${range}|const:`.
+While `at` filter widens the range around the expression,
+`to` restricts it to text content or to another attribute.
 
-If the value is truey, the range is removed.
-
-The value is merged as empty string.
-
-### orAt:range
-
-A shortcut for `else:at:${range}` removes a range when value is null-ish.
-
-### elseAt:range
-
-This is a shortcut for `orAt:${range}|const:`.
-
-If the value is falsey, the range is removed.
-
-The value is merged as empty string.
-
-### to:attrName or *
-
-Moves where the expression is merged:
-
-- `to:` fills the content of the node
-- `to:*` replaces the node
-- `to:attr` replaces the attribute of the node(s)
+- ``: replace selected range (default)
+- `-`: selects current node content (especially when used inside an attribute)
+- `*`: selects current node. `to:*` and `at:*` are equivalent.
+- `attr`: replace content of this attribute
 
 Examples:
 
 - `to:src` fills the src attribute of the current node
 - `at:div|to:class` fills the class attribute of the closest `div`
-- `at:p|then:to:class|else:to:*` fills the class attribute of closest `p` or remove it entirely
+- `val|then:to:class|then:at:p|else:prune:p` fills the class attribute of closest `p` if val is not falsey, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
 
-### repeat:range:alias:place:(...)
+### repeat:alias:place:(...)
 
 Expect the value to be iterable (array, collection, etc...).
 
 Repeats selected range for each item in the value.
+
+The selected range is:
+
+- set by `at:range` filter if called before repeat
+- or defaults to `at:*` (the most common case).
 
 The keys in each item become available in the scope of each repeated range.
 
 The alias parameter can name repeated item, so that these two expressions
 are equivalent:
 
-- `[items|repeat:div|id] has some [text]`
-- `[items|repeat:div:my|id] has some [my.text]`
+- `[items|at:div|repeat:|id] has some [text]`
+- `[items|at:div|repeat:my|id] has some [my.text]`
 
 The first case is shorter to write but overwrites current scope with iterated item keys, while the alias allows to avoid that.
 
