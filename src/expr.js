@@ -33,7 +33,7 @@ export default class Expression {
 	}
 	toString() {
 		const { param, append } = this.symbols;
-		return this.filters.map(function (obj) {
+		return this.filters.map((obj) => {
 			let expr = (obj.name || "get") + param;
 			if (obj.params.length) expr += obj.params.join(param);
 			return expr;

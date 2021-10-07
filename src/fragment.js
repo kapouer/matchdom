@@ -2,8 +2,14 @@ class TextNode {
 	nodeValue
 	constructor(str = "", doc) {
 		this.nodeValue = str;
-		this.nodeType = -1;
+		this.nodeType = 3;
 		this.ownerDocument = doc;
+	}
+	get nextSibling() {
+		return findSibling(this, +1);
+	}
+	get previousSibling() {
+		return findSibling(this, -1);
 	}
 	toString() {
 		return this.nodeValue;
@@ -11,6 +17,15 @@ class TextNode {
 	cloneNode() {
 		return new TextNode(this.nodeValue, this.ownerDocument);
 	}
+}
+
+function findSibling(node, dir) {
+	const parent = node.parentNode;
+	if (!parent) return null;
+	const list = parent.childNodes;
+	const pos = list.indexOf(node);
+	if (pos < 0) return null;
+	else return list[pos + dir];
 }
 
 class TextNodeIterator {
@@ -44,8 +59,15 @@ class TextFragment {
 		return node;
 	}
 	insertBefore(node, bef) {
-		const pos = this.childNodes.indexOf(bef);
-		this.childNodes.splice(pos, 0, this.adopt(node));
+		if (node instanceof TextFragment) {
+			for (const child of Array.from(node.childNodes)) {
+				this.insertBefore(child, bef);
+			}
+		} else {
+			const list = this.childNodes;
+			const pos = list.indexOf(bef);
+			list.splice(pos < 0 ? list.length : pos, 0, this.adopt(node));
+		}
 		return node;
 	}
 	removeChild(node) {

@@ -40,17 +40,19 @@ export class Matchdom {
 
 		list = Array.prototype.map.call(list, (root) => {
 			const replacements = [];
-			this.matchEachDom(root, data, scope, (place, str) => {
-				const ctx = new Context(this, data, scope, place);
-				let hits = ctx.parse(str);
+			if (root.documentElement) {
+				root = root.documentElement;
+			}
+			this.matchEachDom(root, data, scope, (node, name, str) => {
+				const hits = Context.parse(this.symbols, str);
 				if (!hits) return;
-				ctx.dest.hits = hits;
-				ctx.src.hits = hits.slice();
-				ctx.processHits(hits);
+				const ctx = new Context(this, data, scope);
+				ctx.setup(hits, root, node, name);
+				const { dest } = ctx;
 				let allNulls = true;
 				let allTrue = true;
 				let allBools = true;
-				hits = hits.filter(function (val) {
+				const filteredHits = hits.filter((val) => {
 					if (val !== null) allNulls = false;
 					if (val === true); // do nothing
 					else if (val === false) allTrue = false;
@@ -59,15 +61,15 @@ export class Matchdom {
 				});
 				// [a][b] returns null if a and b are null
 				// likewise for booleans
-				if (hits.length > 0) {
+				if (filteredHits.length > 0) {
 					let result;
 					if (allNulls) result = null;
 					else if (allBools) result = allTrue;
-					else result = hits;
-					ctx.write(result);
+					else result = filteredHits;
+					dest.write(result, ctx.src);
 				}
-				if (ctx.dest.root && ctx.dest.root != root) root = ctx.dest.root;
-				if (ctx.replacement) replacements.unshift(ctx.replacement);
+				if (dest.root) root = dest.root;
+				if (dest.replacement) replacements.unshift(dest.replacement);
 			});
 			for (const pair of replacements) {
 				const [tag, old] = pair;
@@ -97,10 +99,6 @@ export class Matchdom {
 	}
 
 	matchEachDom(root, data, scope, fn) {
-		let val;
-		if (root.documentElement) {
-			root = root.documentElement;
-		}
 		const ctx = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
 		// old IE need all params
 		const it = root.ownerDocument.createNodeIterator(root, ctx, null, false);
@@ -108,18 +106,13 @@ export class Matchdom {
 		let node;
 		while ((node = it.nextNode())) {
 			if (!(vr ? vr(node, it, data, scope) : true)) continue;
-			const place = { node, root };
 			if (node.attributes) {
 				for (const att of Array.from(node.attributes)) {
-					if (!att.value) continue;
-					place.attr = att.name;
-					fn(place, att.value);
+					if (att.value) fn(node, att.name, att.value);
 				}
-				place.tag = true;
-				fn(place, node.tagName.toLowerCase());
+				fn(node, true, node.tagName.toLowerCase());
 			} else if (node.nodeValue != null) {
-				val = node.nodeValue;
-				if (val != null) fn(place, val);
+				fn(node, null, node.nodeValue);
 			}
 		}
 	}

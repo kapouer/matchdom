@@ -4,8 +4,11 @@ export const formats = {
 	text(ctx, val) {
 		if (val == null) return val;
 		val = val.toString();
-		const doc = ctx.src.node.ownerDocument;
-		if (!doc) return val;
+		const doc = ctx.src.doc;
+		if (!doc) {
+			// no dom available
+			return val;
+		}
 		const frag = doc.createDocumentFragment();
 		const list = val.toString().split('\n');
 		for (let i = 0; i < list.length; i++) {
@@ -16,31 +19,29 @@ export const formats = {
 	},
 	html(ctx, val) {
 		if (val == null) return val;
-		return ctx.own(HTML(val));
+		return ctx.src.doc.importNode(HTML(val), true);
 	},
 	xml(ctx, val) {
 		if (val == null) return val;
-		return ctx.own(XML(val));
+		return ctx.src.doc.importNode(XML(val), true);
 	},
 	url(ctx, val) {
 		if (val == null) return val;
 		const { src, dest } = ctx;
 		const same = src.attr === dest.attr && src.node === dest.node;
 		const valUrl = parseUrl(val);
-		const srcHits = src.hits.slice();
-		srcHits[src.index] = src.index > 0 ? val : '';
+		const srcHits = dest.hits.slice();
+		srcHits[dest.index] = dest.index > 0 ? val : '';
 		const srcVal = srcHits.join('');
 		if (src.index > 0 && valUrl.pathname) {
 			delete valUrl.pathname;
 		}
 		const srcUrl = parseUrl(srcVal);
-		const destUrl = same ? {} : parseUrl(ctx.read(dest));
+		const destUrl = same ? {} : parseUrl(dest.read());
 		const finalUrl = Object.assign({}, destUrl, srcUrl, valUrl);
 		finalUrl.query = Object.assign({}, destUrl.query, srcUrl.query, valUrl.query);
 
-		for (let k = 0; k < dest.hits.length; k++) {
-			if (k !== dest.index) dest.hits[k] = null;
-		}
+		dest.reduceHit();
 		return serializeUrl(finalUrl);
 	}
 };
@@ -48,152 +49,52 @@ export const formats = {
 export const filters = {
 	at(ctx, val, range) {
 		const { dest } = ctx;
-		dest.hits.splice(0, dest.index);
-		dest.hits.splice(1);
-		dest.index = 0;
-		let node = dest.node;
-		if (!node.parentNode || !range) return val;
-		const { attr, tag } = dest;
-		delete dest.attr;
-		delete dest.tag;
-		while (range.startsWith('+')) {
-			dest.before++;
-			range = range.slice(1);
-		}
-		while (range.endsWith('+')) {
-			dest.after++;
-			range = range.slice(0, -1);
-		}
-
-		if (/^\*+$/.test(range)) {
-			let ups = range.length;
-			if (attr || tag) ups += -1;
-			while (ups-- > 0) {
-				node = node.parentNode;
-			}
-			dest.node = node;
-		} else {
-			node = node.closest ? node : node.parentNode;
-			dest.node = node.closest(range);
-		}
+		dest.parse(range);
+		if (dest.ancestor) dest.reduceHit();
+		dest.extend(ctx.src.target);
 		return val;
 	},
-	andAt(ctx, val, range) {
-		return ctx.run('then', val, 'at', range);
-	},
-	orAt(ctx, val, range) {
-		return ctx.run('else', val, 'at', range);
-	},
-	elseAt(ctx, val, range) {
-		ctx.run('else', val, 'at', range);
-		if (ctx.expr.drop()) {
-			// eslint-disable-next-line no-console
-			console.info("elseAt should not be followed by other filters");
+	prune(ctx, val, range) {
+		if (!val) {
+			filters.at(ctx, val, range);
 		}
-		return "";
-	},
-	thenAt(ctx, val, range) {
-		ctx.run('then', val, 'at', range);
-		if (ctx.expr.drop()) {
-			// eslint-disable-next-line no-console
-			console.info("thenAt should not be followed by other filters");
-		}
-		return "";
+		return null;
 	},
 	to(ctx, val, to) {
-		if (val === undefined) return val;
+		if (!to) {
+			return val;
+		}
 		const { src, dest } = ctx;
+		// prevents merging of current expression
 		src.hits[src.index] = null;
 		if (!src.attr) {
-			dest.hits.splice(dest.index + 1);
-			dest.hits.splice(0, dest.index);
-			dest.index = 0;
+			dest.reduceHit();
 		}
-
-		const node = dest.node;
-		delete dest.attr;
-		delete dest.tag;
-		const parent = node.parentNode;
-		if (!to) {
-			if (node.children) {
-				node.textContent = '';
-				const text = node.ownerDocument.createTextNode('');
-				node.appendChild(text);
-				dest.node = text;
-			} else {
-				while (node.previousSibling) parent.removeChild(node.previousSibling);
-				while (node.nextSibling) parent.removeChild(node.nextSibling);
-			}
-		} else if (to == "*") {
-			if (node.children) {
-				const text = dest.node = node.ownerDocument.createTextNode('');
-				node.replaceWith(text);
-			} else {
-				parent.replaceWith(node);
-				if (parent == dest.root) dest.root = node;
-			}
-		} else {
-			dest.attr = to;
-		}
-
+		dest.restrict(to);
 		return val;
 	},
-	repeat: ['array?', 'string?', 'string?', 'filter?', '?*', (ctx, list, range, alias, place, ...params) => {
+	repeat: ['array?', 'string?', 'filter?', '?*', (ctx, list, alias, placer, ...params) => {
 		const { src, dest } = ctx;
-		let node = dest.node;
-		const el = node.children ? node : node.parentNode;
-		let prevs = 0;
-		let nexts = 0;
-		while (range.startsWith('+')) {
-			prevs++;
-			range = range.slice(1);
-		}
-		while (range.endsWith('+')) {
-			nexts++;
-			range = range.slice(0, -1);
-		}
-		if (range == "-") range = "";
 
-		if (range == "*") {
-			node = el;
-		} else if (range) {
-			node = el.closest(range);
-		}
-
-		const cur = ctx.read();
-
+		// rewrite expression without repeat and with alias if any
+		const cur = src.read();
 		if (cur != null) {
 			const expr = ctx.expr.clone();
 			if (alias) expr.prepend("get", [alias]);
-			const hit = src.hits[src.index] = expr.toString();
-			ctx.write([cur.replace(expr.wrap(expr.initial), expr.wrap(hit))]);
+			const hit = dest.hits[dest.index] = expr.wrap(expr.toString());
+			// this call fucks up everything
+			// we just want to write back the expression where it was,
+			// probably on the *source* place
+			src.write([cur.replace(expr.wrap(expr.initial), hit)]);
 		}
 		ctx.expr.drop();
-		const doc = ctx.src.node.ownerDocument;
 
-		const srcFrag = doc.createDocumentFragment();
-		const destNode = node.cloneNode(true);
-		srcFrag.appendChild(destNode);
-
-		let n = prevs;
-		let destSib = destNode;
-		let sib;
-		while (n-- > 0) {
-			sib = node.previousElementSibling;
-			if (sib == null) break;
-			destSib = srcFrag.insertBefore(sib, destSib);
+		if (!dest.changed) {
+			dest.parse("*");
+			dest.extend();
 		}
-		destSib = destNode;
-		n = nexts;
-		while (n-- > 0) {
-			sib = node.nextElementSibling;
-			if (sib == null) break;
-			destSib = srcFrag.insertBefore(sib, destSib.nextSibling);
-		}
-
-		const cursor = doc.createTextNode("");
-		const parent = node.parentNode;
-		parent.replaceChild(cursor, node);
+		const [frag, cursor] = dest.extract();
+		const parent = cursor.parentNode;
 
 		for (const item of Array.from(list)) {
 			let obj = Object.assign({}, ctx.data);
@@ -205,30 +106,15 @@ export const filters = {
 			} else {
 				Object.assign(obj, item);
 			}
-			const dstFrag = ctx.matchdom.merge(srcFrag.cloneNode(true), obj, ctx.scope);
-			let child;
-			while ((child = dstFrag.firstChild)) {
-				if (place) {
-					ctx.src = {
-						node: cursor,
-						root: parent
-					};
-					ctx.dest = {
-						node: child,
-						root: dstFrag
-					};
-					ctx.run(place, item, ...params);
-					if (child.parentNode == dstFrag) dstFrag.removeChild(child);
-				} else {
-					parent.insertBefore(dstFrag.firstChild, cursor);
-				}
+			const dstFrag = ctx.matchdom.merge(frag.cloneNode(true), obj, ctx.scope);
+			if (placer) {
+				ctx.run(placer, item, cursor, dstFrag, ...params);
+			} else {
+				parent.insertBefore(dstFrag, cursor);
 			}
-			ctx.src = src;
-			ctx.dest = dest;
 		}
-		if (dest.root == node) dest.root = parent;
-		parent.removeChild(cursor);
-		// the range replaces src.node so there's not point in returning a value
+		// dropped expr so no return value
+		return null;
 	}],
 	query(ctx, frag, sel) {
 		return frag.querySelector(sel);

@@ -1,4 +1,5 @@
 import Expression from './expr.js';
+import Place from './place.js';
 
 class ParamError extends Error {
 	constructor(msg) {
@@ -8,7 +9,45 @@ class ParamError extends Error {
 }
 export default class Context {
 	cancel = false
-	constructor(md, data, scope, place) {
+
+	static parse(symbols, str) {
+		const { open, close } = symbols;
+		const hits = this.tokenize(open, close, str);
+		if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") {
+			return hits;
+		} else {
+			return;
+		}
+	}
+	static tokenize(open, close, str) {
+		const hits = [];
+		this.fillTokens(open, close, hits, str, 0, str.length);
+		return hits;
+	}
+
+	static fillTokens(open, close, hits, str, pos, len) {
+		const openLen = open.length;
+		const closeLen = close.length;
+		while (pos < len) {
+			const openPos = str.indexOf(open, pos);
+			const closePos = str.indexOf(close, pos);
+			if (openPos >= pos && (openPos < closePos || closePos < pos)) {
+				if (pos != openPos) hits.push(str.substring(pos, openPos));
+				const sub = [];
+				pos = this.fillTokens(open, close, sub, str, openPos + openLen, len);
+				if (sub.length > 0) hits.push(sub);
+			} else if (closePos >= pos && (closePos < openPos || openPos < pos)) {
+				if (pos != closePos) hits.push(str.substring(pos, closePos));
+				return closePos + closeLen;
+			} else {
+				hits.push(str.substring(pos));
+				pos = len;
+			}
+		}
+		return pos;
+	}
+
+	constructor(md, data, scope) {
 		this.data = data;
 		this.scope = Object.assign({}, scope);
 		this.matchdom = md;
@@ -16,28 +55,17 @@ export default class Context {
 		this.hooks = md.hooks;
 		this.symbols = md.symbols;
 		this.level = 0;
-		place.index = 0;
-		this.src = place;
-		this.dest = Object.assign({}, place);
-		this.dest.before = 0;
-		this.dest.after = 0;
 	}
 
-	own(node) {
-		const doc = this.src.node.ownerDocument;
-		return doc.importNode(node, true);
+	setup(hits, root, node, name) {
+		this.src = new Place(root, node, name);
+		this.src.hits = hits.slice();
+		this.dest = new Place(root, node, name);
+		this.dest.hits = hits;
+		this.process(hits);
 	}
 
-	parse(str) {
-		const hits = this.tokenize(str);
-		if (hits.length > 1 || hits.length == 1 && typeof hits[0] != "string") {
-			return hits;
-		} else {
-			return;
-		}
-	}
-
-	processHits(hits) {
+	process(hits) {
 		this.level++;
 		for (let i = 0; i < hits.length; i++) {
 			let hit = hits[i];
@@ -45,7 +73,7 @@ export default class Context {
 				continue;
 			}
 			if (hit.length > 1 || typeof hit[0] != "string") {
-				this.processHits(hit);
+				this.process(hit);
 				hit = hit.join('');
 			} else {
 				hit = hit[0];
@@ -86,120 +114,6 @@ export default class Context {
 		if (expr.last && val === undefined) val = null;
 		if (afterAll) val = afterAll(this, val, expr.filters);
 		return val;
-	}
-
-	read(place = this.dest) {
-		const { node, attr, tag } = place;
-		if (tag) return node.tagName;
-		else if (attr) return node.getAttribute(attr);
-		else return node.nodeValue;
-	}
-
-	write(hits) {
-		const src = this.src;
-		const { node, attr, tag, root } = this.dest;
-		this.src = { node, attr, tag, root };
-
-		const doc = src.node.ownerDocument;
-		const list = Array.isArray(hits) ? hits : [hits];
-
-		if (tag) {
-			const tagName = list.join('');
-			const is = node.getAttribute('is');
-			const tag = doc.createElement(tagName, is ? { is } : null);
-			this.replacement = [this.own(tag), node];
-		} else {
-			const parent = node ? node.parentNode : null;
-			let { before, after } = this.dest;
-			let mutates = false;
-			while (node && before-- > 0) {
-				if (!node.previousSibling) break;
-				parent.removeChild(node.previousSibling);
-			}
-			while (node && after-- > 0) {
-				if (!node.nextSibling) break;
-				parent.removeChild(node.nextSibling);
-			}
-			if (src.attr && (attr != src.attr || node != src.node)) {
-				clearAttr(src.node, src.attr);
-			}
-			if (src.node && src.node != node && (!node || !src.node.contains(node)) && src.node.parentNode && !attr) {
-				// dest node is a node and is replaced by another node
-				src.node.parentNode.removeChild(src.node);
-			}
-			if (!node) {
-				// do nothing more
-			} else if (!attr) {
-				for (let i = 0; i < list.length; i++) {
-					let item = list[i];
-					if (node.nodeType > 0 && item == null) continue;
-					if (!item || !item.nodeType) {
-						if (i == list.length - 1 && !node.children) {
-							// reuse current text node for the last hit
-							node.nodeValue = item;
-							item = node;
-							mutates = true;
-						} else {
-							item = doc.createTextNode((item == null) ? "" : item);
-						}
-					} // else item can be a node or fragment
-					if (parent && item != node) {
-						node.parentNode.insertBefore(this.own(item), node);
-					}
-				}
-				if (!mutates) {
-					if (node.children) parent.removeChild(node);
-					else node.nodeValue = "";
-				}
-			} else {
-				const str = list.join('').trim();
-				let attrNode = node;
-				if (!src.attr) {
-					if (!node.children) attrNode = node.parentNode;
-					if (!src.node.children) src.node.nodeValue = src.hits.join('');
-				}
-				const attrList = attrNode[attr + 'List'];
-				if (!hits || !str) {
-					clearAttr(attrNode, attr);
-				} else if (typeof attrNode[attr] == "boolean") {
-					attrNode.setAttribute(attr, "");
-				} else if ((src.attr !== attr || src.node !== node) && attrList && typeof attrList.add == "function") {
-					for (const name of str.replace(/[\n\t\s]+/g, ' ').trim().split(' ')) {
-						attrList.add(name);
-					}
-				} else {
-					attrNode.setAttribute(attr, str);
-				}
-			}
-		}
-	}
-	tokenize(str) {
-		const list = [];
-		this._tokenize(list, str, 0, str.length);
-		return list;
-	}
-
-	_tokenize(list, str, pos, len) {
-		const { open, close } = this.symbols;
-		const openLen = open.length;
-		const closeLen = close.length;
-		while (pos < len) {
-			const openPos = str.indexOf(open, pos);
-			const closePos = str.indexOf(close, pos);
-			if (openPos >= pos && (openPos < closePos || closePos < pos)) {
-				if (pos != openPos) list.push(str.substring(pos, openPos));
-				const sub = [];
-				pos = this._tokenize(sub, str, openPos + openLen, len);
-				if (sub.length > 0) list.push(sub);
-			} else if (closePos >= pos && (closePos < openPos || openPos < pos)) {
-				if (pos != closePos) list.push(str.substring(pos, closePos));
-				return closePos + closeLen;
-			} else {
-				list.push(str.substring(pos));
-				pos = len;
-			}
-		}
-		return pos;
 	}
 
 	run(name, ...params) {
@@ -314,10 +228,5 @@ export default class Context {
 			return str;
 		}
 	}
-}
-
-function clearAttr(node, attr) {
-	if (node[attr] != null) node.setAttribute(attr, '');
-	node.removeAttribute(attr);
 }
 
