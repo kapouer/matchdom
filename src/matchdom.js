@@ -43,7 +43,7 @@ export class Matchdom {
 			if (root.documentElement) {
 				root = root.documentElement;
 			}
-			this.matchEachDom(root, data, scope, (node, name, str) => {
+			this.matchEachDom(root, (node, name, str) => {
 				const hits = Context.parse(this.symbols, str);
 				if (!hits) return;
 				const ctx = new Context(this, data, scope);
@@ -98,14 +98,12 @@ export class Matchdom {
 		}
 	}
 
-	matchEachDom(root, data, scope, fn) {
+	matchEachDom(root, fn) {
 		const ctx = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
 		// old IE need all params
 		const it = root.ownerDocument.createNodeIterator(root, ctx, null, false);
-		const vr = this.visitor;
 		let node;
 		while ((node = it.nextNode())) {
-			if (!(vr ? vr(node, it, data, scope) : true)) continue;
 			if (node.attributes) {
 				for (const att of Array.from(node.attributes)) {
 					if (att.value) fn(node, att.name, att.value);
