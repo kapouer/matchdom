@@ -60,14 +60,6 @@ export default class Place {
 		Object.assign(this, groups);
 	}
 
-	checkTarget() {
-		if (this.target == Place.CONT && !this.text) {
-			this.node.textContent = "";
-			this.text = this.doc.createTextNode("");
-			this.node.appendChild(this.text);
-		}
-	}
-
 	restrict(str) {
 		if (!str) {
 			this.target = null;
@@ -180,8 +172,13 @@ export default class Place {
 	}
 
 	write(hits, from = this) {
-		this.checkTarget();
-		const { node, attr, text, doc, target } = this;
+		const { node, attr, doc, target } = this;
+		if (target == Place.CONT && !this.text) {
+			node.textContent = "";
+			this.text = this.doc.createTextNode("");
+			node.appendChild(this.text);
+		}
+
 		const list = Array.isArray(hits) ? hits : [hits];
 
 		const otherAtt = attr != from.attr || node != from.node;
@@ -213,15 +210,13 @@ export default class Place {
 		} else { // TEXT, CONT, NODE
 			let mutates = false;
 			this.removeSiblings();
-
-			const isIn = target != Place.NODE;
-			const cursor = isIn ? text : node;
+			const cursor = target == Place.NODE ? node : this.text;
 			const parent = cursor.parentNode;
 			for (let i = 0; i < list.length; i++) {
 				let item = list[i];
 				if (cursor.nodeName && cursor.nodeType > 0 && item == null) continue;
 				if (!item || !item.nodeType) {
-					if (i == list.length - 1 && isIn) {
+					if (i == list.length - 1 && cursor.nodeType == 3) {
 						// reuse current text node for the last hit
 						cursor.nodeValue = item;
 						item = cursor;
