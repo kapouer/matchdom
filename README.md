@@ -448,7 +448,7 @@ Examples:
 - `at:div|to:class` fills the class attribute of the closest `div`
 - `val|then:to:class|then:at:p|else:prune:p` fills the class attribute of closest `p` if val is not falsey, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
 
-### repeat:alias:place:(...)
+### repeat:alias:placer:(...)
 
 Expect the value to be iterable (array, collection, etc...).
 
@@ -469,19 +469,19 @@ are equivalent:
 
 The first case is shorter to write but overwrites current scope with iterated item keys, while the alias allows to avoid that.
 
-The place parameter may be a custom filter name called *after* the iterated range
-has been merged:
+The placer parameter may be a custom filter name called *after* the iterated range
+has been merged, with (item, cursor, fragment, ...params) signature:
 
-- value is iterated item, additional parameters are passed
-- ctx.src.node is the insertion cursor (an empty text node) in ctx.src.root
-- ctx.dest.root the fragment containing the merged range
-- ctx.dest.node the current node in the fragment.
+- the iterated item
+- cursor node before which the fragment would have been merged
+- fragment result of the merge
+- other custom params passed to the placer
 
 The place filter may choose to:
 
-- insert ctx.dest.node before ctx.src.node (default behavior)
+- insert fragment before cursor (the default behavior)
 - insert it somewhere else
-- do nothing in which case the node is dropped
+- do nothing in which case the fragment is not inserted
 
 ### query: selector
 
