@@ -71,7 +71,7 @@ describe('repeating', () => {
 		</div>`).outerHTML);
 	});
 
-	it('should repeat array on a template tag with custom fragment', () => {
+	it('should merge and insert template content using a custom filter', () => {
 		const node = dom(`<div>
 			<template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item|.title]</h1><p>[item.text]</p></template>
 		</div>`);
@@ -86,6 +86,28 @@ describe('repeating', () => {
 		});
 		assert.equal(copy.outerHTML, dom(`<div>
 			<h1>t1</h1><p>one</p><h1>t2</h1><p>two</p><template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item|.title]</h1><p>[item.text]</p></template>
+		</div>`).outerHTML);
+	});
+
+	it('should merge and insert template content using custom filter and placer', () => {
+		const node = dom(`<div>
+			<template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item:placer|.title]</h1><p>[item.text]</p></template>
+		</div>`);
+		const copy = matchdom(node, {
+			arr: [{ title: 't1', text: 'one' }, { title: 't2', text: 'two' }]
+		}, {
+			template(ctx, data, mode) {
+				const node = ctx.dest.node;
+				const frag = ctx.matchdom.merge(node.content.cloneNode(true), data, { template: node });
+				node.parentNode.insertBefore(frag, node);
+			},
+			placer(ctx, item, cursor, fragment) {
+				const { template } = ctx.scope;
+				template.parentNode.insertBefore(fragment, template.parentNode.firstElementChild);
+			}
+		});
+		assert.equal(copy.outerHTML, dom(`<div>
+			<h1>t2</h1><p>two</p><h1>t1</h1><p>one</p><template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item:placer|.title]</h1><p>[item.text]</p></template>
 		</div>`).outerHTML);
 	});
 
