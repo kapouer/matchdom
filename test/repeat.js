@@ -71,6 +71,24 @@ describe('repeating', () => {
 		</div>`).outerHTML);
 	});
 
+	it('should repeat array on a template tag with custom fragment', () => {
+		const node = dom(`<div>
+			<template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item|.title]</h1><p>[item.text]</p></template>
+		</div>`);
+		const copy = matchdom(node, {
+			arr: [{ title: 't1', text: 'one' }, { title: 't2', text: 'two' }]
+		}, {
+			template(ctx, data, mode) {
+				const node = ctx.dest.node;
+				const frag = ctx.matchdom.merge(node.content.cloneNode(true), data);
+				node.parentNode.insertBefore(frag, node);
+			}
+		});
+		assert.equal(copy.outerHTML, dom(`<div>
+			<h1>t1</h1><p>one</p><h1>t2</h1><p>two</p><template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item|.title]</h1><p>[item.text]</p></template>
+		</div>`).outerHTML);
+	});
+
 	it('should repeat array in reverse order', () => {
 		const node = dom(`<div>
 			<span>[arr|reverse:|repeat:|value]</span>
