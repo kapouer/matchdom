@@ -23,8 +23,7 @@ However, explicit parsing can be done through exported `HTML` and `XML` methods.
 import { Matchdom, HTML, XHTML } from 'matchdom';
 const md = new Matchdom({
  hooks = {},
- symbols = {},
- visitor = () => true
+ symbols = {}
 });
 md.extend({
  filters = {},
@@ -58,21 +57,6 @@ assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
 - there is a crucial dependency on `<template>` for the html fragment parser.
 
 Consider using a service like polyfill.io for older browsers support.
-
-## dom traversal visitor
-
-This can be done by defining
-
-```js
-new Matchdom({
- visitor(elementNode, iter, data, scope):boolean
-})
-```
-
-which is called before processing node, so this function can change it,
-or can append/remove next siblings.
-
-See tests for an example.
 
 ## types and formats
 
