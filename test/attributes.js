@@ -37,14 +37,23 @@ describe('attributes', () => {
 		assert.equal(copy.outerHTML, '<span>test</span>');
 	});
 
-	it('should always trim attribute value', () => {
-		const node = dom(`<span some=" [notempty]
+	it('should always trim class attribute value', () => {
+		const node = dom(`<span class=" [notempty]
 		">test</span>`);
 		const copy = matchdom(node, {
 			empty: null,
 			notempty: 'test'
 		});
-		assert.equal(copy.outerHTML, '<span some="test">test</span>');
+		assert.equal(copy.outerHTML, '<span class="test">test</span>');
+	});
+
+	it('should never trim other attribute value', () => {
+		const node = dom(`<input value=" [notempty] ">`);
+		const copy = matchdom(node, {
+			empty: null,
+			notempty: 'test'
+		});
+		assert.equal(copy.outerHTML, '<input value=" test ">');
 	});
 
 	it('should not remove attribute when not null', () => {
@@ -56,10 +65,10 @@ describe('attributes', () => {
 		assert.equal(copy.outerHTML, '<span class="test">test</span>');
 	});
 
-	it('should remove class attribute when empty', () => {
-		const node = dom(`<span class="[empty]">test</span>`);
+	it('should remove class attribute when empty after being trimmed', () => {
+		const node = dom(`<span class="[empty] ">test</span>`);
 		const copy = matchdom(node, {
-			empty: ""
+			empty: " "
 		});
 		assert.equal(copy.outerHTML, '<span>test</span>');
 	});

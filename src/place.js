@@ -194,18 +194,19 @@ export default class Place {
 			if (from.target == Place.TEXT) {
 				from.text.nodeValue = from.hits.join('');
 			}
-			const str = list.join('').trim();
+			const str = list.join('');
+			const tstr = str.trim();
 			const attrList = node[attr + 'List'];
-			if (!hits || !str) {
+			if (!hits || tstr.length == 0) {
 				clearAttr(node, attr);
 			} else if (typeof node[attr] == "boolean") {
 				node.setAttribute(attr, "");
-			} else if (otherAtt && attrList && typeof attrList.add == "function") {
-				for (const name of str.replace(/[\n\t\s]+/g, ' ').trim().split(' ')) {
+			} else if (otherAtt && attrList) {
+				for (const name of tstr.replace(/[\n\t\s]+/g, ' ').trim().split(' ')) {
 					attrList.add(name);
 				}
 			} else {
-				node.setAttribute(attr, str);
+				node.setAttribute(attr, attrList ? tstr : str);
 			}
 		} else { // TEXT, CONT, NODE
 			let mutates = false;
