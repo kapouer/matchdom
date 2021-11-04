@@ -147,7 +147,7 @@ export default class Context {
 					arg = arg.slice(0, -1);
 					mtype = arg;
 				}
-				params[i] = this.check(val, params[i], arg);
+				params[i] = this.check(val, params, i, arg);
 			}
 			if (it.length < params.length) {
 				if (typed) {
@@ -159,7 +159,7 @@ export default class Context {
 					}
 				}
 				for (let i = it.length; i < params.length; i++) {
-					params[i] = this.check(val, params[i], mtype || '?');
+					params[i] = this.check(val, params, i, mtype || '?');
 				}
 			}
 			this.raw = val;
@@ -171,7 +171,8 @@ export default class Context {
 			return null;
 		}
 	}
-	check(val, str, arg) {
+	check(val, params, i, arg) {
+		let str = params[i];
 		if (!arg || arg.startsWith('?')) arg = "any" + arg;
 		const [type, def] = arg.split("?");
 		if (str == null) {
@@ -186,12 +187,12 @@ export default class Context {
 		const alts = type.split('|');
 		if (alts.length > 1) {
 			if (alts.includes(str)) return str;
-			else throw new ParamError(`"${val}" is not of in enum ${type}`);
+			else throw new ParamError(`"${str}" is not in enum ${type}`);
 		}
 
 		if (type == "filter") {
-			if (str && this.plugins.filters[str] == null && (!val[str] || typeof val[str] != "function")) {
-				throw new ParamError(`"${val}" is not of type ${type}`);
+			if (str && this.plugins.filters[str] == null && (val == null || !val[str] || typeof val[str] != "function")) {
+				throw new ParamError(`"${str}" is not of type ${type}`);
 			}
 		} else if (type == "path") {
 			str = this.toPath(str, val);
@@ -200,8 +201,9 @@ export default class Context {
 		} else {
 			str = this.run('as', str, type);
 		}
-		if (typeof str == "string") str = this.decode(str);
-
+		if (typeof str == "string" && i > 0) {
+			str = this.decode(str);
+		}
 		return str;
 	}
 	isSimpleValue(val) {

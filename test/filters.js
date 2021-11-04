@@ -121,15 +121,21 @@ describe('alias', () => {
 });
 
 describe('parameters', () => {
-	it('should uri-decode value', () => {
+	it('should be uri-decoded', () => {
 		const node = dom(`<a>Size[size|pre:%3A |post: mm]</a>`);
 		const copy = matchdom(node, {size: 10});
 		assert.equal(copy.outerHTML, '<a>Size: 10 mm</a>');
 	});
-	it('should leave value untouched if not uri-decodable', () => {
+	it('should be left untouched if not uri-decodable', () => {
 		const node = dom(`<a>Percent[pp|post: %|pre:%3A ]</a>`);
 		const copy = matchdom(node, { pp: 10 });
 		assert.equal(copy.outerHTML, '<a>Percent: 10 %</a>');
+	});
+
+	it('should not consider value to be uri-decodable', () => {
+		const node = dom(`<a href="[pp|pre:?]">ok</a>`);
+		const copy = matchdom(node, { pp: 'test=a%20b' });
+		assert.equal(copy.outerHTML, '<a href="?test=a%20b">ok</a>');
 	});
 });
 
