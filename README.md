@@ -20,19 +20,15 @@ However, explicit parsing can be done through exported `HTML` and `XML` methods.
 ## usage
 
 ```js
-import { Matchdom, HTML, XHTML } from 'matchdom';
+import { Matchdom, HTML, XML, Locale } from 'matchdom';
 const md = new Matchdom({
  hooks = {},
  symbols = {}
 });
-md.extend({
- filters = {},
- types = {},
- formats = {}
-});
+md.extend(Locale);
 const mergedDom = md.merge(`<div id="model" class="[myclass]">
  <h[n]>Header</h[n]>
- <span>[data.text|as:html]</span>
+ <span>[data.text|as:html] for [data.percent|percent:1]</span>
  <img src="[data.icon|prune:*]">
 </div>`, {
  n: 4,

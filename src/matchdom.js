@@ -4,6 +4,10 @@ import Context from './context.js';
 import TextDocument from './fragment.js';
 import { XML, HTML } from './utils.js';
 
+export * as String from './plugins/string.js';
+export * as Operator from './plugins/operator.js';
+export * as Locale from './plugins/locale.js';
+
 export { XML, HTML };
 
 export class Matchdom {

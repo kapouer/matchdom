@@ -1,4 +1,6 @@
-# matchdom 7 changes
+# CHANGES
+
+## matchdom 7
 
 No longer compatible with legacy browsers. Use polyfills for that.
 
@@ -11,3 +13,13 @@ in particular, the __repeat__ filter, which no longer second-guesses the list to
 and that filter can be used anywhere in the expression (not necessarily at the beginning).
 - repeat:target:alias is not at:target|repeat:alias
 - use new prune/else:at filters to conditionally remove selection
+
+## matchdom 8
+
+Non-essential plugins must be loaded explicitely,
+allowing tree-shaking to drop some unnecessary code.
+
+```js
+const { Matchdom, String, Operator, Locale } = require('matchdom');
+new Matchdom().extend([String, Operator, Locale])
+```

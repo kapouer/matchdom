@@ -1,7 +1,4 @@
 export const filters = {
-	const(x, val, param) {
-		return param || "";
-	},
 	case: ['?', 'up|low|caps', (x, val, how) => {
 		if (!val) return val;
 		val = val.toString();

@@ -1,12 +1,13 @@
 import * as Array from "./array.js";
 import * as Dom from "./dom.js";
 import * as Flow from "./flow.js";
-import * as String from "./string.js";
 import * as Type from "./type.js";
-import * as Operator from "./operator.js";
 
 const Base = {
 	filters: {
+		const(x, val, param) {
+			return param || "";
+		},
 		get: ['?', 'path?', (ctx, data, path) => {
 			return ctx.expr.get(data, path, ctx.data);
 		}],
@@ -37,7 +38,7 @@ const Base = {
 };
 
 const Defaults = [
-	Base, Array, Dom, Flow, String, Type, Operator,
+	Base, Array, Dom, Flow, Type
 ];
 
 export default class Plugins {
