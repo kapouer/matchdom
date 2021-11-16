@@ -46,7 +46,7 @@ assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
 
 - merge(dom, data, scope)
 - extend({filters, types, formats} or an array of plugins)
-- Matchdom.HTML, Matchdom.XML parses strings to DOM fragments.
+- Matchdom.HTML, Matchdom.XML use browser api to parse strings into native DOM fragments - feel free to use other ways.
 
 ## compatibility
 
