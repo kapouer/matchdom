@@ -253,6 +253,11 @@ Returns an object in which current value can be accessed using this path.
 
 Useful when another filter expects data to be accessible under a specific path.
 
+### const:str
+
+Always return str.
+
+
 ## canonical methods filter
 
 ### name:param(...)
@@ -263,13 +268,9 @@ Think about toLowerCase, toUpperCase, toISOString, split, join, slice etc...
 
 This has many limitations and corner cases: for correct handling of parameters, define a custom filter.
 
-## string filters
+## String filters (optional)
 
 If the value is a string, javascript string methods are callable as filters.
-
-### str:str
-
-Always return str.
 
 ### pre:str
 
@@ -283,6 +284,22 @@ Appends string if value is not null or not empty.
 
 Shorthands for lowercase, uppercase.
 Caps means: capitalize each sentence separated by a dot and whitespace (requires unicode support in regexp).
+
+### enc:base64|base64url|url|hex
+
+Encodes to specified encoding.
+
+### dec:base64|base64url|url|hex
+
+Decodes from specified encoding.
+
+## Locale filters (optional)
+
+### digits:min:max
+
+### percent:min:max
+
+### currency:min:max
 
 ## flow control filters
 
@@ -309,7 +326,9 @@ Same as then but when value is falsey.
 
 Alias for `else:const:str`
 
-## boolean operators
+## Operator filters (optional)
+
+### booleans
 
 These filters return the value if the condition is true, or null if the condition is false:
 
@@ -322,9 +341,7 @@ These filters return the value if the condition is true, or null if the conditio
 - gte:num
 - lte:num
 
-## numeric operators
-
-Standard operations:
+### arithmetic
 
 - add:num
 - sub:num
