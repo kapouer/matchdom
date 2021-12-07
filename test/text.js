@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Matchdom, HTML as dom } from 'matchdom';
+import { Matchdom, DomPlugin, HTML as dom } from 'matchdom';
 const matchdom = (node, data, filters) => {
 	return (new Matchdom()).extend({ filters }).merge(node, data);
 };
@@ -26,24 +26,27 @@ describe('text nodes', () => {
 	});
 
 	it('should not be merged as html', () => {
+		const md = new Matchdom().extend(DomPlugin);
 		const node = dom(`<span>[str|as:text]</span>`);
-		const copy = matchdom(node, {
+		const copy = md.merge(node, {
 			str: "<b>bold</b>"
 		});
 		assert.equal(copy.outerHTML, '<span>&lt;b&gt;bold&lt;/b&gt;</span>');
 	});
 
 	it('should be merged as html', () => {
+		const md = new Matchdom().extend(DomPlugin);
 		const node = dom(`<span>[str|as:html]</span>`);
-		const copy = matchdom(node, {
+		const copy = md.merge(node, {
 			str: "test<b>bold</b><i>italic</i>test"
 		});
 		assert.equal(copy.outerHTML, '<span>test<b>bold</b><i>italic</i>test</span>');
 	});
 
 	it('should replace newlines with br', () => {
+		const md = new Matchdom().extend(DomPlugin);
 		const node = dom(`<p>[str|as:text]</p>`);
-		const copy = matchdom(node, {
+		const copy = md.merge(node, {
 			str: "test\n\ntest\n"
 		});
 		assert.equal(copy.outerHTML, '<p>test<br><br>test<br></p>');

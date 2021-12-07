@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Matchdom, HTML as dom } from 'matchdom';
+import { Matchdom, DomPlugin, HTML as dom } from 'matchdom';
 const matchdom = (node, data, filters) => {
 	return (new Matchdom()).extend({ filters }).merge(node, data);
 };
@@ -39,24 +39,27 @@ describe('tag', () => {
 		assert.equal(copy.outerHTML, '<h1 class="yes">Header</h1>');
 	});
 	it('should merge whole tag name', () => {
+		const md = new Matchdom().extend(DomPlugin);
 		const node = dom(`<h[name|at:-] class="[test]">div</hn>`);
-		const copy = matchdom(node, {
+		const copy = md.merge(node, {
 			name: "div",
 			test: "yes"
 		});
 		assert.equal(copy.outerHTML, '<div class="yes">div</div>');
 	});
 	it('should merge whole tag name when it has a parent', () => {
+		const md = new Matchdom().extend(DomPlugin);
 		const node = dom(`<div><h[name|at:-] class="[test]">div</h[name|at:]></div>`);
-		const copy = matchdom(node, {
+		const copy = md.merge(node, {
 			name: "main",
 			test: "yes"
 		});
 		assert.equal(copy.outerHTML, '<div><main class="yes">div</main></div>');
 	});
 	it('should merge whole tag name when it has a next sibling', () => {
+		const md = new Matchdom().extend(DomPlugin);
 		const node = dom(`<div><h[name|at:-] class="[test]">div</h[name|at:-]><div class="toto"></div></div>`);
-		const copy = matchdom(node, {
+		const copy = md.merge(node, {
 			name: "main",
 			test: "yes"
 		});

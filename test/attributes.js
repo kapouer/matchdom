@@ -1,7 +1,7 @@
 import assert from 'assert';
-import { Matchdom, HTML as dom } from 'matchdom';
+import { Matchdom, DomPlugin, HTML as dom } from 'matchdom';
 
-const matchdom = (node, data, filters) => new Matchdom().extend({ filters }).merge(node, data);
+const matchdom = (node, data, filters) => new Matchdom().extend(DomPlugin, { filters }).merge(node, data);
 
 describe('attributes', () => {
 	it('should be merged with simple value', () => {

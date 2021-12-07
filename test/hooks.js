@@ -1,16 +1,16 @@
 import assert from 'assert';
-import { Matchdom, HTML as dom } from 'matchdom';
+import { Matchdom, ArrayPlugin, DomPlugin, HTML as dom } from 'matchdom';
 
-const matchdom = (node, data, hooks) => new Matchdom({ hooks }).merge(node, data);
+const matchdom = (node, data, hooks) => new Matchdom({ hooks }).extend(DomPlugin, ArrayPlugin).merge(node, data);
 
 describe('hooks filter', () => {
 	it('should be called after this filter', () => {
-		const node = dom(`<p>[arr|join: |pre:now]</p>`);
+		const node = dom(`<p>[arr|join: ]</p>`);
 		const copy = matchdom(node, {
 			arr: ['word1', 'word2']
 		}, {
 			afterEach(ctx, val, filter) {
-				if (filter.name == "join") {
+				if (filter[0] == "join") {
 					assert.strictEqual(val, 'word1 word2');
 					return ' it ' + val;
 				} else {
@@ -18,25 +18,25 @@ describe('hooks filter', () => {
 				}
 			}
 		});
-		assert.equal(copy.outerHTML, '<p>now it word1 word2</p>');
+		assert.equal(copy.outerHTML, '<p> it word1 word2</p>');
 	});
 	it('should be called before all filters', () => {
-		const node = dom(`<p>[arr2|join: |pre:now ]</p>`);
+		const node = dom(`<p>[arr2|join: ]</p>`);
 		const arr = ['word1', 'word2'];
 		const copy = matchdom(node, {
 			arr: arr
 		}, {
 			beforeAll(ctx, val, filters) {
 				assert.deepStrictEqual(val, { arr });
-				assert.strictEqual(filters[0].params[0], "arr2");
+				assert.strictEqual(filters[0][0], "arr2");
 				ctx.data.arr2 = arr;
 				return val;
 			}
 		});
-		assert.equal(copy.outerHTML, '<p>now word1 word2</p>');
+		assert.equal(copy.outerHTML, '<p>word1 word2</p>');
 	});
 	it('should be called after all filters', () => {
-		const node = dom(`<p>[arr|join: |pre:now ]</p>`);
+		const node = dom(`<p>[arr|unshift:now|join:%20]</p>`);
 		const copy = matchdom(node, {
 			arr: ['word1', 'word2']
 		}, {

@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Matchdom, HTML as dom } from 'matchdom';
+import { Matchdom, DomPlugin, HTML as dom } from 'matchdom';
 const matchdom = (node, data, filters) => new Matchdom({debug:true}).extend({ filters }).merge(node, data);
 
 describe('flow filters', () => {
@@ -35,8 +35,9 @@ describe('flow filters', () => {
 		});
 
 		it('should run without filter when false', () => {
+			const md = new Matchdom().extend(DomPlugin);
 			const node = dom(`<div><p>[val|prune:*]</p>test</div>`);
-			const copy = matchdom(node, { val: false });
+			const copy = md.merge(node, { val: false });
 			assert.equal(copy.outerHTML, '<div>test</div>');
 		});
 	});

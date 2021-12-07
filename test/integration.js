@@ -1,8 +1,8 @@
 import assert from 'assert';
 
-import { Matchdom, HTML as dom } from 'matchdom';
+import { Matchdom, DomPlugin, ArrayPlugin, HTML as dom } from 'matchdom';
 const matchdom = (node, data, filters) => {
-	return (new Matchdom()).extend({ filters }).merge(node, data);
+	return (new Matchdom()).extend(DomPlugin, ArrayPlugin, { filters }).merge(node, data);
 };
 
 describe('integration', () => {

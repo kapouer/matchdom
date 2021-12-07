@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Matchdom, HTML as dom } from 'matchdom';
+import { Matchdom, ArrayPlugin, DomPlugin, HTML as dom } from 'matchdom';
 const matchdom = (node, data, filters, scope) => {
 	return (new Matchdom()).extend({ filters }).merge(node, data, scope);
 };
@@ -23,17 +23,21 @@ describe('scope path', () => {
 		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
 	it('should be set when repeating an array', () => {
+		const md = new Matchdom().extend(ArrayPlugin, DomPlugin, {
+			filters: {
+				scope: function (ctx, entry) {
+					assert.equal(ctx.expr.path[0], 'row');
+					assert.ok([0, 1].includes(entry.key));
+					return entry;
+				}
+			}
+		});
+		md.debug = true;
 		const node = dom(`<div>
 			<span>[arr|as:entries|repeat:row|scope:|.value]</span>
 		</div>`);
-		const copy = matchdom(node, {
+		const copy = md.merge(node, {
 			arr: ['one', 'two']
-		}, {
-			scope: function (ctx, entry) {
-				assert.equal(ctx.expr.path[0], 'row');
-				assert.ok([0, 1].includes(entry.key));
-				return entry;
-			}
 		});
 		assert.equal(copy.outerHTML, dom(`<div>
 			<span>one</span><span>two</span>

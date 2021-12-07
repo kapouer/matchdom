@@ -1,8 +1,10 @@
 import assert from 'assert';
-import { Matchdom } from 'matchdom';
+import { Matchdom, DomPlugin, ArrayPlugin } from 'matchdom';
 const matchdom = (node, data, filters) => {
 	return (new Matchdom()).extend({ filters }).merge(node, data);
 };
+
+const md = new Matchdom().extend(ArrayPlugin, DomPlugin);
 
 describe('string', () => {
 	it('should be merged and returned', () => {
@@ -44,35 +46,35 @@ describe('string', () => {
 	});
 
 	it('should repeat array', () => {
-		const copy = matchdom("--[arr|repeat:|value]--", {
+		const copy = md.merge("--[arr|repeat:|value]--", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
 		assert.equal(copy, "--one----two--");
 	});
 
 	it('should repeat object', () => {
-		const copy = matchdom("key:[obj|as:keys|repeat:] ", {
+		const copy = md.merge("key:[obj|as:keys|repeat:] ", {
 			obj: {a: 1, b: 2}
 		});
 		assert.equal(copy, "key:a key:b ");
 	});
 
 	it('should repeat object keys', () => {
-		const copy = matchdom("[obj|as:entries|repeat:|key]=[value]&", {
+		const copy = md.merge("[obj|as:entries|repeat:|key]=[value]&", {
 			obj: {a: 1, b: 2}
 		});
 		assert.equal(copy, "a=1&b=2&");
 	});
 
 	it('should repeat array using whole string', () => {
-		const copy = matchdom("--[arr|repeat:|value]--", {
+		const copy = md.merge("--[arr|repeat:|value]--", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
 		assert.equal(copy, "--one----two--");
 	});
 
 	it('should repeat array inside string', () => {
-		const copy = matchdom("-X[arr|at:-|repeat:|value]YY-", {
+		const copy = md.merge("-X[arr|at:-|repeat:|value]YY-", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
 		assert.equal(copy, "-XonetwoYY-");
@@ -80,7 +82,7 @@ describe('string', () => {
 
 	it('should return array', () => {
 		const arr = ['one', 'two'];
-		const copy = matchdom("[arr]", {arr});
+		const copy = md.merge("[arr]", {arr});
 		assert.deepEqual(copy, arr);
 	});
 });
