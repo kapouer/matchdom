@@ -34,7 +34,7 @@ export const filters = {
 			}).join('');
 		}
 	}],
-	dec: ['string', 'base64|base64url|hex|url', (x, str, type) => {
+	dec: ['str', 'base64|base64url|hex|url', (x, str, type) => {
 		if (!str) return str;
 		switch (type) {
 			case "base64url":

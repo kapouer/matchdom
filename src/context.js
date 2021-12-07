@@ -1,13 +1,13 @@
 import Expression from './expr.js';
 import Place from './place.js';
 
-class ParamError extends Error {
-	constructor(msg) {
-		super(msg);
-		this.name = "ParamError";
-	}
-}
 export default class Context {
+	static ParamError = class extends Error {
+		constructor(msg) {
+			super(msg);
+			this.name = "ParamError";
+		}
+	};
 	cancel = false
 
 	static parse(symbols, str) {
@@ -103,7 +103,7 @@ export default class Context {
 			if (val === undefined && !expr.last) break;
 			const filter = expr.filters[expr.filter++];
 			if (beforeEach) val = beforeEach(this, val, filter);
-			val = this.run(filter.name, val, ...filter.params);
+			val = this.run(val, filter);
 			if (afterEach) val = afterEach(this, val, filter);
 			if (this.cancel) {
 				expr.last = false; // probably a bad idea
@@ -116,27 +116,20 @@ export default class Context {
 		return val;
 	}
 
-	run(name, ...params) {
-		let it = this.plugins.filters[name];
-		const val = params[0];
-		if (!it && val != null && typeof val[name] == "function") {
-			const meth = val[name];
-			it = (ctx, val, ...args) => {
-				return meth.apply(val, args);
-			};
-		}
-		if (it == null) {
-			// eslint-disable-next-line no-console
+	run(val, filter) {
+		filter = filter.slice();
+		const [name, def] = this.getFilter(val, filter);
+		if (!def) {
 			console.info(name, "filter is missing");
 			return val;
 		}
-		const typed = Array.isArray(it);
-		it = typed ? it.slice() : [it];
-		const fn = it.pop();
+		if (filter.length > 1) filter[0] = val;
+		const typed = def.length > 1;
+		const fn = def.pop();
 		try {
 			let mtype;
-			for (let i = 0; i < it.length; i++) {
-				let arg = it[i];
+			for (let i = 0; i < def.length; i++) {
+				let arg = def[i];
 				if (arg == null) {
 					throw new Error("missing type");
 				}
@@ -147,23 +140,25 @@ export default class Context {
 					arg = arg.slice(0, -1);
 					mtype = arg;
 				}
-				params[i] = this.check(val, params, i, arg);
+				const fi = this.check(val, filter, i, arg);
+				if (!mtype || fi !== undefined) filter[i] = fi;
 			}
-			if (it.length < params.length) {
+			if (def.length < filter.length) {
 				if (typed) {
-					if (params.length == 2 && params[1] === "") {
+					if (filter.length == 2 && filter[1] === "") {
 						// [myfilter:] has a mandatory empty param
-						params.length = 1;
+						filter.length = 1;
 					} else if (!mtype) {
-						throw new ParamError("wrong number of parameters");
+						throw new Context.ParamError("wrong number of parameters");
 					}
 				}
-				for (let i = it.length; i < params.length; i++) {
-					params[i] = this.check(val, params, i, mtype || '?');
+				for (let i = def.length; i < filter.length; i++) {
+					const fi = this.check(val, filter, i, mtype || '?');
+					if (!mtype || fi !== undefined) filter[i] = fi;
 				}
 			}
 			this.raw = val;
-			return fn(this, ...params);
+			return fn(this, ...filter);
 		} catch (ex) {
 			if (this.matchdom.debug) throw ex;
 			// eslint-disable-next-line no-console
@@ -177,9 +172,9 @@ export default class Context {
 		const [type, def] = arg.split("?");
 		if (str == null) {
 			if (def == null) {
-				throw new ParamError("Missing required type " + arg);
+				throw new Context.ParamError("Missing required type " + arg);
 			} else if (type == "any") {
-				return null;
+				return str;
 			} else {
 				str = def === "" ? null : def;
 			}
@@ -187,19 +182,13 @@ export default class Context {
 		const alts = type.split('|');
 		if (alts.length > 1) {
 			if (alts.includes(str)) return str;
-			else throw new ParamError(`"${str}" is not in enum ${type}`);
+			else throw new Context.ParamError(`"${str}" is not in enum ${type}`);
 		}
 
-		if (type == "filter") {
-			if (str && this.plugins.filters[str] == null && (val == null || !val[str] || typeof val[str] != "function")) {
-				throw new ParamError(`"${str}" is not of type ${type}`);
-			}
-		} else if (type == "path") {
-			str = this.toPath(str, val);
-		} else if (type == "any") {
+		if (type == "any") {
 			// check nothing
 		} else {
-			str = this.run('as', str, type);
+			str = this.run(str, ['as', type, ...params.slice(i + 1)]);
 		}
 		if (typeof str == "string" && i > 0) {
 			str = this.decode(str);
@@ -217,12 +206,6 @@ export default class Context {
 		].includes(typ);
 	}
 
-	toPath(str, ctxValue) {
-		if (str == null) str = "";
-		if (!str && ctxValue !== undefined && this.isSimpleValue(ctxValue)) return [];
-		return str.split(this.symbols.path).map(str => this.decode(str));
-	}
-
 	decode(str) {
 		try {
 			return decodeURIComponent(str);
@@ -230,5 +213,29 @@ export default class Context {
 			return str;
 		}
 	}
+	getLang() {
+		let lang = this.scope.lang;
+		if (!lang && typeof window != "undefined") {
+			lang = this.scope.lang = document.documentElement && document.documentElement.lang || window.navigator.language();
+		}
+		return lang;
+	}
+	getFilter(val, filter) {
+		if (filter.length <= 1) {
+			filter.unshift("get");
+		}
+		const name = filter[0];
+		let def = this.plugins.filters[name];
+		if (!def && val != null && typeof val[name] == "function") {
+			const meth = val[name];
+			def = (ctx, val, ...args) => {
+				return meth.apply(val, args);
+			};
+		}
+		if (def) {
+			if (!Array.isArray(def)) def = [def];
+			else def = def.slice();
+		}
+		return [name, def];
+	}
 }
-

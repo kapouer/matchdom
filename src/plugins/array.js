@@ -36,18 +36,16 @@ export const filters = {
 	filter: ['array', 'string', 'string?eq', 'path?', (ctx, list, str, op, path) => {
 		return list.filter((item) => {
 			const data = ctx.expr.get(item, path);
-			return ctx.run(op, str, data);
+			return ctx.run(str, [op, data]);
 		});
 	}],
-	map: ['array', 'string', '?*', (ctx, list, name, ...params) => {
+	map: ['array', 'string', '?*', (ctx, list, ...filter) => {
 		return list.map((item) => {
-			return ctx.run(name, item, ...params);
+			return ctx.run(item, filter);
 		});
 	}],
-	select: ['array', 'path', ({ expr }, list, path) => {
-		return list.map((item) => {
-			expr.get(item, path);
-		});
+	select: ['array', 'path', (ctx, list, path) => {
+		return ctx.run(list, ['map', 'get', path]);
 	}],
 	page: ['array', 'int', 'int', (ctx, list, len, i) => {
 		return list.slice(i * len, (i + 1) * len);
@@ -74,5 +72,13 @@ export const filters = {
 				return a.toString().localeCompare(b);
 			}
 		});
+	}],
+	push: ['array', 'any', (ctx, list, item) => {
+		list.push(item);
+		return list;
+	}],
+	unshift: ['array', 'any', (ctx, list, item) => {
+		list.unshift(item);
+		return list;
 	}]
 };

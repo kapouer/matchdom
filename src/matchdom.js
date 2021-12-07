@@ -4,11 +4,15 @@ import Context from './context.js';
 import TextDocument from './fragment.js';
 import { XML, HTML } from './utils.js';
 
-export * as String from './plugins/string.js';
-export * as Operator from './plugins/operator.js';
-export * as Locale from './plugins/locale.js';
+export * as TextPlugin from './plugins/text.js';
+export * as OpsPlugin from './plugins/ops.js';
+export * as ArrayPlugin from './plugins/array.js';
+export * as JsonPlugin from './plugins/json.js';
+export * as NumPlugin from './plugins/number.js';
+export * as DatePlugin from './plugins/date.js';
+export * as DomPlugin from './plugins/dom.js';
 
-export { XML, HTML };
+export { XML, HTML }; // TODO this should be imported by DomPlugin
 
 export class Matchdom {
 	constructor({ debug = false, hooks = {}, symbols = {}, visitor } = {}) {
@@ -19,9 +23,8 @@ export class Matchdom {
 		this.plugins = new Plugins();
 	}
 
-	extend(plugins) {
-		plugins = Array.isArray(plugins) ? plugins : [plugins];
-		for (const plugin of plugins) this.plugins.add(plugin);
+	extend(...plugins) {
+		this.plugins.add(...plugins);
 		return this;
 	}
 
@@ -30,6 +33,7 @@ export class Matchdom {
 		let wasText = false;
 		let wasArray = false;
 		if (typeof list == "string") {
+			// TODO try as:html then as:text instead
 			if (document && list.startsWith('<') && list.endsWith('>')) {
 				list = [HTML(list)];
 			} else {

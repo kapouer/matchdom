@@ -79,7 +79,7 @@ export const filters = {
 		const cur = src.read();
 		if (cur != null) {
 			const expr = ctx.expr.clone();
-			if (alias) expr.prepend("get", [alias]);
+			expr.prepend(["get", alias || ""]);
 			const hit = dest.hits[dest.index] = expr.wrap(expr.toString());
 			src.write([cur.replace(expr.wrap(expr.initial), hit)]);
 		}
@@ -107,7 +107,7 @@ export const filters = {
 				continue;
 			}
 			if (placer) {
-				ctx.run(placer, item, cursor, fg, ...params);
+				ctx.run(item, [placer, cursor, fg, ...params]);
 			} else {
 				parent.insertBefore(fg, cursor);
 			}

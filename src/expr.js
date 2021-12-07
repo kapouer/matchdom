@@ -11,17 +11,15 @@ export default class Expression {
 		const list = str.split(sa);
 		this.filters = [];
 		for (const item of list) {
-			const params = item.split(param);
-			const name = params.length == 1 ? 'get' : params.shift();
-			this.append(name, params);
+			this.append(item.split(param));
 		}
 		return this;
 	}
-	append(name, params = []) {
-		this.filters.push({ name, params });
+	append(params = []) {
+		this.filters.push(params);
 	}
-	prepend(name, params = []) {
-		this.filters.splice(this.filter, 0, { name, params });
+	prepend(params = []) {
+		this.filters.splice(this.filter, 0, params);
 	}
 	clone() {
 		const expr = new Expression(this.symbols);
@@ -33,11 +31,10 @@ export default class Expression {
 	}
 	toString() {
 		const { param, append } = this.symbols;
-		return this.filters.map((obj) => {
-			let expr = (obj.name || "get") + param;
-			if (obj.params.length) expr += obj.params.join(param);
-			return expr;
-		}).join(append) || "get:";
+		return this.filters.map(params => {
+			if (!params.join) console.error(params);
+			return params.join(param);
+		}).join(append);
 	}
 	wrap(str) {
 		return this.symbols.open + str + this.symbols.close;
@@ -77,3 +74,4 @@ export default class Expression {
 		return data;
 	}
 }
+
