@@ -1,4 +1,4 @@
-import { serializeUrl, parseUrl, HTML, XML } from '../utils.js';
+import { serializeUrl, parseUrl } from '../utils.js';
 
 export const formats = {
 	text(ctx, val) {
@@ -16,14 +16,6 @@ export const formats = {
 			frag.appendChild(doc.createTextNode(list[i]));
 		}
 		return frag;
-	},
-	html(ctx, val) {
-		if (val == null) return val;
-		return ctx.src.doc.importNode(HTML(val), true);
-	},
-	xml(ctx, val) {
-		if (val == null) return val;
-		return ctx.src.doc.importNode(XML(val), true);
 	},
 	url(ctx, val) {
 		if (val == null) return val;
@@ -102,7 +94,7 @@ export const filters = {
 			} else {
 				Object.assign(obj, item);
 			}
-			const fg = ctx.matchdom.merge(fragment.cloneNode(true), obj, ctx.scope);
+			const fg = ctx.md.merge(fragment.cloneNode(true), obj, ctx.scope);
 			if (fg == null || fg == "" || fg.childNodes && fg.childNodes.length == 0) {
 				continue;
 			}

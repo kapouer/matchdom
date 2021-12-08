@@ -1,8 +1,9 @@
+import { XML, HTML } from '../utils.js';
 export const types = {
 	path(ctx, str) {
 		if (str == null) str = "";
 		if (!str && ctx.raw !== undefined && ctx.isSimpleValue(ctx.raw)) return [];
-		return str.split(ctx.symbols.path).map(str => ctx.decode(str));
+		return str.split(ctx.md.symbols.path).map(str => ctx.decode(str));
 	},
 	filter(ctx, str, params) {
 		const [name, def] = ctx.getFilter(ctx.raw, [str, ...params]);
@@ -10,6 +11,31 @@ export const types = {
 			throw new ctx.constructor.ParamError(`"${name}" is not a filter`);
 		}
 		return str;
+	},
+	array(ctx, val) {
+		if (val === undefined) return val;
+		else if (val == null) return [];
+		if (
+			Array.isArray(val) || typeof val.forEach != "function" || typeof val.item == "function" && typeof val.length == "number"
+		) {
+			// ok
+		} else {
+			val = [val];
+		}
+		return val;
+	}
+};
+
+export const formats = {
+	html(ctx, val) {
+		if (typeof ctx == "string") return HTML(ctx);
+		if (val == null) return val;
+		return ctx.src.doc.importNode(HTML(val), true);
+	},
+	xml(ctx, val) {
+		if (typeof ctx == "string") return XML(ctx);
+		if (val == null) return val;
+		return ctx.src.doc.importNode(XML(val), true);
 	}
 };
 
@@ -21,7 +47,7 @@ export const filters = {
 		return ctx.expr.get(data, path, ctx.data);
 	}],
 	path({ expr, symbols }, val, part) {
-		// FIXME document it
+		// TODO evaluate the need for this filter
 		const path = expr.path;
 		if (part == "name") {
 			return path[path.length - 1];
@@ -73,13 +99,13 @@ export const filters = {
 			if (Number.isNaN(val)) val = null;
 			return val;
 		} else {
-			const fn = ctx.plugins.formats[type] || ctx.plugins.types[type];
+			const fn = ctx.md.formats[type] || ctx.md.types[type];
 			if (!fn) throw new Error(`Unknown type: ${type}`);
 			return fn(ctx, val, params);
 		}
 	},
 	is(ctx, val, type, ...params) {
-		if (type in ctx.plugins.formats) {
+		if (type in ctx.md.formats) {
 			throw new Error(`Cannot check a format: ${type}`);
 		}
 		return ctx.run(val, ['as', type, ...params]) == val;

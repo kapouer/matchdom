@@ -19,6 +19,7 @@ export default class Context {
 			return;
 		}
 	}
+
 	static tokenize(open, close, str) {
 		const hits = [];
 		this.fillTokens(open, close, hits, str, 0, str.length);
@@ -50,10 +51,7 @@ export default class Context {
 	constructor(md, data, scope) {
 		this.data = data;
 		this.scope = Object.assign({}, scope);
-		this.matchdom = md;
-		this.plugins = md.plugins;
-		this.hooks = md.hooks;
-		this.symbols = md.symbols;
+		this.md = md;
 		this.level = 0;
 	}
 
@@ -83,7 +81,7 @@ export default class Context {
 			if (val !== undefined) {
 				hits[this.dest.index] = val;
 			} else {
-				hits[this.dest.index] = this.symbols.open + hit + this.symbols.close;
+				hits[this.dest.index] = this.md.symbols.open + hit + this.md.symbols.close;
 			}
 		}
 	}
@@ -95,8 +93,8 @@ export default class Context {
 			// TODO this regexp seems odd
 			return undefined;
 		}
-		const expr = this.expr = new Expression(this.symbols).parse(hit);
-		const { beforeAll, beforeEach, afterEach, afterAll } = this.hooks;
+		const expr = this.expr = new Expression(this.md.symbols).parse(hit);
+		const { beforeAll, beforeEach, afterEach, afterAll } = this.md.hooks;
 
 		if (beforeAll) val = beforeAll(this, val, expr.filters);
 		while (expr.filter < expr.filters.length) {
@@ -160,7 +158,7 @@ export default class Context {
 			this.raw = val;
 			return fn(this, ...filter);
 		} catch (ex) {
-			if (this.matchdom.debug) throw ex;
+			if (this.md.debug) throw ex;
 			// eslint-disable-next-line no-console
 			console.warn(name, "filter throws", ex.toString(), "in", this.expr.initial);
 			return null;
@@ -225,7 +223,7 @@ export default class Context {
 			filter.unshift("get");
 		}
 		const name = filter[0];
-		let def = this.plugins.filters[name];
+		let def = this.md.filters[name];
 		if (!def && val != null && typeof val[name] == "function") {
 			const meth = val[name];
 			def = (ctx, val, ...args) => {

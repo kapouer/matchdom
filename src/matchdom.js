@@ -1,9 +1,9 @@
-import Plugins from './plugins/index.js';
 import Symbols from './symbols.js';
 import Context from './context.js';
 import TextDocument from './fragment.js';
-import { XML, HTML } from './utils.js';
 
+import * as Core from "./plugins/core.js";
+import * as Flow from "./plugins/flow.js";
 export * as TextPlugin from './plugins/text.js';
 export * as OpsPlugin from './plugins/ops.js';
 export * as ArrayPlugin from './plugins/array.js';
@@ -12,30 +12,52 @@ export * as NumPlugin from './plugins/number.js';
 export * as DatePlugin from './plugins/date.js';
 export * as DomPlugin from './plugins/dom.js';
 
-export { XML, HTML }; // TODO this should be imported by DomPlugin
-
 export class Matchdom {
-	constructor({ debug = false, hooks = {}, symbols = {}, visitor } = {}) {
-		this.visitor = visitor;
-		this.hooks = hooks;
-		this.debug = debug;
-		this.symbols = Object.assign({}, Symbols, symbols);
-		this.plugins = new Plugins();
+	static Symbols = Symbols;
+
+	constructor(...plugins) {
+		this.symbols = this.constructor.Symbols;
+		this.filters = Object.create(null);
+		this.types = Object.create(null);
+		this.formats = Object.create(null);
+		this.hooks = Object.create(null);
+		this.extend(Core).extend(Flow);
+		for (const p of plugins) {
+			this.extend(p);
+		}
 	}
 
-	extend(...plugins) {
-		this.plugins.add(...plugins);
+	extend(p) {
+		const { filters, types, formats, hooks } = p;
+		if (!filters && !types && !formats && !hooks) {
+			if (p.beforeAll || p.beforeEach || p.afterAll || p.afterEach) {
+				Object.assign(this.hooks, p);
+			} else {
+				Object.assign(this.filters, p);
+			}
+		} else {
+			Object.assign(this.filters, filters);
+			Object.assign(this.types, types);
+			Object.assign(this.formats, formats);
+			Object.assign(this.hooks, hooks);
+		}
 		return this;
 	}
 
 	merge(list, data, scope) {
-		if (data == null) return list;
 		let wasText = false;
 		let wasArray = false;
 		if (typeof list == "string") {
-			// TODO try as:html then as:text instead
-			if (document && list.startsWith('<') && list.endsWith('>')) {
-				list = [HTML(list)];
+			if (document) {
+				if (list.startsWith('<') && list.endsWith('>')) {
+					const fn = this.formats[list.startsWith('<?xml') ? 'xml' : 'html'];
+					list = [fn(list)];
+				} else {
+					const node = this.formats.html("-");
+					node.nodeValue = list;
+					wasText = true;
+					list = [node.parentNode];
+				}
 			} else {
 				list = [TextDocument.from(list)];
 				wasText = true;
@@ -97,8 +119,9 @@ export class Matchdom {
 			return root;
 		});
 		if (wasText) {
-			if (list[0].childNodes.length == 1) return list[0].firstChild.nodeValue;
-			else return list[0].childNodes.join('');
+			const item = list[0];
+			if (item.childNodes.length == 1) return item.firstChild.nodeValue;
+			else return Array.from(item.childNodes).map(x => x.nodeValue).join('');
 		} else if (wasArray) {
 			return list;
 		} else {
