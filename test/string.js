@@ -1,59 +1,56 @@
 import assert from 'assert';
 import { Matchdom, DomPlugin, ArrayPlugin } from 'matchdom';
-const matchdom = (node, data, filters) => {
-	return (new Matchdom()).extend({ filters }).merge(node, data);
-};
 
 const md = new Matchdom().extend(ArrayPlugin, DomPlugin);
 
 describe('string', () => {
 	it('should be merged and returned', () => {
-		const copy = matchdom('no? [test]!', {
+		const copy = md.merge('no? [test]!', {
 			test: "yes"
 		});
 		assert.equal(copy, 'no? yes!');
 	});
 
 	it('should be merged as text', () => {
-		const copy = matchdom('no?\n [test]!', {
+		const copy = md.merge('no?\n [test]!', {
 			test: "yes\nnl"
 		});
 		assert.equal(copy, 'no?\n yes\nnl!');
 	});
 
 	it('should return null', () => {
-		const copy = matchdom('[test]', {
+		const copy = md.merge('[test]', {
 			test: null
 		});
 		assert.equal(copy, null);
 	});
 
 	it('should not change when nested variable has no parent set', () => {
-		const copy = matchdom('notfound: [test.a]', {});
+		const copy = md.merge('notfound: [test.a]', {});
 		assert.equal(copy, 'notfound: [test.a]');
 	});
 
 	it('should not change when top variable is not \\w\\S*', () => {
-		const copy = matchdom('notfound: [\\w]', {test:1});
+		const copy = md.merge('notfound: [\\w]', {test:1});
 		assert.equal(copy, 'notfound: [\\w]');
 	});
 
 	it('should not return null', () => {
-		const copy = matchdom('[test]a', {
+		const copy = md.merge('[test]a', {
 			test: null
 		});
 		assert.equal(copy, 'a');
 	});
 
 	it('should repeat array', () => {
-		const copy = md.merge("--[arr|repeat:|value]--", {
+		const copy = md.extend(ArrayPlugin).merge("--[arr|repeat:|value]--", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
 		assert.equal(copy, "--one----two--");
 	});
 
 	it('should repeat object', () => {
-		const copy = md.merge("key:[obj|as:keys|repeat:] ", {
+		const copy = md.extend(ArrayPlugin).merge("key:[obj|as:keys|repeat:] ", {
 			obj: {a: 1, b: 2}
 		});
 		assert.equal(copy, "key:a key:b ");

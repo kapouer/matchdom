@@ -1,14 +1,9 @@
 import assert from 'assert';
-import { Matchdom, ArrayPlugin, DomPlugin, HTML as dom } from 'matchdom';
-
-const matchdom = (node, data, hooks) => new Matchdom({ hooks }).extend(DomPlugin, ArrayPlugin).merge(node, data);
+import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
 
 describe('hooks filter', () => {
 	it('should be called after this filter', () => {
-		const node = dom(`<p>[arr|join: ]</p>`);
-		const copy = matchdom(node, {
-			arr: ['word1', 'word2']
-		}, {
+		const md = new Matchdom({
 			afterEach(ctx, val, filter) {
 				if (filter[0] == "join") {
 					assert.strictEqual(val, 'word1 word2');
@@ -18,14 +13,16 @@ describe('hooks filter', () => {
 				}
 			}
 		});
-		assert.equal(copy.outerHTML, '<p> it word1 word2</p>');
+		const html = `[arr|join: ]`;
+		const copy = md.merge(html, {
+			arr: ['word1', 'word2']
+		});
+		assert.equal(copy, ' it word1 word2');
 	});
 	it('should be called before all filters', () => {
-		const node = dom(`<p>[arr2|join: ]</p>`);
+		const html = `[arr2|join: ]`;
 		const arr = ['word1', 'word2'];
-		const copy = matchdom(node, {
-			arr: arr
-		}, {
+		const md = new Matchdom({
 			beforeAll(ctx, val, filters) {
 				assert.deepStrictEqual(val, { arr });
 				assert.strictEqual(filters[0][0], "arr2");
@@ -33,28 +30,34 @@ describe('hooks filter', () => {
 				return val;
 			}
 		});
-		assert.equal(copy.outerHTML, '<p>word1 word2</p>');
+		const copy = md.merge(html, {
+			arr: arr
+		});
+		assert.equal(copy, 'word1 word2');
 	});
 	it('should be called after all filters', () => {
-		const node = dom(`<p>[arr|unshift:now|join:%20]</p>`);
-		const copy = matchdom(node, {
-			arr: ['word1', 'word2']
-		}, {
+		const html = `[arr|unshift:now|join:%20]`;
+		const md = new Matchdom(ArrayPlugin, {
 			afterAll(ctx, val, filters) {
 				assert.equal(val, 'now word1 word2');
 				return 'it ' + val;
 			}
 		});
-		assert.equal(copy.outerHTML, '<p>it now word1 word2</p>');
+
+		const copy = md.merge(html, {
+			arr: ['word1', 'word2']
+		});
+		assert.equal(copy, 'it now word1 word2');
 	});
 	it('should work in repeated block', () => {
-		const node = dom(`<p><span>[arr|repeat:*|.val]</span></p>`);
-		const copy = matchdom(node, {
-			arr: [{val: 'word1'}, {val: 'word2'}]
-		}, {
+		const html = `<p><span>[arr|repeat:*|.val]</span></p>`;
+		const md = new Matchdom(DomPlugin, {
 			afterAll(ctx, val, filters) {
 				return "it " + val;
 			}
+		});
+		const copy = md.merge(html, {
+			arr: [{ val: 'word1' }, { val: 'word2' }]
 		});
 		assert.equal(copy.outerHTML, '<p><span>it word1</span><span>it word2</span></p>');
 	});

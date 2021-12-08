@@ -2,71 +2,79 @@ import assert from 'assert';
 import {
 	Matchdom, OpsPlugin, TextPlugin,
 	ArrayPlugin, DomPlugin, DatePlugin,
-	JsonPlugin, HTML as dom
+	JsonPlugin
 } from 'matchdom';
-
-const matchdom = (node, data, filters) =>
-	new Matchdom().extend({ filters }).merge(node, data);
 
 describe('value', () => {
 	it('should be undefined', () => {
-		const node = dom(`<a>Size[size|try:]</a>`);
+		const html = `<a>Size[size|try:]</a>`;
 		let hasTried = false;
-		const copy = matchdom(node, {}, {try: function(ctx, val) {
-			hasTried = true;
-			assert.strictEqual(val, undefined);
-		}});
+		const md = new Matchdom(DomPlugin, {
+			try(ctx, val) {
+				hasTried = true;
+				assert.strictEqual(val, undefined);
+			}
+		});
+		const copy = md.merge(html, {});
 		assert.equal(hasTried, true);
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
 
 	it('should be undefined and not merge level 2', () => {
-		const node = dom(`<a>Size[obj.size|try:]</a>`);
+		const html = `<a>Size[obj.size|try:]</a>`;
 		let hasTried = false;
-		const copy = matchdom(node, {}, {try: function(ctx, val) {
-			hasTried = true;
-		}});
+
+		const md = new Matchdom(DomPlugin, {
+			try(ctx, val) {
+				hasTried = true;
+			}
+		});
+		const copy = md.merge(html, {});
 		assert.equal(hasTried, false);
 		assert.equal(copy.outerHTML, '<a>Size[obj.size|try:]</a>');
 	});
 });
 
 describe('method filters', () => {
+	const md = new Matchdom();
+
 	it('should call method on value', () => {
-		const copy = matchdom(`[toUpperCase:]`, "up");
+		const copy = md.merge(`[toUpperCase:]`, "up");
 		assert.equal(copy, 'UP');
 	});
 
 	it('should return value when method fails on value', () => {
-		const copy = matchdom(`[toISOString:]`, new Date("invalid"));
+		const copy = md.merge(`[toISOString:]`, new Date("invalid"));
 		assert.strictEqual(copy, null);
 	});
 });
 
 describe('get is a filter', () => {
+	const md = new Matchdom(DomPlugin);
+
 	it('should get path', () => {
-		const node = dom(`<a>Si[get:a]</a>`);
-		const copy = matchdom(node, { a: "ze" });
+		const html = `<a>Si[get:a]</a>`;
+		const copy = md.merge(html, { a: "ze" });
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
 	it('should allow escaped path', () => {
-		const node = dom(`<a>Si[get:a%2eb]</a>`);
-		const copy = matchdom(node, { "a.b": "ze" });
+		const html = `<a>Si[get:a%2eb]</a>`;
+		const copy = md.merge(html, { "a.b": "ze" });
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
 	it('should get top value', () => {
-		const node = dom(`<a>Si[get:]</a>`);
-		const copy = matchdom(node, { toString: () => "ze" });
+		const html = `<a>Si[get:]</a>`;
+		const copy = md.merge(html, { toString: () => "ze" });
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
 	it('should get current value as string', () => {
-		const node = dom(`<a>Si[get:]</a>`);
-		const copy = matchdom(node, "ze");
+		const html = `<a>Si[get:]</a>`;
+		const copy = md.merge(html, "ze");
 		assert.equal(copy.outerHTML, '<a>Size</a>');
 	});
 	it('should access path in several filters', () => {
-		const node = dom(`<p>[a.b|.c.d]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[a.b|.c.d]</p>`;
+		const copy = md.merge(html, {
 			a: {
 				b: {
 					c: {
@@ -78,17 +86,17 @@ describe('get is a filter', () => {
 		assert.equal(copy.outerHTML, '<p>test</p>');
 	});
 	it('should allow to get path from root', () => {
-		const node = dom(`<p>[a.b|a.b1|test:]</p>`);
+		const html = `<p>[a.b|a.b1|test:]</p>`;
 		let path;
-		const copy = matchdom(node, {
-			a: {
-				b: "test",
-				b1: "toast"
-			}
-		}, {
+		const copy = md.extend({filters: {
 			test(ctx, val) {
 				path = ctx.expr.path;
 				return val;
+			}
+		}}).merge(html, {
+			a: {
+				b: "test",
+				b1: "toast"
 			}
 		});
 		assert.deepStrictEqual(path, ['a', 'b1']);
@@ -96,8 +104,8 @@ describe('get is a filter', () => {
 	});
 
 	it('should work with then', () => {
-		const node = dom(`<p>[a.b|then:get:a.b1]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[a.b|then:get:a.b1]</p>`;
+		const copy = md.merge(html, {
 			a: {
 				b: "test",
 				b1: "toast"
@@ -106,8 +114,8 @@ describe('get is a filter', () => {
 		assert.strictEqual(copy.outerHTML, '<p>toast</p>');
 	});
 	it('should work with else', () => {
-		const node = dom(`<p>[a.b|else:get:a.b1]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[a.b|else:get:a.b1]</p>`;
+		const copy = md.merge(html, {
 			a: {
 				c: "test",
 				b1: "toast"
@@ -117,8 +125,8 @@ describe('get is a filter', () => {
 	});
 
 	it('should be writable as shorthand syntax for filter parameter', () => {
-		const node = dom(`<p>[a.b|then:a.b1]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[a.b|then:a.b1]</p>`;
+		const copy = md.merge(html, {
 			a: {
 				b: "test",
 				b1: "toast"
@@ -129,181 +137,176 @@ describe('get is a filter', () => {
 });
 
 describe('alias', () => {
+	const md = new Matchdom();
+
 	it('should alias value in context', () => {
-		const node = dom(`<a>[size|alias:test.it|.test.it]</a>`);
-		const copy = matchdom(node, {size: 'wot'});
-		assert.equal(copy.outerHTML, '<a>wot</a>');
+		const html = `[size|alias:test.it|.test.it]`;
+		const copy = md.merge(html, {size: 'wot'});
+		assert.equal(copy, 'wot');
 	});
 });
 
 describe('parameters', () => {
+	const md = new Matchdom(DomPlugin);
+
 	it('should be uri-decoded', () => {
-		const node = dom(`<a>Size[size|const:%3A ]10mm</a>`);
-		const copy = matchdom(node, {size: 10});
+		const html = `<a>Size[size|const:%3A ]10mm</a>`;
+		const copy = md.merge(html, {size: 10});
 		assert.equal(copy.outerHTML, '<a>Size: 10mm</a>');
 	});
 	it('should be left untouched if not uri-decodable', () => {
-		const node = dom(`<a>Percent: [pp][const: %]</a>`);
-		const copy = matchdom(node, { pp: 10 });
+		const html = `<a>Percent: [pp][const: %]</a>`;
+		const copy = md.merge(html, { pp: 10 });
 		assert.equal(copy.outerHTML, '<a>Percent: 10 %</a>');
 	});
 
 	it('should not consider value to be uri-decodable', () => {
-		const node = dom(`<a href="?[pp]">ok</a>`);
-		const copy = matchdom(node, { pp: 'test=a%20b' });
+		const html = `<a href="?[pp]">ok</a>`;
+		const copy = md.merge(html, { pp: 'test=a%20b' });
 		assert.equal(copy.outerHTML, '<a href="?test=a%20b">ok</a>');
 	});
 });
 
 describe('types', () => {
+	const md = new Matchdom();
+
 	it('should cast value to int', () => {
 		let ok = false;
-		matchdom('[val|mycheck:]', { val: "10" }, {
-			mycheck: ['int', (ctx, val) => {
-				assert.strictEqual(val, 10);
-				ok = true;
-				return val;
-			}]
-		});
+		md.extend({
+			filters: {
+				mycheck: ['int', (ctx, val) => {
+					assert.strictEqual(val, 10);
+					ok = true;
+					return val;
+				}]
+			}
+		}).merge('[val|mycheck:]', { val: "10" });
 		assert.strictEqual(ok, true);
 	});
 	it('should cast param to int', () => {
 		let ok = false;
-		matchdom('[val|mycheck:7]', { val: 10 }, {
+		md.extend({filters: {
 			mycheck: ['int', 'int', (ctx, val, cte) => {
 				assert.strictEqual(cte, 7);
 				ok = true;
 				return val + cte;
 			}]
-		});
+		}}).merge('[val|mycheck:7]', { val: 10 });
 		assert.strictEqual(ok, true);
 	});
 	it('should cast param to boolean', () => {
 		let ok = false;
-		matchdom('[val|mycheck:7]', { val: 10 }, {
+		md.extend({filters: {
 			mycheck: ['int', 'bool', (ctx, val, cte) => {
 				assert.strictEqual(cte, true);
 				ok = true;
 				return val;
 			}]
-		});
+		}}).merge('[val|mycheck:7]', { val: 10 });
 		assert.strictEqual(ok, true);
 	});
 	it('should not check value when type is null', () => {
 		let ok = false;
-		matchdom('[val|mycheck:false]', { val: 10 }, {
+		md.extend({filters: {
 			mycheck: ['any', 'bool', (ctx, val, cte) => {
 				assert.strictEqual(val, 10);
 				assert.strictEqual(cte, false);
 				ok = true;
 				return val;
 			}]
-		});
+		}}).merge('[val|mycheck:false]', { val: 10 });
 		assert.strictEqual(ok, true);
 	});
 	it('should allow null value when type is null', () => {
 		let ok = false;
-		matchdom('[val|mycheck:false]', { val: null }, {
+		md.extend({ filters: {
 			mycheck: ['any?', 'bool', (ctx, val, cte) => {
 				assert.strictEqual(val, null);
 				assert.strictEqual(cte, false);
 				ok = true;
 				return val;
 			}]
-		});
+		}}).merge('[val|mycheck:false]', { val: null });
 		assert.strictEqual(ok, true);
 	});
 
 	it('should allow any value when type is "any"', () => {
 		let ok = false;
-		matchdom('[val|mycheck:1]', { val: new Date() }, {
+		md.extend({filters: {
 			mycheck: ['any', 'bool', (ctx, val, cte) => {
 				assert.ok(val instanceof Date);
 				assert.strictEqual(cte, true);
 				ok = true;
 				return val;
 			}]
-		});
+		}}).merge('[val|mycheck:1]', { val: new Date() });
 		assert.strictEqual(ok, true);
 	});
 	it('should require any value when type is "any"', () => {
 		let ok = false;
-		matchdom('[val|mycheck:1]', { val: undefined }, {
+		md.extend({filters: {
 			mycheck: ['any', 'bool', (ctx, val, cte) => {
 				ok = true;
 				return val;
 			}]
-		});
+		}}).merge('[val|mycheck:1]', { val: undefined });
 		assert.strictEqual(ok, false);
 	});
 	it('should get a default empty string value', () => {
 		let ok = false;
-		matchdom('[val|mycheck:1]', { val: null }, {
+		md.extend({filters: {
 			mycheck: ['any?', 'bool', (ctx, val, cte) => {
 				assert.strictEqual(val, null);
 				ok = true;
 				return val;
 			}]
-		});
+		}}).merge('[val|mycheck:1]', { val: null });
 		assert.strictEqual(ok, true);
 	});
 	it('should get a default integer value', () => {
 		let ok = false;
-		matchdom('[val|mycheck:1]', { val: null }, {
+		md.extend({filters:{
 			mycheck: ['int?10', 'bool', (ctx, val, cte) => {
 				assert.strictEqual(val, 10);
 				ok = true;
 				return val;
 			}]
-		});
+		}}).merge('[val|mycheck:1]', { val: null });
 		assert.strictEqual(ok, true);
 	});
 });
 
 describe('what', () => {
+	const md = new Matchdom(DomPlugin, {
+		drop: function (ctx, val, what) {
+			ctx.cancel = true;
+			return val;
+		}
+	});
+
 	it('cancel drops merging of expression', () => {
-		const node = dom(`<p>[arr|drop:]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[arr|drop:]</p>`;
+		const copy = md.merge(html, {
 			arr: ['word1', 'word2']
-		}, {
-			drop: function(ctx, val) {
-				ctx.cancel = true;
-				return val;
-			}
 		});
 		assert.equal(copy.outerHTML, '<p>[arr|drop:]</p>');
 	});
 
 	it('cancel drops merging of missing level one expression', () => {
-		const node = dom(`<p>[arr|drop:]</p>`);
-		const copy = matchdom(node, {}, {
-			drop: function(ctx, val) {
-				ctx.cancel = true;
-				return val;
-			}
-		});
+		const html = `<p>[arr|drop:]</p>`;
+		const copy = md.merge(html, {});
 		assert.equal(copy.outerHTML, '<p>[arr|drop:]</p>');
 	});
 
 	it('cancel drops merging of level two expression', () => {
-		const node = dom(`<p>[obj.toto|drop:]</p>`);
-		const copy = matchdom(node, {obj: {toto:1}}, {
-			drop: function (ctx, val, what) {
-				ctx.cancel = true;
-				return val;
-			}
-		});
+		const html = `<p>[obj.toto|drop:]</p>`;
+		const copy = md.merge(html, {obj: {toto:1}});
 		assert.equal(copy.outerHTML, '<p>[obj.toto|drop:]</p>');
 	});
 
 	it('cancel drops merging of missing level two expression', () => {
-		const node = dom(`<p>[arr.toto|drop:]</p>`);
-		const copy = matchdom(node, {}, {
-			drop: function(ctx, val, what) {
-				ctx.cancel = true;
-				return val;
-			}
-		});
+		const html = `<p>[arr.toto|drop:]</p>`;
+		const copy = md.merge(html, {});
 		assert.equal(copy.outerHTML, '<p>[arr.toto|drop:]</p>');
 	});
 });
@@ -311,16 +314,16 @@ describe('what', () => {
 describe('html type', () => {
 	const md = new Matchdom().extend(DomPlugin);
 	it('should select nodes', () => {
-		const node = dom(`<p>[str|as:html|queryAll:span]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[str|as:html|queryAll:span]</p>`;
+		const copy = md.merge(html, {
 			str: '<img src="toto"><span>test</span><i>test</i><span>toto</span>'
 		});
 		assert.equal(copy.outerHTML, '<p><span>test</span><span>toto</span></p>');
 	});
 
 	it('should allow null val', () => {
-		const node = dom(`<p>[str|as:html]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[str|as:html]</p>`;
+		const copy = md.merge(html, {
 			str: null
 		});
 		assert.equal(copy.outerHTML, '<p></p>');
@@ -332,7 +335,7 @@ describe('html type', () => {
 			<title>[title]</title>
 		</root>`;
 		const node = (new DOMParser()).parseFromString(xml, "application/xml");
-		const copy = matchdom(node, {
+		const copy = md.merge(node, {
 			title: 'test'
 		});
 		assert.equal((new XMLSerializer()).serializeToString(copy), `<root>
@@ -374,24 +377,24 @@ describe('html type', () => {
 describe('join filter', () => {
 	const md = new Matchdom().extend(DomPlugin);
 	it('with space', () => {
-		const node = dom(`<p>[arr|join: ]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[arr|join: ]</p>`;
+		const copy = md.merge(html, {
 			arr: ['word1', 'word2']
 		});
 		assert.equal(copy.outerHTML, '<p>word1 word2</p>');
 	});
 
 	it('with newline in br mode', () => {
-		const node = dom(`<p>[arr|join:%0A|as:text]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[arr|join:%0A|as:text]</p>`;
+		const copy = md.merge(html, {
 			arr: ['line1', 'line2']
 		});
 		assert.equal(copy.outerHTML, '<p>line1<br>line2</p>');
 	});
 
 	it('html with <br>', () => {
-		const node = dom(`<p>[arr|join:%3Cbr%3E|as:html]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[arr|join:%3Cbr%3E|as:html]</p>`;
+		const copy = md.merge(html, {
 			arr: ['<b>line1</b>', '<i>line2</i>']
 		});
 		assert.equal(copy.outerHTML, '<p><b>line1</b><br><i>line2</i></p>');
@@ -399,24 +402,24 @@ describe('join filter', () => {
 });
 
 describe('split filter', () => {
-	const md = new Matchdom().extend(TextPlugin, ArrayPlugin);
+	const md = new Matchdom(ArrayPlugin, DomPlugin);
 	it('with space', () => {
-		const node = dom(`<p>[text|split: |join:X]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[text|split: |join:X]</p>`;
+		const copy = md.merge(html, {
 			text: 'word1 word2'
 		});
 		assert.equal(copy.outerHTML, '<p>word1Xword2</p>');
 	});
 	it('with newlines and trim', () => {
-		const node = dom(`<p>[text|trim:|split:%0A|join:X]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[text|trim:|split:%0A|join:X]</p>`;
+		const copy = md.merge(html, {
 			text: 'word1\nword2\nword3\n'
 		});
 		assert.equal(copy.outerHTML, '<p>word1Xword2Xword3</p>');
 	});
 	it('with newlines and trim by value', () => {
-		const node = dom(`<p>[text|split:%0A|filter:word2:neq|join:X]</p>`);
-		const copy = md.extend(OpsPlugin).merge(node, {
+		const html = `<p>[text|split:%0A|filter:word2:neq|join:X]</p>`;
+		const copy = md.extend(OpsPlugin).merge(html, {
 			text: 'word1\nword2\nword3'
 		});
 		assert.equal(copy.outerHTML, '<p>word1Xword3</p>');
@@ -424,16 +427,18 @@ describe('split filter', () => {
 });
 
 describe('slice filter', () => {
+	const md = new Matchdom(DomPlugin);
+
 	it('should slice array with begin and end', () => {
-		const node = dom(`<p>[arr|slice:1:3|join: ]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[arr|slice:1:3|join: ]</p>`;
+		const copy = md.merge(html, {
 			arr: ['word1', 'word2', 'word3']
 		});
 		assert.equal(copy.outerHTML, '<p>word2 word3</p>');
 	});
 	it('should slice array with begin', () => {
-		const node = dom(`<p>[arr|slice:2|join: ]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[arr|slice:2|join: ]</p>`;
+		const copy = md.merge(html, {
 			arr: ['word1', 'word2', 'word3', 'word4']
 		});
 		assert.equal(copy.outerHTML, '<p>word3 word4</p>');
@@ -441,25 +446,26 @@ describe('slice filter', () => {
 });
 
 describe('sort filter', () => {
-	const md = new Matchdom().extend(ArrayPlugin);
+	const md = new Matchdom(ArrayPlugin, DomPlugin);
+
 	it('should sort array with nulls last', () => {
-		const node = dom(`<p>[arr|sort:|join: ]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[arr|sort:|join: ]</p>`;
+		const copy = md.merge(html, {
 			arr: ['word2', 'word1', null, 'word3']
 		});
 		assert.equal(copy.outerHTML, '<p>word1 word2 word3 </p>');
 	});
 
 	it('should sort array with nulls first', () => {
-		const node = dom(`<p>[arr|sort::true|join: ]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[arr|sort::true|join: ]</p>`;
+		const copy = md.merge(html, {
 			arr: ['word2', 'word1', null, 'word3']
 		});
 		assert.equal(copy.outerHTML, '<p> word1 word2 word3</p>');
 	});
 	it('should sort array by item and nulls first', () => {
-		const node = dom(`<p>[arr|sort:val:true|at:-|repeat:|key] </p>`);
-		const copy = md.extend(DomPlugin).merge(node, {
+		const html = `<p>[arr|sort:val:true|at:-|repeat:|key] </p>`;
+		const copy = md.extend(DomPlugin).merge(html, {
 			arr: [
 				{ key: 'a', val: 'word2' },
 				{ key: 'b', val: 'word1' },
@@ -471,8 +477,8 @@ describe('sort filter', () => {
 	});
 
 	it('should sort array by numeric item and nulls last', () => {
-		const node = dom(`<p>[arr|sort:val:false|at:-|repeat:|key] </p>`);
-		const copy = md.extend(DomPlugin).merge(node, {
+		const html = `<p>[arr|sort:val:false|at:-|repeat:|key] </p>`;
+		const copy = md.extend(DomPlugin).merge(html, {
 			arr: [
 				{ key: 'a', val: 2 },
 				{ key: 'b', val: 1 },
@@ -484,8 +490,8 @@ describe('sort filter', () => {
 	});
 
 	it('should sort array by date item and NaN first', () => {
-		const node = dom(`<p>[sort::true|map:date:iso|join:%0A|as:text] </p>`);
-		const copy = md.extend(DomPlugin, DatePlugin).merge(node, [
+		const html = `<p>[sort::true|map:date:iso|join:%0A|as:text] </p>`;
+		const copy = md.extend(DatePlugin).merge(html, [
 			new Date("2021-02-28T15:12"),
 			new Date("2021-02-26T14:12"),
 			new Date("invalid"),
@@ -495,17 +501,19 @@ describe('sort filter', () => {
 });
 
 describe('pad', () => {
+	const md = new Matchdom(DomPlugin);
+
 	it('start', () => {
-		const node = dom(`<p>[str|padStart:3:x]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[str|padStart:3:x]</p>`;
+		const copy = md.merge(html, {
 			str: 'a'
 		});
 		assert.equal(copy.outerHTML, '<p>xxa</p>');
 	});
 
 	it('end', () => {
-		const node = dom(`<p>[str|padEnd:3:x]</p>`);
-		const copy = matchdom(node, {
+		const html = `<p>[str|padEnd:3:x]</p>`;
+		const copy = md.merge(html, {
 			str: 'a'
 		});
 		assert.equal(copy.outerHTML, '<p>axx</p>');
@@ -513,135 +521,154 @@ describe('pad', () => {
 });
 
 describe('eq', () => {
+	const md = new Matchdom(DomPlugin, OpsPlugin);
+
 	it('should keep equal value', () => {
-		const node = dom(`<p>[val|eq:ceci]</p>`);
-		const copy = new Matchdom().extend(OpsPlugin).merge(node, {val: 'ceci'});
+		const html = `<p>[val|eq:ceci]</p>`;
+		const copy = md.merge(html, {val: 'ceci'});
 		assert.equal(copy.outerHTML, '<p>ceci</p>');
 	});
 	it('should return null', () => {
-		const node = dom(`<p>[val|eq:cela]</p>`);
-		const copy = new Matchdom().extend(OpsPlugin).merge(node, {val: 'ceci'});
+		const html = `<p>[val|eq:cela]</p>`;
+		const copy = md.merge(html, {val: 'ceci'});
 		assert.equal(copy.outerHTML, '<p></p>');
 	});
 });
 
 describe('neq', () => {
+	const md = new Matchdom(DomPlugin, OpsPlugin);
+
 	it('should keep value', () => {
-		const node = dom(`<p>[val|neq:ceci]</p>`);
-		const copy = matchdom(node, {val: 'cecia'});
+		const html = `<p>[val|neq:ceci]</p>`;
+		const copy = md.merge(html, {val: 'cecia'});
 		assert.equal(copy.outerHTML, '<p>cecia</p>');
 	});
 	it('should return null', () => {
-		const node = dom(`<p test="[val|neq:cela]">ora</p>`);
-		const copy = new Matchdom().extend(OpsPlugin).merge(node, {val: 'cela'});
+		const html = `<p test="[val|neq:cela]">ora</p>`;
+		const copy = md.merge(html, {val: 'cela'});
 		assert.equal(copy.outerHTML, '<p>ora</p>');
 	});
 });
 
 describe('gt', () => {
+	const md = new Matchdom(DomPlugin, OpsPlugin);
+
 	it('should parse float, compare, and return boolean true', () => {
-		const node = dom(`<p>[val|gt:0.5]</p>`);
-		const copy = new Matchdom().extend(OpsPlugin).merge(node, {val: 0.6});
+		const html = `<p>[val|gt:0.5]</p>`;
+		const copy = md.merge(html, {val: 0.6});
 		assert.equal(copy.outerHTML, '<p>0.6</p>');
 	});
 	it('should fail to parse float and return value', () => {
-		const node = dom(`<p>[val|gt:0.5]</p>`);
-		const copy = new Matchdom().extend(OpsPlugin).merge(node, {val: 'xx'});
+		const html = `<p>[val|gt:0.5]</p>`;
+		const copy = md.merge(html, {val: 'xx'});
 		assert.equal(copy.outerHTML, '<p></p>');
 	});
 });
 
 describe('not', () => {
+	const md = new Matchdom(DomPlugin, OpsPlugin);
+
 	it('should set to null if empty', () => {
-		const node = dom(`<p class="[val|as:null]">test</p>`);
-		const copy = matchdom(node, {val: ''});
+		const html = `<p class="[val|as:null]">test</p>`;
+		const copy = md.merge(html, {val: ''});
 		assert.equal(copy.outerHTML, '<p>test</p>');
 	});
 
 	it('should not set to null if not empty', () => {
-		const node = dom(`<p>[val|or:toto]</p>`);
-		const copy = matchdom(node, {val: ''});
+		const html = `<p>[val|or:toto]</p>`;
+		const copy = md.merge(html, {val: ''});
 		assert.equal(copy.outerHTML, '<p>toto</p>');
 	});
 });
 
 describe('name', () => {
+	const md = new Matchdom(DomPlugin);
+
 	it('should set a value when true', () => {
-		const node = dom(`<p>[val|path:name]</p>`);
-		const copy = matchdom(node, {val: true});
+		const html = `<p>[val|path:name]</p>`;
+		const copy = md.merge(html, {val: true});
 		assert.equal(copy.outerHTML, '<p>val</p>');
 	});
 	it('should set a value when false', () => {
-		const node = dom(`<p>[val|and:ceci|else:path:name]</p>`);
-		const copy = matchdom(node, {val: false});
+		const html = `<p>[val|and:ceci|else:path:name]</p>`;
+		const copy = md.merge(html, {val: false});
 		assert.equal(copy.outerHTML, '<p>val</p>');
 	});
 	it('should set an empty string when false is not set', () => {
-		const node = dom(`<p>[val|and:path:name|or:]</p>`);
-		const copy = matchdom(node, {val: false});
+		const html = `<p>[val|and:path:name|or:]</p>`;
+		const copy = md.merge(html, {val: false});
 		assert.equal(copy.outerHTML, '<p></p>');
 	});
 	it('should set last path component when true is not set', () => {
-		const node = dom(`<p>[to.val|path:name]</p>`);
-		const copy = matchdom(node, {to: {val: true}});
+		const html = `<p>[to.val|path:name]</p>`;
+		const copy = md.merge(html, {to: {val: true}});
 		assert.equal(copy.outerHTML, '<p>val</p>');
 	});
 	it('should set empty string when true is not set', () => {
-		const node = dom(`<p>[val|and:path:name|or:]</p>`);
-		const copy = matchdom(node, {val: false});
+		const html = `<p>[val|and:path:name|or:]</p>`;
+		const copy = md.merge(html, {val: false});
 		assert.equal(copy.outerHTML, '<p></p>');
 	});
 });
 
 describe('const filter', () => {
+	const md = new Matchdom(DomPlugin);
+
 	it('should set to empty string', () => {
-		const node = dom(`<p>[val|const:]</p>`);
-		const copy = matchdom(node, {val: 'toto'});
+		const html = `<p>[val|const:]</p>`;
+		const copy = md.merge(html, {val: 'toto'});
 		assert.equal(copy.outerHTML, '<p></p>');
 	});
 	it('should set to string', () => {
-		const node = dom(`<p>[val|const:def]</p>`);
-		const copy = matchdom(node, {val: 'toto'});
+		const html = `<p>[val|const:def]</p>`;
+		const copy = md.merge(html, {val: 'toto'});
 		assert.equal(copy.outerHTML, '<p>def</p>');
 	});
 });
 
 describe('!?', () => {
+	const md = new Matchdom(DomPlugin);
+
 	it('should set last path component when true is not set', () => {
-		const node = dom(`<p>[to.val|not:|path:name]</p>`);
-		const copy = matchdom(node, {to: {val: false}});
+		const html = `<p>[to.val|not:|path:name]</p>`;
+		const copy = md.merge(html, {to: {val: false}});
 		assert.equal(copy.outerHTML, '<p>val</p>');
 	});
 });
 
 describe('pre', () => {
+	const md = new Matchdom(TextPlugin, DomPlugin);
+
 	it('should not prepend string if value is empty', () => {
-		const node = dom(`<a class="test [button|pre:ui ]">test</a>`);
-		const copy = matchdom(node, {button: ''});
+		const html = `<a class="test [button|pre:ui ]">test</a>`;
+		const copy = md.merge(html, {button: ''});
 		assert.equal(copy.outerHTML, '<a class="test">test</a>');
 	});
 	it('should prepend string if value is not empty', () => {
-		const node = dom(`<a class="[button|pre:ui ]">test</a>`);
-		const copy = new Matchdom().extend(TextPlugin).merge(node, {button: 'button'});
+		const html = `<a class="[button|pre:ui ]">test</a>`;
+		const copy = md.merge(html, {button: 'button'});
 		assert.equal(copy.outerHTML, '<a class="ui button">test</a>');
 	});
 });
 
 describe('post', () => {
+	const md = new Matchdom(TextPlugin, DomPlugin);
+
 	it('should not append string if value is empty', () => {
-		const node = dom(`<a class="test [size|post: wide]">test</a>`);
-		const copy = matchdom(node, {size: ''});
+		const html = `<a class="test [size|post: wide]">test</a>`;
+		const copy = md.merge(html, {size: ''});
 		assert.equal(copy.outerHTML, '<a class="test">test</a>');
 	});
 	it('should append string if value is not empty', () => {
-		const node = dom(`<a class="test [size|post: wide]">test</a>`);
-		const copy = new Matchdom().extend(TextPlugin).merge(node, {size: 'ten'});
+		const html = `<a class="test [size|post: wide]">test</a>`;
+		const copy = md.merge(html, {size: 'ten'});
 		assert.equal(copy.outerHTML, '<a class="test ten wide">test</a>');
 	});
 });
 
 describe('case', () => {
-	const md = new Matchdom().extend(TextPlugin);
+	const md = new Matchdom(TextPlugin, DomPlugin);
+
 	it('should upper case', () => {
 		const str = 'minusculés';
 		const copy = md.merge("[str|case:up]", { str });
@@ -660,27 +687,28 @@ describe('case', () => {
 });
 
 describe('date type', () => {
-	const md = new Matchdom().extend(DatePlugin);
+	const md = new Matchdom(DatePlugin, DomPlugin);
+
 	it('toLocaleString', () => {
-		const node = dom(`<p>[str|lang:en|date:]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[str|lang:en|date:]</p>`;
+		const copy = md.merge(html, {
 			str: '2018-03-09T11:12:56.739Z'
 		});
 		assert.equal(copy.outerHTML, '<p>3/9/2018, 12:12:56 PM</p>');
 	});
 
 	it('accepts "now" as keyword', () => {
-		const node = dom(`<p>[str|as:date|toLocaleTimeString:fr-FR]</p>`);
+		const html = `<p>[str|as:date|toLocaleTimeString:fr-FR]</p>`;
 		const now = new Date();
-		const copy = md.merge(node, {
+		const copy = md.merge(html, {
 			str: 'now'
 		});
 		assert.equal(copy.outerHTML, `<p>${now.toLocaleTimeString('fr-FR')}</p>`);
 	});
 
 	it('getYear', () => {
-		const node = dom(`<p>[str|as:date|getFullYear:]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[str|as:date|getFullYear:]</p>`;
+		const copy = md.merge(html, {
 			str: '2018-03-09T11:12:56.739Z'
 		});
 		assert.equal(copy.outerHTML, '<p>2018</p>');
@@ -689,10 +717,11 @@ describe('date type', () => {
 
 
 describe('json type', () => {
-	const md = new Matchdom().extend(JsonPlugin);
+	const md = new Matchdom(JsonPlugin, DomPlugin);
+
 	it('should parse string', () => {
-		const node = dom(`<p>[str|as:json|.test]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[str|as:json|.test]</p>`;
+		const copy = md.merge(html, {
 			str: '{"test":10}'
 		});
 		assert.equal(copy.outerHTML, '<p>10</p>');
@@ -700,8 +729,8 @@ describe('json type', () => {
 
 	it('should fail to parse', () => {
 		md.debug = true; // ensure missing json filter will crash
-		const node = dom(`<p>[str|as:json|test]</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[str|as:json|test]</p>`;
+		const copy = md.merge(html, {
 			str: '{test:10}'
 		});
 		assert.equal(copy.outerHTML, '<p></p>');
@@ -709,10 +738,11 @@ describe('json type', () => {
 });
 
 describe('url filter', () => {
-	const md = new Matchdom().extend(ArrayPlugin, DomPlugin);
+	const md = new Matchdom(ArrayPlugin, DomPlugin);
+
 	it('should work in the same attribute with a query string', () => {
-		const node = dom(`<a href="/test?[href|as:url]">[title]</a>`);
-		const copy = md.merge(node, {
+		const html = `<a href="/test?[href|as:url]">[title]</a>`;
+		const copy = md.merge(html, {
 			href: '?arg=1&val=2',
 			title: 'anchor'
 		});
@@ -720,8 +750,8 @@ describe('url filter', () => {
 	});
 
 	it('should work in the same attribute with a full url', () => {
-		const node = dom(`<a href="[href|as:url]?toto=2">[title]</a>`);
-		const copy = md.merge(node, {
+		const html = `<a href="[href|as:url]?toto=2">[title]</a>`;
+		const copy = md.merge(html, {
 			href: '/pathname?test=1',
 			title: 'anchor'
 		});
@@ -729,8 +759,8 @@ describe('url filter', () => {
 	});
 
 	it('should merge url query with target pathname', () => {
-		const node = dom(`<a href="/test" data-href="[href|to:href|as:url]">[title]</a>`);
-		const copy = md.merge(node, {
+		const html = `<a href="/test" data-href="[href|to:href|as:url]">[title]</a>`;
+		const copy = md.merge(html, {
 			href: '?arg=1&val=2',
 			title: 'anchor'
 		});
@@ -738,8 +768,8 @@ describe('url filter', () => {
 	});
 
 	it('should merge url pathname with target query', () => {
-		const node = dom(`<a href="/test?toto=1" data-href="[href|to:href|as:url]">[title]</a>`);
-		const copy = md.merge(node, {
+		const html = `<a href="/test?toto=1" data-href="[href|to:href|as:url]">[title]</a>`;
+		const copy = md.merge(html, {
 			href: '/path',
 			title: 'anchor'
 		});
@@ -747,8 +777,8 @@ describe('url filter', () => {
 	});
 
 	it('should merge pathname and query', () => {
-		const node = dom(`<a href="/test?toto=1" data-href="[href|to:href|as:url]">[title]</a>`);
-		const copy = md.merge(node, {
+		const html = `<a href="/test?toto=1" data-href="[href|to:href|as:url]">[title]</a>`;
+		const copy = md.merge(html, {
 			href: '/path?a=1&b=2',
 			title: 'anchor'
 		});
@@ -756,8 +786,8 @@ describe('url filter', () => {
 	});
 
 	it('should overwrite target query name with partial template', () => {
-		const node = dom(`<a href="/test?id=1" data-href="?id=[id|to:href|as:url]">[title]</a>`);
-		const copy = md.merge(node, {
+		const html = `<a href="/test?id=1" data-href="?id=[id|to:href|as:url]">[title]</a>`;
+		const copy = md.merge(html, {
 			id: 'xx',
 			title: 'anchor'
 		});
@@ -765,8 +795,8 @@ describe('url filter', () => {
 	});
 
 	it('should merge url query with partial template', () => {
-		const node = dom(`<a href="/test?toto=1" data-href="?id=[id|to:href|as:url]">[title]</a>`);
-		const copy = md.merge(node, {
+		const html = `<a href="/test?toto=1" data-href="?id=[id|to:href|as:url]">[title]</a>`;
+		const copy = md.merge(html, {
 			id: 'xx',
 			title: 'anchor'
 		});
@@ -774,8 +804,8 @@ describe('url filter', () => {
 	});
 
 	it('should overwrite url pathname and query with partial template', () => {
-		const node = dom(`<a href="/test?toto=1" data-href="/this?id=[id|to:href|as:url]&amp;const=1">[title]</a>`);
-		const copy = md.merge(node, {
+		const html = `<a href="/test?toto=1" data-href="/this?id=[id|to:href|as:url]&amp;const=1">[title]</a>`;
+		const copy = md.merge(html, {
 			id: 'xx',
 			title: 'anchor'
 		});
@@ -783,8 +813,8 @@ describe('url filter', () => {
 	});
 
 	it('should merge url query with partial template when repeated', () => {
-		const node = dom(`<div><a href="/test?id=1" data-href="?id=[repeat:|id|to:href|as:url]">[title]</a></div>`);
-		const copy = md.merge(node, [{
+		const html = `<div><a href="/test?id=1" data-href="?id=[repeat:|id|to:href|as:url]">[title]</a></div>`;
+		const copy = md.merge(html, [{
 			id: 'xx',
 			title: 'anchor'
 		}]);
@@ -792,8 +822,8 @@ describe('url filter', () => {
 	});
 
 	it('should be able to be called multiple times for the same attribute ???', () => {
-		const node = dom(`<div><a href="/test?status=0" data-href="?id=[id]&amp;status=[status|to:href|as:url]">[title]</a></div>`);
-		const copy = md.merge(node, {
+		const html = `<div><a href="/test?status=0" data-href="?id=[id]&amp;status=[status|to:href|as:url]">[title]</a></div>`;
+		const copy = md.merge(html, {
 			id: 'xx',
 			title: 'anchor',
 			status: "12"
@@ -802,8 +832,8 @@ describe('url filter', () => {
 	});
 
 	it('should not crash when data is not string', () => {
-		const node = dom(`<div><a href="/test" data-href="?id=[id|to:href|as:url]">aaa</a></div>`);
-		const copy = md.merge(node, {
+		const html = `<div><a href="/test" data-href="?id=[id|to:href|as:url]">aaa</a></div>`;
+		const copy = md.merge(html, {
 			id: 12
 		});
 		assert.equal(copy.outerHTML, '<div><a href="/test?id=12">aaa</a></div>');
@@ -811,68 +841,71 @@ describe('url filter', () => {
 });
 
 describe('to filter', () => {
-	const md = new Matchdom().extend(ArrayPlugin, DomPlugin);
+	const md = new Matchdom(ArrayPlugin, DomPlugin);
+
 	it('should fill current node', () => {
-		const node = dom(`<p>a[field|to:-]b</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>a[field|to:-]b</p>`;
+		const copy = md.merge(html, {
 			field: 'word'
 		});
 		assert.equal(copy.outerHTML, '<p>word</p>');
 	});
 
 	it('should fill current node from attribute', () => {
-		const node = dom(`<div><p data-template="[field|to:-]">ab</p></div>`);
-		const copy = md.merge(node, {
+		const html = `<div><p data-template="[field|to:-]">ab</p></div>`;
+		const copy = md.merge(html, {
 			field: 'word'
 		});
 		assert.equal(copy.outerHTML, '<div><p>word</p></div>');
 	});
 
 	it('should replace current root node', () => {
-		const node = dom(`<p>[field|to:*]a</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>[field|to:*]a</p>`;
+		const copy = md.merge(html, {
 			field: 'word'
 		});
 		assert.equal(copy.nodeValue, 'word');
 	});
 
 	it('should replace current node from attribute', () => {
-		const node = dom(`<div><p data-template="[field|to:*]">ab</p></div>`);
-		const copy = md.merge(node, {
+		const html = `<div><p data-template="[field|to:*]">ab</p></div>`;
+		const copy = md.merge(html, {
 			field: 'word'
 		});
 		assert.equal(copy.outerHTML, '<div>word</div>');
 	});
 
 	it('should fill current node from attribute using html', () => {
-		const node = dom(`<p data-template="[field|to:-|as:html]">ab</p>`);
-		const copy = md.merge(node, {
+		const html = `<p data-template="[field|to:-|as:html]">ab</p>`;
+		const copy = md.merge(html, {
 			field: '<b>word</b>'
 		});
 		assert.equal(copy.outerHTML, '<p><b>word</b></p>');
 	});
 
 	it('should replace current node from attribute using html', () => {
-		const node = dom(`<p data-template="[field|as:html|to:*]">ab</p>thing`);
-		const copy = md.merge(node, {
+		const frag = md.merge(`[html|as:html]`, {
+			html: `<p data-template="[field|as:html|to:*]">ab</p>thing`
+		});
+		const copy = md.merge(frag, {
 			field: '<b>word</b>'
 		});
-		const div = dom('<div>');
+		const div = copy.ownerDocument.createElement('div');
 		div.append(copy);
 		assert.equal(div.innerHTML, '<b>word</b>thing');
 	});
 
 	it('should not fill current node', () => {
-		const node = dom(`<p>a[field.it|to:]b</p>`);
-		const copy = md.merge(node, {
+		const html = `<p>a[field.it|to:]b</p>`;
+		const copy = md.merge(html, {
 			other: 'word'
 		});
 		assert.equal(copy.outerHTML, '<p>a[field.it|to:]b</p>');
 	});
 
 	it('should not fill from attribute', () => {
-		const node = dom(`<p data-template="[field.it|to:*]">abb</p>`);
-		const copy = md.merge(node, {
+		const html = `<p data-template="[field.it|to:*]">abb</p>`;
+		const copy = md.merge(html, {
 			other: 'word'
 		});
 		assert.equal(copy.outerHTML, '<p data-template="[field.it|to:*]">abb</p>');
@@ -880,16 +913,16 @@ describe('to filter', () => {
 
 
 	it('should append to space-separated attribute', () => {
-		const node = dom(`<p class="test">[style|to:class]abb</p>`);
-		const copy = md.merge(node, {
+		const html = `<p class="test">[style|to:class]abb</p>`;
+		const copy = md.merge(html, {
 			style: 'word'
 		});
 		assert.equal(copy.outerHTML, '<p class="test word">abb</p>');
 	});
 
 	it('should fill current node and set an attribute using two separate expressions', () => {
-		const node = dom(`<p data-fill="[field|to:-]" data-attr="[field2|to:class]">astuffb</p>`);
-		const copy = md.merge(node, {
+		const html = `<p data-fill="[field|to:-]" data-attr="[field2|to:class]">astuffb</p>`;
+		const copy = md.merge(html, {
 			field: 'word',
 			field2: 'myclass'
 		});
@@ -897,8 +930,8 @@ describe('to filter', () => {
 	});
 
 	it('should fill current node and set an attribute on parent node using two separate expressions', () => {
-		const node = dom(`<div><p data-fill="[field|to:-]" data-attr="[field2|at:div|to:class]">astuffb</p></div>`);
-		const copy = md.merge(node, {
+		const html = `<div><p data-fill="[field|to:-]" data-attr="[field2|at:div|to:class]">astuffb</p></div>`;
+		const copy = md.merge(html, {
 			field: 'word',
 			field2: 'myclass'
 		});
@@ -906,8 +939,8 @@ describe('to filter', () => {
 	});
 
 	it('should fill current node before setting an attribute from within', () => {
-		const node = dom(`<p data-expr="[field|to:-]">a[field|to:class]b</p>`);
-		const copy = md.merge(node, {
+		const html = `<p data-expr="[field|to:-]">a[field|to:class]b</p>`;
+		const copy = md.merge(html, {
 			field: 'word',
 			field2: 'myclass'
 		});
@@ -915,8 +948,8 @@ describe('to filter', () => {
 	});
 
 	it('should not set an attribute partially filled', () => {
-		const node = dom(`<div><p data-attr="toto[field|to:-]aa">astuffb</p></div>`);
-		const copy = md.merge(node, {
+		const html = `<div><p data-attr="toto[field|to:-]aa">astuffb</p></div>`;
+		const copy = md.merge(html, {
 			field: 'word',
 			field2: 'myclass'
 		});
