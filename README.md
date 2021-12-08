@@ -5,27 +5,24 @@ DSL for merging data.
 A matchdom expression describes a chain of "filter" functions:
 `[func1:param1|func2:param2]`.
 
-Each filter gets the context object, the current value,
-can change the context, and returns a new value or current value.
-
-The context object describes source and destination nodes,
-and the parsed expression from which the filter is called, see below.
+A filter function has signature (see below):
+`(ctx, val, param1, param2, ...) -> newVal`
+and returns a value handled by the next filter,
+until the expression can be merged.
 
 `md.merge(node, data)` mutates `node`.
+
 If `node` is a string that starts with '<' and ends with '>',
 it is converted to a DOM fragment (or single node) if `document` is available.
 
-However, explicit parsing can be done through exported `HTML` and `XML` methods.
-
-## usage
+## example
 
 ```js
-import { Matchdom, HTML, XML, Locale } from 'matchdom';
-const md = new Matchdom({
- hooks = {},
- symbols = {}
-});
-md.extend(Locale);
+import { Matchdom, TextPlugin, NumPlugin, DomPlugin } from 'matchdom';
+
+const md = new Matchdom(TextPlugin, NumPlugin, DomPlugin);
+
+// html string is converted to a DOM node, thanks to DomPlugin
 const mergedDom = md.merge(`<div id="model" class="[myclass]">
  <h[n]>Header</h[n]>
  <span>[data.text|as:html] for [data.percent|percent:1]</span>
@@ -37,84 +34,53 @@ const mergedDom = md.merge(`<div id="model" class="[myclass]">
   text: "<em>test</em>"
  }
 });
-const expectedHTML = `<div id="model" class="yes">
+
+assert.equal(mergedDom.outerHTML, `<div id="model" class="yes">
  <h4>Header</h4>
  <span><em>test</em></span>
-</div>`;
-assert.equal(mergedDom.outerHTML, HTML(expectedHTML).outerHTML);
+</div>`);
 ```
 
-- merge(dom, data, scope)
-- extend({filters, types, formats} or an array of plugins)
-- Matchdom.HTML, Matchdom.XML use browser api to parse strings into native DOM fragments - feel free to use other ways.
+- merge(body, data, scope)
+
+A plugin is an object with those properties:
+
+```js
+{
+  filters: {},
+  types: {},
+  formats: {},
+  hooks: {}
+}
+```
+
+If a plugin has no filters, types, formats, hooks keys:
+
+- if it has hooks keys, they are used as hooks
+- otherwise keys are assumed to be filters, so that
+  `new Matchdom({myfilter() {} })`
+  and
+  `new Matchdom({filters: {myfilter() {} }})`
+  are equivalent.
+
+Depending on the types that are made available by the loaded plugins,
+body is automatically coerced in a DOM node or kept as a string.
 
 ## compatibility
 
-- there is a crucial dependency on `<template>` for the html fragment parser.
+matchdom expects a somewhat modern browser or server environment,
+depending on the loaded plugins.
 
-Consider using a service like polyfill.io for older browsers support.
+Use runtime or bundled polyfills to meet your particular needs.
 
-## types and formats
+## declaring custom filter
 
-Types can be used by filters typings, or by "as:" and "is:" filters.
+Filter functions should be declared with their types.
 
-Basic types (and their shorthands):
+Since all parameters will be received as strings, declaring the types
+allow coercion rules and type checks.
 
-- undefined, none: converts null-ish to undefined, leave other values intact
-- null: converts falsey to null, leave other values intact
-- integer, int: try to parseInt, return null if NaN
-- string, str: toString
-- boolean, bool: "true", "1" and truey to true, "false", "0", and falsey to false
-- float, num, numeric: try to parseFloat, return null if NaN
-
-Custom types (these can be overriden by plugins):
-
-- date: try new Date(val), return null if not a date, accepts 'now'
-- array: wrap non-array-like values into an array
-- json: parse json string
-
-Default formats:
-
-- text: converts string with newlines by a dom fragment with hard breaks
-- html: converts string to a dom fragment
-- xml: converts string to an xml fragment
-- url: merges source and destination - works well with as: filter.
-- keys: array of keys
-- values: array of values
-- entries: arrays of {key, value}
-
-Additionnal types and formats can be added by passing functions:
-
-```js
-import { DateTime } from 'luxon';
-// overrides default date type
-const types = {
- date(ctx, val) {
-  return DateTime.fromISO(val);
- }
-};
-const md = new Matchdom().extend(types)
-```
-
-## filters
-
-### syntax
-
-- no parameters: `name:`
-- one parameter: `name:param`
-- two parameters: `name:param1:param2`, etc...
-
-### filter function
-
-A filter function takes current value, parameters from expression, and returns a new value.
-
-Signature: `(ctx, val, param1, param2, ...)`
-
-Returns the new value.
-
-Once type-checked, parameters are uri-decoded.
-
-The parameters received by a filter function can be checked/coerced automatically:
+Once type-checked, parameters are uri-decoded (if possible) before filter is called.
 
 ```js
 const filters = {
@@ -140,14 +106,70 @@ of that type:
 - '?*' allows any parameters, even null
 - 'int?0*' allows integers with a default value of zero
 
-Available types are the same as for the "as:" filter, with the addition of:
+All plugins types can be used - see `as` filter.
 
-- 'filter': checks the parameter is a filter name,
-- 'path': converts parameter to a path array
+A filter function can:
 
-A filter function can have side effects on the document being merged.
+- return a new value
+- change context
 
-`ctx` has the following properties:
+## types and formats
+
+Types can be used by filters typings, or by "as:" and "is:" filters.
+
+Formats are not types - they are only used by "as:" filter.
+
+### simple types (hard-coded)
+
+- undefined, none: converts null-ish to undefined, leave other values intact
+- null: converts falsey to null, leave other values intact
+- integer, int: try to parseInt, return null if NaN
+- string, str: toString
+- boolean, bool: "true", "1" and truey to true, "false", "0", and falsey to false
+- float, num, numeric: try to parseFloat, return null if NaN
+
+### complex types (from plugins)
+
+- filter: checks the parameter is a filter name
+- path: converts parameter to a path array
+- date: try new Date(val), return null if not a date, accepts 'now'
+- array: wrap non-array-like values into an array
+- json: parse json string
+
+### formats (from plugins)
+
+- text: converts string with newlines by a dom fragment with hard breaks
+- html: converts string to a dom fragment
+- xml: converts string to an xml fragment
+- url: merges source and destination - works well with as: filter.
+- keys: array of keys
+- values: array of values
+- entries: arrays of {key, value}
+
+### format and type declaration
+
+This adds a `simple` type that checks if a value is simple, and a `text` format:
+
+```js
+const md = new Matchdom({
+  types: {
+    simple(ctx, val) {
+      if (ctx.isSimpleValue(val)) return val;
+      else return null;
+    }
+  },
+  formats: {
+    string(ctx, val) {
+      if (val == null) return val;
+      return val.toString();
+    }
+  }
+});
+```
+
+## Internals
+
+### context
 
 - raw: the current value before being casted as a filter parameter
 - data: the data object available to expressions
@@ -196,40 +218,31 @@ and methods:
 - prepend(name, params=[]) a filter at current index
 - drop() stop processing following filters, return true if there was any
 
-Expressions can be nested:
+## core plugin
 
-```js
-<span>[val|or:[otherval]]</span>
-```
+### filter, path paths
 
-(see examples in tests).
-
-### escaping brackets
-
-Expressions leading to undefined data are ignored, so the naive use of brackets
-in a text won't be merged.
-However in some cases brackets that are not expressions must be escaped.
-
-- a couple of bracketed expressions must be escaped:
- Use `[const:%5B]brackets[const:%5D]`
-
-- the document contains lots of bracketed expressions:
- Use custom symbols, see below.
-
-## path accessor filter
+- filter type checks if the string value is the name of a loaded filter
+- path type coerces the string to a list of identifiers
 
 ### get:path
 
 Returns data as found from path accessor.
 
-FIXME HERE see context.js
+When the path starts with a dot, it applies to current value.
+
+When the path starts with an identifier, it applies to context data.
+
 When the last item of the path of an expression refers to an `undefined` value,
-the value is converted to `null`, so the expression is merged.
+the value is converted to `null`, so the expression is merged:
 
 When the path refers to an `undefined` value before the last item, the expression
 is not merged.
 
-### short syntax
+```js
+assert.equal(md.merge("a[to.nothing]b", {to: {}}), 'ab')
+assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b')
+```
 
 The `get:` filter has a special syntax without colon, instead of
 
@@ -238,14 +251,6 @@ The `get:` filter has a special syntax without colon, instead of
 one can write:
 
 `[path.to.data|myFilter:param|.prop]`
-
-### use multiple times
-
-A path starting with a dot continues the path started in the expression:
-
-- `[path.to|.data]` is equivalent to `[path.to.data]`
-- `[path.prop1|path.prop2]` will just output the last value - this is more meaningful with
-- `[path.prop1|else:get:path.prop2]` which outputs prop2 if prop1 is falsey (see else: filter).
 
 ### alias:path
 
@@ -257,106 +262,18 @@ Useful when another filter expects data to be accessible under a specific path.
 
 Always return str.
 
+### canonical name:param(...)
 
-## canonical methods filter
+Call the current value method under that name.
 
-### name:param(...)
+This could be handy but lacks type checking and might give unexpected results:
+instead, define an adhoc filter.
 
-If the value has a method with that name, call it with the given parameters.
-
-Think about toLowerCase, toUpperCase, toISOString, split, join, slice etc...
-
-This has many limitations and corner cases: for correct handling of parameters, define a custom filter.
-
-## String filters (optional)
-
-If the value is a string, javascript string methods are callable as filters.
-
-### pre:str
-
-Prepends string if value is not null or not empty.
-
-### post:str
-
-Appends string if value is not null or not empty.
-
-### case:low|up|caps
-
-Shorthands for lowercase, uppercase.
-Caps means: capitalize each sentence separated by a dot and whitespace (requires unicode support in regexp).
-
-### enc:base64|base64url|url|hex
-
-Encodes to specified encoding.
-
-### dec:base64|base64url|url|hex
-
-Decodes from specified encoding.
-
-## Locale filters (optional)
-
-### digits:min:max
-
-### percent:min:max
-
-### currency:min:max
-
-## flow control filters
-
-### not:name:params:(...)
-
-Runs the named filter with !val instead of val.
-
-### then:name:param:(...)
-
-When value is loosely true, return the value of running the given named filter;
-else return the value.
-
-### and:str
-
-Alias for `then:const:str`
-
-Remember to use `required="[isrequired|and:]"` to get a "boolean attribute" right.
-
-### else:name:param:(...)
-
-Same as then but when value is falsey.
-
-### or:str
-
-Alias for `else:const:str`
-
-## Operator filters (optional)
-
-### booleans
-
-These filters return the value if the condition is true, or null if the condition is false:
-
-- eq:str
-- neq:str
-- has:str (contains str and returns str)
-- in:str1:... (contained in list of strings)
-- gt:num
-- lt:num
-- gte:num
-- lte:num
-
-### arithmetic
-
-- add:num
-- sub:num
-- mul:num
-- div:num
-- mod:num
-- pow:num
-
-## type filters
-
-### is:(type)
+### is:type
 
 Checks value is of that type, and returns a boolean.
 
-### as:(type|format)
+### as:type|format
 
 Coerces value to type, or converts string to format.
 
@@ -367,26 +284,57 @@ Coerces value to type, or converts string to format.
 - as:html
   return value as a DOM node or null if it fails
 
-## array filters
+## flow plugin
 
-While usual array methods are available by inspection (slice, splice, reverse),
-there additional filters allow array transformations before merging.
+### not then else:filter:param+
 
-### filter:str:cond:path
+Evaluates value loosely, and call named filter with parameters accordingly.
 
-Keep items of a list that satisfy `this.get(item, path) <op> str`.
+### or and:str
 
-- cond can be any conditional filter name eq, neq, gt, lt, lte, gte, has,
-and defaults to eq
-- path is relative to each item, and can be omitted
+- "or" is a shorthand for "else:const:str"
+- "and" is a shorthand for "then:const:str"
 
-### map:name:param:(...)
+## text plugin
 
-Map an array with the filter `name` and its parameters.
+### pre:str, post:str
+
+Prepends or appends string if value is not null or not empty.
+
+### case:low|up|caps
+
+Uppercase, lowercase, or unicode-capitalize sentences.
+
+### dec enc:base64|base64url|url|hex
+
+Decodes/encodes to specified encoding.
+
+## array plugin
+
+### array type
+
+Returns:
+
+- nothing if value is undefined
+- empty array is value is null
+- single item array is value is not an array
+- the value itself if iterable
+
+### keys, values, entries formats
+
+Return these Object methods on the array.
+
+### filter:str:op:path
+
+Filter array by applying `get:${path}|${op}:str` to each item in the array.
+
+### map:filter:param+
+
+Map an array by calling named filter on each item, with additional params.
 
 ### select:path
 
-Map array items to their paths.
+Shorthand for `map:get:${path}`.
 
 ### page:count:index
 
@@ -408,10 +356,86 @@ nullsFirst can be "1" or "true".
 
 Numeric or dates are compared as such, strings are compared using localeCompare.
 
-## html filters
+## ops plugin
 
-While repeat and magnet can be used as pure string filters in a limited fashion,
-they are meant to manipulate dom nodes.
+### booleans filters
+
+These filters return the value if the condition is true, or null if the condition is false:
+
+- eq:str
+- neq:str
+- has:str (contains str and returns str)
+- in:str1:... (contained in list of strings)
+- gt:num
+- lt:num
+- gte:num
+- lte:num
+
+### arithmetic filters
+
+- add:num
+- sub:num
+- mul:num
+- div:num
+- mod:num
+- pow:num
+
+## num plugin
+
+All three filters return a localized string,
+with at least min digits and at most max digits.
+
+min default to 0, max defaults to min.
+
+### digits:min?0:max?min
+
+Formats a number.
+
+### percent:min?0:max?min
+
+Formats a percent.
+
+### currency:currency:min?0:max?min
+
+Formats a currency.
+
+## date plugin
+
+### date type
+
+Converts string or timestamp to date.
+
+### date, time, datetime formats
+
+ISO formatting
+
+### date:format
+
+Localized date formatting
+
+## json plugin // TODO
+
+### json type
+
+Converts string to json object
+
+### format or filter ? json
+
+Converts data to json string
+
+## dom plugin
+
+### text format
+
+Formats string with `<br>` in place of new lines.
+
+### html, xml formats
+
+Parses string as html or xml.
+
+### url format
+
+Fuse source and destination places as if they were url components.
 
 ### at:range
 
@@ -435,7 +459,7 @@ Examples:
 - `at:+div.card+` selects also the previous and next siblings of the ancestor.
 - `at:+**+2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them #FIXME
 
-### prune:range
+### filter prune:range
 
 Like "at", without actually writing the value,
 this is a shortcut for `at:${range}|const:`.
@@ -445,7 +469,7 @@ Useful to test a value and remove selected range if falsey.
 To remove selected range but actually merge the value if truey,
 use instead `else:at:*`.
 
-### to:target
+### filter to:target
 
 While `at` filter widens the range around the expression,
 `to` restricts it to text content or to another attribute.
@@ -461,7 +485,7 @@ Examples:
 - `at:div|to:class` fills the class attribute of the closest `div`
 - `val|then:to:class|then:at:p|else:prune:p` fills the class attribute of closest `p` if val is not falsey, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
 
-### repeat:alias:placer:(...)
+### filter repeat:alias:placer:(...)
 
 Expect the value to be iterable (array, collection, etc...).
 
@@ -496,11 +520,11 @@ The place filter may choose to:
 - insert it somewhere else
 - do nothing in which case the fragment is not inserted
 
-### query: selector
+### filter query:selector
 
 If the current value is a dom node or fragment, runs querySelector(selector) on it.
 
-### queryAll: selector
+### filter queryAll:selector
 
 If the current value is a dom node or fragment, runs querySelectorAll(selector) on it,
 and return a fragment of the selected nodes.
@@ -510,21 +534,18 @@ and return a fragment of the selected nodes.
 Hooks are called before applying filters, or after.
 
 ```js
-hooks: {
+const md = new Matchdom({
   beforeAll: (ctx, val) => {},
   beforeEach: (ctx, val, filter) => {},
   afterEach: (ctx, val, filter) => {},
   afterAll: (ctx, val) => {}
-}
+});
+md.merge(...);
 ```
 
-The `filter` parameter contains:
+The `filter` parameter is a list: `[name, param1, param2, ...]`.
 
-- name:string
-- params:array
-
-and can be modified.
-Also `filter.name` is useful to hook into a specific filter at runtime.
+It can be modified.
 
 ## Custom symbols
 
