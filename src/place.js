@@ -1,9 +1,9 @@
 export default class Place {
-	static TEXT = 0
-	static NODE = 1
-	static CONT = 2
-	static ATTR = 3
-	static TAG = 4
+	static TEXT = 0;
+	static NODE = 1;
+	static CONT = 2;
+	static ATTR = 3;
+	static TAG = 4;
 	constructor(root, node, name) {
 		this.index = 0;
 		this.root = root;

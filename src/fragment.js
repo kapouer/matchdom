@@ -1,5 +1,5 @@
 class TextNode {
-	nodeValue
+	nodeValue;
 	constructor(str = "", doc) {
 		this.nodeValue = str;
 		this.nodeType = 3;
@@ -29,8 +29,8 @@ function findSibling(node, dir) {
 }
 
 class TextNodeIterator {
-	root
-	index = 0
+	root;
+	index = 0;
 	constructor(root) {
 		this.root = root;
 	}
