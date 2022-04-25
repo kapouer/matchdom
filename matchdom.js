@@ -173,7 +173,7 @@ matchdom.filters = {
 				if (prevSibs && what.node.previousElementSibling || nextSibs && what.node.nextElementSibling) parent = what.node;
 			}
 		}
-		if (parent) {
+		if (parent && parent.parentNode) {
 			while (prevSibs-- && parent.previousElementSibling) parent.previousElementSibling.remove();
 			while (nextSibs-- && parent.nextElementSibling) parent.nextElementSibling.remove();
 			parent.remove();
@@ -379,7 +379,7 @@ matchdom.filters = {
 			else ancestor.nodeValue += copy;
 		}
 		if (!tmode) {
-			parent.remove();
+			if (parent.parentNode) parent.remove();
 			return null;
 		} else {
 			if (!what.ancestor) return ancestor.nodeValue;
