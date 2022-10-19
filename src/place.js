@@ -202,7 +202,7 @@ export default class Place {
 			} else if (typeof node[attr] == "boolean") {
 				node.setAttribute(attr, "");
 			} else if (otherAtt && attrList) {
-				for (const name of tstr.replace(/[\n\t\s]+/g, ' ').trim().split(' ')) {
+				for (const name of tstr.replace(/\s+/g, ' ').trim().split(' ')) {
 					attrList.add(name);
 				}
 			} else {
