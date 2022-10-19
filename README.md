@@ -358,7 +358,7 @@ Numeric or dates are compared as such, strings are compared using localeCompare.
 
 ## ops plugin
 
-### booleans filters
+### pass-through filters
 
 These filters return the value if the condition is true, or null if the condition is false:
 
