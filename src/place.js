@@ -223,7 +223,7 @@ export default class Place {
 						item = cursor;
 						mutates = true;
 					} else {
-						item = doc.createTextNode((item == null) ? "" : item);
+						item = doc.createTextNode(item == null ? "" : item);
 					}
 				} // else item can be a node or fragment
 				if (parent && item != cursor) {
