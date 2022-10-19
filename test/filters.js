@@ -589,6 +589,26 @@ describe('not', () => {
 	});
 });
 
+describe('case', () => {
+	const md = new Matchdom(DomPlugin, OpsPlugin);
+
+	it('should match value', () => {
+		const html = `<p>[val|case:ceci:cela]</p>`;
+		const copy = md.merge(html, { val: 'ceci' });
+		assert.equal(copy.outerHTML, '<p>cela</p>');
+	});
+	it('should not match value and pass-through', () => {
+		const html = `<p>[val|case:ceci:cela]</p>`;
+		const copy = md.merge(html, { val: 'it' });
+		assert.equal(copy.outerHTML, '<p>it</p>');
+	});
+	it('should not match value and return null', () => {
+		const html = `<p>[val|case:ceci:cela:]</p>`;
+		const copy = md.merge(html, { val: 'it' });
+		assert.equal(copy.outerHTML, '<p></p>');
+	});
+});
+
 describe('name', () => {
 	const md = new Matchdom(DomPlugin);
 

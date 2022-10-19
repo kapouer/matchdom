@@ -7,6 +7,21 @@ export const filters = {
 		if (val != str) return val;
 		else return null;
 	},
+	case(x, val, ...list) {
+		const pos = list.findIndex((str, i) => {
+			return i % 2 == 0 && str == val;
+		});
+		const len = list.length;
+		if (pos < 0 || pos + 1 >= len) return val;
+		if (pos >= 0) {
+			if (pos + 1 == len) return null;
+			else return list[pos + 1];
+		} else if (len % 2 == 1 && list[len - 1] === "") {
+			return null;
+		} else {
+			return val;
+		}
+	},
 	has: ['array', (x, val, str) => {
 		if (val == null) return val;
 		if (val.includes(str)) return str;

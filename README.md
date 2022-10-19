@@ -370,6 +370,8 @@ These filters return the value if the condition is true, or null if the conditio
 - lt:num
 - gte:num
 - lte:num
+- case:key1:val1:key2:val2:...
+  returns matching value by key, or null if last key is empty, or val
 
 ### arithmetic filters
 
