@@ -1,6 +1,13 @@
 import assert from 'assert';
+import globalJsdom from 'global-jsdom';
 import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
 
+before(function () {
+	this.jsdom = globalJsdom();
+});
+after(function () {
+	this.jsdom();
+});
 
 describe('repeating', () => {
 	const md = new Matchdom().extend(DomPlugin, ArrayPlugin);

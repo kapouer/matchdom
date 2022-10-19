@@ -1,6 +1,13 @@
 import assert from 'assert';
+import globalJsdom from 'global-jsdom';
 import { Matchdom, ArrayPlugin, DomPlugin, OpsPlugin } from 'matchdom';
 
+before(function () {
+	this.jsdom = globalJsdom();
+});
+after(function () {
+	this.jsdom();
+});
 
 describe('scope path', () => {
 	const md = new Matchdom();

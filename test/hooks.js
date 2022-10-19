@@ -1,5 +1,13 @@
 import assert from 'assert';
+import globalJsdom from 'global-jsdom';
 import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
+
+before(function () {
+	this.jsdom = globalJsdom();
+});
+after(function () {
+	this.jsdom();
+});
 
 describe('hooks filter', () => {
 	it('should be called after this filter', () => {

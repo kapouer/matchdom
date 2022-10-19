@@ -1,9 +1,17 @@
 import assert from 'assert';
+import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, OpsPlugin, TextPlugin,
 	ArrayPlugin, DomPlugin, DatePlugin,
 	JsonPlugin
 } from 'matchdom';
+
+before(function () {
+	this.jsdom = globalJsdom();
+});
+after(function () {
+	this.jsdom();
+});
 
 describe('value', () => {
 	it('should be undefined', () => {
