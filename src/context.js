@@ -8,7 +8,7 @@ export default class Context {
 			this.name = "ParamError";
 		}
 	};
-	cancel = false
+	cancel = false;
 
 	static parse(symbols, str) {
 		const { open, close } = symbols;
