@@ -1,4 +1,4 @@
-import assert from 'assert';
+import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
 
@@ -306,7 +306,7 @@ describe('repeating', () => {
 		</ul>`;
 		const copy = md.extend({
 			custom(ctx, item, cursor, frag, param) {
-				assert.strictEqual(param, "myparam");
+				assert.equal(param, "myparam");
 				cursor.before(frag);
 			}
 		}).merge(html, {

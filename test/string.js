@@ -1,4 +1,4 @@
-import assert from 'assert';
+import { strict as assert } from 'node:assert';
 import { Matchdom, DomPlugin, ArrayPlugin } from 'matchdom';
 
 const md = new Matchdom().extend(ArrayPlugin, DomPlugin);

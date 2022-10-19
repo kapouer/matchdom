@@ -1,4 +1,4 @@
-import assert from 'assert';
+import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, OpsPlugin, TextPlugin,
@@ -20,7 +20,7 @@ describe('value', () => {
 		const md = new Matchdom(DomPlugin, {
 			try(ctx, val) {
 				hasTried = true;
-				assert.strictEqual(val, undefined);
+				assert.equal(val, undefined);
 			}
 		});
 		const copy = md.merge(html, {});
@@ -53,7 +53,7 @@ describe('method filters', () => {
 
 	it('should return value when method fails on value', () => {
 		const copy = md.merge(`[toISOString:]`, new Date("invalid"));
-		assert.strictEqual(copy, null);
+		assert.equal(copy, null);
 	});
 });
 
@@ -107,8 +107,8 @@ describe('get is a filter', () => {
 				b1: "toast"
 			}
 		});
-		assert.deepStrictEqual(path, ['a', 'b1']);
-		assert.strictEqual(copy.outerHTML, '<p>toast</p>');
+		assert.deepEqual(path, ['a', 'b1']);
+		assert.equal(copy.outerHTML, '<p>toast</p>');
 	});
 
 	it('should work with then', () => {
@@ -119,7 +119,7 @@ describe('get is a filter', () => {
 				b1: "toast"
 			}
 		});
-		assert.strictEqual(copy.outerHTML, '<p>toast</p>');
+		assert.equal(copy.outerHTML, '<p>toast</p>');
 	});
 	it('should work with else', () => {
 		const html = `<p>[a.b|else:get:a.b1]</p>`;
@@ -129,7 +129,7 @@ describe('get is a filter', () => {
 				b1: "toast"
 			}
 		});
-		assert.strictEqual(copy.outerHTML, '<p>toast</p>');
+		assert.equal(copy.outerHTML, '<p>toast</p>');
 	});
 
 	it('should be writable as shorthand syntax for filter parameter', () => {
@@ -140,7 +140,7 @@ describe('get is a filter', () => {
 				b1: "toast"
 			}
 		});
-		assert.strictEqual(copy.outerHTML, '<p>toast</p>');
+		assert.equal(copy.outerHTML, '<p>toast</p>');
 	});
 });
 
@@ -183,59 +183,59 @@ describe('types', () => {
 		md.extend({
 			filters: {
 				mycheck: ['int', (ctx, val) => {
-					assert.strictEqual(val, 10);
+					assert.equal(val, 10);
 					ok = true;
 					return val;
 				}]
 			}
 		}).merge('[val|mycheck:]', { val: "10" });
-		assert.strictEqual(ok, true);
+		assert.equal(ok, true);
 	});
 	it('should cast param to int', () => {
 		let ok = false;
 		md.extend({filters: {
 			mycheck: ['int', 'int', (ctx, val, cte) => {
-				assert.strictEqual(cte, 7);
+				assert.equal(cte, 7);
 				ok = true;
 				return val + cte;
 			}]
 		}}).merge('[val|mycheck:7]', { val: 10 });
-		assert.strictEqual(ok, true);
+		assert.equal(ok, true);
 	});
 	it('should cast param to boolean', () => {
 		let ok = false;
 		md.extend({filters: {
 			mycheck: ['int', 'bool', (ctx, val, cte) => {
-				assert.strictEqual(cte, true);
+				assert.equal(cte, true);
 				ok = true;
 				return val;
 			}]
 		}}).merge('[val|mycheck:7]', { val: 10 });
-		assert.strictEqual(ok, true);
+		assert.equal(ok, true);
 	});
 	it('should not check value when type is null', () => {
 		let ok = false;
 		md.extend({filters: {
 			mycheck: ['any', 'bool', (ctx, val, cte) => {
-				assert.strictEqual(val, 10);
-				assert.strictEqual(cte, false);
+				assert.equal(val, 10);
+				assert.equal(cte, false);
 				ok = true;
 				return val;
 			}]
 		}}).merge('[val|mycheck:false]', { val: 10 });
-		assert.strictEqual(ok, true);
+		assert.equal(ok, true);
 	});
 	it('should allow null value when type is null', () => {
 		let ok = false;
 		md.extend({ filters: {
 			mycheck: ['any?', 'bool', (ctx, val, cte) => {
-				assert.strictEqual(val, null);
-				assert.strictEqual(cte, false);
+				assert.equal(val, null);
+				assert.equal(cte, false);
 				ok = true;
 				return val;
 			}]
 		}}).merge('[val|mycheck:false]', { val: null });
-		assert.strictEqual(ok, true);
+		assert.equal(ok, true);
 	});
 
 	it('should allow any value when type is "any"', () => {
@@ -243,12 +243,12 @@ describe('types', () => {
 		md.extend({filters: {
 			mycheck: ['any', 'bool', (ctx, val, cte) => {
 				assert.ok(val instanceof Date);
-				assert.strictEqual(cte, true);
+				assert.equal(cte, true);
 				ok = true;
 				return val;
 			}]
 		}}).merge('[val|mycheck:1]', { val: new Date() });
-		assert.strictEqual(ok, true);
+		assert.equal(ok, true);
 	});
 	it('should require any value when type is "any"', () => {
 		let ok = false;
@@ -258,29 +258,29 @@ describe('types', () => {
 				return val;
 			}]
 		}}).merge('[val|mycheck:1]', { val: undefined });
-		assert.strictEqual(ok, false);
+		assert.equal(ok, false);
 	});
 	it('should get a default empty string value', () => {
 		let ok = false;
 		md.extend({filters: {
 			mycheck: ['any?', 'bool', (ctx, val, cte) => {
-				assert.strictEqual(val, null);
+				assert.equal(val, null);
 				ok = true;
 				return val;
 			}]
 		}}).merge('[val|mycheck:1]', { val: null });
-		assert.strictEqual(ok, true);
+		assert.equal(ok, true);
 	});
 	it('should get a default integer value', () => {
 		let ok = false;
 		md.extend({filters:{
 			mycheck: ['int?10', 'bool', (ctx, val, cte) => {
-				assert.strictEqual(val, 10);
+				assert.equal(val, 10);
 				ok = true;
 				return val;
 			}]
 		}}).merge('[val|mycheck:1]', { val: null });
-		assert.strictEqual(ok, true);
+		assert.equal(ok, true);
 	});
 });
 

@@ -1,4 +1,4 @@
-import assert from 'assert';
+import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
 
@@ -14,7 +14,7 @@ describe('hooks filter', () => {
 		const md = new Matchdom({
 			afterEach(ctx, val, filter) {
 				if (filter[0] == "join") {
-					assert.strictEqual(val, 'word1 word2');
+					assert.equal(val, 'word1 word2');
 					return ' it ' + val;
 				} else {
 					return val;
@@ -32,8 +32,8 @@ describe('hooks filter', () => {
 		const arr = ['word1', 'word2'];
 		const md = new Matchdom({
 			beforeAll(ctx, val, filters) {
-				assert.deepStrictEqual(val, { arr });
-				assert.strictEqual(filters[0][0], "arr2");
+				assert.deepEqual(val, { arr });
+				assert.equal(filters[0][0], "arr2");
 				ctx.data.arr2 = arr;
 				return val;
 			}
