@@ -19,7 +19,7 @@ export const filters = {
 			case "isodate":
 				return date.toISOString().split('T').shift();
 			case "iso":
-				return date.toISOString();
+				return date.toISOString().replace(/\.\d{3}/, '');
 			case "time":
 				return date.toLocaleTimeString(ctx.getLang());
 			case "date":

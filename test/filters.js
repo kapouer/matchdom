@@ -504,7 +504,7 @@ describe('sort filter', () => {
 			new Date("2021-02-26T14:12"),
 			new Date("invalid"),
 		]);
-		assert.equal(copy.outerHTML, '<p><br>2021-02-26T13:12:00.000Z<br>2021-02-28T14:12:00.000Z </p>');
+		assert.equal(copy.outerHTML, '<p><br>2021-02-26T13:12:00Z<br>2021-02-28T14:12:00Z </p>');
 	});
 });
 
