@@ -38,10 +38,10 @@ export default class Place {
 		this.index = 0;
 	}
 
-	parse(str) {
+	parse(range) {
 		const {
 			groups = {}
-		} = /(?<before>\d*\+)?(?<ancestor>[^+]+)(?<after>\+\d*)?/.exec(str) || {};
+		} = /(?<before>\d*\+)?(?<ancestor>[^+]+)(?<after>\+\d*)?/.exec(range) || {};
 		if (groups.before) {
 			groups.before = Number.parseInt((groups.before.replace('+', '') || 1)) || 0;
 		}
@@ -61,20 +61,20 @@ export default class Place {
 		Object.assign(this, groups);
 	}
 
-	restrict(str) {
-		if (!str) {
+	restrict(to) {
+		if (!to) {
 			this.target = null;
-		} else if (str == "*") {
+		} else if (to == "*") {
 			this.target = Place.NODE;
 			delete this.attr;
-		} else if (str == "-") {
+		} else if (to == "-") {
 			this.target = Place.CONT;
 			delete this.attr;
-		} else if (/\w+/.test(str)) {
+		} else if (/\w+/.test(to)) {
 			this.target = Place.ATTR;
-			this.attr = str;
+			this.attr = to;
 		} else {
-			console.warn(`Invalid 'to:${str}'`);
+			console.warn(`Invalid 'to:${to}'`);
 		}
 	}
 
@@ -180,25 +180,23 @@ export default class Place {
 			node.appendChild(this.text);
 		}
 
-		const list = Array.isArray(hits) ? hits : [hits];
-
 		const otherAtt = attr != from.attr || node != from.node;
 		if (from.attr && otherAtt) clearAttr(from.node, from.attr);
 
 		if (target == Place.TAG) {
 			const is = node.getAttribute('is');
 			this.replacement = [
-				doc.importNode(doc.createElement(list.join(''), is ? { is } : null), true),
+				doc.importNode(doc.createElement(hits.join(''), is ? { is } : null), true),
 				node
 			];
 		} else if (target == Place.ATTR) {
 			if (from.target == Place.TEXT) {
 				from.text.nodeValue = from.hits.join('');
 			}
-			const str = list.join('');
+			const str = hits.join('');
 			const tstr = str.trim();
 			const attrList = node[attr + 'List'];
-			if (!hits || tstr.length == 0) {
+			if (tstr.length == 0) {
 				clearAttr(node, attr);
 			} else if (typeof node[attr] == "boolean") {
 				node.setAttribute(attr, "");
@@ -214,11 +212,11 @@ export default class Place {
 			this.removeSiblings();
 			const cursor = target == Place.NODE ? node : this.text;
 			const parent = cursor.parentNode;
-			for (let i = 0; i < list.length; i++) {
-				let item = list[i];
-				if (cursor.nodeName && cursor.nodeType > 0 && item == null) continue;
+			for (let i = 0; i < hits.length; i++) {
+				let item = hits[i];
+				if (cursor.nodeType > 0 && item == null) continue;
 				if (!item || !item.nodeType) {
-					if (i == list.length - 1 && cursor.nodeType == 3) {
+					if (i == hits.length - 1 && cursor.nodeType == 3) {
 						// reuse current text node for the last hit
 						cursor.nodeValue = item;
 						item = cursor;
