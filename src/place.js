@@ -4,8 +4,9 @@ export default class Place {
 	static CONT = 2;
 	static ATTR = 3;
 	static TAG = 4;
+	index = 0;
+
 	constructor(root, node, name) {
-		this.index = 0;
 		this.root = root;
 		if (node && node.nodeType == 3) {
 			this.target = Place.TEXT;

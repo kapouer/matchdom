@@ -8,7 +8,6 @@ export default class Context {
 			this.name = "ParamError";
 		}
 	};
-	cancel = false;
 
 	static parse(symbols, str) {
 		const { open, close } = symbols;
@@ -48,11 +47,14 @@ export default class Context {
 		return pos;
 	}
 
+	cancel = false;
+	level = 0;
+	raw;
+
 	constructor(md, data, scope) {
 		this.data = data;
 		this.scope = Object.assign({}, scope);
 		this.md = md;
-		this.level = 0;
 	}
 
 	setup(hits, root, node, name) {

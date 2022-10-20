@@ -1,4 +1,7 @@
 export default class Expression {
+	initial;
+	filters;
+
 	constructor(symbols) {
 		this.filter = 0;
 		this.path = [];
@@ -23,9 +26,7 @@ export default class Expression {
 	}
 	clone() {
 		const expr = new Expression(this.symbols);
-		expr.filter = 0;
 		expr.filters = this.filters.slice(this.filter);
-		expr.path = [];
 		expr.initial = this.initial;
 		return expr;
 	}
