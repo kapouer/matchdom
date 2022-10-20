@@ -169,54 +169,57 @@ const md = new Matchdom({
 
 ## Internals
 
-### context
+### filter
 
-- raw: the current value before being casted as a filter parameter
-- data: the data object available to expressions
-- path: the current path used to get current value from data
-
-- src: initial place of expression (should not be changed by a filter)
-- dest: target place of expression
- if dest.node is different than src.node, src.node is removed
- likewise for dest.attr and src.attr.
-
-- expr: expression instance `this.get(this.data, this.path) == val`
-- cancel: boolean, cancels merging of expression
-
-And methods:
-
-- write(str): updates node or attr value
-- read(): returns node or attr value
-
-### place
-
-A place is an object with these properties related to where the expression sits:
-
-- node: node or text node
-- attr: attribute name (boolean attributes and DOMTokenList are supported)
-- tag: boolean wether the expression is in a tag name
-  Since tag names are case-insensitive, the expression must work in lowercase,
- some filters cannot be used in tag names - it's usually avoidable.
-- root: the ancestor node passed to matchdom
-- hits: list of strings to process
-- index: the current index hits
+An array of strings
 
 ### expression
 
 A parsed expression has properties:
 
-- path (array of strings)
-- filters (array of {name, fn, params} objects where params is an array)
-- filter (index of current filter being applied in filters)
+- path: array of strings
+- filters: array of filters
+- filter: index of current filter in filters
 
 and methods:
 
-- clone() return a new expression with the not-yet processed filters
-- toString() the original expression with open and closing brackets
-- get(data, path, save) get current value and update this.path is save is true
-- append(name, params=[]) a filter to the list
-- prepend(name, params=[]) a filter at current index
-- drop() stop processing following filters, return true if there was any
+- parse(str): parses str and populates this expression
+- clone(): return a new expression with the not-yet processed filters
+- toString(): the original expression with open and closing brackets
+- get(data, path): access data from path
+- get(data, path, root): access data or root data from path, save path
+- append(filter): a filter to the list
+- prepend(filter): a filter at current index
+- drop(): stop processing following filters, return true if there was any
+
+### context
+
+- raw: the current value before coercion to a filter parameter
+- data: the data object available to expressions
+- scope: shallow clone of the scope object passed to matchdom
+- src: initial place of expression, should be immutable
+- dest: target place of expression
+- expr: current expression being merged
+- cancel: boolean, stops and cancels merge
+
+Methods are not supposed to be called by other filters.
+
+### place
+
+A `place` holds:
+
+- root: ancestor node
+- target: one of Place.TEXT, NODE, CONT, ATTR, TAG
+- node: containing node
+- attr: attribute name if any
+- text: text node, if any
+
+During merge, it also has:
+
+- hits: list of strings to write
+- index: current index in hits
+
+And various methods to parse a range, extend to an ancestor, restrict to a node or attribute, write strings to the place, or read the current strings in place.
 
 ## core plugin
 
@@ -460,6 +463,10 @@ Examples:
 - `at:div.card` selects `closest('div.card')`.
 - `at:+div.card+` selects also the previous and next siblings of the ancestor.
 - `at:+**+2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them #FIXME
+
+#TODO:
+- `at:*+.column` selects closest parent then all siblings on the right until they don't match `.column`
+
 
 ### filter prune:range
 
