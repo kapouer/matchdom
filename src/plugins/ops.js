@@ -12,7 +12,6 @@ export const filters = {
 			return i % 2 == 0 && str == val;
 		});
 		const len = list.length;
-		if (pos < 0 || pos + 1 >= len) return val;
 		if (pos >= 0) {
 			if (pos + 1 == len) return null;
 			else return list[pos + 1];
