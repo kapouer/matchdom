@@ -1,9 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { Matchdom, DomPlugin, ArrayPlugin } from 'matchdom';
 
-const md = new Matchdom().extend(ArrayPlugin, DomPlugin);
-
 describe('string', () => {
+	const md = new Matchdom().extend(DomPlugin, ArrayPlugin);
+
 	it('should be merged and returned', () => {
 		const copy = md.merge('no? [test]!', {
 			test: "yes"
@@ -43,7 +43,7 @@ describe('string', () => {
 	});
 
 	it('should repeat array', () => {
-		const copy = md.extend(ArrayPlugin).merge("--[arr|repeat:|value]--", {
+		const copy = md.merge("--[arr|repeat:|value]--", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
 		assert.equal(copy, "--one----two--");
