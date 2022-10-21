@@ -68,6 +68,11 @@ export class Matchdom {
 			list = [list];
 		}
 
+		const trackHits = {
+			count: 0,
+			last: undefined
+		};
+
 		list = Array.prototype.map.call(list, root => {
 			const replacements = [];
 			if (root.documentElement) {
@@ -93,9 +98,11 @@ export class Matchdom {
 				// likewise for booleans
 				if (filteredHits.length > 0) {
 					let result;
-					if (allNulls) result = null;
-					else if (allBools) result = allTrue;
+					if (allNulls) result = [null];
+					else if (allBools) result = [allTrue];
 					else result = filteredHits;
+					trackHits.count += filteredHits.length;
+					trackHits.last = result[result.length - 1];
 					dest.write(result, ctx.src);
 				}
 				if (dest.root) root = dest.root;
@@ -120,7 +127,8 @@ export class Matchdom {
 		});
 		if (wasText) {
 			const item = list[0];
-			if (item.childNodes.length == 1) return item.firstChild.nodeValue;
+			if (trackHits.count == 1) return trackHits.last;
+			else if (item.childNodes.length == 1) return item.firstChild.nodeValue;
 			else return Array.from(item.childNodes).map(x => x.nodeValue).join('');
 		} else if (wasArray) {
 			return list;
