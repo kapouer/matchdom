@@ -196,7 +196,7 @@ export default class Place {
 			const str = hits.join('');
 			const tstr = str.trim();
 			const attrList = node[attr + 'List'];
-			if (tstr.length == 0) {
+			if (hits.length == 1 && !hits[0] || tstr.length == 0) {
 				clearAttr(node, attr);
 			} else if (typeof node[attr] == "boolean") {
 				node.setAttribute(attr, "");
