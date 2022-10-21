@@ -41,6 +41,18 @@ describe('value', () => {
 		assert.equal(hasTried, false);
 		assert.equal(copy.outerHTML, '<a>Size[obj.size|try:]</a>');
 	});
+
+	it('should be returned if it is the only hit and deal properly with undef/null/boolean', () => {
+		const md = new Matchdom();
+		assert.equal(md.merge(`[val]`, { val: 12 }), 12);
+		assert.equal(md.merge(`[val]`, { val: true }), true);
+		assert.equal(md.merge(`[val]`, { val: false }), false);
+		assert.equal(md.merge(`[val]`, { val: null }), null);
+		assert.equal(md.merge(`toto`, {}), 'toto');
+		assert.equal(md.merge(`[val]`, {}), null);
+		assert.equal(md.merge(`[obj.val]`, {}), '[obj.val]');
+		assert.equal(md.merge(`[obj.val]`, { obj: {} }), null);
+	});
 });
 
 describe('method filters', () => {
