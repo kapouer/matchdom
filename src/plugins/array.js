@@ -19,13 +19,13 @@ export const formats = {
 
 export const filters = {
 	filter: ['array', 'string', 'string?eq', 'path?', (ctx, list, str, op, path) => {
-		return list.filter((item) => {
+		return list.filter(item => {
 			const data = ctx.expr.get(item, path);
 			return ctx.run(str, [op, data]);
 		});
 	}],
 	map: ['array', 'string', '?*', (ctx, list, ...filter) => {
-		return list.map((item) => {
+		return list.map(item => {
 			return ctx.run(item, filter);
 		});
 	}],

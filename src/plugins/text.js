@@ -7,8 +7,8 @@ export const filters = {
 		} else if (how == "low") {
 			return val.toLowerCase();
 		} else if (how == "caps") {
-			return val.split(/\.\s+/).map((s) => {
-				return s.replace(/^\p{Letter}/u, (c) => c.toUpperCase());
+			return val.split(/\.\s+/).map(s => {
+				return s.replace(/^\p{Letter}/u, c => c.toUpperCase());
 			}).join('. ');
 		}
 	}],

@@ -13,7 +13,7 @@ export function parseUrl(str = '') {
 }
 
 export function serializeUrl(obj = {}) {
-	const str = obj.query && Object.keys(obj.query).map((key) => {
+	const str = obj.query && Object.keys(obj.query).map(key => {
 		return encodeURIComponent(key) + '=' + encodeURIComponent(obj.query[key]);
 	}).join('&');
 	return (obj.pathname || '') + (str && '?' + str || '');

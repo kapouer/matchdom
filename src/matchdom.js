@@ -68,7 +68,7 @@ export class Matchdom {
 			list = [list];
 		}
 
-		list = Array.prototype.map.call(list, (root) => {
+		list = Array.prototype.map.call(list, root => {
 			const replacements = [];
 			if (root.documentElement) {
 				root = root.documentElement;
@@ -82,7 +82,7 @@ export class Matchdom {
 				let allNulls = true;
 				let allTrue = true;
 				let allBools = true;
-				const filteredHits = hits.filter((val) => {
+				const filteredHits = hits.filter(val => {
 					if (val !== null) allNulls = false;
 					if (val === true); // do nothing
 					else if (val === false) allTrue = false;
