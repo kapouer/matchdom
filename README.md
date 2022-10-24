@@ -122,10 +122,10 @@ Formats are not types - they are only used by "as:" filter.
 ### simple types (hard-coded)
 
 - undefined, none: converts null-ish to undefined, leave other values intact
-- null: converts falsey to null, leave other values intact
+- null: converts false-ish to null, leave other values intact
 - integer, int: try to parseInt, return null if NaN
 - string, str: toString
-- boolean, bool: "true", "1" and truey to true, "false", "0", and falsey to false
+- boolean, bool: "true", "1" and true-ish to true, "false", "0", and false-ish to false
 - float, num, numeric: try to parseFloat, return null if NaN
 
 ### complex types (from plugins)
@@ -281,7 +281,7 @@ Checks value is of that type, and returns a boolean.
 Coerces value to type, or converts string to format.
 
 - as:null, as:undefined
-  returns null, or undefined, if value is falsey - otherwise returns value
+  returns null, or undefined, if value is false-ish - otherwise returns value
 - as:date, as:number
   return value as date, or number, or null if it cannot be converted
 - as:html
@@ -473,9 +473,9 @@ Examples:
 Like "at", without actually writing the value,
 this is a shortcut for `at:${range}|const:`.
 
-Useful to test a value and remove selected range if falsey.
+Useful to test a value and remove selected range if false-ish.
 
-To remove selected range but actually merge the value if truey,
+To remove selected range but actually merge the value if true-ish,
 use instead `else:at:*`.
 
 ### filter to:target
@@ -492,7 +492,7 @@ Examples:
 
 - `to:src` fills the src attribute of the current node
 - `at:div|to:class` fills the class attribute of the closest `div`
-- `val|then:to:class|then:at:p|else:prune:p` fills the class attribute of closest `p` if val is not falsey, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
+- `val|then:to:class|then:at:p|else:prune:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
 
 ### filter repeat:alias:placer:(...)
 
