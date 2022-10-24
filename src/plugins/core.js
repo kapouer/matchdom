@@ -28,14 +28,16 @@ export const types = {
 
 export const formats = {
 	html(ctx, val) {
-		if (typeof ctx == "string") return HTML(ctx);
-		if (val == null) return val;
-		return ctx.src.doc.importNode(HTML(val), true);
+		if (typeof val != "string") return val;
+		val = HTML(val);
+		if (ctx) return ctx.src.doc.importNode(val, true);
+		else return val;
 	},
 	xml(ctx, val) {
-		if (typeof ctx == "string") return XML(ctx);
-		if (val == null) return val;
-		return ctx.src.doc.importNode(XML(val), true);
+		if (typeof val != "string") return val;
+		val = XML(val);
+		if (ctx) return ctx.src.doc.importNode(val, true);
+		else return val;
 	}
 };
 

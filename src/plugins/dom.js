@@ -109,14 +109,14 @@ export const filters = {
 		// dropped expr so no return value
 		return null;
 	}],
-	query(ctx, frag, sel) {
+	query: ['html', 'string', (ctx, frag, sel) => {
 		return frag.querySelector(sel);
-	},
-	queryAll(ctx, frag, sel) {
+	}],
+	queryAll: ['html', 'string', (ctx, frag, sel) => {
 		const nf = frag.ownerDocument.createDocumentFragment();
 		for (const node of frag.querySelectorAll(sel)) {
 			nf.appendChild(node);
 		}
 		return nf;
-	}
+	}]
 };

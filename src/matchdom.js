@@ -51,9 +51,9 @@ export class Matchdom {
 			if (typeof document !== 'undefined') {
 				if (list.startsWith('<') && list.endsWith('>')) {
 					const fn = this.formats[list.startsWith('<?xml') ? 'xml' : 'html'];
-					list = [fn(list)];
+					list = [fn(null, list)];
 				} else {
-					const node = this.formats.html("-");
+					const node = this.formats.html(null, "-");
 					node.nodeValue = list;
 					wasText = true;
 					list = [node.parentNode];

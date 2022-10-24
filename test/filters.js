@@ -335,8 +335,17 @@ describe('filters', () => {
 
 	describe('html type', () => {
 		const md = new Matchdom().extend(DomPlugin);
+
+		it('should select first node', () => {
+			const html = `<p>[str|query:img+span]</p>`;
+			const copy = md.merge(html, {
+				str: '<img src="toto"><span>test</span><i>test</i><span>toto</span>'
+			});
+			assert.equal(copy.outerHTML, '<p><span>test</span></p>');
+		});
+
 		it('should select nodes', () => {
-			const html = `<p>[str|as:html|queryAll:span]</p>`;
+			const html = `<p>[str|queryAll:span]</p>`;
 			const copy = md.merge(html, {
 				str: '<img src="toto"><span>test</span><i>test</i><span>toto</span>'
 			});
