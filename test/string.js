@@ -25,6 +25,12 @@ describe('string', () => {
 		assert.equal(copy, null);
 	});
 
+
+	it('should return value when method fails on value', () => {
+		const copy = md.merge(`[toISOString:]`, new Date("invalid"));
+		assert.equal(copy, null);
+	});
+
 	it('should not change when nested variable has no parent set', () => {
 		const copy = md.merge('notfound: [test.a]', {});
 		assert.equal(copy, 'notfound: [test.a]');
@@ -57,21 +63,21 @@ describe('string', () => {
 	});
 
 	it('should repeat object keys', () => {
-		const copy = md.merge("[obj|as:entries|repeat:|key]=[value]&", {
+		const copy = md.merge("[obj|as:entries|repeat:item|.key]=[item.value]&", {
 			obj: {a: 1, b: 2}
 		});
 		assert.equal(copy, "a=1&b=2&");
 	});
 
 	it('should repeat array using whole string', () => {
-		const copy = md.merge("--[arr|repeat:|value]--", {
+		const copy = md.merge("--[arr|at:-|repeat:|value]--", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
 		assert.equal(copy, "--one----two--");
 	});
 
 	it('should repeat array inside string', () => {
-		const copy = md.merge("-X[arr|at:-|repeat:|value]YY-", {
+		const copy = md.merge("-X[arr|at:|repeat:|value]YY-", {
 			arr: [{value: 'one'}, {value: 'two'}]
 		});
 		assert.equal(copy, "-XonetwoYY-");

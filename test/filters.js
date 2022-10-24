@@ -484,7 +484,7 @@ describe('sort filter', () => {
 		assert.equal(copy.outerHTML, '<p> word1 word2 word3</p>');
 	});
 	it('should sort array by item and nulls first', () => {
-		const html = `<p>[arr|sort:val:true|at:-|repeat:|key] </p>`;
+		const html = `<p>[arr|sort:val:true|at:-+|repeat:|key] </p>`;
 		const copy = md.extend(DomPlugin).merge(html, {
 			arr: [
 				{ key: 'a', val: 'word2' },
@@ -497,7 +497,7 @@ describe('sort filter', () => {
 	});
 
 	it('should sort array by numeric item and nulls last', () => {
-		const html = `<p>[arr|sort:val:false|at:-|repeat:|key] </p>`;
+		const html = `<p>[arr|sort:val:false|at:-+|repeat:|key] </p>`;
 		const copy = md.extend(DomPlugin).merge(html, {
 			arr: [
 				{ key: 'a', val: 2 },
@@ -604,17 +604,17 @@ describe('not', () => {
 describe('case', () => {
 	const md = new Matchdom(DomPlugin, OpsPlugin);
 
-	it('should match value', () => {
+	it('should change value', () => {
 		const html = `<p>[val|case:ceci:cela]</p>`;
 		const copy = md.merge(html, { val: 'ceci' });
 		assert.equal(copy.outerHTML, '<p>cela</p>');
 	});
-	it('should not match value and pass-through', () => {
+	it('should not change value and pass-through', () => {
 		const html = `<p>[val|case:ceci:cela]</p>`;
 		const copy = md.merge(html, { val: 'it' });
 		assert.equal(copy.outerHTML, '<p>it</p>');
 	});
-	it('should not match value and return null', () => {
+	it('should not change value and return null', () => {
 		const html = `<p>[val|case:ceci:cela:]</p>`;
 		const copy = md.merge(html, { val: 'it' });
 		assert.equal(copy.outerHTML, '<p></p>');

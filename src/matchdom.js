@@ -126,10 +126,15 @@ export class Matchdom {
 			return root;
 		});
 		if (wasText) {
-			const item = list[0];
-			if (trackHits.count == 1) return trackHits.last;
-			else if (item.childNodes.length == 1) return item.firstChild.nodeValue;
-			else return Array.from(item.childNodes).map(x => x.nodeValue).join('');
+			const items = Array.from(list[0].childNodes);
+			if (items.length <= 1 && trackHits.count == 1) {
+				return trackHits.last;
+			}
+			if (items.every(node => node.nodeType == 3)) {
+				return items.map(node => node.nodeValue).join('');
+			} else {
+				return list[0];
+			}
 		} else if (wasArray) {
 			return list;
 		} else {

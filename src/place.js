@@ -87,10 +87,12 @@ export default class Place {
 		}
 		let parent = this.node;
 		if (ancestor == "-") {
-			if (from == Place.ATTR || from == Place.TAG) this.target = from;
-			else this.target = Place.CONT;
+			if (from == Place.ATTR || from == Place.TAG) {
+				this.target = from;
+			} else {
+				this.target = Place.CONT;
+			}
 		} else if (ancestor) {
-			this.target = Place.NODE;
 			if (/^\*+$/.test(ancestor)) {
 				let ups = ancestor.length - 1;
 				while (ups-- > 0) {
@@ -99,6 +101,8 @@ export default class Place {
 			} else {
 				parent = parent.closest(ancestor);
 			}
+			if (parent.parentNode) this.target = Place.NODE;
+			else this.target = Place.CONT;
 			this.node = parent;
 		}
 	}
@@ -145,7 +149,9 @@ export default class Place {
 			after = Infinity;
 		}
 		node.parentNode.replaceChild(cursor, node);
-		if (this.root == node) this.root = cursor.parentNode;
+		if (this.root == node) {
+			this.root = cursor.parentNode;
+		}
 		let cur;
 		while (before-- && (cur = cursor.previousElementSibling)) {
 			frag.insertBefore(cur, null);
@@ -229,7 +235,7 @@ export default class Place {
 					parent.insertBefore(doc.importNode(item, true), cursor);
 				}
 			}
-			if (!mutates) {
+			if (!mutates && parent) {
 				parent.removeChild(cursor);
 				if (this.root == cursor) {
 					this.root = parent.childNodes.length == 1 ? parent.firstChild : parent;
