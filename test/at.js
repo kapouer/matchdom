@@ -43,20 +43,20 @@ describe('at filter', () => {
 		assert.equal(copy.outerHTML, '<div><br>me<hr></div>');
 	});
 
-	it('should replace current expression and previous and next characters', () => {
-		const html = `<div>ABC[test|at::1:1]XYZ</div>`;
+	it('should replace current expression and previous and next text nodes', () => {
+		const html = `<div><br>ABC[test|at::1:1]XYZ<hr></div>`;
 		const copy = md.merge(html, {
 			test: 'me'
 		});
-		assert.equal(copy.outerHTML, '<div>ABmeYZ</div>');
+		assert.equal(copy.outerHTML, '<div><br>me<hr></div>');
 	});
 
-	it('should replace current expression and next 2 character', () => {
-		const html = `<div>ABC[test|at::0:2]XYZ</div>`;
+	it('should replace current expression and next text node', () => {
+		const html = `<div>ABC[test|at::0:1]XYZ</div>`;
 		const copy = md.merge(html, {
 			test: 'me'
 		});
-		assert.equal(copy.outerHTML, '<div>ABCmeZ</div>');
+		assert.equal(copy.outerHTML, '<div>ABCme</div>');
 	});
 
 	it('should remove closest tr', () => {

@@ -455,16 +455,16 @@ selects the expression only.
 - `*`: the nth selected parent (one wildcard goes up one parent)
 - a css selector: the closest selected parent
 
-And then by extending to previous or next siblings of the selected parent, using `before` and `after` optional parameters:
+And then by extending to previous or next siblings of the selected parent, using `before` and `after` parameters:
 
-- integer: counts the number of siblings to select (before or after). If the closest sibling is a text node, counts the number of characters in it instead (this cannot work with `-` selector).
+- integer: counts the number of siblings to select (before or after). Empty text nodes are ignored.
 - selector: select siblings until they stop matching that selector.
 
 Using at, prune, then, else, to filters, one can control how a value affects selection.
 
 Examples:
 
-- `at::2:1` selects 2 characters before and one character after the expression
+- `at::2:1` selects 2 nodes before and one node after the expression
 - `at:div.card` selects `closest('div.card')`.
 - `at:div.card:1:1` selects also the previous and next siblings of the ancestor.
 - `at:**:1:2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them.
