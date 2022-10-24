@@ -39,20 +39,23 @@ export const formats = {
 };
 
 export const filters = {
-	at(ctx, val, range) {
+	at: ['?', 'str?', 'str?', 'str?', (ctx, val, ancestor, before, after) => {
 		const { dest } = ctx;
-		dest.parse(range);
-		if (dest.ancestor) dest.reduceHit();
+		dest.ancestor = ancestor;
+		dest.before = before;
+		dest.after = after;
+		if (ancestor) dest.reduceHit();
 		dest.extend(ctx.src.target);
 		return val;
-	},
-	prune(ctx, val, range) {
+	}],
+	prune: ['?', 'str?', 'str?', 'str?', (ctx, val, ...params) => {
 		if (!val) {
-			filters.at(ctx, val, range);
+			params.unshift('at');
+			ctx.run(val, params);
 		}
 		return null;
-	},
-	to(ctx, val, to) {
+	}],
+	to: ['?', 'str?', (ctx, val, to) => {
 		if (!to) {
 			return val;
 		}
@@ -64,9 +67,12 @@ export const filters = {
 		}
 		dest.restrict(to);
 		return val;
-	},
+	}],
 	repeat: ['array?', 'string?', 'filter?', '?*', (ctx, list, alias, placer, ...params) => {
 		const { src, dest } = ctx;
+		if (dest.ancestor == null) {
+			ctx.run(list, ['at', '*']);
+		}
 
 		const cur = src.read();
 		if (cur != null) {
@@ -77,10 +83,6 @@ export const filters = {
 		}
 		ctx.expr.drop();
 
-		if (!dest.changed) {
-			dest.parse("*");
-			dest.extend();
-		}
 		const [fragment, cursor] = dest.extract();
 		const parent = cursor.parentNode;
 

@@ -79,7 +79,7 @@ describe('repeat filter', () => {
 
 	it('should merge and insert template content using a custom filter', () => {
 		const html = `<div>
-			<template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item|.title]</h1><p>[item.text]</p></template>
+			<template data-mode="[template:insert]"><h1>[arr|at:*::1|repeat:item|.title]</h1><p>[item.text]</p></template>
 		</div>`;
 		const copy = md.extend({filters: {
 			template(ctx, data, mode) {
@@ -91,13 +91,13 @@ describe('repeat filter', () => {
 			arr: [{ title: 't1', text: 'one' }, { title: 't2', text: 'two' }]
 		});
 		assert.equal(copy.outerHTML, md.merge(`<div>
-			<h1>t1</h1><p>one</p><h1>t2</h1><p>two</p><template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item|.title]</h1><p>[item.text]</p></template>
+			<h1>t1</h1><p>one</p><h1>t2</h1><p>two</p><template data-mode="[template:insert]"><h1>[arr|at:*::1|repeat:item|.title]</h1><p>[item.text]</p></template>
 		</div>`).outerHTML);
 	});
 
 	it('should merge and insert template content using custom filter and placer', () => {
 		const html = `<div>
-			<template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item:placer|.title]</h1><p>[item.text]</p></template>
+			<template data-mode="[template:insert]"><h1>[arr|at:*::1|repeat:item:placer|.title]</h1><p>[item.text]</p></template>
 		</div>`;
 		const copy = md.extend({filters: {
 			template(ctx, data, mode) {
@@ -113,7 +113,7 @@ describe('repeat filter', () => {
 			arr: [{ title: 't1', text: 'one' }, { title: 't2', text: 'two' }]
 		}, );
 		assert.equal(copy.outerHTML, md.merge(`<div>
-			<h1>t2</h1><p>two</p><h1>t1</h1><p>one</p><template data-mode="[template:insert]"><h1>[arr|at:*+|repeat:item:placer|.title]</h1><p>[item.text]</p></template>
+			<h1>t2</h1><p>two</p><h1>t1</h1><p>one</p><template data-mode="[template:insert]"><h1>[arr|at:*::1|repeat:item:placer|.title]</h1><p>[item.text]</p></template>
 		</div>`).outerHTML);
 	});
 
@@ -189,7 +189,7 @@ describe('repeat filter', () => {
 	});
 
 	it('should repeat array over previous child and next child', () => {
-		const html = `<div><i>*</i><span>[arr|at:+span+|repeat:|value]</span><br></div>`;
+		const html = `<div><i>*</i><span>[arr|at:span:1:1|repeat:|value]</span><br></div>`;
 		const copy = md.merge(html, {
 			arr: [{ value: 'one' }, { value: 'two' }]
 		});
@@ -197,7 +197,7 @@ describe('repeat filter', () => {
 	});
 
 	it('should repeat array over previous child and next child with wildcard selector', () => {
-		const html = `<div><i>*</i><span>[arr|at:+*+|repeat:|value]</span><br></div>`;
+		const html = `<div><i>*</i><span>[arr|at:*:1:1|repeat:|value]</span><br></div>`;
 		const copy = md.merge(html, {
 			arr: [{ value: 'one' }, { value: 'two' }]
 		});
@@ -205,7 +205,7 @@ describe('repeat filter', () => {
 	});
 
 	it('should repeat array over previous child and next child with wildcard selector on a text node', () => {
-		const html = `<div><i>A</i>[arr|at:+-+|repeat:|value]<br></div>`;
+		const html = `<div><i>A</i>[arr|at:-:1:1|repeat:|value]<br></div>`;
 		const copy = md.merge(html, {
 			arr: [{ value: 'one' }, { value: 'two' }]
 		});
@@ -213,7 +213,7 @@ describe('repeat filter', () => {
 	});
 
 	it('should repeat array over previous child and next child and not fail', () => {
-		const html = `<div><i>*</i><span>[arr|at:+span+2|repeat:|value]</span><br></div>`;
+		const html = `<div><i>*</i><span>[arr|at:span:1:2|repeat:|value]</span><br></div>`;
 		const copy = md.merge(html, {
 			arr: [{ value: 'one' }, { value: 'two' }]
 		});

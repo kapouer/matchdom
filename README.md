@@ -219,7 +219,7 @@ During merge, it also has:
 - hits: list of strings to write
 - index: current index in hits
 
-And various methods to parse a range, extend to an ancestor, restrict to a node or attribute, write strings to the place, or read the current strings in place.
+And various methods to extend to an ancestor, restrict to a node or attribute, write strings to the place, or read the current strings in place.
 
 ## core plugin
 
@@ -442,33 +442,35 @@ Parses string as html or xml.
 
 Fuse source and destination places as if they were url components.
 
-### at:range
+### at:selector:before:after
 
 By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
 
-This filter allows one to extend the current selection with:
+This filter extends the selected range, first by changing the selected parent:
 
-- empty range: default behavior replaces the expression itself
+- ``: empty string, default behavior, does not extend the selected parent,
+selects the expression only.
 - `-`: selects the whole text node or attribute surrounding the expression
-- selector: the closest selected parent
 - `*`: the nth selected parent (one wildcard goes up one parent)
-- B+selector+A: selects B siblings before and A siblings after (B and A integers).
-  When the integer is 1, it is optional: +parent selects one sibling before.
+- a css selector: the closest selected parent
+
+And then by extending to previous or next siblings of the selected parent, using `before` and `after` optional parameters:
+
+- integer: counts the number of siblings to select (before or after). If the closest sibling is a text node, counts the number of characters in it instead (this cannot work with `-` selector).
+- selector: select siblings until they stop matching that selector.
 
 Using at, prune, then, else, to filters, one can control how a value affects selection.
 
 Examples:
 
+- `at::2:1` selects 2 characters before and one character after the expression
 - `at:div.card` selects `closest('div.card')`.
-- `at:+div.card+` selects also the previous and next siblings of the ancestor.
-- `at:+**+2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them #FIXME
+- `at:div.card:1:1` selects also the previous and next siblings of the ancestor.
+- `at:**:1:2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them.
+- `at:*::.column` selects parent node and all next siblings until they stop matching `.column`.
 
-#TODO:
-- `at:*+.column` selects closest parent then all siblings on the right until they don't match `.column`
-
-
-### filter prune:range
+### filter prune:range:before:after
 
 Like "at", without actually writing the value,
 this is a shortcut for `at:${range}|const:`.
@@ -500,10 +502,7 @@ Expect the value to be iterable (array, collection, etc...).
 
 Repeats selected range for each item in the value.
 
-The selected range is:
-
-- set by `at:range` filter if called before repeat
-- or defaults to `at:*` (the most common case).
+The selected range must be set using `at` filter; if not, the selected range will default to `at:*`.
 
 The keys in each item become available in the scope of each repeated range.
 

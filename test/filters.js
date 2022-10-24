@@ -486,7 +486,7 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p> word1 word2 word3</p>');
 		});
 		it('should sort array by item and nulls first', () => {
-			const html = `<p>[arr|sort:val:true|at:-+|repeat:|key] </p>`;
+			const html = `<p>[arr|sort:val:true|at:-:0:1|repeat:|key] </p>`;
 			const copy = md.extend(DomPlugin).merge(html, {
 				arr: [
 					{ key: 'a', val: 'word2' },
@@ -499,7 +499,7 @@ describe('filters', () => {
 		});
 
 		it('should sort array by numeric item and nulls last', () => {
-			const html = `<p>[arr|sort:val:false|at:-+|repeat:|key] </p>`;
+			const html = `<p>[arr|sort:val:false|at:-:0:1|repeat:|key] </p>`;
 			const copy = md.extend(DomPlugin).merge(html, {
 				arr: [
 					{ key: 'a', val: 2 },

@@ -72,7 +72,7 @@ describe('integration', () => {
 	});
 
 	it('should remove current node and previous node', () => {
-		const html = `<div><br><span>test</span><span>[test|prune:+*]</span></div>`;
+		const html = `<div><br><span>test</span><span>[test|prune:*:1]</span></div>`;
 		const copy = md.merge(html, {
 			test: false
 		});

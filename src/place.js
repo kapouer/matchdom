@@ -38,19 +38,6 @@ export default class Place {
 		this.index = 0;
 	}
 
-	parse(range) {
-		const {
-			groups = {}
-		} = /(?<before>\d*\+)?(?<ancestor>[^+]+)(?<after>\+\d*)?/.exec(range) || {};
-		if (groups.before) {
-			groups.before = Number.parseInt((groups.before.replace('+', '') || 1)) || 0;
-		}
-		if (groups.after) {
-			groups.after = Number.parseInt((groups.after.replace('+', '') || 1)) || 0;
-		}
-		Object.assign(this, groups);
-	}
-
 	restrict(to) {
 		if (!to) {
 			this.target = null;
@@ -69,7 +56,6 @@ export default class Place {
 	}
 
 	extend(from) {
-		this.changed = true;
 		const { ancestor } = this;
 
 		if (ancestor == null) {

@@ -20,7 +20,7 @@ describe('at filter', () => {
 	});
 
 	it('should remove current node and previous and next element siblings', () => {
-		const html = `<div><br><br><span>[test|at:+span+]</span><hr><hr></div>`;
+		const html = `<div><br><br><span>[test|at:span:1:1]</span><hr><hr></div>`;
 		const copy = md.merge(html, {
 			// test: null
 		});
@@ -28,11 +28,35 @@ describe('at filter', () => {
 	});
 
 	it('should remove current node and previous and next element siblings with wildcard selector', () => {
-		const html = `<div><br><br><span>[test|at:+*+]</span><hr><hr></div>`;
+		const html = `<div><br><br><span>[test|at:*:1:1]</span><hr><hr></div>`;
 		const copy = md.merge(html, {
 			// test: null
 		});
 		assert.equal(copy.outerHTML, '<div><br><hr></div>');
+	});
+
+	it('should replace current expression and previous and next element siblings', () => {
+		const html = `<div><br><br>[test|at::1:1]<hr><hr></div>`;
+		const copy = md.merge(html, {
+			test: 'me'
+		});
+		assert.equal(copy.outerHTML, '<div><br>me<hr></div>');
+	});
+
+	it('should replace current expression and previous and next characters', () => {
+		const html = `<div>ABC[test|at::1:1]XYZ</div>`;
+		const copy = md.merge(html, {
+			test: 'me'
+		});
+		assert.equal(copy.outerHTML, '<div>ABmeYZ</div>');
+	});
+
+	it('should replace current expression and next 2 character', () => {
+		const html = `<div>ABC[test|at::0:2]XYZ</div>`;
+		const copy = md.merge(html, {
+			test: 'me'
+		});
+		assert.equal(copy.outerHTML, '<div>ABCmeZ</div>');
 	});
 
 	it('should remove closest tr', () => {
@@ -91,6 +115,14 @@ describe('at filter', () => {
 			test: "test"
 		});
 		assert.equal(copy.outerHTML, '<section>test</section>');
+	});
+
+	it('should set attributes on all selected range', () => {
+		const html = `<section><div>a</div><div><span class="[test|at:div:1:1|to:class]">test</span></div><div>b</div></section>`;
+		const copy = md.merge(html, {
+			test: "sel"
+		});
+		assert.equal(copy.outerHTML, '<section><div class="sel">a</div><div class="sel"><span>test</span></div><div class="sel">b</div></section>');
 	});
 
 	it('should remove current node from attribute', () => {
