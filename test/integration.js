@@ -2,14 +2,14 @@ import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import { Matchdom, DomPlugin, ArrayPlugin } from 'matchdom';
 
-before(function () {
-	this.jsdom = globalJsdom();
-});
-after(function () {
-	this.jsdom();
-});
-
 describe('integration', () => {
+	before(function () {
+		this.jsdom = globalJsdom();
+	});
+	after(function () {
+		this.jsdom();
+	});
+
 	const md = new Matchdom().extend(DomPlugin, ArrayPlugin);
 
 	it('should repeat array over parent of attribute with url', () => {

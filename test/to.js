@@ -2,14 +2,14 @@ import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import { Matchdom, DomPlugin } from 'matchdom';
 
-before(function () {
-	this.jsdom = globalJsdom();
-});
-after(function () {
-	this.jsdom();
-});
-
 describe('to filter', () => {
+	before(function () {
+		this.jsdom = globalJsdom();
+	});
+	after(function () {
+		this.jsdom();
+	});
+
 	const md = new Matchdom().extend(DomPlugin);
 
 	it('should be renamed and merged with simple value', () => {

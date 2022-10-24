@@ -2,14 +2,14 @@ import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
 
-before(function () {
-	this.jsdom = globalJsdom();
-});
-after(function () {
-	this.jsdom();
-});
+describe('repeat filter', () => {
+	before(function () {
+		this.jsdom = globalJsdom();
+	});
+	after(function () {
+		this.jsdom();
+	});
 
-describe('repeating', () => {
 	const md = new Matchdom().extend(DomPlugin, ArrayPlugin);
 
 	it('should repeat array of strings in string', () => {

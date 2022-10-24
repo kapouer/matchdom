@@ -2,14 +2,14 @@ import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import { Matchdom, DomPlugin } from 'matchdom';
 
-before(function () {
-	this.jsdom = globalJsdom();
-});
-after(function () {
-	this.jsdom();
-});
-
 describe('text nodes', () => {
+	before(function () {
+		this.jsdom = globalJsdom();
+	});
+	after(function () {
+		this.jsdom();
+	});
+
 	const md = new Matchdom(DomPlugin);
 
 	it('should be merged with simple value', () => {
@@ -99,12 +99,8 @@ describe('text nodes', () => {
 		<span>this</span>that
 		</div>`);
 	});
-});
 
-describe('filters on text nodes', () => {
-	const md = new Matchdom(DomPlugin);
-
-	it('should do nothing if missing', () => {
+	it('should do nothing if filter is missing', () => {
 		const html = `<span>[test|notfound:]</span>`;
 		const copy = md.merge(html, {
 			test: "yes"
@@ -128,7 +124,7 @@ describe('filters on text nodes', () => {
 		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
 
-	it('should receive parameter', () => {
+	it('with a filter should receive parameter', () => {
 		const html = `<span>[test|prefix:me]</span>`;
 		const copy = md.extend({filters:{
 			prefix: ['?', 'string', function(ctx, val, prefix) {
@@ -155,7 +151,7 @@ describe('filters on text nodes', () => {
 		assert.equal(copy.outerHTML, '<span>me and you</span>');
 	});
 
-	it('should be merge list of nodes', () => {
+	it('should merge list of nodes', () => {
 		const md = new Matchdom().extend(DomPlugin);
 		const node = md.merge(`<div>
 			<span>no? [test]!</span>

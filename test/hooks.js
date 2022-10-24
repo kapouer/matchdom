@@ -2,14 +2,14 @@ import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
 
-before(function () {
-	this.jsdom = globalJsdom();
-});
-after(function () {
-	this.jsdom();
-});
-
 describe('hooks filter', () => {
+	before(function () {
+		this.jsdom = globalJsdom();
+	});
+	after(function () {
+		this.jsdom();
+	});
+
 	it('should be called after this filter', () => {
 		const md = new Matchdom({
 			afterEach(ctx, val, filter) {

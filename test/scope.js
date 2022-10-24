@@ -2,17 +2,17 @@ import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import { Matchdom, ArrayPlugin, DomPlugin, OpsPlugin } from 'matchdom';
 
-before(function () {
-	this.jsdom = globalJsdom();
-});
-after(function () {
-	this.jsdom();
-});
+describe('scope', () => {
+	before(function () {
+		this.jsdom = globalJsdom();
+	});
+	after(function () {
+		this.jsdom();
+	});
 
-describe('scope path', () => {
 	const md = new Matchdom();
 
-	it('should be set when merging a simple field', () => {
+	it('path should be set when merging a simple field', () => {
 		const html = `[path.test.to|test:]`;
 		const copy = md.extend({
 			test: function (ctx, val) {
@@ -28,7 +28,7 @@ describe('scope path', () => {
 		});
 		assert.equal(copy, 'yes');
 	});
-	it('should be set when repeating an array', () => {
+	it('path should be set when repeating an array', () => {
 		const md = new Matchdom(ArrayPlugin, DomPlugin, {
 			scope: function (ctx, entry) {
 				assert.equal(ctx.expr.path[0], 'row');
@@ -47,12 +47,9 @@ describe('scope path', () => {
 			<span>one</span><span>two</span>
 		</div>`).outerHTML);
 	});
-});
 
-describe('scope variables', () => {
-	const md = new Matchdom().extend(OpsPlugin);
-
-	it('should be kept', () => {
+	it('variables should be kept', () => {
+		const md = new Matchdom().extend(OpsPlugin);
 		const html = `<div>
 			<span>[.$one|eq:[.$two]|and:yes]</span>
 		</div>`;
