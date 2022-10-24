@@ -99,20 +99,6 @@ export default class Place {
 		return node;
 	}
 
-	removeSiblings() {
-		const cursor = this.target == Place.TEXT ? this.text : this.node;
-		const parent = cursor.parentNode;
-		let cur;
-		while ((cur = this.checkSibling(cursor, false))) {
-			parent.removeChild(cur);
-		}
-		while ((cur = this.checkSibling(cursor, true))) {
-			parent.removeChild(cur);
-		}
-		this.before = 0;
-		this.after = 0;
-	}
-
 	extract() {
 		const { doc, target } = this;
 		let { node } = this;
@@ -178,8 +164,8 @@ export default class Place {
 			node.appendChild(this.text);
 		}
 
-		const otherAtt = attr != from.attr || node != from.node;
-		if (from.attr && otherAtt) clearAttr(from.node, from.attr);
+		const isOther = attr != from.attr || node != from.node;
+		if (from.attr && isOther) clearAttr(from.node, from.attr);
 
 		if (target == Place.TAG) {
 			const is = node.getAttribute('is');
@@ -193,23 +179,38 @@ export default class Place {
 			}
 			const str = hits.join('');
 			const tstr = str.trim();
-			const attrList = node[attr + 'List'];
-			if (hits.length == 1 && !hits[0] || tstr.length == 0) {
-				clearAttr(node, attr);
-			} else if (typeof node[attr] == "boolean") {
-				node.setAttribute(attr, "");
-			} else if (otherAtt && attrList) {
-				for (const name of tstr.replace(/\s+/g, ' ').trim().split(' ')) {
-					attrList.add(name);
-				}
-			} else {
-				node.setAttribute(attr, attrList ? tstr : str);
+			const clear = hits.length == 1 && !hits[0] || tstr.length == 0;
+			let cur = node;
+			while ((cur = this.checkSibling(cur, false))) {
+				if (cur.nodeType != 1) continue;
+				if (clear) clearAttr(cur, attr);
+				else writeAttr(cur, attr, isOther, str, tstr);
 			}
+			if (clear) clearAttr(node, attr);
+			else writeAttr(node, attr, isOther, str, tstr);
+			cur = node;
+			while ((cur = this.checkSibling(cur, true))) {
+				if (cur.nodeType != 1) continue;
+				if (clear) clearAttr(cur, attr);
+				else writeAttr(cur, attr, isOther, str, tstr);
+			}
+			this.before = 0;
+			this.after = 0;
 		} else { // TEXT, CONT, NODE
 			let mutates = false;
-			this.removeSiblings();
 			const cursor = target == Place.NODE ? node : this.text;
 			const parent = cursor.parentNode;
+
+			let cur;
+			while ((cur = this.checkSibling(cursor, false))) {
+				parent.removeChild(cur);
+			}
+			while ((cur = this.checkSibling(cursor, true))) {
+				parent.removeChild(cur);
+			}
+			this.before = 0;
+			this.after = 0;
+
 			for (let i = 0; i < hits.length; i++) {
 				let item = hits[i];
 				if (cursor.nodeType > 0 && item == null) continue;
@@ -234,6 +235,19 @@ export default class Place {
 				}
 			}
 		}
+	}
+}
+
+function writeAttr(node, attr, isOther, str, tstr) {
+	const attrList = node[attr + 'List'];
+	if (typeof node[attr] == "boolean") {
+		node.setAttribute(attr, "");
+	} else if (isOther && attrList) {
+		for (const name of tstr.replace(/\s+/g, ' ').split(' ')) {
+			attrList.add(name);
+		}
+	} else {
+		node.setAttribute(attr, attrList ? tstr : str);
 	}
 }
 
