@@ -48,7 +48,7 @@ export class Matchdom {
 		let wasText = false;
 		let wasArray = false;
 		if (typeof list == "string") {
-			if (document) {
+			if (typeof document !== 'undefined') {
 				if (list.startsWith('<') && list.endsWith('>')) {
 					const fn = this.formats[list.startsWith('<?xml') ? 'xml' : 'html'];
 					list = [fn(list)];
@@ -143,7 +143,8 @@ export class Matchdom {
 	}
 
 	matchEachDom(root, fn) {
-		const ctx = NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT;
+		// NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT
+		const ctx = 5;
 		// old IE need all params
 		const it = root.ownerDocument.createNodeIterator(root, ctx, null, false);
 		let node;

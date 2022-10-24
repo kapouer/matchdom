@@ -48,16 +48,6 @@ export default class Place {
 		if (groups.after) {
 			groups.after = Number.parseInt((groups.after.replace('+', '') || 1)) || 0;
 		}
-		if (!this.node.nodeType) {
-			switch (groups.ancestor) {
-				case "*":
-					groups.ancestor = "-";
-					break;
-				default:
-					groups.ancestor = "";
-					break;
-			}
-		}
 		Object.assign(this, groups);
 	}
 
