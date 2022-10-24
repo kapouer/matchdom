@@ -57,10 +57,7 @@ export default class Place {
 
 	extend(from) {
 		const { ancestor } = this;
-
-		if (ancestor == null) {
-			return;
-		}
+		if (!ancestor) return;
 		let parent = this.node;
 		if (ancestor == "-") {
 			if (from == Place.ATTR || from == Place.TAG) {
@@ -83,15 +80,33 @@ export default class Place {
 		}
 	}
 
+	checkSibling(cursor, asc) {
+		const node = asc ? cursor.nextSibling : cursor.previousSibling;
+		if (!node) return false;
+		const sel = asc ? this.after : this.before;
+		if (typeof sel == "string") {
+			if (node.nodeType == 1 && !node.matches(sel)) {
+				return false;
+			} else {
+				return node;
+			}
+		} else if (!sel) {
+			return false;
+		}
+		if (node.nodeType == 3 && /^\s*$/.test(node.nodeValue)) return node;
+		if (asc) this.after--;
+		else this.before--;
+		return node;
+	}
+
 	removeSiblings() {
 		const cursor = this.target == Place.TEXT ? this.text : this.node;
 		const parent = cursor.parentNode;
-		let { after, before } = this;
 		let cur;
-		while (before-- && (cur = cursor.previousElementSibling)) {
+		while ((cur = this.checkSibling(cursor, false))) {
 			parent.removeChild(cur);
 		}
-		while (after-- && (cur = cursor.nextElementSibling)) {
+		while ((cur = this.checkSibling(cursor, true))) {
 			parent.removeChild(cur);
 		}
 		this.before = 0;
@@ -100,7 +115,7 @@ export default class Place {
 
 	extract() {
 		const { doc, target } = this;
-		let { node, before, after } = this;
+		let { node } = this;
 		const frag = doc.createDocumentFragment();
 		const cursor = doc.createTextNode("");
 		if (target == Place.TEXT) {
@@ -121,22 +136,23 @@ export default class Place {
 			return [frag, cursor];
 		} else if (target == Place.CONT) {
 			node = this.text;
-			before = Infinity;
-			after = Infinity;
+			this.before = Infinity;
+			this.after = Infinity;
 		}
 		node.parentNode.replaceChild(cursor, node);
 		if (this.root == node) {
 			this.root = cursor.parentNode;
 		}
 		let cur;
-		while (before-- && (cur = cursor.previousElementSibling)) {
+		while ((cur = this.checkSibling(cursor, false))) {
 			frag.insertBefore(cur, null);
 		}
-		this.before = 0;
 		frag.appendChild(node);
-		while (after-- && (cur = cursor.nextElementSibling)) {
+		while ((cur = this.checkSibling(cursor, true))) {
 			frag.appendChild(cur);
 		}
+
+		this.before = 0;
 		this.after = 0;
 		return [frag, cursor];
 	}

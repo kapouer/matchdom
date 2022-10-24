@@ -42,8 +42,18 @@ export const filters = {
 	at: ['?', 'str?', 'str?', 'str?', (ctx, val, ancestor, before, after) => {
 		const { dest } = ctx;
 		dest.ancestor = ancestor;
-		dest.before = before;
-		dest.after = after;
+		if (!before) {
+			dest.before = 0;
+		} else {
+			const bef = parseInt(before);
+			dest.before = bef == before ? bef : before;
+		}
+		if (!after) {
+			dest.after = 0;
+		} else {
+			const aft = parseInt(after);
+			dest.after = aft == after ? aft : after;
+		}
 		if (ancestor) dest.reduceHit();
 		dest.extend(ctx.src.target);
 		return val;
