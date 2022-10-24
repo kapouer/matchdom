@@ -7,7 +7,7 @@ export const filters = {
 		if (val != str) return val;
 		else return null;
 	},
-	case(x, val, ...list) {
+	switch(x, val, ...list) {
 		const pos = list.findIndex((str, i) => {
 			return i % 2 == 0 && str == val;
 		});

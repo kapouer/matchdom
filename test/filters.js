@@ -603,21 +603,21 @@ describe('filters', () => {
 		});
 	});
 
-	describe('case', () => {
+	describe('switch', () => {
 		const md = new Matchdom(DomPlugin, OpsPlugin);
 
 		it('should change value', () => {
-			const html = `<p>[val|case:ceci:cela]</p>`;
+			const html = `<p>[val|switch:ceci:cela]</p>`;
 			const copy = md.merge(html, { val: 'ceci' });
 			assert.equal(copy.outerHTML, '<p>cela</p>');
 		});
 		it('should not change value and pass-through', () => {
-			const html = `<p>[val|case:ceci:cela]</p>`;
+			const html = `<p>[val|switch:ceci:cela]</p>`;
 			const copy = md.merge(html, { val: 'it' });
 			assert.equal(copy.outerHTML, '<p>it</p>');
 		});
 		it('should not change value and return null', () => {
-			const html = `<p>[val|case:ceci:cela:]</p>`;
+			const html = `<p>[val|switch:ceci:cela:]</p>`;
 			const copy = md.merge(html, { val: 'it' });
 			assert.equal(copy.outerHTML, '<p></p>');
 		});
