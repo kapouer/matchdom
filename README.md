@@ -447,7 +447,7 @@ Fuse source and destination places as if they were url components.
 By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
 
-The filter allows one to extend the current selection with:
+This filter allows one to extend the current selection with:
 
 - empty range: default behavior replaces the expression itself
 - `-`: selects the whole text node or attribute surrounding the expression
