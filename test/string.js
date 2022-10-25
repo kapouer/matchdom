@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import { Matchdom, DomPlugin, ArrayPlugin } from 'matchdom';
 
 describe('string', () => {
-	const md = new Matchdom().extend(DomPlugin, ArrayPlugin);
+	const md = new Matchdom().extend(DomPlugin);
 
 	it('should be merged and returned', () => {
 		const copy = md.merge('no? [test]!', {

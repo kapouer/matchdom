@@ -16,10 +16,21 @@ and that filter can be used anywhere in the expression (not necessarily at the b
 
 ## matchdom 8
 
-Non-essential plugins must be loaded explicitely,
+Non-essential plugins must be loaded explicitly,
 allowing tree-shaking to drop some unnecessary code.
 
 ```js
-const { Matchdom, String, Operator, Locale } = require('matchdom');
-new Matchdom().extend([String, Operator, Locale])
+import { Matchdom, DomPlugin } from 'matchdom';
+new Matchdom().extend(DomPlugin)
 ```
+
+All range selection by char by char has been dropped.
+
+Ranges are now written as three parameters: ancestor, before, after.
+Before and after can be integers as before, and now also css selectors.
+
+`to:attr` can affect all nodes of a range.
+
+`query`, `queryAll` are typed - string is converted to DOM.
+
+It is still possible to run matchdom without a browser environment, as long as no html needs to be parsed.

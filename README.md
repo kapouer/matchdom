@@ -21,6 +21,7 @@ it is converted to a DOM fragment (or single node) if `document` is available.
 import { Matchdom, TextPlugin, NumPlugin, DomPlugin } from 'matchdom';
 
 const md = new Matchdom(TextPlugin, NumPlugin, DomPlugin);
+// or new Matchdom(TextPlugin, NumPlugin).extend(DomPlugin)
 
 // html string is converted to a DOM node, thanks to DomPlugin
 const mergedDom = md.merge(`<div id="model" class="[myclass]">
@@ -115,7 +116,7 @@ A filter function can:
 
 ## types and formats
 
-Types can be used by filters typings, or by "as:" and "is:" filters.
+Types can be used by filters parameters, or by "as:" and "is:" filters.
 
 Formats are not types - they are only used by "as:" filter.
 
@@ -287,7 +288,7 @@ Coerces value to type, or converts string to format.
 - as:html
   return value as a DOM node or null if it fails
 
-## flow plugin
+## flow plugin (always loaded)
 
 ### not then else:filter:param+
 
@@ -298,7 +299,7 @@ Evaluates value loosely, and call named filter with parameters accordingly.
 - "or" is a shorthand for "else:const:str"
 - "and" is a shorthand for "then:const:str"
 
-## text plugin
+## Matchdom.TextPlugin
 
 ### pre:str, post:str
 
@@ -312,7 +313,7 @@ Uppercase, lowercase, or unicode-capitalize sentences.
 
 Decodes/encodes to specified encoding.
 
-## array plugin
+## Matchdom.ArrayPlugin
 
 ### array type
 
@@ -359,7 +360,7 @@ nullsFirst can be "1" or "true".
 
 Numeric or dates are compared as such, strings are compared using localeCompare.
 
-## ops plugin
+## Matchdom.OpsPlugin
 
 ### pass-through filters
 
@@ -385,7 +386,7 @@ These filters return the value if the condition is true, or null if the conditio
 - mod:num
 - pow:num
 
-## num plugin
+## Matchdom.NumPlugin
 
 All three filters return a localized string,
 with at least min digits and at most max digits.
@@ -404,7 +405,7 @@ Formats a percent.
 
 Formats a currency.
 
-## date plugin
+## Matchdom.DatePlugin
 
 ### date type
 
@@ -418,7 +419,7 @@ ISO formatting
 
 Localized date formatting
 
-## json plugin // TODO
+## Matchdom.JsonPlugin
 
 ### json type
 
@@ -428,7 +429,7 @@ Converts string to json object
 
 Converts data to json string
 
-## dom plugin
+## Matchdom.DomPlugin
 
 ### text format
 
@@ -467,6 +468,7 @@ Examples:
 - `at::2:1` selects 2 nodes before and one node after the expression
 - `<br>a[val|at::1]b` selects the `<br>`, `a` and `b` strings
 - it is not possible to not select `a` or `b` in previous example
+- `at::b:a` is not defined when destination is an attribute, avoid using it
 - `at:div.card` selects `closest('div.card')`.
 - `at:div.card:1:1` selects also the previous and next siblings of the ancestor.
 - `at:**:1:2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them.

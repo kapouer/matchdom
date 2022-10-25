@@ -10,7 +10,7 @@ describe('repeat filter', () => {
 		this.jsdom();
 	});
 
-	const md = new Matchdom().extend(DomPlugin, ArrayPlugin);
+	const md = new Matchdom().extend(DomPlugin);
 
 	it('should repeat array of strings in string', () => {
 		const html = `<div>a[arr|at:|repeat:]</div>`;
