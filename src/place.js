@@ -178,7 +178,7 @@ export default class Place {
 				from.text.nodeValue = from.hits.join('');
 			}
 			const str = hits.join('');
-			const tstr = str.trim();
+			const tstr = str.trim().replace(/\s+/g, ' ');
 			const clear = hits.length == 1 && !hits[0] || tstr.length == 0;
 			let cur = node;
 			while ((cur = this.checkSibling(cur, false))) {
@@ -242,12 +242,14 @@ function writeAttr(node, attr, isOther, str, tstr) {
 	const attrList = node[attr + 'List'];
 	if (typeof node[attr] == "boolean") {
 		node.setAttribute(attr, "");
-	} else if (isOther && attrList) {
-		for (const name of tstr.replace(/\s+/g, ' ').split(' ')) {
+	} else if (attrList) {
+		if (isOther) for (const name of tstr.split(' ')) {
 			attrList.add(name);
+		} else {
+			node.setAttribute(attr, tstr);
 		}
 	} else {
-		node.setAttribute(attr, attrList ? tstr : str);
+		node.setAttribute(attr, str);
 	}
 }
 

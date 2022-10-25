@@ -71,6 +71,15 @@ describe('at filter', () => {
 		</tbody></table>`).outerHTML);
 	});
 
+	it('should do nothing special on attribute', () => {
+		const html = `<div><span class="some [test|at:] [tata]">[tata]</span></div>`;
+		const copy = md.merge(html, {
+			// test: null,
+			tata: "test"
+		});
+		assert.equal(copy.outerHTML, '<div><span class="some test">test</span></div>');
+	});
+
 	it('should remove current attribute', () => {
 		const html = `<div><span class="some [test|at:-] [tata]">[tata]</span></div>`;
 		const copy = md.merge(html, {
