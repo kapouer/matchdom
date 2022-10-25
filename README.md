@@ -446,16 +446,16 @@ Fuse source and destination places as if they were url components.
 
 By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
+This filter extends the selected range.
 
-This filter extends the selected range, first by changing the selected parent:
+First by changing the selected parent:
 
-- ``: empty string, default behavior, does not extend the selected parent,
-selects the expression only.
-- `-`: selects the whole text node or attribute surrounding the expression
+- ``: empty selector, selects the expression and the adjacent text to it
+- `-`: selects the content of the parent node containing the expression
 - `*`: the nth selected parent (one wildcard goes up one parent)
 - a css selector: the closest selected parent
 
-And then by extending to previous or next siblings of the selected parent, using `before` and `after` parameters:
+Second, by extending to previous or next siblings of the selected parent, using `before` and `after` parameters:
 
 - integer: counts the number of siblings to select (before or after). Empty text nodes are ignored.
 - selector: select siblings until they stop matching that selector.
@@ -465,6 +465,8 @@ Using at, prune, then, else, to filters, one can control how a value affects sel
 Examples:
 
 - `at::2:1` selects 2 nodes before and one node after the expression
+- `<br>a[val|at::1]b` selects the `<br>`, `a` and `b` strings
+- it is not possible to not select `a` or `b` in previous example
 - `at:div.card` selects `closest('div.card')`.
 - `at:div.card:1:1` selects also the previous and next siblings of the ancestor.
 - `at:**:1:2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them.
