@@ -748,6 +748,22 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>3/9/2018, 12:12:56 PM</p>');
 		});
 
+		it('complex format', () => {
+			const html = `<p>[str|lang:fr|date:day:D:month:Y:h:m]</p>`;
+			const copy = md.merge(html, {
+				str: '2018-03-09T11:12:56.739Z'
+			});
+			assert.equal(copy.outerHTML, '<p>vendredi 9 mars 2018 à 12:12</p>');
+		});
+
+		it('adds time', () => {
+			const html = `<p>[str|clock:3:D|lang:fr|date:date]</p>`;
+			const copy = md.merge(html, {
+				str: '2018-03-09T11:12:56.739Z'
+			});
+			assert.equal(copy.outerHTML, '<p>12/03/2018</p>');
+		});
+
 		it('accepts "now" as keyword', () => {
 			const html = `<p>[str|as:date|toLocaleTimeString:fr-FR]</p>`;
 			const now = new Date();

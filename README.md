@@ -288,6 +288,11 @@ Coerces value to type, or converts string to format.
 - as:html
   return value as a DOM node or null if it fails
 
+### lang:name
+
+Sets lang name in current scope.
+Used by localized filters.
+
 ## flow plugin (always loaded)
 
 ### not then else:filter:param+
@@ -411,13 +416,59 @@ Formats a currency.
 
 Converts string or timestamp to date.
 
-### date, time, datetime formats
-
-ISO formatting
+Accepts keyword 'now' to build a date with current timestamp.
 
 ### date:format
 
-Localized date formatting
+format can be:
+
+- isotime: time from iso output
+- isodate: date from iso output
+- iso: full iso output
+- time: localized time
+- date: localized date
+
+Milliseconds are removed from all these formats.
+
+For localization, lang is searched in this order:
+
+- scope.lang (which can be set using the `lang:<name>` filter)
+- documentElement.lang
+- window.navigator.language()
+
+Localized format accepts shorthands:
+
+- d: narrow weekday
+- da: short weekday
+- day: long weekday
+- Y: year
+- YY: two-digits year
+- mo: narrow month
+- mon: short month
+- month: long month
+- M: numeric month
+- MM: two-digits month
+- D: day of month
+- DD: two-digits day of month
+- H: hours
+- HH: two-digits hours
+- m: minutes
+- mm: two-digits minutes
+- s: seconds
+- ss: two-digits seconds
+- tz: short timezone
+- timezone: long timezone
+- `country`/`city`: sets a timezone
+
+For example, a fully localized date can be obtained using:
+`[obj.mydatestr|date:day:month:Y:H:m]`
+
+### clock:offset:unit
+
+Offset a unit of date by an integer value.
+`[mydate|clock:3:m]` add 3 minutes to `mydate`.
+
+Units are: Y, M, D, h, m, s.
 
 ## Matchdom.JsonPlugin
 

@@ -15,7 +15,7 @@ export const filters = {
 		const com = list[0];
 		switch (com) {
 			case "isotime":
-				return date.toISOString().split('T').pop().split('.').shift();
+				return date.toISOString().split('T').pop().replace(/\.\d{3}/, '');
 			case "isodate":
 				return date.toISOString().split('T').shift();
 			case "iso":
@@ -45,8 +45,8 @@ export const filters = {
 				case 'MM': p.month = dig; break;
 				case 'D': p.day = num; break;
 				case 'DD': p.day = dig; break;
-				case 'H': p.hour = num; break;
-				case 'HH': p.hour = dig; break;
+				case 'h': case 'H': p.hour = num; break;
+				case 'hh': case 'HH': p.hour = dig; break;
 				case 'm': p.minute = num; break;
 				case 'mm': p.minute = dig; break;
 				case 's': p.second = num; break;
@@ -76,6 +76,7 @@ export const filters = {
 			D: 'Date',
 			M: 'Month',
 			Y: 'FullYear',
+			H: 'Hours',
 			h: 'Hours',
 			m: 'Minutes',
 			s: 'Seconds'
