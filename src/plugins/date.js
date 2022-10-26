@@ -10,21 +10,31 @@ export const types = {
 	}
 };
 
+export const formats = {
+	date: {
+		iso(ctx, date) {
+			return date.toISOString().replace(/\.\d{3}/, '');
+		},
+		isotime(ctx, date) {
+			return date.toISOString().split('T').pop().replace(/\.\d{3}/, '');
+		},
+		isodate(ctx, date) {
+			return date.toISOString().split('T').shift();
+		},
+		time(ctx, date) {
+			return date.toLocaleTimeString(ctx.getLang());
+		},
+		date(ctx, date) {
+			return date.toLocaleDateString(ctx.getLang());
+		}
+	}
+};
+
 export const filters = {
 	date: ['date', 'str*', (ctx, date, ...list) => {
-		const com = list[0];
-		switch (com) {
-			case "isotime":
-				return date.toISOString().split('T').pop().replace(/\.\d{3}/, '');
-			case "isodate":
-				return date.toISOString().split('T').shift();
-			case "iso":
-				return date.toISOString().replace(/\.\d{3}/, '');
-			case "time":
-				return date.toLocaleTimeString(ctx.getLang());
-			case "date":
-				return date.toLocaleDateString(ctx.getLang());
-		}
+		const fmt = list.length == 1 ? ctx.md.formats.date[list[0]] : null;
+		if (fmt) return fmt(ctx, date);
+
 		const p = {};
 		const n = 'narrow';
 		const s = 'short';

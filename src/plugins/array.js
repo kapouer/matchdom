@@ -1,19 +1,21 @@
 export const formats = {
-	keys(ctx, val) {
-		if (typeof val != "object") return [];
-		return Object.keys(val);
-	},
-	values(ctx, val) {
-		if (typeof val != "object") return [];
-		return Object.values(val);
-	},
-	entries(ctx, val) {
-		if (typeof val != "object") return [];
-		const cast = Array.isArray(val);
-		return Object.entries(val).map(([key, value]) => {
-			if (cast) key = parseInt(key);
-			return { key, value };
-		});
+	as: {
+		keys(ctx, val) {
+			if (typeof val != "object") return [];
+			return Object.keys(val);
+		},
+		values(ctx, val) {
+			if (typeof val != "object") return [];
+			return Object.values(val);
+		},
+		entries(ctx, val) {
+			if (typeof val != "object") return [];
+			const cast = Array.isArray(val);
+			return Object.entries(val).map(([key, value]) => {
+				if (cast) key = parseInt(key);
+				return { key, value };
+			});
+		}
 	}
 };
 

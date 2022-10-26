@@ -38,8 +38,11 @@ export class Matchdom {
 		} else {
 			Object.assign(this.filters, filters);
 			Object.assign(this.types, types);
-			Object.assign(this.formats, formats);
 			Object.assign(this.hooks, hooks);
+			if (formats) for (const [n, obj] of Object.entries(formats)) {
+				if (!this.formats[n]) this.formats[n] = Object.create(null);
+				Object.assign(this.formats[n], obj);
+			}
 		}
 		return this;
 	}
@@ -50,10 +53,10 @@ export class Matchdom {
 		if (typeof list == "string") {
 			if (typeof document !== 'undefined') {
 				if (list.startsWith('<') && list.endsWith('>')) {
-					const fn = this.formats[list.startsWith('<?xml') ? 'xml' : 'html'];
+					const fn = this.formats.as[list.startsWith('<?xml') ? 'xml' : 'html'];
 					list = [fn(null, list)];
 				} else {
-					const node = this.formats.html(null, "-");
+					const node = this.formats.as.html(null, "-");
 					node.nodeValue = list;
 					wasText = true;
 					list = [node.parentNode];

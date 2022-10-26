@@ -1,40 +1,42 @@
 import { serializeUrl, parseUrl } from '../utils.js';
 
 export const formats = {
-	text(ctx, val) {
-		if (val == null) return val;
-		val = val.toString();
-		const doc = ctx.src.doc;
-		if (!doc) {
-			// no dom available
-			return val;
-		}
-		const frag = doc.createDocumentFragment();
-		const list = val.toString().split('\n');
-		for (let i = 0; i < list.length; i++) {
-			if (i > 0) frag.appendChild(doc.createElement('br'));
-			frag.appendChild(doc.createTextNode(list[i]));
-		}
-		return frag;
-	},
-	url(ctx, val) {
-		if (val == null) return val;
-		const { src, dest } = ctx;
-		const same = src.attr === dest.attr && src.node === dest.node;
-		const valUrl = parseUrl(val);
-		const srcHits = dest.hits.slice();
-		srcHits[dest.index] = dest.index > 0 ? val : '';
-		const srcVal = srcHits.join('');
-		if (src.index > 0 && valUrl.pathname) {
-			delete valUrl.pathname;
-		}
-		const srcUrl = parseUrl(srcVal);
-		const destUrl = same ? {} : parseUrl(dest.read());
-		const finalUrl = Object.assign({}, destUrl, srcUrl, valUrl);
-		finalUrl.query = Object.assign({}, destUrl.query, srcUrl.query, valUrl.query);
+	as: {
+		text(ctx, val) {
+			if (val == null) return val;
+			val = val.toString();
+			const doc = ctx.src.doc;
+			if (!doc) {
+				// no dom available
+				return val;
+			}
+			const frag = doc.createDocumentFragment();
+			const list = val.toString().split('\n');
+			for (let i = 0; i < list.length; i++) {
+				if (i > 0) frag.appendChild(doc.createElement('br'));
+				frag.appendChild(doc.createTextNode(list[i]));
+			}
+			return frag;
+		},
+		url(ctx, val) {
+			if (val == null) return val;
+			const { src, dest } = ctx;
+			const same = src.attr === dest.attr && src.node === dest.node;
+			const valUrl = parseUrl(val);
+			const srcHits = dest.hits.slice();
+			srcHits[dest.index] = dest.index > 0 ? val : '';
+			const srcVal = srcHits.join('');
+			if (src.index > 0 && valUrl.pathname) {
+				delete valUrl.pathname;
+			}
+			const srcUrl = parseUrl(srcVal);
+			const destUrl = same ? {} : parseUrl(dest.read());
+			const finalUrl = Object.assign({}, destUrl, srcUrl, valUrl);
+			finalUrl.query = Object.assign({}, destUrl.query, srcUrl.query, valUrl.query);
 
-		dest.reduceHit();
-		return serializeUrl(finalUrl);
+			dest.reduceHit();
+			return serializeUrl(finalUrl);
+		}
 	}
 };
 

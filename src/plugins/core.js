@@ -27,17 +27,19 @@ export const types = {
 };
 
 export const formats = {
-	html(ctx, val) {
-		if (typeof val != "string") return val;
-		val = HTML(val);
-		if (ctx) return ctx.src.doc.importNode(val, true);
-		else return val;
-	},
-	xml(ctx, val) {
-		if (typeof val != "string") return val;
-		val = XML(val);
-		if (ctx) return ctx.src.doc.importNode(val, true);
-		else return val;
+	as: {
+		html(ctx, val) {
+			if (typeof val != "string") return val;
+			val = HTML(val);
+			if (ctx) return ctx.src.doc.importNode(val, true);
+			else return val;
+		},
+		xml(ctx, val) {
+			if (typeof val != "string") return val;
+			val = XML(val);
+			if (ctx) return ctx.src.doc.importNode(val, true);
+			else return val;
+		}
 	}
 };
 
@@ -101,14 +103,14 @@ export const filters = {
 			if (Number.isNaN(val)) val = null;
 			return val;
 		} else {
-			const fn = ctx.md.formats[type] || ctx.md.types[type];
+			const fn = ctx.md.formats.as[type] || ctx.md.types[type];
 			if (!fn) throw new Error(`Unknown type: ${type}`);
 			return fn(ctx, val, params);
 		}
 	},
 	is(ctx, val, type, ...params) {
-		if (type in ctx.md.formats) {
-			throw new Error(`Cannot check a format: ${type}`);
+		if (type in ctx.md.formats.as) {
+			throw new Error(`Cannot check as format: ${type}`);
 		}
 		return ctx.run(val, ['as', type, ...params]) == val;
 	},

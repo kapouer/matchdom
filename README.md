@@ -114,11 +114,11 @@ A filter function can:
 - return a new value
 - change context
 
-## types and formats
+## types
 
-Types can be used by filters parameters, or by "as:" and "is:" filters.
+Filters parameters can be given a type.
 
-Formats are not types - they are only used by "as:" filter.
+The `as` and `is` filters are useful to explicitely cast or check a value type.
 
 ### simple types (hard-coded)
 
@@ -137,7 +137,15 @@ Formats are not types - they are only used by "as:" filter.
 - array: wrap non-array-like values into an array
 - json: parse json string
 
-### formats (from plugins)
+## formats
+
+Formats are functions names to convert a value into something else.
+
+They are grouped by filters names, in `formats[name]` objects.
+
+Formats are used directly by the corresponding filter.
+
+### as:format added by plugins
 
 - text: converts string with newlines by a dom fragment with hard breaks
 - html: converts string to a dom fragment
@@ -147,9 +155,13 @@ Formats are not types - they are only used by "as:" filter.
 - values: array of values
 - entries: arrays of {key, value}
 
+### date:format
+
+See date filter.
+
 ### format and type declaration
 
-This adds a `simple` type that checks if a value is simple, and a `text` format:
+This adds a `simple` type that checks if a value is simple, and a `nosp` format:
 
 ```js
 const md = new Matchdom({
@@ -160,9 +172,11 @@ const md = new Matchdom({
     }
   },
   formats: {
-    string(ctx, val) {
-      if (val == null) return val;
-      return val.toString();
+    as: {
+      nosp(ctx, val) {
+        if (val == null) return val;
+        return val.toString().replace(/\s+/, ' ');
+      }
     }
   }
 });
@@ -418,7 +432,7 @@ Converts string or timestamp to date.
 
 Accepts keyword 'now' to build a date with current timestamp.
 
-### date:format
+### date:format, date:...list
 
 format can be:
 
@@ -429,6 +443,8 @@ format can be:
 - date: localized date
 
 Milliseconds are removed from all these formats.
+
+Custom date formats can be added through a plugin exporting `{format: date: {}}`.
 
 For localization, lang is searched in this order:
 
