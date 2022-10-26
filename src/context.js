@@ -172,7 +172,7 @@ export default class Context {
 		const [type, def] = arg.split("?");
 		if (str == null) {
 			if (def == null) {
-				throw new Context.ParamError("Missing required type " + arg);
+				throw new Context.ParamError("Missing required argument of type " + arg);
 			} else if (type == "any") {
 				return str;
 			} else {
