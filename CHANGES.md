@@ -34,3 +34,11 @@ Before and after can be integers as before, and now also css selectors.
 `query`, `queryAll` are typed - string is converted to DOM.
 
 It is still possible to run matchdom without a browser environment, as long as no html needs to be parsed.
+
+## matchdom 9
+
+- `at` filter parameters order is changed to `ancestor:after:before`
+- plugins formats are grouped by filter name using those formats
+- date filter uses formats.date
+- date filter pass null value through to the next plugin
+
