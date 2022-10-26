@@ -131,11 +131,11 @@ export default class Context {
 			for (let i = 0; i < def.length; i++) {
 				let arg = def[i];
 				if (arg == null) {
-					throw new Error("missing type");
+					throw new Error("Missing type");
 				}
 				if (arg.endsWith('*')) {
 					if (mtype) {
-						throw new Error("cannot check multiple lists");
+						throw new Error("Cannot check multiple lists");
 					}
 					arg = arg.slice(0, -1);
 					mtype = arg;
@@ -149,7 +149,7 @@ export default class Context {
 						// [myfilter:] has a mandatory empty param
 						filter.length = 1;
 					} else if (!mtype) {
-						throw new Context.ParamError("wrong number of parameters");
+						throw new Context.ParamError("Wrong number of parameters");
 					}
 				}
 				for (let i = def.length; i < filter.length; i++) {
