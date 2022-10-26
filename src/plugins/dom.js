@@ -41,7 +41,7 @@ export const formats = {
 };
 
 export const filters = {
-	at: ['?', 'str?', 'str?', 'str?', (ctx, val, ancestor, before, after) => {
+	at: ['?', 'str?', 'str?', 'str?', (ctx, val, ancestor, after, before) => {
 		const { dest } = ctx;
 		dest.ancestor = ancestor;
 		if (!before) {

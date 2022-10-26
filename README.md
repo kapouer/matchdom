@@ -510,7 +510,7 @@ Parses string as html or xml.
 
 Fuse source and destination places as if they were url components.
 
-### at:selector:before:after
+### at:selector:after:before
 
 By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
@@ -527,6 +527,8 @@ Second, by extending to previous or next siblings of the selected parent, using 
 
 - integer: counts the number of siblings to select (before or after). Empty text nodes are ignored.
 - selector: select siblings until they stop matching that selector.
+
+Note that `after` comes first, since it's the most commonly used parameter, `at:*:br` is prettier than `at:*::br`.
 
 Using at, prune, then, else, to filters, one can control how a value affects selection.
 

@@ -44,7 +44,7 @@ describe('at filter', () => {
 	});
 
 	it('should replace current expression and previous node', () => {
-		const html = `<div><br>ABC[test|at::1]XYZ<hr></div>`;
+		const html = `<div><br>ABC[test|at::0:1]XYZ<hr></div>`;
 		const copy = md.merge(html, {
 			test: 'me'
 		});
@@ -52,7 +52,7 @@ describe('at filter', () => {
 	});
 
 	it('should replace current expression and next node', () => {
-		const html = `<div><hr>ABC[test|at::0:1]XYZ<img></div>`;
+		const html = `<div><hr>ABC[test|at::1]XYZ<img></div>`;
 		const copy = md.merge(html, {
 			test: 'me'
 		});
