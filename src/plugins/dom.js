@@ -63,7 +63,7 @@ export const filters = {
 	prune: ['?', 'str?', 'str?', 'str?', (ctx, val, ...params) => {
 		if (!val) {
 			params.unshift('at');
-			ctx.run(val, params);
+			ctx.filter(val, params);
 		}
 		return null;
 	}],
@@ -83,7 +83,7 @@ export const filters = {
 	repeat: ['array?', 'string?', 'filter?', '?*', (ctx, list, alias, placer, ...params) => {
 		const { src, dest } = ctx;
 		if (dest.ancestor == null) {
-			ctx.run(list, ['at', '*']);
+			ctx.filter(list, 'at', '*');
 		}
 
 		const cur = src.read();
@@ -113,7 +113,7 @@ export const filters = {
 				continue;
 			}
 			if (placer) {
-				ctx.run(item, [placer, cursor, fg, ...params]);
+				ctx.filter(item, placer, cursor, fg, ...params);
 			} else {
 				parent.insertBefore(fg, cursor);
 			}

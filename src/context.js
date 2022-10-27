@@ -103,7 +103,7 @@ export default class Context {
 			if (val === undefined && !expr.last) break;
 			const filter = expr.filters[expr.filter++];
 			if (beforeEach) val = beforeEach(this, val, filter);
-			val = this.run(val, filter);
+			val = this.filter(val, filter);
 			if (afterEach) val = afterEach(this, val, filter);
 			if (this.cancel) {
 				expr.last = false; // probably a bad idea
@@ -116,8 +116,22 @@ export default class Context {
 		return val;
 	}
 
-	run(val, filter) {
-		filter = filter.slice();
+	format(val, name, fmt) {
+		const fn = (this.md.formats[name] || {})[fmt];
+		if (fn) {
+			return fn(this, val);
+		} else {
+			console.warn("Unknown format", name, fmt);
+			return val;
+		}
+	}
+
+	filter(val, filter, ...params) {
+		if (Array.isArray(filter)) {
+			filter = filter.slice();
+		} else {
+			filter = [filter, ...params];
+		}
 		const [name, def] = this.getFilter(val, filter);
 		if (!def) {
 			console.info(name, "filter is missing");
@@ -188,7 +202,7 @@ export default class Context {
 		if (type == "any") {
 			// check nothing
 		} else {
-			str = this.run(str, ['as', type, ...params.slice(i + 1)]);
+			str = this.filter(str, 'as', type, ...params.slice(i + 1));
 		}
 		if (typeof str == "string" && i > 0) {
 			str = this.decode(str);

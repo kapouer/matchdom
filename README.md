@@ -217,7 +217,10 @@ and methods:
 - expr: current expression being merged
 - cancel: boolean, stops and cancels merge
 
-Methods are not supposed to be called by other filters.
+Two methods can be called by other filters:
+
+- filter(value, name, ...params): filter value
+- format(value, name, format): format value
 
 ### place
 

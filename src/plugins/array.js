@@ -23,16 +23,16 @@ export const filters = {
 	filter: ['array', 'string', 'string?eq', 'path?', (ctx, list, str, op, path) => {
 		return list.filter(item => {
 			const data = ctx.expr.get(item, path);
-			return ctx.run(str, [op, data]);
+			return ctx.filter(str, op, data);
 		});
 	}],
 	map: ['array', 'string', '?*', (ctx, list, ...filter) => {
 		return list.map(item => {
-			return ctx.run(item, filter);
+			return ctx.filter(item, filter);
 		});
 	}],
 	select: ['array', 'path', (ctx, list, path) => {
-		return ctx.run(list, ['map', 'get', path]);
+		return ctx.filter(list, 'map', 'get', path);
 	}],
 	page: ['array', 'int', 'int', (ctx, list, len, i) => {
 		return list.slice(i * len, (i + 1) * len);
