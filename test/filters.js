@@ -336,6 +336,14 @@ describe('filters', () => {
 	describe('html type', () => {
 		const md = new Matchdom().extend(DomPlugin);
 
+		it('should keep whitespace', () => {
+			const html = `<div>[str|as:html]</div>`;
+			const copy = md.merge(html, {
+				str: '<p>One <strong>two</strong>\n<strong>three</strong> four</p>'
+			});
+			assert.equal(copy.outerHTML, '<div><p>One <strong>two</strong>\n<strong>three</strong> four</p></div>');
+		});
+
 		it('should select first node', () => {
 			const html = `<p>[str|query:img+span]</p>`;
 			const copy = md.merge(html, {
