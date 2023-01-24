@@ -115,7 +115,7 @@ export const filters = {
 		return ctx.filter(val, 'as', type, ...params) == val;
 	},
 	lang(ctx, val, lang) {
-		ctx.scope.lang = lang || null;
+		ctx.lang = lang || null;
 		return val;
 	}
 };

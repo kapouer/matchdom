@@ -53,7 +53,7 @@ export default class Context {
 
 	constructor(md, data, scope) {
 		this.data = data;
-		this.scope = Object.assign({}, scope);
+		this.scope = scope ?? {};
 		this.md = md;
 	}
 
@@ -227,13 +227,14 @@ export default class Context {
 			return str;
 		}
 	}
+
 	getLang() {
-		let lang = this.scope.lang;
-		if (!lang && typeof window != "undefined") {
-			lang = this.scope.lang = document.documentElement && document.documentElement.lang || window.navigator.language();
+		if (!this.lang && typeof window != "undefined") {
+			this.lang = document.documentElement && document.documentElement.lang || window.navigator.language();
 		}
-		return lang;
+		return this.lang;
 	}
+
 	getFilter(val, filter) {
 		if (filter.length <= 1) {
 			filter.unshift("get");
