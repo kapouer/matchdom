@@ -211,7 +211,7 @@ and methods:
 
 - raw: the current value before coercion to a filter parameter
 - data: the data object available to expressions
-- scope: shallow clone of the scope object passed to matchdom
+- scope: the scope object passed to matchdom, useful to pass information to filters; provided filters will never change mutate scope.
 - src: initial place of expression, should be immutable
 - dest: target place of expression
 - expr: current expression being merged
@@ -307,7 +307,7 @@ Coerces value to type, or converts string to format.
 
 ### lang:name
 
-Sets lang name in current scope.
+Sets lang name in current context.
 Used by localized filters.
 
 ## flow plugin (always loaded)
@@ -451,7 +451,7 @@ Custom date formats can be added through a plugin exporting `{format: date: {}}`
 
 For localization, lang is searched in this order:
 
-- scope.lang (which can be set using the `lang:<name>` filter)
+- ctx.lang (which can be set using the `lang:<name>` filter)
 - documentElement.lang
 - window.navigator.language()
 

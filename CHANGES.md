@@ -1,6 +1,6 @@
 # CHANGES
 
-## matchdom 7
+## Version 7
 
 No longer compatible with legacy browsers. Use polyfills for that.
 
@@ -14,7 +14,7 @@ and that filter can be used anywhere in the expression (not necessarily at the b
 - repeat:target:alias is not at:target|repeat:alias
 - use new prune/else:at filters to conditionally remove selection
 
-## matchdom 8
+## Version 8
 
 Non-essential plugins must be loaded explicitly,
 allowing tree-shaking to drop some unnecessary code.
@@ -35,10 +35,15 @@ Before and after can be integers as before, and now also css selectors.
 
 It is still possible to run matchdom without a browser environment, as long as no html needs to be parsed.
 
-## matchdom 9
+## Version 9
 
 - `at` filter parameters order is changed to `ancestor:after:before`
 - plugins formats are grouped by filter name using those formats
 - date filter uses formats.date
 - date filter pass null value through to the next plugin
 
+## Version 9.2
+
+- context.scope is no longer a shallow copy
+- context.scope is no longer mutated by matchdom filters - that's up to the owner of the scope to change it entirely
+- context.lang stores current value
