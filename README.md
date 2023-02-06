@@ -331,7 +331,7 @@ Prepends or appends string if value is not null or not empty.
 
 Uppercase, lowercase, or unicode-capitalize sentences.
 
-### dec enc:base64|base64url|url|hex
+### dec or enc:base64|base64url|url|hex
 
 Decodes/encodes to specified encoding.
 
