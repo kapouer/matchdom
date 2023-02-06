@@ -63,7 +63,7 @@ export const filters = {
 				case 's': p.second = num; break;
 				case 'ss': p.second = dig; break;
 				case 'tz': p.timeZoneName = s; break;
-				case 'timezone': p.timeZoneName = l; break;
+				case 'timezone': p.timeZoneName = "shortGeneric"; break;
 				default:
 					if (/\w+\/\w+/.test(tok)) p.timeZone = tok;
 					else console.warn("Unknown date filter param", tok);
