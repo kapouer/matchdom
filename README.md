@@ -254,6 +254,9 @@ When the path starts with a dot, it applies to current value.
 
 When the path starts with an identifier, it applies to context data.
 
+When data being accessed is an Array, the matching path item can be negative or above array length - it is applied modulo array length.
+Also, special path item "first" and "last" can be used to specify those array indexes.
+
 When the last item of the path of an expression refers to an `undefined` value,
 the value is converted to `null`, so the expression is merged:
 

@@ -62,10 +62,21 @@ export default class Expression {
 			}
 		}
 		let n = 0;
-		for (let i = 0; i < path.length; i++) {
+		for (const item of path) {
 			if (data == null) break;
 			n++;
-			data = data[path[i]];
+			if (Array.isArray(data)) {
+				const len = data.length;
+				const k = { first: 0, last: -1 }[item] ?? parseInt(item);
+				if (!Number.isNaN(k)) {
+					// allows negative integers as well
+					data = data[((k % len) + len) % len];
+				} else {
+					data = data[item];
+				}
+			} else {
+				data = data[item];
+			}
 		}
 		if (path.length == 1 && this.last && data === null) {
 			// do not change the value
