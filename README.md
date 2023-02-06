@@ -321,6 +321,10 @@ Evaluates value loosely, and call named filter with parameters accordingly.
 - "or" is a shorthand for "else:const:str"
 - "and" is a shorthand for "then:const:str"
 
+### ?:yes:no
+
+Ternary operator, shortcut for "and:yes|or:no"
+
 ## Matchdom.TextPlugin
 
 ### pre:str, post:str

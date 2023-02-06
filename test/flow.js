@@ -84,4 +84,17 @@ describe('flow filters', () => {
 		});
 	});
 
+	describe('?', () => {
+		it('should match true to first param', () => {
+			const html = `<p>[bool|?:yes:no]</p>`;
+			const copy = md.merge(html, { bool: true });
+			assert.equal(copy.outerHTML, '<p>yes</p>');
+		});
+		it('should match false to second param', () => {
+			const html = `<p>[bool|?:yes:no]</p>`;
+			const copy = md.merge(html, { bool: false });
+			assert.equal(copy.outerHTML, '<p>no</p>');
+		});
+	});
+
 });
