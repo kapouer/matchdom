@@ -156,7 +156,7 @@ export default class Place {
 		}
 	}
 
-	write(hits, from = this) {
+	write(hits, from) {
 		const { node, attr, doc, target } = this;
 		if (target == Place.CONT && !this.text) {
 			node.textContent = "";
@@ -164,8 +164,8 @@ export default class Place {
 			node.appendChild(this.text);
 		}
 
-		const isOther = attr != from.attr || node != from.node;
-		if (from.attr && isOther) clearAttr(from.node, from.attr);
+		const another = attr != from.attr || node != from.node;
+		if (from.attr && another) clearAttr(from.node, from.attr);
 
 		if (target == Place.TAG) {
 			const is = node.getAttribute('is');
@@ -177,22 +177,28 @@ export default class Place {
 			if (from.target == Place.TEXT) {
 				from.text.nodeValue = from.hits.join('');
 			}
-			const str = hits.join('');
-			const tstr = str.trim().replace(/\s+/g, ' ');
-			const clear = hits.length == 1 && !hits[0] || tstr.length == 0;
+			const val = { another };
+			if (hits.length == 1) {
+				val.str = hits[0];
+				val.trm = val.str || '';
+			} else {
+				val.str = hits.join('');
+				val.trm = val.str.trim().replace(/\s+/g, ' ');
+			}
+			val.del = !val.trm;
 			let cur = node;
 			while ((cur = this.checkSibling(cur, false))) {
 				if (cur.nodeType != 1) continue;
-				if (clear) clearAttr(cur, attr);
-				else writeAttr(cur, attr, isOther, str, tstr);
+				if (val.del) clearAttr(cur, attr);
+				else writeAttr(cur, attr, val);
 			}
-			if (clear) clearAttr(node, attr);
-			else writeAttr(node, attr, isOther, str, tstr);
+			if (val.del) clearAttr(node, attr);
+			else writeAttr(node, attr, val);
 			cur = node;
 			while ((cur = this.checkSibling(cur, true))) {
 				if (cur.nodeType != 1) continue;
-				if (clear) clearAttr(cur, attr);
-				else writeAttr(cur, attr, isOther, str, tstr);
+				if (val.del) clearAttr(cur, attr);
+				else writeAttr(cur, attr, val);
 			}
 			this.before = 0;
 			this.after = 0;
@@ -238,15 +244,15 @@ export default class Place {
 	}
 }
 
-function writeAttr(node, attr, isOther, str, tstr) {
+function writeAttr(node, attr, { another, str, trm, path }) {
 	const attrList = node[attr + 'List'];
 	if (typeof node[attr] == "boolean") {
 		node.setAttribute(attr, "");
 	} else if (attrList) {
-		if (isOther) for (const name of tstr.split(' ')) {
+		if (another) for (const name of trm.split(' ')) {
 			attrList.add(name);
 		} else {
-			node.setAttribute(attr, tstr);
+			node.setAttribute(attr, trm);
 		}
 	} else {
 		node.setAttribute(attr, str);

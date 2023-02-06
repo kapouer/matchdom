@@ -40,6 +40,16 @@ export const formats = {
 	}
 };
 
+export const hooks = {
+	afterEach({ dest, expr }, val) {
+		if (dest.attr && dest.node[dest.attr + 'List']) {
+			if (val === true) return expr.path[expr.path.length - 1];
+			else if (val === false) return null;
+		}
+		return val;
+	}
+};
+
 export const filters = {
 	at: ['?', 'str?', 'str?', 'str?', (ctx, val, ancestor, after, before) => {
 		const { dest } = ctx;
@@ -91,7 +101,7 @@ export const filters = {
 			const expr = ctx.expr.clone();
 			expr.prepend(["get", alias || ""]);
 			const hit = dest.hits[dest.index] = expr.wrap(expr.toString());
-			src.write([cur.replace(expr.wrap(expr.initial), hit)]);
+			src.write([cur.replace(expr.wrap(expr.initial), hit)], src);
 		}
 		ctx.expr.drop();
 

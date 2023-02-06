@@ -47,3 +47,7 @@ It is still possible to run matchdom without a browser environment, as long as n
 - context.scope is no longer a shallow copy
 - context.scope is no longer mutated by matchdom filters - that's up to the owner of the scope to change it entirely
 - context.lang stores current value
+
+## Version 9.3
+
+- DomPlugin new hook: when merging a boolean value in a DOMTokenList attribute, its path name is used

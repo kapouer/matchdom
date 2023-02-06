@@ -513,6 +513,13 @@ Parses string as html or xml.
 
 Fuse source and destination places as if they were url components.
 
+### Special behaviors for merging in attributes
+
+- if it has a DOMTokenList interface like `class`, and if source expression is different from destination, tokens are added. Otherwise the whole attribute is set.
+- if the attribute is "boolean", it is set to empty when value is true, and removed when value is false.
+- if the value is boolean `true`, merged in a DOMTokenList, the last key
+of the expression path is used as the value. If it is `false`, it is replaced by null - this behavior is implemented using an `afterEach` hook.
+
 ### at:selector:after:before
 
 By default an expression is replaced by its value,

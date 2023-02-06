@@ -104,12 +104,35 @@ describe('attributes', () => {
 			});
 			assert.equal(copy.outerHTML, '<textarea></textarea>');
 		});
-		it('should keep attribute empty', () => {
+		it('should keep attribute empty if attribute is boolean', () => {
 			const html = `<textarea required="[required]"></textarea>`;
 			const copy = md.merge(html, {
 				required: true
 			});
 			assert.equal(copy.outerHTML, '<textarea required=""></textarea>');
+		});
+		it('should add variable name if attribute is a class and value is true', () => {
+			const html = `<div class="[some]"></div>`;
+			const copy = md.merge(html, {
+				some: true
+			});
+			assert.equal(copy.outerHTML, '<div class="some"></div>');
+		});
+		it('should add variable names or not if attribute is a class and values are true or false', () => {
+			const html = `<div class="[some] [testbool] [other]"></div>`;
+			const copy = md.merge(html, {
+				some: true,
+				testbool: false,
+				other: true
+			});
+			assert.equal(copy.outerHTML, '<div class="some other"></div>');
+		});
+		it('should not add variable name if attribute is a class and value is false', () => {
+			const html = `<div class="[some]"></div>`;
+			const copy = md.merge(html, {
+				some: false
+			});
+			assert.equal(copy.outerHTML, '<div></div>');
 		});
 		it('should set data-attribute to true', () => {
 			const html = `<textarea data-required="[required]"></textarea>`;
