@@ -43,6 +43,7 @@ export const filters = {
 		const num = 'numeric';
 		const dig = '2-digit';
 		for (const tok of list) {
+			if (!tok) continue;
 			switch (tok) {
 				case 'd': p.weekday = n; break;
 				case 'da': p.weekday = s; break;
