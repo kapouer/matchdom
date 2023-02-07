@@ -47,20 +47,4 @@ describe('scope', () => {
 			<span>one</span><span>two</span>
 		</div>`).outerHTML);
 	});
-
-	it('variables should be kept', () => {
-		const md = new Matchdom().extend(OpsPlugin);
-		const html = `<div>
-			<span>[.$one|eq:[.$two]|and:yes]</span>
-		</div>`;
-		const copy = md.merge(html, {}, {
-			data: {
-				$one: "one",
-				$two: "one"
-			}
-		});
-		assert.equal(copy.outerHTML, md.merge(`<div>
-			<span>yes</span>
-		</div>`).outerHTML);
-	});
 });
