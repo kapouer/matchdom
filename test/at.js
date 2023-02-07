@@ -148,4 +148,13 @@ describe('at filter', () => {
 		assert.equal(copy.outerHTML, '<div><div></div></div>');
 	});
 
+	it('should be an alias of else:at', () => {
+		const html = `<div><div><span class="[test|fail:*]">test</span><span>[ok|fail:*]</span></div></div>`;
+		const copy = md.merge(html, {
+			test: false,
+			ok: 'oui'
+		});
+		assert.equal(copy.outerHTML, '<div><div><span>oui</span></div></div>');
+	});
+
 });

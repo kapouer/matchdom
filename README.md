@@ -549,7 +549,7 @@ Second, by extending to previous or next siblings of the selected parent, using 
 
 Note that `after` comes first, since it's the most commonly used parameter, `at:*:br` is prettier than `at:*::br`.
 
-Using at, prune, then, else, to filters, one can control how a value affects selection.
+Using at, fail, prune, then, else, to filters, one can control how a value affects selection.
 
 Examples:
 
@@ -561,6 +561,12 @@ Examples:
 - `at:div.card:1:1` selects also the previous and next siblings of the ancestor.
 - `at:**:1:2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them.
 - `at:*::.column` selects parent node and all next siblings until they stop matching `.column`.
+
+### filter fail:range:before:after
+
+Synonym of `else:at:...`
+
+A very common use case for merging, or removing a range if value is falsey.
 
 ### filter prune:range:before:after
 
