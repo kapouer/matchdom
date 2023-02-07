@@ -211,7 +211,7 @@ and methods:
 
 - raw: the current value before coercion to a filter parameter
 - data: the data object available to expressions
-- scope: the scope object passed to matchdom, useful to pass information to filters; provided filters do not mutate scope.
+- scope: a custom object passed to matchdom, not mutated by filters
 - src: initial place of expression, should be immutable
 - dest: target place of expression
 - expr: current expression being merged
