@@ -92,7 +92,7 @@ export default class Context {
 		let val = this.scope.data;
 		if (val === undefined) val = this.data;
 		if (/^[^\\]+$/.test(hit) == false) {
-			// TODO this regexp seems odd
+			// expressions with \ are not ours
 			return undefined;
 		}
 		const expr = this.expr = new Expression(this.md.symbols).parse(hit);
@@ -106,8 +106,7 @@ export default class Context {
 			val = this.filter(val, filter);
 			if (afterEach) val = afterEach(this, val, filter);
 			if (this.cancel) {
-				expr.last = false; // probably a bad idea
-				// FIXME skip = true -rename "last" to "skip" and invert the meaning
+				expr.last = false; // won't trigger last condition
 				val = undefined;
 			}
 		}
