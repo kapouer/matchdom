@@ -89,8 +89,7 @@ export default class Context {
 	}
 
 	mutate(hit) {
-		let val = this.scope.data;
-		if (val === undefined) val = this.data;
+		let val = this.data;
 		if (/^[^\\]+$/.test(hit) == false) {
 			// expressions with \ are not ours
 			return undefined;
