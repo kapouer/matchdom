@@ -38,7 +38,15 @@ export const filters = {
 		return list.slice(i * len, (i + 1) * len);
 	}],
 	nth: ['array', 'int?1', 'int?0', (ctx, list, step, off) => {
-		return list.filter((item, i) => (i - off) % step == 0);
+		const nlist = [];
+		const len = list.length;
+		if (step > 0) for (let i = off; i < len && i >= 0; i += step) {
+			nlist.push(list[i]);
+		}
+		else if (step < 0) for (let i = len - 1 - off; i < len && i >= 0; i += step) {
+			nlist.push(list[i]);
+		}
+		return nlist;
 	}],
 	sort: ['array', 'path?', 'bool?false', ({expr}, list, path, nullsFirst) => {
 		return list.sort((ia, ib) => {

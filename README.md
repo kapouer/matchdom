@@ -377,7 +377,9 @@ Returns `array.slice(index * count, (index + 1) * count)`.
 
 Returns every n*step + offset index of the array.
 
-Offset is optional.
+If step is negative, iterates in reverse, starting at last item.
+
+Offset can be negative too.
 
 For example to get evens and odds: `[list|nth:2]` `[list|nth:2:1]`.
 

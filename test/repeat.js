@@ -129,6 +129,18 @@ describe('repeat filter', () => {
 		</div>`).outerHTML);
 	});
 
+	it('should repeat array in reverse order using nth:-1', () => {
+		const html = `<div>
+			<span>[arr|nth:-1|repeat:]</span>
+		</div>`;
+		const copy = md.extend(ArrayPlugin).merge(html, {
+			arr: [0, 1, 2]
+		});
+		assert.equal(copy.outerHTML, md.merge(`<div>
+			<span>2</span><span>1</span><span>0</span>
+		</div>`).outerHTML);
+	});
+
 	it('should not repeat empty array', () => {
 		const html = `<div><span>[arr|repeat:|value]</span></div>`;
 		const copy = md.merge(html, {
