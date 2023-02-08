@@ -346,6 +346,12 @@ Decodes/encodes to specified encoding.
 
 Calls `str.split(tok)`. Return empty array if value is false-ish.
 
+### slice:start:end
+
+Calls `list.slice(start, end)`.
+
+Also works with array.
+
 ## Matchdom.ArrayPlugin
 
 ### array type
@@ -398,10 +404,6 @@ Numeric or dates are compared as such, strings are compared using localeCompare.
 ### join:tok
 
 Calls `list.join(tok)`.
-
-### slice:start:end
-
-Calls `list.slice(start, end)`.
 
 ## Matchdom.OpsPlugin
 
