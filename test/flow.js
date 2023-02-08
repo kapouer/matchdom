@@ -84,16 +84,26 @@ describe('flow filters', () => {
 		});
 	});
 
-	describe('?', () => {
+	describe('alt', () => {
 		it('should match true to first param', () => {
-			const html = `<p>[bool|?:yes:no]</p>`;
+			const html = `<p>[bool|alt:yes:no]</p>`;
 			const copy = md.merge(html, { bool: true });
 			assert.equal(copy.outerHTML, '<p>yes</p>');
 		});
 		it('should match false to second param', () => {
-			const html = `<p>[bool|?:yes:no]</p>`;
+			const html = `<p>[bool|alt:yes:no]</p>`;
 			const copy = md.merge(html, { bool: false });
 			assert.equal(copy.outerHTML, '<p>no</p>');
+		});
+		it('should work without second param', () => {
+			const html = `<p>[bool|alt:yes]</p>`;
+			const copy = md.merge(html, { bool: true });
+			assert.equal(copy.outerHTML, '<p>yes</p>');
+		});
+		it('should work with false without second param', () => {
+			const html = `<p>[bool|alt:yes]</p>`;
+			const copy = md.merge(html, { bool: false });
+			assert.equal(copy.outerHTML, '<p></p>');
 		});
 	});
 

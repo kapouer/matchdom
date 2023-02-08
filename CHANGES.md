@@ -70,3 +70,5 @@ It is still possible to run matchdom without a browser environment, as long as n
 - drop old code about scope (use a beforeEach hook to do that)
 - add `fail` filter shorthand
 - add `split`, `join`, `slice` filters
+- replace ternary '?' by 'alt'
+- allow one or two parameters for 'alt'

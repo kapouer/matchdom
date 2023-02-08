@@ -14,7 +14,8 @@ export const filters = {
 	or: ['bool?', '?', (ctx, val, str) => {
 		return !val ? str : ctx.raw;
 	}],
-	'?': ['bool?', '?', '?', (ctx, val, yes, no) => {
+	alt: ['bool?', '?', '?', (ctx, val, yes, no) => {
+		if (no === undefined) no = null;
 		return val ? yes : no;
 	}]
 };
