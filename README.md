@@ -258,14 +258,17 @@ When data being accessed is an Array, the matching path item can be negative or 
 Also, special path item "first" and "last" can be used to specify those array indexes.
 
 When the last item of the path of an expression refers to an `undefined` value,
-the value is converted to `null`, so the expression is merged:
+the value is converted to `null`, so the expression is merged.
 
 When the path refers to an `undefined` value before the last item, the expression
 is not merged.
 
+When a component of a path ends with a `?` (Symbols.opt), if it is `undefined`, it becomes `null`: thus, it changes the previous behavior.
+
 ```js
 assert.equal(md.merge("a[to.nothing]b", {to: {}}), 'ab')
 assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b')
+assert.equal(md.merge("a[to?.nothing]b", {}), 'ab')
 ```
 
 The `get:` filter has a special syntax without colon, instead of
@@ -676,6 +679,7 @@ Default symbols are:
 - open: `[`
 - close: `]`,
 - path: `.`
+- opt: `?`
 - append: `|`
 - param: `:`
 

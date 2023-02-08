@@ -79,12 +79,14 @@ describe('text nodes', () => {
 
 	it('should be left unmerged when first-level is undefined on a two-level path', () => {
 		const html = `<span>no? [test.it]!</span>`;
-		const copy = md.merge(html, {
-			tost: {
-				it: 'oui'
-			}
-		});
+		const copy = md.merge(html, {});
 		assert.equal(copy.outerHTML, '<span>no? [test.it]!</span>');
+	});
+
+	it('should be merged when first-level is undefined and optionally chained on a two-level path', () => {
+		const html = `<span>no? [test?.it]!</span>`;
+		const copy = md.merge(html, {});
+		assert.equal(copy.outerHTML, '<span>no? !</span>');
 	});
 
 	it('should not replace newlines of contiguous text nodes with br', () => {

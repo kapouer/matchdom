@@ -623,7 +623,7 @@ describe('filters', () => {
 		});
 	});
 
-	describe('not', () => {
+	describe('null/undefined', () => {
 		const md = new Matchdom(DomPlugin, OpsPlugin);
 
 		it('should set to null if empty', () => {
@@ -636,6 +636,28 @@ describe('filters', () => {
 			const html = `<p>[val|or:toto]</p>`;
 			const copy = md.merge(html, {val: ''});
 			assert.equal(copy.outerHTML, '<p>toto</p>');
+		});
+
+		it('should set to null if undefined', () => {
+			const html = `<div><p>[obj|as:null|.test|fail:*]</p></div>`;
+			const copy = md.merge(html, {});
+			assert.equal(copy.outerHTML, '<div></div>');
+		});
+		it('should not set to null if not undefined', () => {
+			const html = `<div><p>[obj|as:null|.test|fail:*]</p></div>`;
+			const copy = md.merge(html, {obj: {test:1}});
+			assert.equal(copy.outerHTML, '<div><p>1</p></div>');
+		});
+
+		it('should set to null if undefined using optional chaining', () => {
+			const html = `<div><p>[obj?.test|fail:*]</p></div>`;
+			const copy = md.merge(html, {});
+			assert.equal(copy.outerHTML, '<div></div>');
+		});
+		it('should not set to null if not undefined using optional chaining', () => {
+			const html = `<div><p>[obj?.test|fail:*]</p></div>`;
+			const copy = md.merge(html, { obj: { test: 1 } });
+			assert.equal(copy.outerHTML, '<div><p>1</p></div>');
 		});
 	});
 

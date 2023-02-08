@@ -62,8 +62,13 @@ export default class Expression {
 			}
 		}
 		let n = 0;
-		for (const item of path) {
+		for (let item of path) {
 			if (data == null) break;
+			let opt = false;
+			if (item.endsWith(this.symbols.opt)) {
+				item = item.slice(0, -1);
+				opt = true;
+			}
 			n++;
 			if (Array.isArray(data)) {
 				const len = data.length;
@@ -77,6 +82,7 @@ export default class Expression {
 			} else {
 				data = data[item];
 			}
+			if (opt && data === undefined) data = null;
 		}
 		if (path.length == 1 && this.last && data === null) {
 			// do not change the value
