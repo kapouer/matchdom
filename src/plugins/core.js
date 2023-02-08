@@ -16,7 +16,7 @@ export const types = {
 		if (val === undefined) return val;
 		else if (val == null) return [];
 		if (
-			Array.isArray(val) || typeof val.forEach != "function" || typeof val.item == "function" && typeof val.length == "number"
+			Array.isArray(val) || typeof val.forEach == "function" || typeof val.item == "function" && typeof val.length == "number"
 		) {
 			// ok
 		} else {
