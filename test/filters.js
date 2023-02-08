@@ -441,13 +441,25 @@ describe('filters', () => {
 	});
 
 	describe('split filter', () => {
-		const md = new Matchdom(ArrayPlugin, DomPlugin);
+		const md = new Matchdom(ArrayPlugin, DomPlugin, TextPlugin);
 		it('with space', () => {
 			const html = `<p>[text|split: |join:X]</p>`;
 			const copy = md.merge(html, {
 				text: 'word1 word2'
 			});
 			assert.equal(copy.outerHTML, '<p>word1Xword2</p>');
+		});
+		it('when value is not a string', () => {
+			const html = `<p>[text|split:.]</p>`;
+			const info = console.info;
+			console.info = (...args) => {
+				throw new Error(args.join(' '));
+			};
+			const copy = md.merge(html, {
+				text: null
+			});
+			console.info = info;
+			assert.equal(copy.outerHTML, '<p></p>');
 		});
 		it('with newlines and trim', () => {
 			const html = `<p>[text|trim:|split:%0A|join:X]</p>`;
