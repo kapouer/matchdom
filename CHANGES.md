@@ -51,3 +51,22 @@ It is still possible to run matchdom without a browser environment, as long as n
 ## Version 9.3
 
 - DomPlugin new hook: when merging a boolean value in a DOMTokenList attribute, its path name is used
+
+## Version 9.4
+
+- Ternary '?' operator
+
+## Version 9.5
+
+- easier array indexes: negative values, first/last keywords
+
+## Version 9.6
+
+- nth filter accepts negative values for step, which iterates in reverse order
+
+## Version 9.7
+
+- filter type is normalized to `['get', path]` before passed as argument
+- drop old code about scope (use a beforeEach hook to do that)
+- add `fail` filter shorthand
+- add `split`, `join`, `slice` filters
