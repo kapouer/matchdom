@@ -46,5 +46,12 @@ export const filters = {
 	split: ['?', 'str', (x, str, tok) => {
 		if (!str) return [];
 		return str.split(tok);
+	}],
+	slice: ['?', 'int?', 'int?', (ctx, val, a, b) => {
+		if (!val) return null;
+		if (a == null) a = undefined;
+		if (b == null) b = undefined;
+		if (val.slice) return val.slice(a, b);
+		else return val;
 	}]
 };

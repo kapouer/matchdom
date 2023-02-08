@@ -478,7 +478,7 @@ describe('filters', () => {
 	});
 
 	describe('slice filter', () => {
-		const md = new Matchdom(DomPlugin);
+		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
 
 		it('should slice array with begin and end', () => {
 			const html = `<p>[arr|slice:1:3|join: ]</p>`;
@@ -493,6 +493,13 @@ describe('filters', () => {
 				arr: ['word1', 'word2', 'word3', 'word4']
 			});
 			assert.equal(copy.outerHTML, '<p>word3 word4</p>');
+		});
+		it('should slice text with begin', () => {
+			const html = `<p>[text|slice:2|join: ]</p>`;
+			const copy = md.merge(html, {
+				text: 'abcdef'
+			});
+			assert.equal(copy.outerHTML, '<p>cdef</p>');
 		});
 	});
 
