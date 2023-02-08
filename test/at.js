@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, DomPlugin } from 'matchdom';
+import { Matchdom, DomPlugin, OpsPlugin } from 'matchdom';
 
 describe('at filter', () => {
 	before(function () {
@@ -9,7 +9,7 @@ describe('at filter', () => {
 	after(function () {
 		this.jsdom();
 	});
-	const md = new Matchdom().extend(DomPlugin);
+	const md = new Matchdom(DomPlugin, OpsPlugin);
 	it('should replace current node', () => {
 		const html = `<div><span>[test|at:*]</span></div>`;
 		const copy = md.merge(html, {
@@ -149,12 +149,24 @@ describe('at filter', () => {
 	});
 
 	it('should be an alias of else:at', () => {
-		const html = `<div><div><span class="[test|fail:*]">test</span><span>[ok|fail:*]</span></div></div>`;
+		const html = `<div>
+			<span class="[test|fail:*]">test</span>
+			<span>[ok|fail:*]</span>
+			<span>[zero|neq:0|fail:*]</span>
+			<span>[zero|switch:0|fail:*]</span>
+			<p>[zero|fail:*]</p>
+			<section>[un|fail:*]</section>
+		</div>`;
 		const copy = md.merge(html, {
 			test: false,
-			ok: 'oui'
+			ok: 'oui',
+			zero: 0,
+			un: 1
 		});
-		assert.equal(copy.outerHTML, '<div><div><span>oui</span></div></div>');
+		assert.equal(copy.outerHTML.replaceAll(/\s/g, ''), `<div>
+			<span>oui</span>
+			<section>1</section>
+		</div>`.replaceAll(/\s/g, ''));
 	});
 
 });
