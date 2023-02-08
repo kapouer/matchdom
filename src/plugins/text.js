@@ -42,5 +42,9 @@ export const filters = {
 			case "url": return decodeURIComponent(str);
 			case "hex": return decodeURIComponent('%' + str.match(/.{1,2}/g).join('%'));
 		}
+	}],
+	split: ['?', 'str', (x, str, tok) => {
+		if (!str) return [];
+		return str.split(tok);
 	}]
 };

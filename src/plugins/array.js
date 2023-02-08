@@ -75,5 +75,11 @@ export const filters = {
 	unshift: ['array', 'any', (ctx, list, item) => {
 		list.unshift(item);
 		return list;
+	}],
+	join: ['array', 'str', (ctx, list, tok) => {
+		return list.join('tok');
+	}],
+	slice: ['array', 'int?', 'int?', (ctx, list, a, b) => {
+		return list.slice(a, b);
 	}]
 };

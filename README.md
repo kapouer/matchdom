@@ -342,6 +342,10 @@ Uppercase, lowercase, or unicode-capitalize sentences.
 
 Decodes/encodes to specified encoding.
 
+### split:tok
+
+Calls `str.split(tok)`. Return empty array if value is false-ish.
+
 ## Matchdom.ArrayPlugin
 
 ### array type
@@ -390,6 +394,14 @@ Calls array.sort on each property specified by path.
 nullsFirst can be "1" or "true".
 
 Numeric or dates are compared as such, strings are compared using localeCompare.
+
+### join:tok
+
+Calls `list.join(tok)`.
+
+### slice:start:end
+
+Calls `list.slice(start, end)`.
 
 ## Matchdom.OpsPlugin
 
