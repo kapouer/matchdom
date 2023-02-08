@@ -78,7 +78,7 @@ export const filters = {
 		return null;
 	}],
 	fail: ['bool?', '?*', (ctx, test, ...args) => {
-		if (!test) return ctx.filter(ctx.raw, 'at', ...args);
+		if (!test) return ctx.filter(null, 'at', ...args);
 		else return ctx.raw;
 	}],
 	to: ['?', 'str?', (ctx, val, to) => {
