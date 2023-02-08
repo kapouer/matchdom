@@ -131,7 +131,7 @@ The `as` and `is` filters are useful to explicitely cast or check a value type.
 
 ### complex types (from plugins)
 
-- filter: checks the parameter is a filter name
+- filter: an array, first parameter must be a filter name
 - path: converts parameter to a path array
 - date: try new Date(val), return null if not a date, accepts 'now'
 - array: wrap non-array-like values into an array

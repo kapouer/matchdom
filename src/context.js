@@ -101,6 +101,7 @@ export default class Context {
 		while (expr.filter < expr.filters.length) {
 			if (val === undefined && !expr.last) break;
 			const filter = expr.filters[expr.filter++];
+			if (filter.length <= 1) filter.unshift("get");
 			if (beforeEach) val = beforeEach(this, val, filter);
 			val = this.filter(val, filter);
 			if (afterEach) val = afterEach(this, val, filter);
@@ -234,9 +235,7 @@ export default class Context {
 	}
 
 	getFilter(val, filter) {
-		if (filter.length <= 1) {
-			filter.unshift("get");
-		}
+		if (filter.length <= 1) filter.unshift("get");
 		const name = filter[0];
 		let def = this.md.filters[name];
 		if (!def && val != null && typeof val[name] == "function") {
