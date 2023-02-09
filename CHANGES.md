@@ -73,3 +73,4 @@ It is still possible to run matchdom without a browser environment, as long as n
 - replace ternary '?' by 'alt'
 - allow one or two parameters for 'alt'
 - paths can use optional chaining to force undefined to be evaluated as null
+- add trim filter

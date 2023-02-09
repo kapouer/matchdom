@@ -1072,4 +1072,43 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<div><p>totowordaa</p></div>');
 		});
 	});
+
+	describe('trim', () => {
+		const md = new Matchdom(TextPlugin);
+		it('out', () => {
+			const html = `<span>-[test|trim:out]-</span>`;
+			const copy = md.merge(html, { test: ' a ' });
+			assert.equal(copy.outerHTML, '<span>-a-</span>');
+		});
+
+		it('default', () => {
+			const html = `<span>-[test|trim:]-</span>`;
+			const copy = md.merge(html, { test: ' a ' });
+			assert.equal(copy.outerHTML, '<span>-a-</span>');
+		});
+
+		it('start', () => {
+			const html = `<span>-[test|trim:start]-</span>`;
+			const copy = md.merge(html, { test: ' a ' });
+			assert.equal(copy.outerHTML, '<span>-a -</span>');
+		});
+
+		it('end', () => {
+			const html = `<span>-[test|trim:end]-</span>`;
+			const copy = md.merge(html, { test: ' a ' });
+			assert.equal(copy.outerHTML, '<span>- a-</span>');
+		});
+
+		it('all', () => {
+			const html = `<span>-[test|trim:all]-</span>`;
+			const copy = md.merge(html, { test: ' a b\n\tc ' });
+			assert.equal(copy.outerHTML, '<span>-abc-</span>');
+		});
+
+		it('line', () => {
+			const html = `<span>-[test|trim:line]-</span>`;
+			const copy = md.merge(html, { test: ' a\nb\n\nc ' });
+			assert.equal(copy.outerHTML, '<span>- a\nb\nc -</span>');
+		});
+	});
 });

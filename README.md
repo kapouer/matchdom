@@ -357,6 +357,16 @@ Calls `list.slice(start, end)`.
 
 Also works with array.
 
+### trim:all|line|start|end|out
+
+Trimming:
+
+- all: whitespaces are removed inside too
+- line: only empty lines are removed
+- start: trim at start
+- end: trim at end
+- out: trim both sides (the default)
+
 ## Matchdom.ArrayPlugin
 
 ### array type

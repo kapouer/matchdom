@@ -12,6 +12,22 @@ export const filters = {
 			}).join('. ');
 		}
 	}],
+	trim: ['?', 'all|line|start|end|out|', (x, val, how) => {
+		if (!val) return val;
+		switch (how) {
+			case 'all':
+				return val.replace(/\s/gm, '');
+			case 'line':
+				return val.replace(/(\r?\n)\r?\n/gm, '$1');
+			case 'start':
+				return val.trimStart();
+			case 'end':
+				return val.trimEnd();
+			case 'out':
+			default:
+				return val.trim();
+		}
+	}],
 	pre: ['?', 'str', (x, val, str) => {
 		if (val == null || val === "") return val;
 		return str + val;
