@@ -605,7 +605,7 @@ this is a shortcut for `at:${range}|const:`.
 Useful to test a value and remove selected range if false-ish.
 
 To remove selected range but actually merge the value if true-ish,
-use instead `else:at:*`.
+use instead `fail:*`.
 
 ### filter to:target
 
