@@ -318,9 +318,19 @@ Used by localized filters.
 
 ## flow plugin (always loaded)
 
-### not, then, else:filter:param+
+### not:filter:param*
 
-Evaluates value loosely, and call named filter with parameters accordingly.
+Call filter with negated value.
+
+### then:filter:param*
+
+Call filter if value evaluates to true, else return value.
+
+### else:filter:param*
+
+Call filter if value evaluates to false, else return value.
+
+Like `not:then:`
 
 ### or, and:str
 
