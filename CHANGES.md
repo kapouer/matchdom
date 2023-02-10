@@ -74,3 +74,8 @@ It is still possible to run matchdom without a browser environment, as long as n
 - allow one or two parameters for 'alt'
 - paths can use optional chaining to force undefined to be evaluated as null
 - add trim filter
+
+## Version 9.8
+
+- afterAll receives value before it is 'converted to null if last and undefined'.
+- expr.get does change expr.last only if called by get filter
