@@ -51,7 +51,10 @@ export default class Expression {
 
 	get(data, path, root) {
 		if (path.length == 0) return data;
-		if (root) {
+		let n = 0;
+		if (root !== undefined) {
+			// called from filter
+			n = this.path.length;
 			if (path[0] !== "") {
 				// absolute path
 				data = root;
@@ -61,7 +64,6 @@ export default class Expression {
 				this.path.push(...path);
 			}
 		}
-		let n = 0;
 		for (let item of path) {
 			if (data == null) break;
 			let opt = false;
@@ -84,10 +86,8 @@ export default class Expression {
 			}
 			if (opt && data === undefined) data = null;
 		}
-		if (path.length == 1 && this.last && data === null) {
-			// do not change the value
-		} else {
-			this.last = data === undefined && n === path.length;
+		if (root !== undefined) {
+			this.last = data === undefined && n === this.path.length;
 		}
 		return data;
 	}
