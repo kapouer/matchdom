@@ -250,25 +250,26 @@ And various methods to extend to an ancestor, restrict to a node or attribute, w
 
 Returns data as found from path accessor.
 
-When the path starts with a dot, it applies to current value.
+When the path starts with a dot, it applies to the value returned by previous filter.
 
 When the path starts with an identifier, it applies to context data.
 
 When data being accessed is an Array, the matching path item can be negative or above array length - it is applied modulo array length.
 Also, special path item "first" and "last" can be used to specify those array indexes.
 
-When the last item of the path of an expression refers to an `undefined` value,
-the value is converted to `null`, so the expression is merged.
+When a path tries to access a non-existent object, it returns `undefined`, preventing the expression to be merged.
+However, when the last value is `undefined`, it is converted to `null`. This conversion happens after `afterAll` hook.
 
-When the path refers to an `undefined` value before the last item, the expression
-is not merged.
-
-When a component of a path ends with a `?` (Symbols.opt), if it is `undefined`, it becomes `null`: thus, it changes the previous behavior.
+When a component of a path ends with a `?` (Symbols.opt), if it is `undefined`, it becomes `null`, changing the previous behavior (except for top-level path).
 
 ```js
 assert.equal(md.merge("a[to.nothing]b", {to: {}}), 'ab')
 assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b')
 assert.equal(md.merge("a[to?.nothing]b", {}), 'ab')
+assert.equal(md.merge("a[to|as:array|.first]b", {}), 'a[to|as:array|.first]b')
+assert.equal(md.merge("a[to?|as:array|.first]b", {}), 'ab')
+assert.equal(md.merge("a[top]b", {}), 'ab')
+assert.equal(md.merge("a[top?]b", {}), 'ab')
 ```
 
 The `get:` filter has a special syntax without colon, instead of

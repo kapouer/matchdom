@@ -626,6 +626,16 @@ describe('filters', () => {
 	describe('null/undefined', () => {
 		const md = new Matchdom(DomPlugin, OpsPlugin);
 
+		it('work with tests in the README', () => {
+			assert.equal(md.merge("a[to.nothing]b", { to: {} }), 'ab');
+			assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b');
+			assert.equal(md.merge("a[to?.nothing]b", {}), 'ab');
+			assert.equal(md.merge("a[to|as:array|.first]b", {}), 'a[to|as:array|.first]b');
+			assert.equal(md.merge("a[to?|as:array|.first]b", {}), 'ab');
+			assert.equal(md.merge("a[top]b", {}), 'ab');
+			assert.equal(md.merge("a[top?]b", {}), 'ab');
+		});
+
 		it('should set to null if empty', () => {
 			const html = `<p class="[val|as:null]">test</p>`;
 			const copy = md.merge(html, {val: ''});
