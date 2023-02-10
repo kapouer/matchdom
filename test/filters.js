@@ -632,6 +632,12 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>test</p>');
 		});
 
+		it('should merge an undefined top-level value', () => {
+			const html = `<p>[val]test</p>`;
+			const copy = md.merge(html, {});
+			assert.equal(copy.outerHTML, '<p>test</p>');
+		});
+
 		it('should not set to null if not empty', () => {
 			const html = `<p>[val|or:toto]</p>`;
 			const copy = md.merge(html, {val: ''});
@@ -655,9 +661,24 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<div></div>');
 		});
 		it('should not set to null if not undefined using optional chaining', () => {
-			const html = `<div><p>[obj?.test|fail:*]</p></div>`;
-			const copy = md.merge(html, { obj: { test: 1 } });
-			assert.equal(copy.outerHTML, '<div><p>1</p></div>');
+			const copy = md.merge('[obj.test?]', { obj: { test: 1 } });
+			assert.equal(copy, 1);
+		});
+
+		it('optional chaining should affect afterAll filter', () => {
+			const result = {};
+			const md = new Matchdom({
+				hooks: {
+					afterAll(ctx, val) {
+						result.test = val;
+						return val;
+					}
+				}
+			});
+			assert.equal(md.merge('[obj.test]', { obj: {} }), null);
+			assert.equal(result.test, undefined);
+			assert.equal(md.merge('[obj.test?]', { obj: {} }), null);
+			assert.equal(result.test, null);
 		});
 	});
 
