@@ -110,8 +110,8 @@ export default class Context {
 				val = undefined;
 			}
 		}
-		if (expr.last && val === undefined) val = null;
 		if (afterAll) val = afterAll(this, val, expr.filters);
+		if (expr.last && val === undefined) val = null;
 		return val;
 	}
 
