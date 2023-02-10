@@ -865,12 +865,21 @@ describe('filters', () => {
 		});
 
 		it('should fail to parse', () => {
-			md.debug = true; // ensure missing json filter will crash
-			const html = `<p>[str|as:json|test]</p>`;
+			md.debug = true; // ensure missing json as type will crash
+			const html = `<p>[str|as:json|.test]</p>`;
 			const copy = md.merge(html, {
 				str: '{test:10}'
 			});
 			assert.equal(copy.outerHTML, '<p></p>');
+		});
+
+		it('should fail to parse and not merge', () => {
+			md.debug = true; // ensure missing json as type will crash
+			const html = `<p>[str|as:json|test]</p>`;
+			const copy = md.merge(html, {
+				str: '{test:10}'
+			});
+			assert.equal(copy.outerHTML, '<p>[str|as:json|test]</p>');
 		});
 	});
 
