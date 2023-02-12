@@ -367,6 +367,10 @@ Calls `str.slice(start, end)`.
 
 Also works with array.
 
+### parts:tok:start:end
+
+Shorthand for "str|split:tok|slice:start:end|join:tok".
+
 ### trim:all|line|start|end|out
 
 Trimming:

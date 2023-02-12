@@ -65,9 +65,15 @@ export const filters = {
 	}],
 	slice: ['?', 'int?', 'int?', (ctx, val, a, b) => {
 		if (!val) return null;
-		if (a == null) a = undefined;
+		if (a == null) return val;
 		if (b == null) b = undefined;
 		if (val.slice) return val.slice(a, b);
 		else return val;
+	}],
+	parts: ['?', 'str', 'int?', 'int?', (ctx, val, tok, a, b) => {
+		if (typeof val != "string") return val;
+		if (a == null) return val;
+		if (b == null) b = undefined;
+		return val.split(tok).slice(a, b).join(tok);
 	}]
 };
