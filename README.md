@@ -192,7 +192,7 @@ An array of strings
 
 A parsed expression has properties:
 
-- path: array of strings
+- path: actual list of keys used to access data
 - filters: array of filters
 - filter: index of current filter in filters
 
