@@ -339,7 +339,7 @@ Like `not:then:`
 
 ### alt:yes:no
 
-Ternary operator, shortcut for "and:yes|or:no"
+Ternary operator, shorthand for "and:yes|or:no"
 
 Second parameter can be omitted
 
@@ -363,7 +363,7 @@ Calls `str.split(tok)`. Return empty array if value is false-ish.
 
 ### slice:start:end
 
-Calls `list.slice(start, end)`.
+Calls `str.slice(start, end)`.
 
 Also works with array.
 
@@ -610,7 +610,7 @@ A very common use case for merging, or removing a range if value is falsey.
 ### filter prune:range:before:after
 
 Like "at", without actually writing the value,
-this is a shortcut for `at:${range}|const:`.
+this is a shorthand for `at:${range}|const:`.
 
 Useful to test a value and remove selected range if false-ish.
 
