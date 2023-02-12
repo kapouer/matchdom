@@ -885,11 +885,11 @@ describe('filters', () => {
 
 		it('should fail to parse and not merge', () => {
 			md.debug = true; // ensure missing json as type will crash
-			const html = `<p>[str|as:json|test]</p>`;
+			const html = `<p>[str|as:json|other.test]</p>`;
 			const copy = md.merge(html, {
 				str: '{test:10}'
 			});
-			assert.equal(copy.outerHTML, '<p>[str|as:json|test]</p>');
+			assert.equal(copy.outerHTML, '<p>[str|as:json|other.test]</p>');
 		});
 	});
 

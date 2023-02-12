@@ -51,45 +51,50 @@ export default class Expression {
 
 	get(data, path, root) {
 		if (path.length == 0) return data;
+		const internal = root !== undefined;
 		let n = 0;
-		if (root !== undefined) {
+		let skip = false;
+		if (internal) {
 			// called from filter
-			n = this.path.length;
 			if (path[0] !== "") {
 				// absolute path
 				data = root;
-				this.path = path.slice();
+				this.path = [];
 			} else {
-				path = path.slice(1);
-				this.path.push(...path);
+				skip = true;
 			}
+			n = this.path.length;
 		}
 		for (let item of path) {
-			if (data == null) break;
+			if (skip) {
+				skip = false;
+				continue;
+			}
 			let opt = false;
 			if (item.endsWith(this.symbols.opt)) {
 				item = item.slice(0, -1);
 				opt = true;
 			}
-			n++;
-			if (Array.isArray(data)) {
-				const len = data.length;
-				const k = { first: 0, last: -1 }[item] ?? parseInt(item);
-				if (!Number.isNaN(k)) {
-					// allows negative integers as well
-					data = data[((k % len) + len) % len];
-				} else {
-					data = data[item];
+			if (data != null) {
+				if (Array.isArray(data)) {
+					const len = data.length;
+					const k = { first: 0, last: -1 }[item] ?? parseInt(item);
+					if (!Number.isNaN(k)) {
+						// allows negative integers as well
+						item = ((k % len) + len) % len;
+					}
 				}
-			} else {
 				data = data[item];
+				if (opt && data === undefined) {
+					data = null;
+				}
+				n++;
 			}
-			if (opt && data === undefined) data = null;
+			if (internal) this.path.push(item);
 		}
-		if (root !== undefined) {
-			this.last = data === undefined && n === this.path.length;
+		if (internal) {
+			this.last = n === this.path.length;
 		}
 		return data;
 	}
 }
-
