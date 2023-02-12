@@ -79,3 +79,9 @@ It is still possible to run matchdom without a browser environment, as long as n
 
 - afterAll receives value before it is 'converted to null if last and undefined'.
 - expr.get does change expr.last only if called by get filter
+
+### Version 9.9
+
+- Fix expr.path to match the actual accessed list of keys
+- Add TextPlugin `parts:tok:start:end` filter.
+- expr.get(data, path, root) is not public api, remove it from README
