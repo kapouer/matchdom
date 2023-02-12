@@ -202,9 +202,8 @@ and methods:
 - clone(): return a new expression with the not-yet processed filters
 - toString(): the original expression with open and closing brackets
 - get(data, path): access data from path
-- get(data, path, root): access data or root data from path, save path
-- append(filter): a filter to the list
-- prepend(filter): a filter at current index
+- append(filter): add a filter to the list
+- prepend(filter): insert a filter at current index
 - drop(): stop processing following filters, return true if there was any
 
 ### context
