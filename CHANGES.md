@@ -85,3 +85,7 @@ It is still possible to run matchdom without a browser environment, as long as n
 - Fix expr.path to match the actual accessed list of keys
 - Add TextPlugin `parts:tok:start:end` filter.
 - expr.get(data, path, root) is not public api, remove it from README
+
+### Version 9.10.0
+
+- afterAll hook can `ctx.cancel = true`

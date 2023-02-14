@@ -99,18 +99,15 @@ export default class Context {
 
 		if (beforeAll) val = beforeAll(this, val, expr.filters);
 		while (expr.filter < expr.filters.length) {
-			if (val === undefined && !expr.last) break;
+			if (val === undefined && !expr.last || this.cancel) break;
 			const filter = expr.filters[expr.filter++];
 			if (filter.length <= 1) filter.unshift("get");
 			if (beforeEach) val = beforeEach(this, val, filter);
 			val = this.filter(val, filter);
 			if (afterEach) val = afterEach(this, val, filter);
-			if (this.cancel) {
-				expr.last = false; // won't trigger last condition
-				val = undefined;
-			}
 		}
 		if (afterAll) val = afterAll(this, val, expr.filters);
+		if (this.cancel) return;
 		if (expr.last && val === undefined) val = null;
 		return val;
 	}
