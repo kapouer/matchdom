@@ -26,6 +26,25 @@ describe('prune filter', () => {
 		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
 	});
 
+	it('should just drop text', () => {
+		const html = `<div><span>test[test|prune:]</span></div>`;
+		const copy = md.merge(html, {
+			test: false
+		});
+		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
+		assert.equal(md.merge("test[test|prune:]", { test: false }), 'test');
+		assert.equal(md.merge("test[test]", { test: false }), 'testfalse');
+	});
+
+	it('should remove content', () => {
+		const html = `<div><span>test[test|prune:-]</span></div>`;
+		const copy = md.merge(html, {
+			test: false
+		});
+		assert.equal(copy.outerHTML, '<div><span></span></div>');
+		assert.equal(md.merge("test[test|prune:-]", {}), null);
+	});
+
 	it('should remove current attribute', () => {
 		const html = `<div><span class="some[test|prune:-]">test</span></div>`;
 		const copy = md.merge(html, {
