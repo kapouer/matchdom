@@ -505,7 +505,7 @@ For localization, lang is searched in this order:
 
 - ctx.lang (which can be set using the `lang:<name>` filter)
 - documentElement.lang
-- window.navigator.language()
+- window.navigator.language
 
 Localized format accepts shorthands:
 

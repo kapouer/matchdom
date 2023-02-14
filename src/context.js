@@ -229,7 +229,7 @@ export default class Context {
 
 	getLang() {
 		if (!this.lang && typeof window != "undefined") {
-			this.lang = document.documentElement && document.documentElement.lang || window.navigator.language();
+			this.lang = document.documentElement && document.documentElement.lang || window.navigator.language;
 		}
 		return this.lang;
 	}
