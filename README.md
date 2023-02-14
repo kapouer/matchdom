@@ -710,3 +710,8 @@ Default symbols are:
 - param: `:`
 
 and can be overriden by passing a symbols object to the constructor.
+
+## Acknowledgement
+
+Skrol29 for its TinyButStrong PHP template engine.
+
