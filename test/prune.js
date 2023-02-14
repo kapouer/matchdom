@@ -42,9 +42,21 @@ describe('prune filter', () => {
 		assert.equal(copy.outerHTML, '<div></div>');
 	});
 
-	it('should remove attr if prop is undefined', () => {
+	it('should remove attr if val is nullish', () => {
 		const html = `<div><p class="[obj.val|prune:-]test">test</p></div>`;
-		const copy = md.merge(html, { obj: {}});
+		const copy = md.merge(html, { obj: { val: null } });
+		assert.equal(copy.outerHTML, '<div><p>test</p></div>');
+	});
+
+	it('should remove attr if val is optional', () => {
+		const html = `<div><p class="[obj?.val|prune:-]test">test</p></div>`;
+		const copy = md.merge(html, {});
+		assert.equal(copy.outerHTML, '<div><p>test</p></div>');
+	});
+
+	it('should remove attr if val is undefined', () => {
+		const html = `<div><p class="[obj.val|prune:-]test">test</p></div>`;
+		const copy = md.merge(html, { obj: {} });
 		assert.equal(copy.outerHTML, '<div><p>test</p></div>');
 	});
 
