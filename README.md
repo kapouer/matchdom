@@ -578,10 +578,10 @@ By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
 This filter extends the selected range.
 
-First by changing the selected parent:
+The selector changes the current parent:
 
-- ``: empty selector, selects the expression and the adjacent text to it
-- `-`: selects the content of the parent node containing the expression
+- ``: the expression itself
+- `-`: the parent node content, or the attribute
 - `*`: the nth selected parent (one wildcard goes up one parent)
 - a css selector: the closest selected parent
 
@@ -617,6 +617,8 @@ Like "at", without actually writing the value,
 this is a shorthand for `at:${range}|const:`.
 
 Useful to test a value and remove selected range if false-ish.
+
+Note that `val|prune:` is the same as `val` only if `val` is empty, and differs if `val` is equal to boolean false.
 
 To remove selected range but actually merge the value if true-ish,
 use instead `fail:*`.
