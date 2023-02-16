@@ -257,18 +257,32 @@ When data being accessed is an Array, the matching path item can be negative or 
 Also, special path item "first" and "last" can be used to specify those array indexes.
 
 When a path tries to access a non-existent object, it returns `undefined`, preventing the expression to be merged.
-However, when the last value is `undefined`, it is converted to `null`. This conversion happens after `afterAll` hook.
+However, when the last value is `undefined`, it is converted to `null`.
+This conversion happens after `afterAll` hook.
 
-When a component of a path ends with a `?` (Symbols.opt), if it is `undefined`, it becomes `null`, changing the previous behavior (except for top-level path).
+When a component of a path ends with a `?` (Symbols.opt), if it is `undefined`, it becomes `null`, changing the previous behavior.
+
+A variable with a top-level path, like `[prop]`, is merged even if it is undefined.
+
+However, if a filter declares a required value, and the value is undefined, the expression is not merged.
 
 ```js
-assert.equal(md.merge("a[to.nothing]b", {to: {}}), 'ab')
+// non-existent object
 assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b')
+// existent object
+assert.equal(md.merge("a[to.nothing]b", {to: {}}), 'ab')
+// optional chaining
 assert.equal(md.merge("a[to?.nothing]b", {}), 'ab')
+// same situations with a filter
 assert.equal(md.merge("a[to|as:array|.first]b", {}), 'a[to|as:array|.first]b')
 assert.equal(md.merge("a[to?|as:array|.first]b", {}), 'ab')
+// top-level has a different behavior
 assert.equal(md.merge("a[top]b", {}), 'ab')
 assert.equal(md.merge("a[top?]b", {}), 'ab')
+// unless a filter requires a value
+assert.equal(md.merge("a[list|at:-|repeat:]b", {}), 'a[list|at:-|repeat:]b')
+// here list? becomes null which becomes [] so repeat works
+assert.equal(md.merge("a[list?|at:-|repeat:]b", {}), 'ab')
 ```
 
 The `get:` filter has a special syntax without colon, instead of
@@ -714,4 +728,3 @@ and can be overriden by passing a symbols object to the constructor.
 ## Acknowledgement
 
 Skrol29 for its TinyButStrong PHP template engine.
-

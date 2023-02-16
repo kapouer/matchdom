@@ -94,7 +94,7 @@ export const filters = {
 		dest.restrict(to);
 		return val;
 	}],
-	repeat: ['array?', 'string?', 'filter?', '?*', (ctx, list, alias, placer, ...params) => {
+	repeat: ['array', 'string?', 'filter?', '?*', (ctx, list, alias, placer, ...params) => {
 		const { src, dest } = ctx;
 		if (dest.ancestor == null) {
 			ctx.filter(list, 'at', '*');

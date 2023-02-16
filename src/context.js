@@ -151,8 +151,13 @@ export default class Context {
 					mtype = arg;
 				}
 				const fi = this.check(val, filter, i, arg);
+				if (i === 0 && fi === undefined) {
+					this.cancel = true;
+					break;
+				}
 				if (!mtype || fi !== undefined) filter[i] = fi;
 			}
+			if (this.cancel) return;
 			if (def.length < filter.length) {
 				if (typed) {
 					if (filter.length == 2 && filter[1] === "") {
@@ -182,8 +187,9 @@ export default class Context {
 		const [type, def] = arg.split("?");
 		if (str == null) {
 			if (def == null) {
-				throw new Context.ParamError("Missing required argument of type " + arg);
+				return str;
 			} else if (type == "any") {
+				if (i === 0 && str === undefined) str = null;
 				return str;
 			} else {
 				str = def === "" ? null : def;

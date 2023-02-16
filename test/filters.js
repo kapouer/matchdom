@@ -657,7 +657,7 @@ describe('filters', () => {
 			assert.equal(md.merge("a[to.nothing]b", { to: {} }), 'ab');
 			assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b');
 			assert.equal(md.merge("a[to?.nothing]b", {}), 'ab');
-			assert.equal(md.merge("a[to|as:array|.first]b", {}), 'a[to|as:array|.first]b');
+			assert.equal(md.merge("a[to|repeat:|.first]b", {}), 'a[to|repeat:|.first]b');
 			assert.equal(md.merge("a[to?|as:array|.first]b", {}), 'ab');
 			assert.equal(md.merge("a[top]b", {}), 'ab');
 			assert.equal(md.merge("a[top?]b", {}), 'ab');
@@ -673,6 +673,18 @@ describe('filters', () => {
 			const html = `<p>[val]test</p>`;
 			const copy = md.merge(html, {});
 			assert.equal(copy.outerHTML, '<p>test</p>');
+		});
+
+		it('should not merge an undefined top-level value if next filter requires a value', () => {
+			const html = `<p>[list|repeat:]test</p>`;
+			const copy = md.merge(html, {});
+			assert.equal(copy.outerHTML, '<p>[list|repeat:]test</p>');
+		});
+
+		it('should merge an undefined optional top-level value even if next filter requires a value', () => {
+			const html = `<div>a<p>[list?|repeat:]test</p></div>`;
+			const copy = md.merge(html, {});
+			assert.equal(copy.outerHTML, '<div>a</div>');
 		});
 
 		it('should not set to null if not empty', () => {
