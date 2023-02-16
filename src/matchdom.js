@@ -90,7 +90,7 @@ export class Matchdom {
 				let allNulls = true;
 				let allTrue = true;
 				let allBools = true;
-				const filteredHits = ctx.dest.hits.filter(val => {
+				const filteredHits = dest.hits.filter(val => {
 					if (val !== null) allNulls = false;
 					if (val === true); // do nothing
 					else if (val === false) allTrue = false;

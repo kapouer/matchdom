@@ -7,6 +7,7 @@ export default class Expression {
 		this.path = [];
 		this.symbols = symbols;
 	}
+
 	parse(str) {
 		const { append, param } = this.symbols;
 		this.initial = str;
@@ -18,18 +19,22 @@ export default class Expression {
 		}
 		return this;
 	}
+
 	append(params = []) {
 		this.filters.push(params);
 	}
+
 	prepend(params = []) {
 		this.filters.splice(this.filter, 0, params);
 	}
+
 	clone() {
 		const expr = new Expression(this.symbols);
 		expr.filters = this.filters.slice(this.filter);
 		expr.initial = this.initial;
 		return expr;
 	}
+
 	toString() {
 		const { param, append } = this.symbols;
 		return this.filters.map(params => {
@@ -37,9 +42,7 @@ export default class Expression {
 			return params.join(param);
 		}).join(append);
 	}
-	wrap(str) {
-		return this.symbols.open + str + this.symbols.close;
-	}
+
 	drop() {
 		if (this.filter != this.filters.length) {
 			this.filter = this.filters.length;

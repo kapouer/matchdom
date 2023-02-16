@@ -58,29 +58,25 @@ export default class Context {
 	setup(hits, root, node, name) {
 		this.src = new Place(hits, root, node, name);
 		this.dest = this.src.clone();
-		this.process(this.dest.hits);
+		this.process(this.dest);
 	}
 
-	process(hits) {
-		for (let i = 0; i < hits.length; i++) {
-			let hit = hits[i];
+	process(place) {
+		for (let i = 0; i < place.hits.length; i++) {
+			let hit = place.hits[i];
 			if (hit === null || typeof hit == "string") {
 				continue;
 			}
 			if (hit.length > 1 || typeof hit[0] != "string") {
-				this.process(hit);
-				hit = hit.join('');
+				hit = this.process(new Place(hit)).join('');
 			} else {
 				hit = hit[0];
 			}
-			this.src.index = this.dest.index = i;
+			this.src.index = place.index = i;
 			const val = this.mutate(hit);
-			if (val !== undefined) {
-				hits[this.dest.index] = val;
-			} else {
-				hits[this.dest.index] = this.md.symbols.open + hit + this.md.symbols.close;
-			}
+			place.hits[place.index] = val !== undefined ? val : this.wrap(hit);
 		}
+		return place.hits;
 	}
 
 	mutate(hit) {
@@ -105,8 +101,8 @@ export default class Context {
 		}
 		if (afterAll) val = afterAll(this, val, expr.filters);
 		if (expr.cancel) {
-			this.src = src;
-			this.dest = dest;
+			Object.assign(this.src, src);
+			Object.assign(this.dest, dest);
 			return;
 		}
 		if (expr.last && val === undefined) val = null;
@@ -257,5 +253,9 @@ export default class Context {
 			else def = def.slice();
 		}
 		return [name, def];
+	}
+
+	wrap(str) {
+		return this.md.symbols.open + str + this.md.symbols.close;
 	}
 }
