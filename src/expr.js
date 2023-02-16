@@ -78,7 +78,8 @@ export default class Expression {
 			if (data != null) {
 				if (Array.isArray(data)) {
 					const len = data.length;
-					const k = { first: 0, last: -1 }[item] ?? parseInt(item);
+					const map = { first: 0, last: -1 };
+					const k = item in map ? map[item] : parseInt(item);
 					if (!Number.isNaN(k)) {
 						// allows negative integers as well
 						item = ((k % len) + len) % len;

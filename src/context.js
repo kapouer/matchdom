@@ -53,7 +53,7 @@ export default class Context {
 
 	constructor(md, data, scope) {
 		this.data = data;
-		this.scope = scope ?? {};
+		this.scope = scope || {};
 		this.md = md;
 	}
 
