@@ -4,9 +4,10 @@ export default class Place {
 	static CONT = 2;
 	static ATTR = 3;
 	static TAG = 4;
-	index = 0;
 
-	constructor(root, node, name) {
+	constructor(hits, root, node, name) {
+		this.index = 0;
+		this.hits = hits;
 		this.root = root;
 		if (node && node.nodeType == 3) {
 			this.target = Place.TEXT;
@@ -25,7 +26,11 @@ export default class Place {
 	}
 
 	clone() {
-		return Object.assign(new Place(), this);
+		return Object.assign(
+			new Place(),
+			this,
+			{ hits: this.hits.slice() }
+		);
 	}
 
 	get doc() {

@@ -47,7 +47,6 @@ export default class Context {
 		return pos;
 	}
 
-	cancel = false;
 	level = 0;
 	raw;
 
@@ -58,11 +57,9 @@ export default class Context {
 	}
 
 	setup(hits, root, node, name) {
-		this.src = new Place(root, node, name);
-		this.src.hits = hits.slice();
-		this.dest = new Place(root, node, name);
-		this.dest.hits = hits;
-		this.process(hits);
+		this.src = new Place(hits, root, node, name);
+		this.dest = this.src.clone();
+		this.process(this.dest.hits);
 	}
 
 	process(hits) {
@@ -96,10 +93,12 @@ export default class Context {
 		}
 		const expr = this.expr = new Expression(this.md.symbols).parse(hit);
 		const { beforeAll, beforeEach, afterEach, afterAll } = this.md.hooks;
+		const src = this.src.clone();
+		const dest = this.dest.clone();
 
 		if (beforeAll) val = beforeAll(this, val, expr.filters);
 		while (expr.filter < expr.filters.length) {
-			if (val === undefined && !expr.last || this.cancel) break;
+			if (val === undefined && !expr.last || expr.cancel) break;
 			const filter = expr.filters[expr.filter++];
 			if (filter.length <= 1) filter.unshift("get");
 			if (beforeEach) val = beforeEach(this, val, filter);
@@ -107,7 +106,11 @@ export default class Context {
 			if (afterEach) val = afterEach(this, val, filter);
 		}
 		if (afterAll) val = afterAll(this, val, expr.filters);
-		if (this.cancel) return;
+		if (expr.cancel) {
+			this.src = src;
+			this.dest = dest;
+			return;
+		}
 		if (expr.last && val === undefined) val = null;
 		return val;
 	}
@@ -136,6 +139,7 @@ export default class Context {
 		if (filter.length > 1) filter[0] = val;
 		const typed = def.length > 1;
 		const fn = def.pop();
+		let stop;
 		try {
 			let mtype;
 			for (let i = 0; i < def.length; i++) {
@@ -152,12 +156,15 @@ export default class Context {
 				}
 				const fi = this.check(val, filter, i, arg);
 				if (i === 0 && fi === undefined) {
-					this.cancel = true;
+					stop = true;
 					break;
 				}
 				if (!mtype || fi !== undefined) filter[i] = fi;
 			}
-			if (this.cancel) return;
+			if (stop) {
+				this.expr.cancel = true;
+				return;
+			}
 			if (def.length < filter.length) {
 				if (typed) {
 					if (filter.length == 2 && filter[1] === "") {

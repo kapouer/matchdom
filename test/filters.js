@@ -307,7 +307,7 @@ describe('filters', () => {
 	describe('what', () => {
 		const md = new Matchdom(DomPlugin, {
 			drop: function (ctx, val, what) {
-				ctx.cancel = true;
+				ctx.expr.cancel = true;
 				return val;
 			}
 		});

@@ -195,6 +195,7 @@ A parsed expression has properties:
 - path: actual list of keys used to access data
 - filters: array of filters
 - filter: index of current filter in filters
+- cancel: boolean, stops and cancels merging of that expression
 
 and methods:
 
@@ -214,7 +215,6 @@ and methods:
 - src: initial place of expression, should be immutable
 - dest: target place of expression
 - expr: current expression being merged
-- cancel: boolean, stops and cancels merge
 
 Two methods can be called by other filters:
 
