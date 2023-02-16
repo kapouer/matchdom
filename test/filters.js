@@ -16,32 +16,38 @@ describe('filters', () => {
 	});
 
 	describe('value', () => {
-		it('should be undefined', () => {
+		it('should be null if top-level', () => {
 			const html = `<a>Size[size|try:]</a>`;
 			let hasTried = false;
+			let lastVal;
 			const md = new Matchdom(DomPlugin, {
 				try(ctx, val) {
 					hasTried = true;
-					assert.equal(val, undefined);
+					lastVal = val;
 				}
 			});
 			const copy = md.merge(html, {});
 			assert.equal(hasTried, true);
+			assert.equal(lastVal, null);
 			assert.equal(copy.outerHTML, '<a>Size</a>');
 		});
 
 		it('should be undefined and not merge level 2', () => {
-			const html = `<a>Size[obj.size|try:]</a>`;
 			let hasTried = false;
-
+			let lastVal;
 			const md = new Matchdom(DomPlugin, {
-				try(ctx, val) {
-					hasTried = true;
+				hooks: {
+					afterEach(ctx, val) {
+						hasTried = true;
+						lastVal = val;
+						return val;
+					}
 				}
 			});
-			const copy = md.merge(html, {});
-			assert.equal(hasTried, false);
-			assert.equal(copy.outerHTML, '<a>Size[obj.size|try:]</a>');
+			const copy = md.merge(`[obj.size]`, {});
+			assert.equal(hasTried, true);
+			assert.equal(lastVal, undefined);
+			assert.equal(copy, `[obj.size]`);
 		});
 
 		it('should be returned if it is the only hit and deal properly with undef/null/boolean', () => {
@@ -765,17 +771,17 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>val</p>');
 		});
 		it('should set an empty string when false is not set', () => {
-			const html = `<p>[val|and:path:name|or:]</p>`;
+			const html = `<p>[val|then:path:name|or:]</p>`;
 			const copy = md.merge(html, {val: false});
 			assert.equal(copy.outerHTML, '<p></p>');
 		});
 		it('should set last path component when true is not set', () => {
-			const html = `<p>[to.val|path:name]</p>`;
+			const html = `<p>[to.val|then:path:name]</p>`;
 			const copy = md.merge(html, {to: {val: true}});
 			assert.equal(copy.outerHTML, '<p>val</p>');
 		});
 		it('should set empty string when true is not set', () => {
-			const html = `<p>[val|and:path:name|or:]</p>`;
+			const html = `<p>[val|then:path:name|or:]</p>`;
 			const copy = md.merge(html, {val: false});
 			assert.equal(copy.outerHTML, '<p></p>');
 		});

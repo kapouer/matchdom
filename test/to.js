@@ -58,11 +58,11 @@ describe('to filter', () => {
 		assert.equal(copy.outerHTML, '<span class="some visible">test</span>');
 	});
 
-	it('should not crash when adding an empty class', () => {
-		const html = `<span class="some">[label|attr:class]test</span>`;
+	it('should erase class attribute if setting an empty class', () => {
+		const html = `<span class="some">[label|to:class]test</span>`;
 		const copy = md.merge(html, {
 			label: ""
 		});
-		assert.equal(copy.outerHTML, '<span class="some">test</span>');
+		assert.equal(copy.outerHTML, '<span>test</span>');
 	});
 });
