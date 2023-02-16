@@ -47,7 +47,6 @@ export default class Context {
 		return pos;
 	}
 
-	level = 0;
 	raw;
 
 	constructor(md, data, scope) {
@@ -63,7 +62,6 @@ export default class Context {
 	}
 
 	process(hits) {
-		this.level++;
 		for (let i = 0; i < hits.length; i++) {
 			let hit = hits[i];
 			if (hit === null || typeof hit == "string") {
