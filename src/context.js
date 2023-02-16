@@ -145,7 +145,7 @@ export default class Context {
 				}
 				if (arg.endsWith('*')) {
 					if (mtype) {
-						throw new Error("Cannot check multiple lists");
+						throw new Error("Checking multiple lists is not implemented");
 					}
 					arg = arg.slice(0, -1);
 					mtype = arg;
