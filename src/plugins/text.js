@@ -1,6 +1,6 @@
 export const filters = {
-	case: ['?', 'up|low|caps', (x, val, how) => {
-		if (!val) return val;
+	case: ['?', 'up|low|caps', (ctx, val, how) => {
+		if (!val) return ctx.raw;
 		val = val.toString();
 		if (how == "up") {
 			return val.toUpperCase();
@@ -12,8 +12,8 @@ export const filters = {
 			}).join('. ');
 		}
 	}],
-	trim: ['?', 'all|line|start|end|out|', (x, val, how) => {
-		if (!val) return val;
+	trim: ['?', 'all|line|start|end|out|', (ctx, val, how) => {
+		if (!val) return ctx.raw;
 		switch (how) {
 			case 'all':
 				return val.replace(/\s/gm, '');
@@ -28,16 +28,16 @@ export const filters = {
 				return val.trim();
 		}
 	}],
-	pre: ['?', 'str', (x, val, str) => {
-		if (val == null || val === "") return val;
+	pre: ['?', 'str', (ctx, val, str) => {
+		if (val == null || val === "") return ctx.raw;
 		return str + val;
 	}],
-	post: ['?', 'str', (x, val, str) => {
-		if (val == null || val === '') return val;
+	post: ['?', 'str', (ctx, val, str) => {
+		if (val == null || val === '') return ctx.raw;
 		return val + str;
 	}],
-	enc: ['?', 'base64|base64url|hex|url', (x, str, type) => {
-		if (!str) return str;
+	enc: ['?', 'base64|base64url|hex|url', (ctx, str, type) => {
+		if (!str) return ctx.raw;
 		str = str.toString();
 		switch (type) {
 			case "base64": return btoa(str);
@@ -51,7 +51,6 @@ export const filters = {
 		}
 	}],
 	dec: ['str', 'base64|base64url|hex|url', (x, str, type) => {
-		if (!str) return str;
 		switch (type) {
 			case "base64url":
 			case "base64": return atob(str);
@@ -64,15 +63,13 @@ export const filters = {
 		return str.split(tok);
 	}],
 	slice: ['?', 'int?', 'int?', (ctx, val, a, b) => {
-		if (!val) return null;
-		if (a == null) return val;
+		if (!val || a == null) return ctx.raw;
 		if (b == null) b = undefined;
 		if (val.slice) return val.slice(a, b);
 		else return val;
 	}],
 	parts: ['?', 'str', 'int?', 'int?', (ctx, val, tok, a, b) => {
-		if (typeof val != "string") return val;
-		if (a == null) return val;
+		if (typeof val != "string" || a == null) return ctx.raw;
 		if (b == null) b = undefined;
 		return val.split(tok).slice(a, b).join(tok);
 	}]

@@ -68,7 +68,7 @@ export const filters = {
 		}
 		if (ancestor) dest.reduceHit();
 		dest.extend(ctx.src.target);
-		return val;
+		return ctx.raw;
 	}],
 	prune: ['?', 'str?', 'str?', 'str?', (ctx, val, ...params) => {
 		if (!val) {
@@ -81,18 +81,16 @@ export const filters = {
 		if (!test) return ctx.filter(null, 'at', ...args);
 		else return ctx.raw;
 	}],
-	to: ['?', 'str?', (ctx, val, to) => {
-		if (!to) {
-			return val;
+	to: ['?', 'str?', ({ src, dest, raw }, val, to) => {
+		if (to) {
+			// prevents merging of current expression
+			src.hits[src.index] = null;
+			if (!src.attr) {
+				dest.reduceHit();
+			}
+			dest.restrict(to);
 		}
-		const { src, dest } = ctx;
-		// prevents merging of current expression
-		src.hits[src.index] = null;
-		if (!src.attr) {
-			dest.reduceHit();
-		}
-		dest.restrict(to);
-		return val;
+		return raw;
 	}],
 	repeat: ['array', 'string?', 'filter?', '?*', (ctx, list, alias, placer, ...params) => {
 		const { src, dest } = ctx;

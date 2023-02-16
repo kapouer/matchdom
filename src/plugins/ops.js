@@ -22,7 +22,6 @@ export const filters = {
 		}
 	},
 	has: ['array', (x, val, str) => {
-		if (val == null) return val;
 		if (val.includes(str)) return str;
 		else return null;
 	}],

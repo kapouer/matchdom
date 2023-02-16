@@ -31,8 +31,7 @@ export const formats = {
 };
 
 export const filters = {
-	date: ['date?', 'str*', (ctx, date, ...list) => {
-		if (date == null) return date;
+	date: ['date', 'str*', (ctx, date, ...list) => {
 		const fmt = list.length == 1 ? ctx.md.formats.date[list[0]] : null;
 		if (fmt) return fmt(ctx, date);
 
