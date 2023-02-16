@@ -304,7 +304,7 @@ describe('filters', () => {
 		});
 	});
 
-	describe('what', () => {
+	describe('context', () => {
 		const md = new Matchdom(DomPlugin, {
 			drop: function (ctx, val, what) {
 				ctx.expr.cancel = true;
