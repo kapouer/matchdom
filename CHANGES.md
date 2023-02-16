@@ -89,3 +89,7 @@ It is still possible to run matchdom without a browser environment, as long as n
 ### Version 9.10.0
 
 - afterAll hook can `ctx.cancel = true`
+
+### Version 10.0.0
+
+- breaking change: an expression is not merged if one of its filters requires a value and the value it receives is undefined.
