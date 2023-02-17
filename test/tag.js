@@ -45,6 +45,13 @@ describe('tag', () => {
 		});
 		assert.equal(copy.outerHTML, '<h1 class="yes">Header</h1>');
 	});
+	it('should merge tag name with boolean filter', () => {
+		const html = `<x[mybool|alt:div:p|at:-]>test</x>`;
+		assert.equal(md.merge(html, { mybool: true }).outerHTML, '<div>test</div>');
+		assert.equal(md.merge(html, { mybool: false }).outerHTML, '<p>test</p>');
+		assert.equal(md.merge(html, { mybool: null }).outerHTML, '<p>test</p>');
+		assert.equal(md.merge(html, {}).outerHTML, '<p>test</p>');
+	});
 	it('should merge whole tag name', () => {
 		const md = new Matchdom().extend(DomPlugin);
 		const html = `<h[name|at:-] class="[test]">div</hn>`;
