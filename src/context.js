@@ -185,10 +185,8 @@ export default class Context {
 		let str = params[i];
 		if (!arg || arg.startsWith('?')) arg = "any" + arg;
 		const [type, def] = arg.split("?");
-		if (str == null) {
-			if (def == null) {
-				return str;
-			} else if (type == "any") {
+		if (str == null && def != null) {
+			if (type == "any") {
 				if (i === 0 && str === undefined) str = null;
 				return str;
 			} else {
@@ -196,7 +194,7 @@ export default class Context {
 			}
 		}
 		const alts = type.split('|');
-		if (alts.length > 1) {
+		if (str != null && alts.length > 1) {
 			if (alts.includes(str)) return str;
 			else throw new Context.ParamError(`"${str}" is not in enum ${type}`);
 		}
