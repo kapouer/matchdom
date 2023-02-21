@@ -92,6 +92,14 @@ export default class Context {
 
 		if (beforeAll) val = beforeAll(this, val, expr.filters);
 		while (expr.filter < expr.filters.length) {
+			if (expr.last) {
+				for (const [name, param] of expr.filters.slice(expr.filter + 1)) {
+					if (name == "get" && param.startsWith('.')) {
+						expr.last = false;
+						break;
+					}
+				}
+			}
 			if (val === undefined && !expr.last || expr.cancel) break;
 			const filter = expr.filters[expr.filter++];
 			if (beforeEach) val = beforeEach(this, val, filter);
