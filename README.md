@@ -256,33 +256,50 @@ When the path starts with an identifier, it applies to context data.
 When data being accessed is an Array, the matching path item can be negative or above array length - it is applied modulo array length.
 Also, special path item "first" and "last" can be used to specify those array indexes.
 
-When a path tries to access a non-existent object, it returns `undefined`, preventing the expression to be merged.
-However, when the last value is `undefined`, it is converted to `null`.
-This conversion happens after `afterAll` hook.
+A path can be partially resolved if an undefined value is encountered before reaching the last component. In this case, `undefined` is returned.
+
+Otherwise, if the path is fully resolved, `ctx.expr.last` is set to true, which will convert an `undefined` value to `null` - after the `afterAll` hook.
+
+Furthermore, a path is not fully resolved if there are unconditional relative paths in the following filters.
 
 When a component of a path ends with a `?` (Symbols.opt), if it is `undefined`, it becomes `null`, changing the previous behavior.
 
-A variable with a top-level path, like `[prop]`, is merged even if it is undefined.
+For example, a variable with a top-level path, like `[prop]`, is merged even if it is undefined, because it starts from defined context data.
 
 However, if a filter declares a required value, and the value is undefined, the expression is not merged.
 
 ```js
 // non-existent object
-assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b')
+assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b');
+
 // existent object
-assert.equal(md.merge("a[to.nothing]b", {to: {}}), 'ab')
+assert.equal(md.merge("a[to.nothing]b", { to: {} }), 'ab');
+
 // optional chaining
-assert.equal(md.merge("a[to?.nothing]b", {}), 'ab')
-// same situations with a filter
-assert.equal(md.merge("a[to|as:array|.first]b", {}), 'a[to|as:array|.first]b')
-assert.equal(md.merge("a[to?|as:array|.first]b", {}), 'ab')
-// top-level has a different behavior
-assert.equal(md.merge("a[top]b", {}), 'ab')
-assert.equal(md.merge("a[top?]b", {}), 'ab')
-// unless a filter requires a value
-assert.equal(md.merge("a[list|at:-|repeat:]b", {}), 'a[list|at:-|repeat:]b')
-// here list? becomes null which becomes [] so repeat works
-assert.equal(md.merge("a[list?|at:-|repeat:]b", {}), 'ab')
+assert.equal(md.merge("a[to?.nothing]b", {}), 'ab');
+
+// expression is not fully resolved because `to` is not the last component
+assert.equal(md.merge("a[to|as:array|.first]b", {}), 'a[to|as:array|.first]b');
+
+// to is optional, null is cast to [], .first is fully resolved and becomes null
+assert.equal(md.merge("a[to?|as:array|.first]b", {}), 'ab');
+
+// top level value is resolved, so optional chaining doesn't change the result
+assert.equal(md.merge("a[top]b", {}), 'ab');
+assert.equal(md.merge("a[top?]b", {}), 'ab');
+
+// list becomes null and cast to []
+assert.equal(md.merge("a[list|at:|repeat:]b", {}), 'ab');
+
+// here list is not fully resolved, and repeat filter expects defined value
+// so the whole expression is canceled
+assert.equal(
+  md.merge("a[list|at:-|repeat:|.title]b", {}),
+  'a[list|at:-|repeat:|.title]b'
+);
+
+// here the list becomes optional, cast to null then []
+assert.equal(md.merge("a[list?|at:|repeat:|.title]b", {}), 'ab');
 ```
 
 The `get:` filter has a special syntax without colon, instead of
