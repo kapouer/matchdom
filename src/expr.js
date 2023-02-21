@@ -21,10 +21,12 @@ export default class Expression {
 	}
 
 	append(params = []) {
+		if (params.length == 1) params.unshift("get");
 		this.filters.push(params);
 	}
 
 	prepend(params = []) {
+		if (params.length == 1) params.unshift("get");
 		this.filters.splice(this.filter, 0, params);
 	}
 
@@ -39,7 +41,8 @@ export default class Expression {
 		const { param, append } = this.symbols;
 		return this.filters.map(params => {
 			if (!params.join) console.error(params);
-			return params.join(param);
+			if (params[0] == "get" && params[1] != "") return params[1];
+			else return params.join(param);
 		}).join(append);
 	}
 

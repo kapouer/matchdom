@@ -33,7 +33,7 @@ describe('hooks filter', () => {
 		const md = new Matchdom({
 			beforeAll(ctx, val, filters) {
 				assert.deepEqual(val, { arr });
-				assert.equal(filters[0][0], "arr2");
+				assert.equal(filters[0][1], "arr2");
 				ctx.data.arr2 = arr;
 				return val;
 			}

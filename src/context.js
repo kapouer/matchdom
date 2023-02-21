@@ -94,7 +94,6 @@ export default class Context {
 		while (expr.filter < expr.filters.length) {
 			if (val === undefined && !expr.last || expr.cancel) break;
 			const filter = expr.filters[expr.filter++];
-			if (filter.length <= 1) filter.unshift("get");
 			if (beforeEach) val = beforeEach(this, val, filter);
 			val = this.filter(val, filter);
 			if (afterEach) val = afterEach(this, val, filter);
