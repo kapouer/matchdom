@@ -705,11 +705,12 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>toto</p>');
 		});
 
-		it('should set to null if undefined', () => {
+		it('should not process undefined unresolved path', () => {
 			const html = `<div><p>[obj|as:null|.test|fail:*]</p></div>`;
 			const copy = md.merge(html, {});
-			assert.equal(copy.outerHTML, '<div></div>');
+			assert.equal(copy.outerHTML, '<div><p>[obj|as:null|.test|fail:*]</p></div>');
 		});
+
 		it('should not set to null if not undefined', () => {
 			const html = `<div><p>[obj|as:null|.test|fail:*]</p></div>`;
 			const copy = md.merge(html, {obj: {test:1}});
@@ -721,6 +722,13 @@ describe('filters', () => {
 			const copy = md.merge(html, {});
 			assert.equal(copy.outerHTML, '<div></div>');
 		});
+
+		it('should set to undefined after optional chaining', () => {
+			const html = `<div><p>[obj?|as:none|.test]</p></div>`;
+			const copy = md.merge(html, {});
+			assert.equal(copy.outerHTML, '<div><p>[obj?|as:none|.test]</p></div>');
+		});
+
 		it('should not set to null if not undefined using optional chaining', () => {
 			const copy = md.merge('[obj.test?]', { obj: { test: 1 } });
 			assert.equal(copy, 1);
