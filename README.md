@@ -337,6 +337,7 @@ Coerces value to type, or converts string to format.
 
 - as:null, as:undefined
   returns null, or undefined, if value is false-ish - otherwise returns value
+  mind that `[obj|as:null|.key]` won't merge if obj is undefined - use `[obj?.key]` instead.
 - as:date, as:number
   return value as date, or number, or null if it cannot be converted
 - as:html
