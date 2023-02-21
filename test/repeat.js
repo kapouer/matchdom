@@ -141,7 +141,7 @@ describe('repeat filter', () => {
 		</div>`).outerHTML);
 	});
 
-	it('should merge an undefined optional top-level value even if next filter requires a value with nth', () => {
+	it('should not merge an undefined optional top-level value because next path requires a value', () => {
 		const html = `<div>a<p>[items|at:p|repeat:item|.value|fail:*]test</p></div>`;
 		const copy = md.merge(html, {});
 		assert.equal(copy.outerHTML, '<div>a<p>[items|at:p|repeat:item|.value|fail:*]test</p></div>');

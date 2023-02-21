@@ -660,13 +660,25 @@ describe('filters', () => {
 		const md = new Matchdom(DomPlugin, OpsPlugin);
 
 		it('work with tests in the README', () => {
-			assert.equal(md.merge("a[to.nothing]b", { to: {} }), 'ab');
+			// non-existent object
 			assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b');
+			// existent object
+			assert.equal(md.merge("a[to.nothing]b", { to: {} }), 'ab');
+			// optional chaining
 			assert.equal(md.merge("a[to?.nothing]b", {}), 'ab');
-			assert.equal(md.merge("a[to|repeat:|.first]b", {}), 'a[to|repeat:|.first]b');
+			// expression is not fully resolved because `to` is not the last component
+			assert.equal(md.merge("a[to|as:array|.first]b", {}), 'a[to|as:array|.first]b');
+			// to is optional, null is cast to [], .first is fully resolved and becomes null
 			assert.equal(md.merge("a[to?|as:array|.first]b", {}), 'ab');
+			// top level value is resolved, so optional chaining doesn't change the result
 			assert.equal(md.merge("a[top]b", {}), 'ab');
 			assert.equal(md.merge("a[top?]b", {}), 'ab');
+			// list becomes null and cast to []
+			assert.equal(md.merge("a[list|at:|repeat:]b", {}), 'ab');
+			// here list is not fully resolved, and repeat filter expects defined value, the whole expression is canceled
+			assert.equal(md.merge("a[list|at:-|repeat:|.title]b", {}), 'a[list|at:-|repeat:|.title]b');
+			// here the list becomes optional, cast to null then []
+			assert.equal(md.merge("a[list?|at:|repeat:|.title]b", {}), 'ab');
 		});
 
 		it('should set to null if empty', () => {
@@ -679,12 +691,6 @@ describe('filters', () => {
 			const html = `<p>[val]test</p>`;
 			const copy = md.merge(html, {});
 			assert.equal(copy.outerHTML, '<p>test</p>');
-		});
-
-		it('should not merge an undefined top-level value if next filter requires a value', () => {
-			const html = `<p>[list|repeat:]test</p>`;
-			const copy = md.merge(html, {});
-			assert.equal(copy.outerHTML, '<p>[list|repeat:]test</p>');
 		});
 
 		it('should merge an undefined optional top-level value even if next filter requires a value', () => {
