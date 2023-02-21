@@ -94,4 +94,10 @@ It is still possible to run matchdom without a browser environment, as long as n
 
 - breaking change: an expression is not merged if one of its filters requires a value and the value it receives is undefined.
 - move ctx.cancel to ctx.expr.cancel where it belongs (multiples expressions could be present in context hits)
-- cancelled expression restores context, in particular, modifications made to src and dest by `to` and `at` filters are discarded.
+- canceled expression restores context, in particular, modifications made to src and dest by `to` and `at` filters are discarded.
+
+### Version 10.1.0
+
+- consider the whole unconditional path accessor to determine if a path is fully resolved, and thus improve how undefined is converted to null
+- convert path shorthand to/from `get` filter in expressions
+- update tests
