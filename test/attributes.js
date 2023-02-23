@@ -48,6 +48,12 @@ describe('attributes', () => {
 			assert.equal(copy.outerHTML, '<span>test</span>');
 		});
 
+		it('should set empty attribute value when falsey', () => {
+			const data = { empty: "" };
+			assert.equal(md.merge(`<input value="[empty]">`, data).outerHTML, "<input>");
+			assert.equal(md.merge(`<option value="[empty]">-</option>`, data).outerHTML, '<option value="">-</option>');
+		});
+
 		it('should always trim class attribute value', () => {
 			const html = `<span class=" [notempty]
 			">test</span>`;

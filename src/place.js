@@ -265,6 +265,8 @@ function writeAttr(node, attr, { another, str, trm, path }) {
 }
 
 function clearAttr(node, attr) {
-	if (node[attr] != null) node.setAttribute(attr, '');
 	node.removeAttribute(attr);
+	if (node[attr] || node[attr] === null) {
+		node.setAttribute(attr, "");
+	}
 }
