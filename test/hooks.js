@@ -69,7 +69,7 @@ describe('hooks filter', () => {
 		});
 		assert.equal(copy.outerHTML, '<p><span>it word1</span><span>it word2</span></p>');
 	});
-	it('should be register multiple hooks', () => {
+	it('should register multiple hooks', () => {
 		const html = `[arr2|join:-]`;
 		const arr = ['word1', 'word2'];
 		const md = new Matchdom({
@@ -87,8 +87,10 @@ describe('hooks filter', () => {
 				}
 			}
 		});
-		const copy = md.merge(html, { arr	});
+		const copy = md.merge(html, { arr });
 		assert.equal(copy, 'word1-word2-word3');
+		// also a copy of md should work
+		assert.equal((new Matchdom(md)).merge(html, { arr }), 'word1-word2-word3-word3');
 	});
 });
 
