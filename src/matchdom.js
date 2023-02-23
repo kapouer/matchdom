@@ -45,7 +45,8 @@ export class Matchdom {
 		if (filters) Object.assign(this.filters, filters);
 		if (types) Object.assign(this.types, types);
 		if (hooks) for (const [key, fn] of Object.entries(hooks)) {
-			this.hooks[key].push(fn);
+			const list = Array.isArray(fn) ? fn : [fn];
+			this.hooks[key].push(...list);
 		}
 		if (formats) for (const [n, obj] of Object.entries(formats)) {
 			if (!this.formats[n]) this.formats[n] = Object.create(null);
