@@ -69,5 +69,26 @@ describe('hooks filter', () => {
 		});
 		assert.equal(copy.outerHTML, '<p><span>it word1</span><span>it word2</span></p>');
 	});
+	it('should be register multiple hooks', () => {
+		const html = `[arr2|join:-]`;
+		const arr = ['word1', 'word2'];
+		const md = new Matchdom({
+			beforeAll(ctx, val, filters) {
+				assert.deepEqual(val, { arr });
+				assert.equal(filters[0][1], "arr2");
+				ctx.data.arr2 = arr;
+				return val;
+			}
+		}, {
+			hooks: {
+				beforeAll(ctx, val) {
+					ctx.data.arr2.push('word3');
+					return val;
+				}
+			}
+		});
+		const copy = md.merge(html, { arr	});
+		assert.equal(copy, 'word1-word2-word3');
+	});
 });
 

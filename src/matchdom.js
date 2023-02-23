@@ -20,7 +20,12 @@ export class Matchdom {
 		this.filters = Object.create(null);
 		this.types = Object.create(null);
 		this.formats = Object.create(null);
-		this.hooks = Object.create(null);
+		this.hooks = {
+			beforeAll: [],
+			beforeEach: [],
+			afterEach: [],
+			afterAll: []
+		};
 		this.extend(Core).extend(Flow);
 		for (const p of plugins) {
 			this.extend(p);
@@ -28,21 +33,23 @@ export class Matchdom {
 	}
 
 	extend(p) {
-		const { filters, types, formats, hooks } = p;
+		let { filters, hooks } = p;
+		const { types, formats } = p;
 		if (!filters && !types && !formats && !hooks) {
 			if (p.beforeAll || p.beforeEach || p.afterAll || p.afterEach) {
-				Object.assign(this.hooks, p);
+				hooks = p;
 			} else {
-				Object.assign(this.filters, p);
+				filters = p;
 			}
-		} else {
-			Object.assign(this.filters, filters);
-			Object.assign(this.types, types);
-			Object.assign(this.hooks, hooks);
-			if (formats) for (const [n, obj] of Object.entries(formats)) {
-				if (!this.formats[n]) this.formats[n] = Object.create(null);
-				Object.assign(this.formats[n], obj);
-			}
+		}
+		if (filters) Object.assign(this.filters, filters);
+		if (types) Object.assign(this.types, types);
+		if (hooks) for (const [key, fn] of Object.entries(hooks)) {
+			this.hooks[key].push(fn);
+		}
+		if (formats) for (const [n, obj] of Object.entries(formats)) {
+			if (!this.formats[n]) this.formats[n] = Object.create(null);
+			Object.assign(this.formats[n], obj);
 		}
 		return this;
 	}

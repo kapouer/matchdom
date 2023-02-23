@@ -90,7 +90,7 @@ export default class Context {
 		const src = this.src.clone();
 		const dest = this.dest.clone();
 
-		if (beforeAll) val = beforeAll(this, val, expr.filters);
+		for (const fn of beforeAll) val = fn(this, val, expr.filters);
 		while (expr.filter < expr.filters.length) {
 			if (expr.last) {
 				for (const [name, param] of expr.filters.slice(expr.filter + 1)) {
@@ -102,11 +102,11 @@ export default class Context {
 			}
 			if (val === undefined && !expr.last || expr.cancel) break;
 			const filter = expr.filters[expr.filter++];
-			if (beforeEach) val = beforeEach(this, val, filter);
+			for (const fn of beforeEach) val = fn(this, val, filter);
 			val = this.filter(val, filter);
-			if (afterEach) val = afterEach(this, val, filter);
+			for (const fn of afterEach) val = fn(this, val, filter);
 		}
-		if (afterAll) val = afterAll(this, val, expr.filters);
+		for (const fn of afterAll) val = fn(this, val, expr.filters);
 		if (expr.cancel) {
 			Object.assign(this.src, src);
 			Object.assign(this.dest, dest);

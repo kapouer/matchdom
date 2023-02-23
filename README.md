@@ -726,6 +726,8 @@ const md = new Matchdom({
 md.merge(...);
 ```
 
+Multiple hooks can be set by multiple plugins.
+
 The `filter` parameter is a list: `[name, param1, param2, ...]`.
 
 It can be modified.

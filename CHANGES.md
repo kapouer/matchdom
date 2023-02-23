@@ -101,3 +101,7 @@ It is still possible to run matchdom without a browser environment, as long as n
 - consider the whole unconditional path accessor to determine if a path is fully resolved, and thus improve how undefined is converted to null
 - convert path shorthand to/from `get` filter in expressions
 - update tests
+
+### Version 10.2.0
+
+- plugins do not overwrite hooks
