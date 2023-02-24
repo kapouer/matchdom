@@ -104,4 +104,8 @@ It is still possible to run matchdom without a browser environment, as long as n
 
 ### Version 10.2.0
 
-- plugins do not overwrite hooks
+- allow multiple hooks
+
+### Version 10.3.0
+
+- neq filter fix: returns the parameter and not the value

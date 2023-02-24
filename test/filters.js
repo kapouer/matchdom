@@ -632,7 +632,7 @@ describe('filters', () => {
 		it('should keep value', () => {
 			const html = `<p>[val|neq:ceci]</p>`;
 			const copy = md.merge(html, {val: 'cecia'});
-			assert.equal(copy.outerHTML, '<p>cecia</p>');
+			assert.equal(copy.outerHTML, '<p>ceci</p>');
 		});
 		it('should return null', () => {
 			const html = `<p test="[val|neq:cela]">ora</p>`;

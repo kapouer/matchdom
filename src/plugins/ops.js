@@ -4,7 +4,7 @@ export const filters = {
 		else return null;
 	},
 	neq(x, val, str) {
-		if (val != str) return val;
+		if (val != str) return str;
 		else return null;
 	},
 	switch(x, val, ...list) {
