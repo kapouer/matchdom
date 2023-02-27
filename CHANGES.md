@@ -109,3 +109,7 @@ It is still possible to run matchdom without a browser environment, as long as n
 ### Version 10.3.0
 
 - neq filter fix: returns the parameter and not the value
+
+### Version 10.4.0
+
+- allow only word characters for filter names and accessors
