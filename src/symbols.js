@@ -4,5 +4,7 @@ export default {
 	path: '.',
 	opt: '?',
 	append: '|',
-	param: ':'
+	param: ':',
+	fname: /^\w+$/,
+	fparam: /^[\s\w-+*=/.?$%,;@&§()!]*$/
 };

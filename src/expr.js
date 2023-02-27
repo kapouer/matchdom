@@ -31,13 +31,14 @@ export default class Expression {
 	}
 
 	check(params) {
+		const { fname, fparam } = this.symbols;
 		if (params.length == 1) {
 			params.unshift('get');
-		} else if (/^\w+$/.test(params[0]) == false) {
+		} else if (fname.test(params[0]) == false) {
 			throw new Error();
 		}
 		for (let i = 1; i < params.length; i++) {
-			if (/^[\s\w-+*=/.?$%,;@&§()!]*$/.test(params[i]) == false) {
+			if (fparam.test(params[i]) == false) {
 				throw new Error();
 			}
 		}
