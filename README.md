@@ -186,7 +186,17 @@ const md = new Matchdom({
 
 ### filter
 
-An array of strings
+An array of strings:
+
+- first item is the filter name.
+- others are the filter parameters
+
+An array of length one is normalized to be a `get` filter.
+
+The name and parameters only allow specific characters, see Symbols.
+
+Escaping in parameters can be done using percent-encoding.
+Decoding is tried with decodeURIComponent.
 
 ### expression
 
@@ -742,6 +752,8 @@ Default symbols are:
 - opt: `?`
 - append: `|`
 - param: `:`
+- fname: `/^\w+$/`
+- fparam: `/^[\s\w-+*=/.?$%,;@&§()!]*$/`
 
 and can be overriden by passing a symbols object to the constructor.
 

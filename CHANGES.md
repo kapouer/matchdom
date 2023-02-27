@@ -112,4 +112,5 @@ It is still possible to run matchdom without a browser environment, as long as n
 
 ### Version 10.4.0
 
-- allow only word characters for filter names and accessors
+- restrict allowed characters for filter names, and also for parameters.
+Parameters can still be escaped using percent-encoding.
