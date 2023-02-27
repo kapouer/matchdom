@@ -21,13 +21,26 @@ export default class Expression {
 	}
 
 	append(params = []) {
-		if (params.length == 1) params.unshift("get");
+		this.check(params);
 		this.filters.push(params);
 	}
 
 	prepend(params = []) {
-		if (params.length == 1) params.unshift("get");
+		this.check(params);
 		this.filters.splice(this.filter, 0, params);
+	}
+
+	check(params) {
+		if (params.length == 1) {
+			params.unshift('get');
+		} else if (/^\w+$/.test(params[0]) == false) {
+			throw new Error();
+		}
+		for (let i = 1; i < params.length; i++) {
+			if (/^[\s\w-+*=/.?$%,;@&§()!]*$/.test(params[i]) == false) {
+				throw new Error();
+			}
+		}
 	}
 
 	clone() {

@@ -80,16 +80,18 @@ export default class Context {
 	}
 
 	mutate(hit) {
+		if (hit.length == 0) return;
 		let val = this.data;
-		if (/^[^\\]+$/.test(hit) == false) {
-			// expressions with \ are not ours
-			return undefined;
+		const expr = new Expression(this.md.symbols);
+		try {
+			expr.parse(hit);
+		} catch (err) {
+			return;
 		}
-		const expr = this.expr = new Expression(this.md.symbols).parse(hit);
+		this.expr = expr;
 		const { beforeAll, beforeEach, afterEach, afterAll } = this.md.hooks;
 		const src = this.src.clone();
 		const dest = this.dest.clone();
-
 		for (const fn of beforeAll) val = fn(this, val, expr.filters);
 		while (expr.filter < expr.filters.length) {
 			if (expr.last) {
