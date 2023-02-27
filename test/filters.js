@@ -63,6 +63,26 @@ describe('filters', () => {
 		});
 	});
 
+	describe('allowed chars', () => {
+		const md = new Matchdom({
+			filters: {
+				'{test'(ctx, val, param) {
+					return "not";
+				}
+			}
+		});
+
+		it('should only allow word chars for filter names', () => {
+			const copy = md.merge(`[{test: 1}]`, {});
+			assert.equal(copy, '[{test: 1}]');
+		});
+
+		it('should only allow word chars for get accessors', () => {
+			const copy = md.merge(`[{test}]`, {'{test}':'no'});
+			assert.equal(copy, '[{test}]');
+		});
+	});
+
 	describe('method filters', () => {
 		const md = new Matchdom();
 
