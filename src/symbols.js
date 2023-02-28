@@ -6,5 +6,5 @@ export default {
 	append: '|',
 	param: ':',
 	fname: /^\w+$/,
-	fparam: /^[\s\w-+*=/.?$%,;@&§()!]*$/
+	fparam: /^( |[^{}"'\s\\])*$/
 };
