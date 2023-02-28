@@ -744,18 +744,8 @@ It can be modified.
 
 ## Custom symbols
 
-Default symbols are:
-
-- open: `[`
-- close: `]`,
-- path: `.`
-- opt: `?`
-- append: `|`
-- param: `:`
-- fname: `/^\w+$/`
-- fparam: `/^[\s\w-+*=/.?$%,;@&§()!]*$/`
-
-and can be overriden by passing a symbols object to the constructor.
+Default symbols are defined in src/symbols.js,
+They can be overriden by passing a symbols object to the constructor.
 
 ## Acknowledgement
 
