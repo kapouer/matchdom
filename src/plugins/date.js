@@ -1,11 +1,11 @@
 export const types = {
 	date(ctx, val) {
-		if (val == null) return val;
+		if (val == null) return;
 		if (/^\d{1,2}:\d\d(:\d\d)?$/.test(val)) {
 			val = '1970-01-01T' + val + 'Z';
 		}
 		const date = val == "now" ? new Date() : new Date(val);
-		if (Number.isNaN(date.getTime())) return null;
+		if (Number.isNaN(date.getTime())) return;
 		else return date;
 	}
 };
