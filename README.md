@@ -250,10 +250,14 @@ And various methods to extend to an ancestor, restrict to a node or attribute, w
 
 ## core plugin
 
-### filter, path paths
+### type filter
 
-- filter type checks if the string value is the name of a loaded filter
-- path type coerces the string to a list of identifiers
+Checks if the string value is the name of a loaded filter.
+
+### type path
+
+Parses the value into an array of path components.
+If the value is empty, returns an empty array.
 
 ### get:path
 
@@ -614,7 +618,7 @@ Fuse source and destination places as if they were url components.
 - if the value is boolean `true`, merged in a DOMTokenList, the last key
 of the expression path is used as the value. If it is `false`, it is replaced by null - this behavior is implemented using an `afterEach` hook.
 
-### at:selector:after:before
+### filter at:selector:after:before
 
 By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, or node.
