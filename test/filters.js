@@ -495,11 +495,41 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>word1Xword2Xword3</p>');
 		});
 		it('with newlines and trim by value', () => {
-			const html = `<p>[text|split:%0A|filter:word2:neq|join:X]</p>`;
+			const html = `<p>[text|split:%0A|filter:neq:word2|join:X]</p>`;
 			const copy = md.extend(OpsPlugin).merge(html, {
 				text: 'word1\nword2\nword3'
 			});
 			assert.equal(copy.outerHTML, '<p>word1Xword3</p>');
+		});
+	});
+
+	describe('filter filter', () => {
+		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
+
+		it('should filter by boolean', () => {
+			const html = `<p>[arr|filter:as:bool|join:-]</p>`;
+			const copy = md.merge(html, {
+				arr: [0, 1, 2, new Date('a')]
+			});
+			assert.equal(copy.outerHTML, '<p>1-2</p>');
+		});
+
+		it('should filter by inner data check', () => {
+			const html = `<p>[arr|filter:as:bool:value|map:get:.title|join:-]</p>`;
+			const copy = md.merge(html, {
+				arr: [{
+					title: 'zero', value: 0
+				}, {
+					title: 'one', value: 1
+				}, {
+					title: 'two',
+					value: 2
+				}, {
+					title: 'date',
+					value: new Date('a')
+				}]
+			});
+			assert.equal(copy.outerHTML, '<p>one-two</p>');
 		});
 	});
 
@@ -601,13 +631,13 @@ describe('filters', () => {
 		});
 
 		it('should sort array by date item and NaN first', () => {
-			const html = `<p>[sort::true|map:date:iso|join:%0A|as:text] </p>`;
+			const html = `<p>[sort::true|filter:as:bool|map:date:iso|join:%0A|as:text] </p>`;
 			const copy = md.extend(DatePlugin).merge(html, [
 				new Date("2021-02-28T15:12"),
 				new Date("2021-02-26T14:12"),
 				new Date("invalid"),
 			]);
-			assert.equal(copy.outerHTML, '<p><br>2021-02-26T13:12:00Z<br>2021-02-28T14:12:00Z </p>');
+			assert.equal(copy.outerHTML, '<p>2021-02-26T13:12:00Z<br>2021-02-28T14:12:00Z </p>');
 		});
 	});
 
@@ -905,6 +935,17 @@ describe('filters', () => {
 				str: '2018-03-09T11:12:56.739Z'
 			});
 			assert.equal(copy.outerHTML, '<p>3/9/2018, 12:12:56 PM</p>');
+		});
+
+		it('null date should not be handled by date: plugin', () => {
+			const html = `<p>[data.stamp|lang:en|date:M]</p>`;
+			md.debug = true;
+			const copy = md.merge(html, {
+				data: {
+					stamp: null
+				}
+			});
+			assert.equal(copy.outerHTML, '<p>[data.stamp|lang:en|date:M]</p>');
 		});
 
 		it('complex format', () => {
