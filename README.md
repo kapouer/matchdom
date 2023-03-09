@@ -442,9 +442,11 @@ Returns:
 
 Return these Object methods on the array.
 
-### filter:str:op:path
+### filter:op:arg:path
 
-Filter array by applying `get:${path}|${op}:str` to each item in the array.
+Filter array by applying `get:${path}|${op}:arg` to each item in the array.
+`op` should be a filter returning a boolean, called with a single argument.
+`path` is optional.
 
 ### map:filter:param+
 
