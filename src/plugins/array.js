@@ -20,10 +20,10 @@ export const formats = {
 };
 
 export const filters = {
-	filter: ['array', 'string', 'string?eq', 'path?', (ctx, list, str, op, path) => {
+	filter: ['array', 'filter', '?', 'path?', (ctx, list, filter, arg, path) => {
 		return list.filter(item => {
 			const data = ctx.expr.get(item, path);
-			return ctx.filter(str, op, data);
+			return ctx.filter(data, filter, arg);
 		});
 	}],
 	map: ['array', 'string', '?*', (ctx, list, ...filter) => {
