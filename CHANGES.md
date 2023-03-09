@@ -114,3 +114,8 @@ It is still possible to run matchdom without a browser environment, as long as n
 
 - restrict allowed characters for filter names, and also for parameters.
 Parameters can still be escaped using percent-encoding.
+
+### Version 10.5.0
+
+- Change order of parameters for filter:op:arg:path (small break...)
+- Casting an invalid Date to Boolean makes it false
