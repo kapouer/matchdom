@@ -495,7 +495,7 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>word1Xword2Xword3</p>');
 		});
 		it('with newlines and trim by value', () => {
-			const html = `<p>[text|split:%0A|filter:neq:word2|join:X]</p>`;
+			const html = `<p>[text|split:%0A|filter::neq:word2|join:X]</p>`;
 			const copy = md.extend(OpsPlugin).merge(html, {
 				text: 'word1\nword2\nword3'
 			});
@@ -507,7 +507,7 @@ describe('filters', () => {
 		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
 
 		it('should filter by boolean', () => {
-			const html = `<p>[arr|filter:as:bool|join:-]</p>`;
+			const html = `<p>[arr|filter::as:bool|join:-]</p>`;
 			const copy = md.merge(html, {
 				arr: [0, 1, 2, new Date('a')]
 			});
@@ -515,7 +515,7 @@ describe('filters', () => {
 		});
 
 		it('should filter by inner data check', () => {
-			const html = `<p>[arr|filter:as:bool:value|map:get:.title|join:-]</p>`;
+			const html = `<p>[arr|filter:value:as:bool|map:get:.title|join:-]</p>`;
 			const copy = md.merge(html, {
 				arr: [{
 					title: 'zero', value: 0
@@ -631,7 +631,7 @@ describe('filters', () => {
 		});
 
 		it('should sort array by date item and NaN first', () => {
-			const html = `<p>[sort::true|filter:as:bool|map:date:iso|join:%0A|as:text] </p>`;
+			const html = `<p>[sort::true|filter::as:bool|map:date:iso|join:%0A|as:text] </p>`;
 			const copy = md.extend(DatePlugin).merge(html, [
 				new Date("2021-02-28T15:12"),
 				new Date("2021-02-26T14:12"),
