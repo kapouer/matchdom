@@ -533,6 +533,36 @@ describe('filters', () => {
 		});
 	});
 
+	describe('group filter', () => {
+		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin, OpsPlugin);
+
+		it('should group by value', () => {
+			const html = `<p>[arr|group:|at:-|repeat:|join:-] </p>`;
+			const copy = md.merge(html, {
+				arr: [0, 3, 0, 1, 2, 1, 2, 3]
+			});
+			assert.equal(copy.outerHTML, '<p>0-0 3-3 1-1 2-2 </p>');
+		});
+
+		it('should group by inner value with operation', () => {
+			const html = `<p><i>[arr|group:val:mod:3|repeat:|map:get:.const|join:-]</i></p>`;
+			const copy = md.merge(html, {
+				arr: [{
+					const: 'a',
+					val: 3
+				}, {
+					const: 'b',
+					val: 6
+				}, {
+					const: 'c',
+					val: 5
+				}]
+			});
+			assert.equal(copy.outerHTML, '<p><i>a-b</i><i>c</i></p>');
+		});
+	});
+
+
 	describe('slice filter', () => {
 		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
 

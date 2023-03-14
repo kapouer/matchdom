@@ -26,6 +26,20 @@ export const filters = {
 			return ctx.filter(data, filter, params);
 		});
 	}],
+	group: ['array', 'path?', 'filter?', '?*', (ctx, list, path, filter, params) => {
+		const groups = new Map();
+		for (const item of list) {
+			const data = ctx.expr.get(item, path);
+			const val = filter != null ? ctx.filter(data, filter, params) : data;
+			let group = groups.get(val);
+			if (group == null) {
+				group = [];
+				groups.set(val, group);
+			}
+			group.push(item);
+		}
+		return groups.values();
+	}],
 	map: ['array', 'filter', '?*', (ctx, list, filter, params) => {
 		return list.map(item => {
 			return ctx.filter(item, filter, params);
