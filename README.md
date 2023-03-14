@@ -442,13 +442,18 @@ Returns:
 
 Return these Object methods on the array.
 
-### filter:op:arg:path
+### filter:path:filter:param*
 
-Filter array by applying `get:${path}|${op}:arg` to each item in the array.
-`op` should be a filter returning a boolean, called with a single argument.
+Filter array by applying `get:${path}|${filter}:params...` to each item in the array.
+`filter` should be a filter returning a boolean, called with its parameters.
 `path` is optional.
 
-### map:filter:param+
+### group:path:filter:param*
+
+Group items in array by `get:${path}|${filter}:params...` value.
+Returns an iterable of arrays.
+
+### map:filter:param*
 
 Map an array by calling named filter on each item, with additional params.
 

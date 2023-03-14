@@ -119,3 +119,9 @@ Parameters can still be escaped using percent-encoding.
 
 - Change order of parameters for filter:op:arg:path (small break...)
 - Casting an invalid Date to Boolean makes it false
+
+### Version 10.6.0
+
+- new array filter: group:path:filter:params* to group items by value
+- revert change in 10.5.0, use filter:path:filter:params* to match same order.
+- fix map:filter:params
