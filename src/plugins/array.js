@@ -26,9 +26,9 @@ export const filters = {
 			return ctx.filter(data, filter, params);
 		});
 	}],
-	map: ['array', 'string', '?*', (ctx, list, ...filter) => {
+	map: ['array', 'filter', '?*', (ctx, list, filter, params) => {
 		return list.map(item => {
-			return ctx.filter(item, filter);
+			return ctx.filter(item, filter, params);
 		});
 	}],
 	select: ['array', 'path', (ctx, list, path) => {
