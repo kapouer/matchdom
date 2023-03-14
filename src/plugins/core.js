@@ -15,8 +15,9 @@ export const types = {
 	array(ctx, val) {
 		if (val === undefined) return val;
 		else if (val == null) return [];
-		if (
-			Array.isArray(val) || typeof val.forEach == "function" || typeof val.item == "function" && typeof val.length == "number"
+		else if (typeof val == "string") return [val];
+		else if (
+			Array.isArray(val) || typeof val.forEach == "function" || typeof val.item == "function" && typeof val.length == "number" || typeof val[Symbol.iterator] == 'function'
 		) {
 			// ok
 		} else {
