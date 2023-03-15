@@ -150,7 +150,7 @@ Formats are used directly by the corresponding filter.
 - text: converts string with newlines by a dom fragment with hard breaks
 - html: converts string to a dom fragment
 - xml: converts string to an xml fragment
-- url: merges source and destination - works well with as: filter.
+- url: merges source and destination
 - keys: array of keys
 - values: array of values
 - entries: arrays of {key, value}
