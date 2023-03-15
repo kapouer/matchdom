@@ -148,7 +148,7 @@ export const filters = {
 		// dropped expr so no return value
 		return null;
 	}],
-	query: ['html', 'string', (ctx, frag, sel) => {
+	queryOne: ['html', 'string', (ctx, frag, sel) => {
 		return frag.querySelector(sel);
 	}],
 	queryAll: ['html', 'string', (ctx, frag, sel) => {
