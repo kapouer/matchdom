@@ -1,4 +1,3 @@
-import { XML, HTML } from '../utils.js';
 export const types = {
 	path(ctx, str) {
 		if (str == null) str = "";
@@ -24,23 +23,6 @@ export const types = {
 			val = [val];
 		}
 		return val;
-	}
-};
-
-export const formats = {
-	as: {
-		html(ctx, val) {
-			if (typeof val != "string") return val;
-			val = HTML(val);
-			if (ctx) return ctx.src.doc.importNode(val, true);
-			else return val;
-		},
-		xml(ctx, val) {
-			if (typeof val != "string") return val;
-			val = XML(val);
-			if (ctx) return ctx.src.doc.importNode(val, true);
-			else return val;
-		}
 	}
 };
 

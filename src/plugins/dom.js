@@ -1,4 +1,26 @@
-import { serializeUrl, parseUrl } from '../utils.js';
+let doc, parser;
+function HTML(str) {
+	if (str.startsWith('<html') && str.endsWith('</html>')) {
+		if (!parser) parser = new DOMParser();
+		return parser.parseFromString(str, "text/html");
+	} else {
+		if (!doc) doc = document.cloneNode();
+		const tpl = doc.createElement('template');
+		tpl.innerHTML = str.trim();
+		const frag = tpl.content;
+		return frag.childNodes.length == 1 ? frag.childNodes[0] : frag;
+	}
+}
+
+function XML(str) {
+	if (!parser) parser = new DOMParser();
+	const doc = parser.parseFromString(`<root>${str.trim()}</root>`, "text/xml");
+	const root = doc.documentElement;
+	if (root.childNodes.length == 1) return root.childNodes[0];
+	const frag = doc.createDocumentFragment();
+	while (root.firstChild) frag.appendChild(root.firstChild);
+	return frag;
+}
 
 export const formats = {
 	as: {
@@ -18,24 +40,17 @@ export const formats = {
 			}
 			return frag;
 		},
-		url(ctx, val) {
-			if (val == null) return val;
-			const { src, dest } = ctx;
-			const same = src.attr === dest.attr && src.node === dest.node;
-			const valUrl = parseUrl(val);
-			const srcHits = dest.hits.slice();
-			srcHits[dest.index] = dest.index > 0 ? val : '';
-			const srcVal = srcHits.join('');
-			if (src.index > 0 && valUrl.pathname) {
-				delete valUrl.pathname;
-			}
-			const srcUrl = parseUrl(srcVal);
-			const destUrl = same ? {} : parseUrl(dest.read());
-			const finalUrl = Object.assign({}, destUrl, srcUrl, valUrl);
-			finalUrl.query = Object.assign({}, destUrl.query, srcUrl.query, valUrl.query);
-
-			dest.reduceHit();
-			return serializeUrl(finalUrl);
+		html(ctx, val) {
+			if (typeof val != "string") return val;
+			val = HTML(val);
+			if (ctx) return ctx.src.doc.importNode(val, true);
+			else return val;
+		},
+		xml(ctx, val) {
+			if (typeof val != "string") return val;
+			val = XML(val);
+			if (ctx) return ctx.src.doc.importNode(val, true);
+			else return val;
 		}
 	}
 };

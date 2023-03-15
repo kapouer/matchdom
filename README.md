@@ -614,10 +614,6 @@ Formats string with `<br>` in place of new lines.
 
 Parses string as html or xml.
 
-### url format
-
-Fuse source and destination places as if they were url components.
-
 ### Special behaviors for merging in attributes
 
 - if it has a DOMTokenList interface like `class`, and if source expression is different from destination, tokens are added. Otherwise the whole attribute is set.
