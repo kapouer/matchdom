@@ -27,7 +27,7 @@ const md = new Matchdom(TextPlugin, NumPlugin, DomPlugin);
 const mergedDom = md.merge(`<div id="model" class="[myclass]">
  <h[n]>Header</h[n]>
  <span>[data.text|as:html] for [data.percent|percent:1]</span>
- <img src="[data.icon|prune:*]">
+ <img src="[data.icon|fail:*]">
 </div>`, {
  n: 4,
  myclass: "yes",
@@ -690,7 +690,7 @@ Examples:
 
 - `to:src` fills the src attribute of the current node
 - `at:div|to:class` fills the class attribute of the closest `div`
-- `val|then:to:class|then:at:p|else:prune:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
+- `val|then:to:class|then:at:p|fail:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
 
 ### filter repeat:alias:placer:(...)
 
