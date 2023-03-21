@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, ArrayPlugin, DomPlugin, OpsPlugin } from 'matchdom';
+import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
 
 describe('scope', () => {
 	before(function () {
