@@ -549,6 +549,9 @@ format can be:
 - iso: full iso output
 - time: localized time
 - date: localized date
+- weekday: day of the week between 1 (monday) and 7 (sunday)
+- days: number of days since Jan 1
+- weeks: iso week number
 
 Milliseconds are removed from all these formats.
 

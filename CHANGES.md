@@ -129,3 +129,4 @@ Parameters can still be escaped using percent-encoding.
 ### Version 11.0.0
 
 - xml, html formats are made available only by DomPlugin
+- date: add weekday, days, weeks (non-trivial) formats

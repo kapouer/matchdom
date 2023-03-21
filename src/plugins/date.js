@@ -28,7 +28,7 @@ export const formats = {
 			return date.toLocaleDateString(ctx.getLang());
 		},
 		weekday(ctx, date) {
-			return date.getDay();
+			return date.getDay() || 7;
 		},
 		days(ctx, date) {
 			const start = new Date(date.getFullYear(), 0, 1);
