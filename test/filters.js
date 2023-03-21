@@ -371,7 +371,7 @@ describe('filters', () => {
 		});
 
 		it('should select first node', () => {
-			const html = `<p>[str|query:img+span]</p>`;
+			const html = `<p>[str|one:img+span]</p>`;
 			const copy = md.merge(html, {
 				str: '<img src="toto"><span>test</span><i>test</i><span>toto</span>'
 			});
@@ -379,7 +379,7 @@ describe('filters', () => {
 		});
 
 		it('should select nodes', () => {
-			const html = `<p>[str|queryAll:span]</p>`;
+			const html = `<p>[str|all:span]</p>`;
 			const copy = md.merge(html, {
 				str: '<img src="toto"><span>test</span><i>test</i><span>toto</span>'
 			});

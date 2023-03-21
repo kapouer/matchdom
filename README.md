@@ -723,11 +723,11 @@ The place filter may choose to:
 - insert it somewhere else
 - do nothing in which case the fragment is not inserted
 
-### filter query:selector
+### filter one:selector
 
 If the current value is a dom node or fragment, runs querySelector(selector) on it.
 
-### filter queryAll:selector
+### filter all:selector
 
 If the current value is a dom node or fragment, runs querySelectorAll(selector) on it,
 and return a fragment of the selected nodes.

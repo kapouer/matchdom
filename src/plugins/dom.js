@@ -148,10 +148,10 @@ export const filters = {
 		// dropped expr so no return value
 		return null;
 	}],
-	queryOne: ['html', 'string', (ctx, frag, sel) => {
+	one: ['html', 'string', (ctx, frag, sel) => {
 		return frag.querySelector(sel);
 	}],
-	queryAll: ['html', 'string', (ctx, frag, sel) => {
+	all: ['html', 'string', (ctx, frag, sel) => {
 		const nf = frag.ownerDocument.createDocumentFragment();
 		for (const node of frag.querySelectorAll(sel)) {
 			nf.appendChild(node);
