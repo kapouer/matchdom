@@ -26,6 +26,16 @@ export const formats = {
 		},
 		date(ctx, date) {
 			return date.toLocaleDateString(ctx.getLang());
+		},
+		weekday(ctx, date) {
+			return date.getDay();
+		},
+		days(ctx, date) {
+			const start = new Date(date.getFullYear(), 0, 1);
+			return Math.floor((date - start) / 86400000);
+		},
+		weeks(ctx, date) {
+			return Math.ceil(formats.date.days(ctx, date) / 7);
 		}
 	}
 };

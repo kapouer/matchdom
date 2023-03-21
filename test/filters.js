@@ -1003,6 +1003,30 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, `<p>${now.toLocaleTimeString('fr-FR')}</p>`);
 		});
 
+		it('weekday', () => {
+			const html = `<p>[str|date:weekday]</p>`;
+			const copy = md.merge(html, {
+				str: '2018-03-09T11:12:56.739Z'
+			});
+			assert.equal(copy.outerHTML, '<p>5</p>');
+		});
+
+		it('days', () => {
+			const html = `<p>[str|date:days]</p>`;
+			const copy = md.merge(html, {
+				str: '2018-03-09T11:12:56.739Z'
+			});
+			assert.equal(copy.outerHTML, '<p>67</p>');
+		});
+
+		it('weeks', () => {
+			const html = `<p>[str|date:weeks]</p>`;
+			const copy = md.merge(html, {
+				str: '2018-03-09T11:12:56.739Z'
+			});
+			assert.equal(copy.outerHTML, '<p>10</p>');
+		});
+
 		it('getYear', () => {
 			const html = `<p>[str|as:date|getFullYear:]</p>`;
 			const copy = md.merge(html, {
