@@ -593,26 +593,26 @@ describe('filters', () => {
 		const md = new Matchdom(DatePlugin, TextPlugin);
 
 		it('should get last part of a path', () => {
-			const html = `<p>[path|parts:.:-1]</p>`;
+			const html = `[path|parts:.:-1]`;
 			const copy = md.merge(html, {
 				path: 'test.to.last'
 			});
-			assert.equal(copy.outerHTML, '<p>last</p>');
+			assert.equal(copy, 'last');
 		});
 		it('should get first parts of isodate', () => {
-			const html = `<p>[date|date:isodate|parts:-:0:2]</p>`;
+			const html = `[date|date:isodate|parts:-:0:2]`;
 			const copy = md.merge(html, {
 				date: new Date("2022-05-30")
 			});
-			assert.equal(copy.outerHTML, '<p>2022-05</p>');
+			assert.equal(copy, '2022-05');
 		});
 
 		it('should do nothing', () => {
-			const html = `<p>[str|parts:x]</p>`;
+			const html = `[str|parts:x]`;
 			const copy = md.merge(html, {
 				str: 'xyzzx'
 			});
-			assert.equal(copy.outerHTML, '<p>xyzzx</p>');
+			assert.equal(copy, 'xyzzx');
 		});
 	});
 
