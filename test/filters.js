@@ -1288,7 +1288,7 @@ describe('filters', () => {
 	});
 
 	describe('trim', () => {
-		const md = new Matchdom(TextPlugin);
+		const md = new Matchdom(TextPlugin, DomPlugin);
 		it('out', () => {
 			const html = `<span>-[test|trim:out]-</span>`;
 			const copy = md.merge(html, { test: ' a ' });

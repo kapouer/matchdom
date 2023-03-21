@@ -20,6 +20,7 @@ export class Matchdom {
 		this.filters = Object.create(null);
 		this.types = Object.create(null);
 		this.formats = Object.create(null);
+		this.formats.as = {};
 		this.hooks = {
 			beforeAll: [],
 			beforeEach: [],
@@ -59,7 +60,7 @@ export class Matchdom {
 		let wasText = false;
 		let wasArray = false;
 		if (typeof list == "string") {
-			if (typeof document !== 'undefined') {
+			if (typeof document !== 'undefined' && this.formats.as.html) {
 				if (list.startsWith('<') && list.endsWith('>')) {
 					const fn = this.formats.as[list.startsWith('<?xml') ? 'xml' : 'html'];
 					list = [fn(null, list)];

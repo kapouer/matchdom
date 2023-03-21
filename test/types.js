@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, ArrayPlugin } from 'matchdom';
+import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
 
 describe('types', () => {
 	before(function () {
@@ -10,11 +10,8 @@ describe('types', () => {
 		this.jsdom();
 	});
 
-	const md = new Matchdom(ArrayPlugin);
-	md.debug = true;
-
 	describe('array', () => {
-		const md = new Matchdom(ArrayPlugin);
+		const md = new Matchdom(ArrayPlugin, DomPlugin);
 
 		it('should cast value to array', () => {
 			const html = `<span>[val|as:array|join:-]</span>`;

@@ -125,3 +125,7 @@ Parameters can still be escaped using percent-encoding.
 - new array filter: group:path:filter:params* to group items by value
 - revert change in 10.5.0, use filter:path:filter:params* to match same order.
 - fix map:filter:params
+
+### Version 11.0.0
+
+- xml, html formats are made available only by DomPlugin
