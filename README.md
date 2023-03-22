@@ -409,7 +409,7 @@ Ternary operator, shorthand for "and:yes|or:no"
 
 Second parameter can be omitted
 
-## Matchdom.TextPlugin
+## TextPlugin
 
 ### pre:str, post:str
 
@@ -447,7 +447,7 @@ Trimming:
 - end: trim at end
 - out: trim both sides (the default)
 
-## Matchdom.ArrayPlugin
+## ArrayPlugin
 
 ### array type
 
@@ -507,7 +507,7 @@ Numeric or dates are compared as such, strings are compared using localeCompare.
 
 Calls `list.join(tok)`.
 
-## Matchdom.OpsPlugin
+## OpsPlugin
 
 ### pass-through filters
 
@@ -533,7 +533,7 @@ These filters return the value if the condition is true, or null if the conditio
 - mod:num
 - pow:num
 
-## Matchdom.NumPlugin
+## NumPlugin
 
 All three filters return a localized string,
 with at least min digits and at most max digits.
@@ -552,7 +552,7 @@ Formats a percent.
 
 Formats a currency.
 
-## Matchdom.DatePlugin
+## DatePlugin
 
 ### date type
 
@@ -617,7 +617,7 @@ Offset a unit of date by an integer value.
 
 Units are: Y, M, D, h, m, s.
 
-## Matchdom.JsonPlugin
+## JsonPlugin
 
 ### json type
 
@@ -627,7 +627,26 @@ Converts string to json object
 
 Converts data to json string
 
-## Matchdom.DomPlugin
+## UrlPlugin
+
+### url type
+
+Converts string to a URL instance.
+
+By default, such an instance will be serialized as absolute path when it has the same origin as the default location, thus omitting `protocol://hostname:port` part.
+
+The default location is given by document.location, or `null://`.
+
+### query:mutations*
+
+Expects a url as input, and mutates searchParams.
+Mutations paths are properly escaped:
+`str|query:row.prop=val` is interpreted as `str|as:url|set:searchParams.row%2E.prop=val`
+
+To remove the query entirely, use `str|as:url|set:search=`
+To append a query string to another url do: `[str|as:url][]`
+
+## DomPlugin
 
 ### text format
 
