@@ -3,7 +3,7 @@ import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, OpsPlugin, TextPlugin,
 	ArrayPlugin, DomPlugin, DatePlugin,
-	JsonPlugin
+	JsonPlugin, UrlPlugin
 } from 'matchdom';
 
 describe('filters', () => {
@@ -1068,7 +1068,7 @@ describe('filters', () => {
 	});
 
 	describe('url filter', () => {
-		const md = new Matchdom(ArrayPlugin, DomPlugin);
+		const md = new Matchdom(ArrayPlugin, DomPlugin, UrlPlugin);
 
 		it('should work in the same attribute with a query string', () => {
 			const html = `<a href="/test?[href|as:url]">[title]</a>`;
