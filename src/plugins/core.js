@@ -4,6 +4,26 @@ export const types = {
 		if (!str && ctx.raw !== undefined && ctx.isSimpleValue(ctx.raw)) return [];
 		return str.split(ctx.md.symbols.path).map(str => ctx.decode(str));
 	},
+	mutation(ctx, str) {
+		if (!str) return null;
+		const eq = '=';
+		const mut = {};
+		const parts = str.split(eq);
+		str = parts.shift();
+		if (parts.length == 0) return null;
+		if (str.endsWith('-')) {
+			mut.del = true;
+			str = str.slice(0, -1);
+		} else if (str.endsWith('+')) {
+			mut.add = true;
+			str = str.slice(0, -1);
+		} else {
+			mut.set = true;
+		}
+		mut.str = parts.join(eq);
+		mut.path = types.path(ctx, str);
+		return mut;
+	},
 	filter(ctx, str, params) {
 		const [name, def] = ctx.getFilter(ctx.raw, [str, ...params]);
 		if (!def) {
@@ -33,19 +53,47 @@ export const filters = {
 	get: ['?', 'path?', (ctx, data, path) => {
 		return ctx.expr.get(data, path, ctx.data);
 	}],
-	path({ expr, symbols }, val, part) {
-		// TODO evaluate the need for this filter
-		const path = expr.path;
-		if (part == "name") {
-			return path[path.length - 1];
-		} else if (part == "parent") {
-			return path[path.length - 2];
-		} else if (part == "dir") {
-			return path.slice(0, -1).join(symbols.path);
-		} else {
-			return path.join(symbols.path);
+	set: ['?', 'mutation*', (ctx, data, ...mutations) => {
+		for (const mut of mutations) {
+			const { str, path } = mut;
+			if (mut.del) {
+				const obj = filters.get(ctx, data, path);
+				if (obj == null) {
+					continue;
+				} else if (typeof obj.indexOf == "function") {
+					const index = obj.indexOf(str);
+					if (index >= 0) obj.splice(index, 1);
+				} else if (typeof obj.delete == "function") {
+					obj.delete(str);
+				} else if (typeof obj == "object") {
+					delete obj[str];
+				}
+			} else if (mut.set) {
+				const key = path.pop();
+				const obj = filters.get(ctx, data, path);
+				if (obj == null) {
+					continue;
+				} else if (typeof obj.set == "function") {
+					obj.set(key, str);
+				} else {
+					obj[key] = str;
+				}
+			} else if (mut.add) {
+				const key = path.pop();
+				const obj = filters.get(ctx, data, path);
+				if (obj == null) {
+					continue;
+				} else if (typeof obj.append == "function") {
+					obj.append(key, str);
+				} else {
+					const sub = obj[key];
+					if (sub == null) continue;
+					if (typeof sub.add == "function") sub.add(str);
+					else if (typeof sub.push == "function") sub.push(str);
+				}
+			}
 		}
-	},
+	}],
 	alias: ['any', 'path', (ctx, data, path) => {
 		const obj = {};
 		let cur = obj;

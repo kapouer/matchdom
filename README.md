@@ -324,6 +324,26 @@ one can write:
 
 `[path.to.data|myFilter:param|.prop]`
 
+### type mutation
+
+A mutation starts with a path and ends with:
+
+- `=str`: sets the specified path to that value
+- `+=str`: appends the value to the path
+- `-=str`: removes the key from the path
+
+The mutation type is an object with the following properties:
+
+- del, set, add: boolean, only one is true
+- path: array
+- str: string
+
+### set:mutation*
+
+Mutates current value with one or several mutations.
+
+This filter supports Object, Set, Map, Array, URLSearchParams instances.
+
 ### alias:path
 
 Returns an object in which current value can be accessed using this path.

@@ -128,6 +128,5 @@ Parameters can still be escaped using percent-encoding.
 
 ### Version 11.0.0
 
-- xml, html formats are made available only by DomPlugin
-- DomPlugin: queryAll becomes all, query becomes one
+- core: new mutation type and set:mutation* filter
 - date: add weekday, days, weeks (non-trivial) formats
