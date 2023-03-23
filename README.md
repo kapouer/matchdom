@@ -324,25 +324,24 @@ one can write:
 
 `[path.to.data|myFilter:param|.prop]`
 
-### type mutation
-
-A mutation starts with a path and ends with:
-
-- `=str`: sets the specified path to that value
-- `+=str`: appends the value to the path
-- `-=str`: removes the key from the path
-
-The mutation type is an object with the following properties:
-
-- del, set, add: boolean, only one is true
-- path: array
-- str: string
-
 ### set:mutation*
 
 Mutates current value with one or several mutations.
 
+A mutation starts with a path, optionally prefixed by `-` or `+`:
+
+- prefixed by `+` it appends next parameter to the selected path
+- prefixed by `-` it deletes the selected path from its parent object
+- without prefix it sets the selected path to the value in next parameter
+
 This filter supports Object, Set, Map, Array, URLSearchParams instances.
+
+```js
+assert.deepEqual(
+  md.merge(`[obj|set:name:doe:-year:+id:abc]`, { id: 'f1d3', year: 1700 }),
+  { name: 'doe', id: ['f1d3', 'abc'] }
+);
+```
 
 ### alias:path
 
@@ -637,14 +636,19 @@ By default, such an instance will be serialized as absolute path when it has the
 
 The default location is given by document.location, or `null://`.
 
-### query:mutations*
+### url:path
 
-Expects a url as input, and mutates searchParams.
-Mutations paths are properly escaped:
-`str|query:row.prop=val` is interpreted as `str|as:url|set:searchParams.row%2E.prop=val`
+Filter that first converts to url, then return the data accessed by the path, with a special treatment for `query`.
 
-To remove the query entirely, use `str|as:url|set:search=`
-To append a query string to another url do: `[str|as:url][]`
+When the path starts with `query`, `url.searchParams.getAll(path)` is used.
+
+### query:params*
+
+Expects a url as input, and mutates searchParams in a way similar to `set:` filter, except that it doesn't parse paths.
+
+With empty parameters, it empties `url.search`.
+
+With a single string parameter, and if that parameter is a path to an object, it merges the object by setting or appending keys (depending on + being in front of the parameter).
 
 ## DomPlugin
 
