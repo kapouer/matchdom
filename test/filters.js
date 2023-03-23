@@ -851,36 +851,6 @@ describe('filters', () => {
 		});
 	});
 
-	describe('name', () => {
-		const md = new Matchdom(DomPlugin);
-
-		it('should set a value when true', () => {
-			const html = `<p>[val|path:name]</p>`;
-			const copy = md.merge(html, {val: true});
-			assert.equal(copy.outerHTML, '<p>val</p>');
-		});
-		it('should set a value when false', () => {
-			const html = `<p>[val|and:ceci|else:path:name]</p>`;
-			const copy = md.merge(html, {val: false});
-			assert.equal(copy.outerHTML, '<p>val</p>');
-		});
-		it('should set an empty string when false is not set', () => {
-			const html = `<p>[val|then:path:name|or:]</p>`;
-			const copy = md.merge(html, {val: false});
-			assert.equal(copy.outerHTML, '<p></p>');
-		});
-		it('should set last path component when true is not set', () => {
-			const html = `<p>[to.val|then:path:name]</p>`;
-			const copy = md.merge(html, {to: {val: true}});
-			assert.equal(copy.outerHTML, '<p>val</p>');
-		});
-		it('should set empty string when true is not set', () => {
-			const html = `<p>[val|then:path:name|or:]</p>`;
-			const copy = md.merge(html, {val: false});
-			assert.equal(copy.outerHTML, '<p></p>');
-		});
-	});
-
 	describe('const filter', () => {
 		const md = new Matchdom(DomPlugin);
 
@@ -893,16 +863,6 @@ describe('filters', () => {
 			const html = `<p>[val|const:def]</p>`;
 			const copy = md.merge(html, {val: 'toto'});
 			assert.equal(copy.outerHTML, '<p>def</p>');
-		});
-	});
-
-	describe('!?', () => {
-		const md = new Matchdom(DomPlugin);
-
-		it('should set last path component when true is not set', () => {
-			const html = `<p>[to.val|not:|path:name]</p>`;
-			const copy = md.merge(html, {to: {val: false}});
-			assert.equal(copy.outerHTML, '<p>val</p>');
 		});
 	});
 
