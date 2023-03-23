@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, DomPlugin } from 'matchdom';
+import { Matchdom, DomPlugin, UrlPlugin } from 'matchdom';
 
 describe('integration', () => {
 	before(function () {
@@ -10,7 +10,7 @@ describe('integration', () => {
 		this.jsdom();
 	});
 
-	const md = new Matchdom().extend(DomPlugin);
+	const md = new Matchdom(DomPlugin, UrlPlugin);
 
 	it('should repeat array over parent of attribute with url', () => {
 		const html = `<div><div>
