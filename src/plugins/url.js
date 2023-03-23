@@ -20,20 +20,42 @@ export const types = {
 	}
 };
 
-export const formats = {
-	url: {
-		query(ctx, url) {
-			const copy = new RelativeURL(url);
-			copy.pathname = '';
-		}
-	}
-};
-
 export const filters = {
-	// sometimes we get an object and we want a query out of it
-	// sometimes we get a url and we want to change something in it, like remove some variables, or add some variables, or allow only some variables
-	// sometimes we get
-	query: ['url', '*', (ctx, url, ...pairs) => {
-
+	url: ['url', 'path', (ctx, url, path) => {
+		if (path[0] == "query") {
+			path.shift();
+			const key = path.join('.');
+			const list = url.searchParams.getAll(key);
+			if (list.length == 0) return null;
+			if (list.length == 1) return list[0];
+			else return list;
+		} else {
+			return ctx.expr.get(url, path);
+		}
+	}],
+	query: ['url', '?', '?*', (ctx, url, str, ...params) => {
+		const usp = url.searchParams;
+		if (params.length == 0) {
+			if (str == "") {
+				url.search = "";
+				return url;
+			} else if (!str.startsWith('-')) {
+				const add = str.startsWith('+');
+				const obj = ctx.filter(ctx.data, 'get', add ? str.slice(1) : str);
+				if (obj) for (const [key, val] of Object.entries(obj)) {
+					if (add) usp.append(key, val);
+					else usp.set(key, val);
+				}
+				return url;
+			}
+		}
+		params.unshift(str);
+		for (let i = 0; i < params.length; i++) {
+			const p = params[i];
+			params[i] = p.replace(/\./g, '%2E');
+			if (!p.startsWith('-')) i += 1;
+		}
+		ctx.filter(usp, 'set', ...params);
+		return url;
 	}]
 };
