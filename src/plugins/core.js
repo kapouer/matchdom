@@ -4,26 +4,6 @@ export const types = {
 		if (!str && ctx.raw !== undefined && ctx.isSimpleValue(ctx.raw)) return [];
 		return str.split(ctx.md.symbols.path).map(str => ctx.decode(str));
 	},
-	mutation(ctx, str) {
-		if (!str) return null;
-		const eq = '=';
-		const mut = {};
-		const parts = str.split(eq);
-		str = parts.shift();
-		if (parts.length == 0) return null;
-		if (str.endsWith('-')) {
-			mut.del = true;
-			str = str.slice(0, -1);
-		} else if (str.endsWith('+')) {
-			mut.add = true;
-			str = str.slice(0, -1);
-		} else {
-			mut.set = true;
-		}
-		mut.str = parts.join(eq);
-		mut.path = types.path(ctx, str);
-		return mut;
-	},
 	filter(ctx, str, params) {
 		const [name, def] = ctx.getFilter(ctx.raw, [str, ...params]);
 		if (!def) {
@@ -53,46 +33,43 @@ export const filters = {
 	get: ['?', 'path?', (ctx, data, path) => {
 		return ctx.expr.get(data, path, ctx.data);
 	}],
-	set: ['?', 'mutation*', (ctx, data, ...mutations) => {
-		for (const mut of mutations) {
-			const { str, path } = mut;
-			if (mut.del) {
-				const obj = filters.get(ctx, data, path);
-				if (obj == null) {
-					continue;
-				} else if (typeof obj.indexOf == "function") {
-					const index = obj.indexOf(str);
+	set: ['?', '?*', (ctx, data, ...params) => {
+		while (params.length) {
+			const str = params.shift();
+			let act = 0;
+			if (str.startsWith('+')) act = 1;
+			else if (str.startsWith('-')) act = 2;
+			const path = types.path(ctx, act ? str.slice(1) : str);
+			const key = path.pop();
+			const obj = ctx.expr.get(data, path);
+			const val = act == 2 ? null : params.shift();
+			if (obj == null) continue;
+			if (act == 2) {
+				if (typeof obj.indexOf == "function") {
+					const index = obj.indexOf(key);
 					if (index >= 0) obj.splice(index, 1);
 				} else if (typeof obj.delete == "function") {
-					obj.delete(str);
+					obj.delete(key);
 				} else if (typeof obj == "object") {
-					delete obj[str];
+					delete obj[key];
 				}
-			} else if (mut.set) {
-				const key = path.pop();
-				const obj = filters.get(ctx, data, path);
-				if (obj == null) {
-					continue;
-				} else if (typeof obj.set == "function") {
-					obj.set(key, str);
+			} else if (!act) {
+				if (typeof obj.set == "function") {
+					obj.set(key, val);
 				} else {
-					obj[key] = str;
+					obj[key] = val;
 				}
-			} else if (mut.add) {
-				const key = path.pop();
-				const obj = filters.get(ctx, data, path);
-				if (obj == null) {
-					continue;
-				} else if (typeof obj.append == "function") {
-					obj.append(key, str);
-				} else {
-					const sub = obj[key];
-					if (sub == null) continue;
-					if (typeof sub.add == "function") sub.add(str);
-					else if (typeof sub.push == "function") sub.push(str);
-				}
+			} else if (typeof obj.append == "function") {
+				obj.append(key, val);
+			} else {
+				const sub = obj[key];
+				if (sub == null) obj[key] = val;
+				else if (typeof sub.add == "function") sub.add(val);
+				else if (typeof sub.push == "function") sub.push(val);
+				else obj[key] = [sub, val];
 			}
 		}
+		return data;
 	}],
 	alias: ['any', 'path', (ctx, data, path) => {
 		const obj = {};
