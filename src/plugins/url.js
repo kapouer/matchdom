@@ -43,8 +43,10 @@ export const filters = {
 				const add = str.startsWith('+');
 				const obj = ctx.filter(ctx.data, 'get', add ? str.slice(1) : str);
 				if (obj) for (const [key, val] of Object.entries(obj)) {
-					if (add) usp.append(key, val);
-					else usp.set(key, val);
+					const str = val == null ? '' : val;
+					if (val === undefined) usp.delete(key);
+					else if (add) usp.append(key, str);
+					else usp.set(key, str);
 				}
 				return url;
 			}

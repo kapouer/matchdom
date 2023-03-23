@@ -64,13 +64,15 @@ describe('url plugin', () => {
 	it('sets query part of the url with another object', () => {
 		const html = `<a href="[href|query:myobj]">[title]</a>`;
 		const copy = md.merge(html, {
-			href: '/pathname?test=1',
+			href: '/pathname?test=1&notme=3',
 			title: 'anchor',
 			myobj: {
-				toto: 2
+				toto: 2,
+				me: null,
+				notme: undefined
 			}
 		});
-		assert.equal(copy.outerHTML, '<a href="/pathname?test=1&amp;toto=2">anchor</a>');
+		assert.equal(copy.outerHTML, '<a href="/pathname?test=1&amp;toto=2&amp;me=">anchor</a>');
 	});
 
 	it('appends query part of the url with another object', () => {
