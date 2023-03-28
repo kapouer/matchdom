@@ -107,16 +107,17 @@ export const filters = {
 		}
 		return raw;
 	}],
-	repeat: ['array', 'string?', 'filter?', '?*', (ctx, list, alias, placer, ...params) => {
+	repeat: ['array', 'path', 'filter?', '?*', (ctx, list, alias, placer, ...params) => {
 		const { src, dest } = ctx;
 		if (dest.ancestor == null) {
 			ctx.filter(list, 'at', '*');
 		}
 
 		const cur = src.read();
+		const name = alias.shift();
 		if (cur != null) {
 			const expr = ctx.expr.clone();
-			expr.prepend(["get", alias || ""]);
+			expr.prepend(["get", name || ""]);
 			const hit = dest.hits[dest.index] = ctx.wrap(expr.toString());
 			src.write([cur.replace(ctx.wrap(expr.initial), hit)], src);
 		}
@@ -125,11 +126,12 @@ export const filters = {
 		const [fragment, cursor] = dest.extract();
 		const parent = cursor.parentNode;
 
-		for (const item of Array.from(list)) {
+		for (let item of Array.from(list)) {
 			let obj = Object.assign({}, ctx.data);
+			if (alias.length) item = ctx.expr.get(item, alias);
 
-			if (alias) {
-				obj[alias] = item;
+			if (name) {
+				obj[name] = item;
 			} else if (ctx.isSimpleValue(item)) {
 				obj = item;
 			} else {

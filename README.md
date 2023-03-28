@@ -729,7 +729,7 @@ Examples:
 - `at:div|to:class` fills the class attribute of the closest `div`
 - `val|then:to:class|then:at:p|fail:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
 
-### filter repeat:alias:placer:(...)
+### filter repeat:path?:placer?:(...)
 
 Expect the value to be iterable (array, collection, etc...).
 
@@ -737,15 +737,13 @@ Repeats selected range for each item in the value.
 
 The selected range must be set using `at` filter; if not, the selected range will default to `at:*`.
 
-The keys in each item become available in the scope of each repeated range.
+The first component of the path is an alias for the repeated item.
+The remaining path is used to access the item before merging it.
+These expressions are equivalent:
 
-The alias parameter can name repeated item, so that these two expressions
-are equivalent:
-
-- `[items|at:div|repeat:|id] has some [text]`
-- `[items|at:div|repeat:my|id] has some [my.text]`
-
-The first case is shorter to write but overwrites current scope with iterated item keys, while the alias allows to avoid that.
+- `[items|at:div|repeat:|.id] has some [text]`
+- `[items|at:div|repeat:my|.id] has some [my.text]`
+- `[items|as:entries|at:div|repeat:item.value|.id] has some [item.text]`
 
 The placer parameter may be a custom filter name called *after* the iterated range
 has been merged, with (item, cursor, fragment, ...params) signature:
