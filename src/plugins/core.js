@@ -71,17 +71,6 @@ export const filters = {
 		}
 		return data;
 	}],
-	alias: ['any', 'path', (ctx, data, path) => {
-		const obj = {};
-		let cur = obj;
-		const len = path.length - 1;
-		for (let i = 0; i <= len; i++) {
-			const item = path[i];
-			if (i == len) cur[item] = data;
-			else cur = cur[item] = {};
-		}
-		return obj;
-	}],
 	as(ctx, val, type, ...params) {
 		if (type == "none" || type == "undefined") {
 			if (!val) return undefined;

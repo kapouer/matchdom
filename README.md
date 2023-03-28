@@ -343,12 +343,6 @@ assert.deepEqual(
 );
 ```
 
-### alias:path
-
-Returns an object in which current value can be accessed using this path.
-
-Useful when another filter expects data to be accessible under a specific path.
-
 ### const:str
 
 Always return str.

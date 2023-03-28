@@ -184,16 +184,6 @@ describe('filters', () => {
 		});
 	});
 
-	describe('alias', () => {
-		const md = new Matchdom();
-
-		it('should alias value in context', () => {
-			const html = `[size|alias:test.it|.test.it]`;
-			const copy = md.merge(html, {size: 'wot'});
-			assert.equal(copy, 'wot');
-		});
-	});
-
 	describe('parameters', () => {
 		const md = new Matchdom(DomPlugin);
 
