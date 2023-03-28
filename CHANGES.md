@@ -133,3 +133,9 @@ Parameters can still be escaped using percent-encoding.
 - DomPlugin: `queryAll` is renamed to `all`, `query` is renamed to `one`
 - UrlPlugin: url type, url and query filters
 - date: add weekday, days, weeks (non-trivial) formats
+
+### Version 11.1.0
+
+- drop useless alias filter
+- quot:num filter for getting a quotient
+- repeat:path was treating path as a string. It now uses the first component of the path to get an alias, and the remaining path to get the aliased value from the repeated item.
