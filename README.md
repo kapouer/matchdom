@@ -529,6 +529,7 @@ These filters return the value if the condition is true, or null if the conditio
 - sub:num
 - mul:num
 - div:num
+- quot:num
 - mod:num
 - pow:num
 

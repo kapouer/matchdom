@@ -57,6 +57,9 @@ export const filters = {
 	div: ['num', 'num', (x, a, b) => {
 		return a / b;
 	}],
+	quot: ['num', 'num', (x, a, b) => {
+		return Math.trunc(a / b);
+	}],
 	mod: ['num', 'num', (x, a, b) => {
 		return a % b;
 	}],
