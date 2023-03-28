@@ -547,5 +547,17 @@ describe('repeat filter', () => {
 			<span>a: one</span><span>b: two</span>
 		</div>`).innerHTML);
 	});
+
+	it('should alias value in context', () => {
+		const html = `<ul><li>[list|repeat:item.value|.name]:[item.sum]</li></ul>`;
+		const copy = md.merge(html, {
+			size: 'wot',
+			list: [
+				{ value: { name: 'a', sum: 12 } },
+				{ value: { name: 'b', sum: 7 } }
+			]
+		});
+		assert.equal(copy.outerHTML, '<ul><li>a:12</li><li>b:7</li></ul>');
+	});
 });
 
