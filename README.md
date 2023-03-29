@@ -647,9 +647,11 @@ The default location is given by document.location, or `null://`.
 
 ### url:path
 
-Filter that first converts to url, then return the data accessed by the path, with a special treatment for `query`.
+Filter that first converts to url, then return the url property accessed by the path, like `hostname`, `pathname`, ...
 
-When the path starts with `query`, `url.searchParams.getAll(path)` is used.
+If the path is `query` a representing `searchParams` is returned.
+
+If the path starts with `query.`, `searchParams.getAll(remainingPath)` is used to return a value or an array.
 
 ### query:params*
 
@@ -657,7 +659,16 @@ Expects a url as input, and mutates searchParams in a way similar to `set:` filt
 
 With empty parameters, it empties `url.search`.
 
-With a single string parameter, and if that parameter is a path to an object, it merges the object by setting or appending keys (depending on + being in front of the parameter).
+With a single string parameter, and if that parameter is a path to an object, it merges the object by setting or appending keys (depending on + being in front of the parameter):
+
+```js
+assert.equal(md.merge('[loc|query:+referer.query]', {
+  loc: '/test?a=1&b=1',
+  referer: {
+    query: { b: 2 }
+  }
+}), '/test?a=1&b=1&b=2');
+```
 
 ## DomPlugin
 

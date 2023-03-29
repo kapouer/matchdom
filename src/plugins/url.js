@@ -23,12 +23,25 @@ export const types = {
 export const filters = {
 	url: ['url', 'path', (ctx, url, path) => {
 		if (path[0] == "query") {
-			path.shift();
-			const key = path.join('.');
-			const list = url.searchParams.getAll(key);
-			if (list.length == 0) return null;
-			if (list.length == 1) return list[0];
-			else return list;
+			if (path.length == 1) {
+				const obj = {};
+				for (const [key, value] of url.searchParams) {
+					if (obj[key] == null) {
+						obj[key] = value;
+					} else if (Array.isArray(obj[key])) {
+						obj[key].push(value);
+					} else {
+						obj[key] = [obj[key], value];
+					}
+				}
+				return obj;
+			} else {
+				const key = path.slice(1).join('.');
+				const list = url.searchParams.getAll(key);
+				if (list.length == 0) return null;
+				if (list.length == 1) return list[0];
+				else return list;
+			}
 		} else {
 			return ctx.expr.get(url, path);
 		}

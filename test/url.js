@@ -34,6 +34,14 @@ describe('url plugin', () => {
 		assert.equal(copy.outerHTML, '<a href="/pathname?toto=2">anchor</a>');
 	});
 
+	it('returns searchParams as a query object with array values if needed', () => {
+		const html = `<a href="[href|url:pathname]">[href|url:query|.test|join:-]</a>`;
+		const copy = md.merge(html, {
+			href: '/pathname?test=1&test=a&toto=2'
+		});
+		assert.equal(copy.outerHTML, '<a href="/pathname">1-a</a>');
+	});
+
 	it('sets query part of the url', () => {
 		const html = `<a href="[href|query:toto:2]">[title]</a>`;
 		const copy = md.merge(html, {
