@@ -21,11 +21,11 @@ export const filters = {
 			return val;
 		}
 	},
-	has: ['array', (x, val, str) => {
+	has: ['array', 'any', (x, val, str) => {
 		if (val.includes(str)) return str;
 		else return null;
 	}],
-	in: ['?', 'any*', (x, val, ...list) => {
+	in: ['any', 'any*', (x, val, ...list) => {
 		if (list.includes(val)) return val;
 		else return null;
 	}],

@@ -841,6 +841,62 @@ describe('filters', () => {
 		});
 	});
 
+	describe('has', () => {
+		const md = new Matchdom(DomPlugin, OpsPlugin);
+
+		it('should return str', () => {
+			const html = `[arr|has:test]`;
+			const copy = md.merge(html, { arr: ['a', 'test'] });
+			assert.equal(copy, 'test');
+		});
+
+		it('should return null', () => {
+			const html = `[arr|has:test]`;
+			const copy = md.merge(html, { arr: ['a', 'tesst'] });
+			assert.equal(copy, null);
+		});
+
+		it('should return empty', () => {
+			const html = `[arr|has:]`;
+			const copy = md.merge(html, { arr: ['a', ''] });
+			assert.equal(copy, '');
+		});
+
+		it('should return null too', () => {
+			const html = `[arr|has:test]`;
+			const copy = md.merge(html, { arr: null });
+			assert.equal(copy, null);
+		});
+	});
+
+	describe('in', () => {
+		const md = new Matchdom(DomPlugin, OpsPlugin);
+
+		it('should return str', () => {
+			const html = `[val|in:a:b:c]`;
+			const copy = md.merge(html, { val: 'a'});
+			assert.equal(copy, 'a');
+		});
+
+		it('should return null', () => {
+			const html = `[val|in:a:b:c]`;
+			const copy = md.merge(html, { val: 'd' });
+			assert.equal(copy, null);
+		});
+
+		it('should return empty', () => {
+			const html = `[val|in:]`;
+			const copy = md.merge(html, { val: '' });
+			assert.equal(copy, '');
+		});
+
+		it('should return null too', () => {
+			const html = `[val|in:a:b:c]`;
+			const copy = md.merge(html, { val: null });
+			assert.equal(copy, null);
+		});
+	});
+
 	describe('const filter', () => {
 		const md = new Matchdom(DomPlugin);
 
