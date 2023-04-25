@@ -597,6 +597,16 @@ describe('filters', () => {
 			assert.equal(copy, '2022-05');
 		});
 
+		it('should parse partial date', () => {
+			const html = `[$query.date|or:now|clock:1:M|date:isodate|parts:-:0:2]`;
+			const copy = md.merge(html, {
+				$query: {
+					date: "2022-05"
+				}
+			});
+			assert.equal(copy, '2022-06');
+		});
+
 		it('should do nothing', () => {
 			const html = `[str|parts:x]`;
 			const copy = md.merge(html, {

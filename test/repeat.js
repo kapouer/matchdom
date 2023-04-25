@@ -19,7 +19,7 @@ describe('repeat filter', () => {
 		});
 		assert.equal(copy.outerHTML, `<div>aonetwo</div>`);
 	});
-	it('should repeat array-in-object over node', () => {
+	it('should repeat array of values over node', () => {
 		const html = `<div>
 			<span>[arr|repeat:]</span>
 		</div>`;
@@ -28,6 +28,18 @@ describe('repeat filter', () => {
 		});
 		assert.equal(copy.outerHTML, md.merge(`<div>
 			<span>one</span><span>two</span>
+		</div>`).outerHTML);
+	});
+	it('should repeat aliased array of values over node', () => {
+		// top-level values are optional, so objects are needed for second level
+		const html = `<div>
+			<span class="[item.value]">[arr|as:entries|repeat:item|.key]</span>
+		</div>`;
+		const copy = md.merge(html, {
+			arr: ['one', 'two']
+		});
+		assert.equal(copy.outerHTML, md.merge(`<div>
+			<span class="one">1</span><span class="two">2</span>
 		</div>`).outerHTML);
 	});
 

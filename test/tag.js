@@ -50,6 +50,10 @@ describe('tag', () => {
 		assert.equal(md.merge(html, { mybool: true }).outerHTML, '<div>test</div>');
 		assert.equal(md.merge(html, { mybool: false }).outerHTML, '<p>test</p>');
 		assert.equal(md.merge(html, { mybool: null }).outerHTML, '<p>test</p>');
+		const html2 = `<x[mybool|alt:div:p|at:-]>test</x[mybool|alt:div:p|at:-]>`;
+		assert.equal(md.merge(html2, { mybool: true }).outerHTML, '<div>test</div>');
+		assert.equal(md.merge(html2, { mybool: false }).outerHTML, '<p>test</p>');
+		assert.equal(md.merge(html2, { mybool: null }).outerHTML, '<p>test</p>');
 		assert.equal(md.merge(html, {}).outerHTML, '<p>test</p>');
 	});
 	it('should merge whole tag name', () => {
