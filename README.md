@@ -515,7 +515,7 @@ Calls `list.join(tok)`.
 These filters return the value if the condition is true, or null if the condition is false:
 
 - eq:str
-- neq:str returns str if the value is not equal to str
+- neq:str returns str if the value is not equal to str (to return val, use switch:str:)
 - has:str (contains str and returns str)
 - in:str1:... (contained in list of strings)
 - gt:num
