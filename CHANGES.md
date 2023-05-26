@@ -139,3 +139,8 @@ Parameters can still be escaped using percent-encoding.
 - drop useless alias filter
 - quot:num filter for getting a quotient
 - repeat:path was treating path as a string. It now uses the first component of the path to get an alias, and the remaining path to get the aliased value from the repeated item.
+
+### Version 11.2.0
+
+- fix has: and in: filters, there were somewhat broken - add tests for them
+- new date:full option
