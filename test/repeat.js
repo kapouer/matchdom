@@ -31,6 +31,7 @@ describe('repeat filter', () => {
 		</div>`).outerHTML);
 	});
 	it('should repeat aliased array of values over node', () => {
+		const md = new Matchdom(ArrayPlugin, DomPlugin);
 		// top-level values are optional, so objects are needed for second level
 		const html = `<div>
 			<span class="[item.value]">[arr|as:entries|repeat:item|.key]</span>
@@ -39,7 +40,7 @@ describe('repeat filter', () => {
 			arr: ['one', 'two']
 		});
 		assert.equal(copy.outerHTML, md.merge(`<div>
-			<span class="one">1</span><span class="two">2</span>
+			<span class="one">0</span><span class="two">1</span>
 		</div>`).outerHTML);
 	});
 
