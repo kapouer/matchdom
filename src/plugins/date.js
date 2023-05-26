@@ -44,6 +44,9 @@ export const filters = {
 	date: ['date', 'str*', (ctx, date, ...list) => {
 		const fmt = list.length == 1 ? ctx.md.formats.date[list[0]] : null;
 		if (fmt) return fmt(ctx, date);
+		if (list.length == 1 && list[0] == "full") {
+			list = ['day', 'D', 'month', 'Y', 'H', 'm'];
+		}
 
 		const p = {};
 		const n = 'narrow';

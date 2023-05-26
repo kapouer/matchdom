@@ -608,9 +608,7 @@ Localized format accepts shorthands:
 - tz: short timezone
 - timezone: long timezone
 - `country`/`city`: sets a timezone
-
-For example, a fully localized date can be obtained using:
-`[obj.mydatestr|date:day:month:Y:H:m]`
+- full: localized full date, alias for day:D:month:Y:H:m
 
 ### clock:offset:unit
 
