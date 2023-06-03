@@ -533,7 +533,7 @@ describe('filters', () => {
 	});
 
 	describe('filter and find', () => {
-		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
+		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin, OpsPlugin);
 
 		it('should filter by boolean', () => {
 			const html = `<p>[arr|filter::as:bool|join:-]</p>`;
