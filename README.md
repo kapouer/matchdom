@@ -343,6 +343,10 @@ assert.deepEqual(
 );
 ```
 
+### assign:path
+
+Reassigns `ctx.data` so that current value becomes accessible by `get:<path>`.
+
 ### const:str
 
 Always return str.

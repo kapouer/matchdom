@@ -33,6 +33,21 @@ export const filters = {
 	get: ['?', 'path?', (ctx, data, path) => {
 		return ctx.expr.get(data, path, ctx.data);
 	}],
+	assign: ['?', 'path', (ctx, val, path) => {
+		let data = ctx.data = Object.assign({}, ctx.data);
+		for (let i = 0; i < path.length - 1; i++) {
+			const str = path[i];
+			if (data[str] == null) {
+				data = data[str] = {};
+			} else if (typeof data[str] != 'object') {
+				throw new Error(`Cannot set property '${str}' on non-object`);
+			} else {
+				data = data[str] = Object.assign({}, data[str]);
+			}
+		}
+		data[path[path.length - 1]] = val;
+		return val;
+	}],
 	set: ['?', '?*', (ctx, data, ...params) => {
 		while (params.length) {
 			const str = params.shift();

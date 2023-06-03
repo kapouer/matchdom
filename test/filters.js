@@ -184,6 +184,45 @@ describe('filters', () => {
 		});
 	});
 
+	describe('assign is a filter', () => {
+		const md = new Matchdom();
+
+		it('should assign data to given path', () => {
+			const txt = `Si[c|assign:a.b] and [a.b]`;
+			const data = {
+				c: 'value'
+			};
+			const clone = structuredClone(data);
+			const copy = md.merge(txt, data);
+			assert.deepEqual(data, clone);
+			assert.equal(copy, 'Sivalue and value');
+		});
+
+		it('should set global data at given path with existing object', () => {
+			const txt = `Si[c|assign:a.b] and [a.b] [a.d]`;
+			const data = {
+				a: { d: 1 },
+				c: 'value'
+			};
+			const clone = structuredClone(data);
+			const copy = md.merge(txt, data);
+			assert.deepEqual(data, clone);
+			assert.equal(copy, 'Sivalue and value 1');
+		});
+
+		it('should fail to set global data at path with a value', () => {
+			const txt = `Si[c|assign:a.b] and [a.b]`;
+			const data = {
+				a: 3,
+				c: 'value'
+			};
+			const clone = structuredClone(data);
+			const copy = md.merge(txt, data);
+			assert.deepEqual(data, clone);
+			assert.equal(copy, 'Si and ');
+		});
+	});
+
 	describe('parameters', () => {
 		const md = new Matchdom(DomPlugin);
 

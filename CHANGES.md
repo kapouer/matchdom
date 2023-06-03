@@ -144,3 +144,7 @@ Parameters can still be escaped using percent-encoding.
 
 - fix has: and in: filters, there were somewhat broken - add tests for them
 - new date:full option
+
+### Version 11.3.0
+
+- assign:path filter makes current value available under specified path without changing the original ctx.data.
