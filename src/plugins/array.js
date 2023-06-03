@@ -26,6 +26,12 @@ export const filters = {
 			return ctx.filter(data, filter, params);
 		});
 	}],
+	find: ['array', 'path?', 'filter', '?*', (ctx, list, path, filter, params) => {
+		return list.find(item => {
+			const data = ctx.expr.get(item, path);
+			return ctx.filter(data, filter, params);
+		});
+	}],
 	group: ['array', 'path?', 'filter?', '?*', (ctx, list, path, filter, params) => {
 		const groups = new Map();
 		for (const item of list) {

@@ -148,3 +148,7 @@ Parameters can still be escaped using percent-encoding.
 ### Version 11.3.0
 
 - assign:path filter makes current value available under specified path without changing the original ctx.data.
+
+### Version 11.4.0
+
+- find: filter like filter: but stops to find one item in the array.

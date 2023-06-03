@@ -532,7 +532,7 @@ describe('filters', () => {
 		});
 	});
 
-	describe('filter filter', () => {
+	describe('filter and find', () => {
 		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
 
 		it('should filter by boolean', () => {
@@ -541,6 +541,18 @@ describe('filters', () => {
 				arr: [0, 1, 2, new Date('a')]
 			});
 			assert.equal(copy.outerHTML, '<p>1-2</p>');
+		});
+
+		it('should find one item', () => {
+			const html = `<p>[arr|find:id:eq:a|.name]</p>`;
+			const copy = md.merge(html, {
+				arr: [
+					{ id: 'b', name: 'best' },
+					{ id: 'a', name: 'toto' },
+					{ id: 'cc', name: 'aaa' }
+				]
+			});
+			assert.equal(copy.outerHTML, '<p>toto</p>');
 		});
 
 		it('should filter by inner data check', () => {

@@ -465,6 +465,10 @@ Filter array by applying `get:${path}|${filter}:params...` to each item in the a
 `filter` should be a filter returning a boolean, called with its parameters.
 `path` is optional.
 
+### find:path:filter:param*
+
+Return the first item satisfying the filter condition.
+
 ### group:path:filter:param*
 
 Group items in array by `get:${path}|${filter}:params...` value.
