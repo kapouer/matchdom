@@ -11,6 +11,20 @@ describe('string', () => {
 		assert.equal(copy, 'no? yes!');
 	});
 
+
+	it('should not merge anything', () => {
+		const md = new Matchdom();
+		const copy = md.merge(true, {});
+		assert.equal(copy, true);
+	});
+
+	it('should merge null', () => {
+		const copy = md.extend(DatePlugin).merge('[test|then:date:Y]', {
+			toto: 'one'
+		});
+		assert.equal(copy, '[test]');
+	});
+
 	it('should be merged as text', () => {
 		const copy = md.merge('no?\n [test]!', {
 			test: "yes\nnl"
