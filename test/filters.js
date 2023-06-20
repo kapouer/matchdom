@@ -543,6 +543,14 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>1-2</p>');
 		});
 
+		it('should filter strings', () => {
+			const html = `<p>[arr|filter::is:string|join:-]</p>`;
+			const copy = md.merge(html, {
+				arr: [0, "a", 1, "b", 2, new Date('a')]
+			});
+			assert.equal(copy.outerHTML, '<p>a-b</p>');
+		});
+
 		it('should find one item', () => {
 			const html = `<p>[arr|find:id:eq:a|.name]</p>`;
 			const copy = md.merge(html, {
