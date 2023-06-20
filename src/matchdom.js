@@ -156,6 +156,7 @@ export class Matchdom {
 	}
 
 	matchEachDom(root, fn) {
+		if (!root.ownerDocument) return;
 		// NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT
 		const ctx = 5;
 		// old IE need all params
