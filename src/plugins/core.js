@@ -125,7 +125,7 @@ export const filters = {
 		if (type in ctx.md.formats.as) {
 			throw new Error(`Cannot check as format: ${type}`);
 		}
-		return ctx.filter(val, 'as', type, ...params) == val;
+		return ctx.filter(val, 'as', type, ...params) === val;
 	},
 	lang(ctx, val, lang) {
 		ctx.lang = lang || null;
