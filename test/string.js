@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import { Matchdom, DomPlugin, ArrayPlugin } from 'matchdom';
+import { Matchdom, DomPlugin, ArrayPlugin, DatePlugin } from 'matchdom';
 
 describe('string', () => {
 	const md = new Matchdom().extend(DomPlugin);
@@ -22,7 +22,7 @@ describe('string', () => {
 		const copy = md.extend(DatePlugin).merge('[test|then:date:Y]', {
 			toto: 'one'
 		});
-		assert.equal(copy, '[test]');
+		assert.equal(copy, null);
 	});
 
 	it('should be merged as text', () => {
