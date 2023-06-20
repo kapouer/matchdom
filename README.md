@@ -15,6 +15,8 @@ until the expression can be merged.
 If `node` is a string that starts with '<' and ends with '>',
 it is converted to a DOM fragment (or single node) if `document` is available.
 
+If `node` cannot be parsed as a string or a DOM node, it is treated as if it was already merged.
+
 ## example
 
 ```js
