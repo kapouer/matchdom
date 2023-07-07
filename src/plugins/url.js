@@ -21,20 +21,20 @@ export const types = {
 };
 
 export const filters = {
-	url: ['url', 'path', (ctx, url, path) => {
+	url: ['url', 'path', '?', (ctx, url, path, value) => {
 		if (path[0] == "query") {
 			if (path.length == 1) {
-				const obj = {};
-				for (const [key, value] of url.searchParams) {
-					if (obj[key] == null) {
-						obj[key] = value;
-					} else if (Array.isArray(obj[key])) {
-						obj[key].push(value);
-					} else {
-						obj[key] = [obj[key], value];
+				if (value === undefined) {
+					return url.search.substring(1);
+				} else {
+					if (value != null) {
+						const h = new URL('/' + (value.startsWith('?') ? '' : '?') + value, url);
+						for (const [key, val] of h.searchParams) {
+							url.searchParams.append(key, val);
+						}
 					}
+					return url;
 				}
-				return obj;
 			} else {
 				const key = path.slice(1).join('.');
 				const list = url.searchParams.getAll(key);
@@ -43,10 +43,10 @@ export const filters = {
 				else return list;
 			}
 		} else {
-			return ctx.expr.get(url, path);
+			return url[path[0]];
 		}
 	}],
-	query: ['url', '?', '?*', (ctx, url, str, ...params) => {
+	query: ['url', 'any', 'any*', (ctx, url, str, ...params) => {
 		const usp = url.searchParams;
 		if (params.length == 0) {
 			if (str == "") {

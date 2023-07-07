@@ -35,7 +35,7 @@ describe('url plugin', () => {
 	});
 
 	it('returns searchParams as a query object with array values if needed', () => {
-		const html = `<a href="[href|url:pathname]">[href|url:query|.test|join:-]</a>`;
+		const html = `<a href="[href|url:pathname]">[href|url:query.test|join:-]</a>`;
 		const copy = md.merge(html, {
 			href: '/pathname?test=1&test=a&toto=2'
 		});
@@ -44,6 +44,24 @@ describe('url plugin', () => {
 
 	it('sets query part of the url', () => {
 		const html = `<a href="[href|query:toto:2]">[title]</a>`;
+		const copy = md.merge(html, {
+			href: '/pathname?test=1',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/pathname?test=1&amp;toto=2">anchor</a>');
+	});
+
+	it('sets url.search', () => {
+		const html = `<a href="[href|url:search:test=1&toto=2]">[title]</a>`;
+		const copy = md.merge(html, {
+			href: '/pathname?test=1',
+			title: 'anchor'
+		});
+		assert.equal(copy.outerHTML, '<a href="/pathname?test=1&amp;toto=2">anchor</a>');
+	});
+
+	it('merges url query', () => {
+		const html = `<a href="[href|url:query:test=1&toto=2]">[title]</a>`;
 		const copy = md.merge(html, {
 			href: '/pathname?test=1',
 			title: 'anchor'

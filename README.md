@@ -677,13 +677,17 @@ By default, such an instance will be serialized as absolute path when it has the
 
 The default location is given by document.location, or `null://`.
 
-### url:path
+### url:path:value?
 
-Filter that first converts to url, then return the url property accessed by the path, like `hostname`, `pathname`, ...
+Convert to url, then get or set a part of it.
 
-If the path is `query` a representing `searchParams` is returned.
+With one parameter, get a part of the url.
 
+Special path `query` returns an object.
 If the path starts with `query.`, `searchParams.getAll(remainingPath)` is used to return a value or an array.
+
+With two parameters, set a part of the url and returns the modified url.
+If the path starts with `query.`, `searchParams.set(remainingPath, value)` is used to set a value. If the path starts with `+query.`, it is appended instead of set.
 
 ### query:params*
 
