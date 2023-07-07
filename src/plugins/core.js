@@ -48,7 +48,8 @@ export const filters = {
 		data[path[path.length - 1]] = val;
 		return val;
 	}],
-	set: ['?', '?*', (ctx, data, ...params) => {
+	set: ['obj?', '?*', (ctx, data, ...params) => {
+		if (!data) return data;
 		while (params.length) {
 			const str = params.shift();
 			let act = 0;
@@ -86,6 +87,13 @@ export const filters = {
 		}
 		return data;
 	}],
+	pick: ['obj', 'str*', (ctx, obj, ...list) => {
+		const ret = {};
+		for (const name of list) {
+			if (Object.hasOwnProperty.call(obj, name)) ret[name] = obj[name];
+		}
+		return ret;
+	}],
 	as(ctx, val, type, ...params) {
 		if (type == "none" || type == "undefined") {
 			if (!val) return undefined;
@@ -115,6 +123,8 @@ export const filters = {
 			val = Number.parseFloat(val);
 			if (Number.isNaN(val)) val = null;
 			return val;
+		} else if (type == "obj" || type == "object") {
+			if (val != null && typeof val == "object" && !Array.isArray(val)) return val;
 		} else {
 			const fn = ctx.md.formats.as[type] || ctx.md.types[type];
 			if (!fn) throw new Error(`Unknown type: ${type}`);

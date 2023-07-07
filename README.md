@@ -130,6 +130,7 @@ The `as` and `is` filters are useful to explicitely cast or check a value type.
 - string, str: toString
 - boolean, bool: "true", "1" and true-ish to true, "false", "0", and false-ish to false
 - float, num, numeric: try to parseFloat, return null if NaN
+- object: not any of the other simple types
 
 ### complex types (from plugins)
 
@@ -344,6 +345,11 @@ assert.deepEqual(
   { name: 'doe', id: ['f1d3', 'abc'] }
 );
 ```
+
+### pick:key*
+
+Pick only the listed keys from current object and return a new object.
+To remove keys from an object, use `set:-name`.
 
 ### assign:path
 
