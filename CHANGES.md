@@ -157,3 +157,8 @@ Parameters can still be escaped using percent-encoding.
 
 - is: filter wasn't correctly checking input value type
 - support non-mergeable input instead of failing
+
+### Version 11.6.0
+
+- object type is added to core types
+- pick filter is added to core filters
