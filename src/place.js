@@ -251,7 +251,7 @@ export default class Place {
 
 function writeAttr(node, attr, { another, str, trm, path }) {
 	const attrList = node[attr + 'List'];
-	if (typeof node[attr] == "boolean") {
+	if (typeof node[attr] == "boolean" && typeof str == "boolean") {
 		node.setAttribute(attr, "");
 	} else if (attrList) {
 		if (another) for (const name of trm.split(' ')) {

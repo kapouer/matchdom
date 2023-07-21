@@ -165,7 +165,7 @@ describe('attributes', () => {
 		});
 	});
 
-	describe('set a boolean attribute using and:', () => {
+	describe('set a boolean attribute', () => {
 		const md = new Matchdom(DomPlugin);
 
 		it('should drop attribute if value is falsey', () => {
@@ -175,12 +175,19 @@ describe('attributes', () => {
 			});
 			assert.equal(copy.outerHTML, '<textarea></textarea>');
 		});
-		it('should set attribute value to attribute name', () => {
+		it('should set attribute value to empty if value is boolean true', () => {
 			const html = `<textarea required="[val]"></textarea>`;
 			const copy = md.merge(html, {
 				val: true
 			});
 			assert.equal(copy.outerHTML, '<textarea required=""></textarea>');
+		});
+		it('should set attribute value to str if value is a string', () => {
+			const html = `<textarea required="[val]"></textarea>`;
+			const copy = md.merge(html, {
+				val: "test"
+			});
+			assert.equal(copy.outerHTML, '<textarea required="test"></textarea>');
 		});
 	});
 });

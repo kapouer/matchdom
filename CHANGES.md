@@ -162,3 +162,8 @@ Parameters can still be escaped using percent-encoding.
 
 - object type is added to core types
 - pick filter is added to core filters
+
+### Version 11.7.0
+
+- boolean attributes: only honor specific behavior when value is boolean
+  this allows one to not lose expressions in those attributes.
