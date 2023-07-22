@@ -904,9 +904,25 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>it</p>');
 		});
 		it('should not change value and return null', () => {
-			const html = `<p>[val|switch:ceci:cela:]</p>`;
+			const html = `[val|switch:ceci:cela:]`;
 			const copy = md.merge(html, { val: 'it' });
-			assert.equal(copy.outerHTML, '<p></p>');
+			assert.equal(copy, null);
+		});
+		it('should match null key', () => {
+			const html = `[query.test|switch:ceci:cela::quoi]`;
+			const copy = md.merge(html, {
+				query: {
+					test: null
+				}
+			});
+			assert.equal(copy, 'quoi');
+		});
+		it('should match optional chaining', () => {
+			const html = `[query.test?|switch:ceci:cela::quoi]`;
+			const copy = md.merge(html, {
+				query: {}
+			});
+			assert.equal(copy, 'quoi');
 		});
 	});
 

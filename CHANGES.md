@@ -167,3 +167,7 @@ Parameters can still be escaped using percent-encoding.
 
 - boolean attributes: only honor specific behavior when value is boolean
   this allows one to not lose expressions in those attributes.
+
+### Version 11.8.0
+
+- switch filter: let empty param match null value

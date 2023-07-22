@@ -9,7 +9,7 @@ export const filters = {
 	},
 	switch(x, val, ...list) {
 		const pos = list.findIndex((str, i) => {
-			return i % 2 == 0 && str == val;
+			return i % 2 == 0 && (!str && !val || str == val);
 		});
 		const len = list.length;
 		if (pos >= 0) {
