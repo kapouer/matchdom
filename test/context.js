@@ -54,4 +54,36 @@ describe('context', () => {
 		assert.equal(copy.outerHTML, '<div>Date: 2022-10-27<br>10:55:32Z</div>');
 	});
 
+	const mdd = md.extend({
+		drop: function (ctx, val, what) {
+			ctx.expr.cancel = true;
+			return val;
+		}
+	});
+
+	it('drops merging of expression', () => {
+		const html = `<p>[arr|drop:]</p>`;
+		const copy = mdd.merge(html, {
+			arr: ['word1', 'word2']
+		});
+		assert.equal(copy.outerHTML, '<p>[arr|drop:]</p>');
+	});
+
+	it('drops merging of missing level one expression', () => {
+		const html = `<p>[arr|drop:]</p>`;
+		const copy = mdd.merge(html, {});
+		assert.equal(copy.outerHTML, '<p>[arr|drop:]</p>');
+	});
+
+	it('drops merging of level two expression', () => {
+		const html = `<p>[obj.toto|drop:]</p>`;
+		const copy = mdd.merge(html, { obj: { toto: 1 } });
+		assert.equal(copy.outerHTML, '<p>[obj.toto|drop:]</p>');
+	});
+
+	it('drops merging of missing level two expression', () => {
+		const html = `<p>[arr.toto|drop:]</p>`;
+		const copy = mdd.merge(html, {});
+		assert.equal(copy.outerHTML, '<p>[arr.toto|drop:]</p>');
+	});
 });
