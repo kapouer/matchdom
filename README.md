@@ -477,6 +477,14 @@ Filter array by applying `get:${path}|${filter}:params...` to each item in the a
 
 Return the first item satisfying the filter condition.
 
+### find:str
+
+Return str if current array of values contains that str.
+
+### has:val
+
+Tests if current value (as an array) contains this value.
+
 ### group:path:filter:param*
 
 Group items in array by `get:${path}|${filter}:params...` value.
@@ -526,24 +534,36 @@ Calls `list.join(tok)`.
 
 ## OpsPlugin
 
-### pass-through filters
+### switch
 
-These filters return the value if the condition is true, or null if the condition is false:
+switch:key1:val1:key2:val2:...
 
-- eq:str
-- neq:str
-  returns str if the value is not equal to str (to return val, use switch:str:)
-- has:str
-  contains str and returns str
+returns matching value by key, or null if last key is empty, or val
+an empty key match a null value.
+
+### boolean operators
+
+- eq:val
+  loose equality
+- neq:val
+  loose inequality
 - in:str1:...
-  contained in list of strings
+  contained in list of values
 - gt:num
+  greater
 - lt:num
+  lesser
 - gte:num
+  greater or equal
 - lte:num
-- switch:key1:val1:key2:val2:...
-  returns matching value by key, or null if last key is empty, or val
-  an empty key match a null value
+  lesser or equal
+
+### if filter
+
+- if:filter:param*
+
+Runs the following filter.
+If it evaluates to boolean true, returns current value, else return null.
 
 ### arithmetic filters
 
