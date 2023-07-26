@@ -78,6 +78,19 @@ describe('switch', () => {
 	});
 });
 
+describe('if', () => {
+	it('should return value if true', () => {
+		const html = `[val|if:eq:ceci]`;
+		const copy = md.merge(html, { val: 'ceci' });
+		assert.equal(copy, 'ceci');
+	});
+	it('should return null if false', () => {
+		const html = `[val|if:eq:ceci]`;
+		const copy = md.merge(html, { val: 'cela' });
+		assert.equal(copy, null);
+	});
+});
+
 describe('in', () => {
 	it('should return str', () => {
 		const html = `[val|in:a:b:c]`;
