@@ -5,7 +5,7 @@ import {
 	ArrayPlugin, DomPlugin, DatePlugin
 } from 'matchdom';
 
-describe('filters', () => {
+describe('dom', () => {
 
 	before(function () {
 		this.jsdom = globalJsdom();

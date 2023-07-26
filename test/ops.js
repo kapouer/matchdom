@@ -124,6 +124,10 @@ describe('add filter', () => {
 		const copy = md.merge(`[x|add:xyz]`, { x: '3.14' });
 		assert.deepEqual(copy, 3.14);
 	});
+	it('should add value to null', () => {
+		const copy = md.merge(`[x|add:2]`, { });
+		assert.deepEqual(copy, 2);
+	});
 });
 
 describe('mod filter', () => {

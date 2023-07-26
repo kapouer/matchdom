@@ -9,7 +9,44 @@ describe('types', () => {
 	after(function () {
 		this.jsdom();
 	});
-
+	describe('simple', () => {
+		it('should cast value to num', () => {
+			const md = new Matchdom();
+			const copy = md.merge(`[str|as:num]`, { str: '3' });
+			assert.equal(copy, 3);
+		});
+		it('should tell it is a num', () => {
+			const md = new Matchdom();
+			assert.equal(md.merge(`[str|is:num]`, { str: 3 }), true);
+			assert.equal(md.merge(`[str|is:int]`, { str: 3 }), true);
+		});
+		it('should tell it is not a num', () => {
+			const md = new Matchdom();
+			assert.equal(md.merge(`[str|is:num]`, { str: '3' }), false);
+			assert.equal(md.merge(`[str|is:int]`, { str: '3' }), false);
+		});
+		it('should tell it is not an int', () => {
+			const md = new Matchdom();
+			assert.equal(md.merge(`[str|is:int]`, { str: 3.2 }), false);
+		});
+		it('should tell null is not a num', () => {
+			const md = new Matchdom();
+			assert.equal(md.merge(`[str|is:num]`, { str: null }), false);
+			assert.equal(md.merge(`[str|is:int]`, { str: null }), false);
+		});
+		it('should tell undefined is not a num', () => {
+			const md = new Matchdom();
+			// assert.equal(md.merge(`[str|is:num]`, { }), false);
+			// assert.equal(md.merge(`[str|is:int]`, {}), false);
+			assert.equal(md.merge(`[q?.str|is:int]`, {}), false);
+		});
+		it('should cast num/int in a practical way', () => {
+			const md = new Matchdom();
+			assert.equal(md.merge(`[str|as:num]`, {}), 0);
+			assert.equal(md.merge(`[str|as:int]`, {}), 0);
+			assert.equal(md.merge(`[str|as:int]`, {str: '3.4'}), 3);
+		});
+	});
 	describe('array', () => {
 		const md = new Matchdom(ArrayPlugin, DomPlugin);
 
