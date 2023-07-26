@@ -171,3 +171,12 @@ Parameters can still be escaped using percent-encoding.
 ### Version 11.8.0
 
 - switch filter: let empty param match null value
+
+### Version 12.0.0
+
+- if:filter:params* returns value if filter returns true, else returns null
+- comparison operators now only return boolean values (breaking change)
+  Use them with if: filter to recover previous behavior (e.g. if:eq:str)
+- find:val is a shorthand for find::eq:val
+- has: filter now returns the value, not the parameter.
+  It is available in ArrayPlugin. Previous behavior can be obtained using `[arr|find:str]`
