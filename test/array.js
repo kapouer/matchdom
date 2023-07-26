@@ -109,6 +109,30 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>toto</p>');
 		});
 
+		it('should find value with shorthand', () => {
+			const html = `[arr|find:b]`;
+			const copy = md.merge(html, {
+				arr: ['a', 'b', 'c']
+			});
+			assert.equal(copy, 'b');
+		});
+
+		it('should find value with shorthand and not confuse it with a path', () => {
+			const html = `[arr|find:b.a]`;
+			const copy = md.merge(html, {
+				arr: ['a', 'b.a', 'c']
+			});
+			assert.equal(copy, 'b.a');
+		});
+
+		it('should not find value with shorthand', () => {
+			const html = `[arr|find:d]`;
+			const copy = md.merge(html, {
+				arr: ['a', 'b', 'c']
+			});
+			assert.equal(copy, null);
+		});
+
 		it('should filter by inner data check', () => {
 			const html = `<p>[arr|filter:value:as:bool|map:get:.title|join:-]</p>`;
 			const copy = md.merge(html, {

@@ -27,7 +27,8 @@ export const filters = {
 		});
 	}],
 	find: ['array', 'path?', 'filter?', '?*', (ctx, list, path, filter, params) => {
-		if (!filter && path != null && params.length == 0) {
+		if (!filter && path.length > 0 && !params) {
+			path = path.join(ctx.md.symbols.path);
 			return list.includes(path) ? path : null;
 		} else {
 			return list.find(item => ctx.filter(ctx.expr.get(item, path), filter, params));
