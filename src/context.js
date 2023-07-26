@@ -199,8 +199,10 @@ export default class Context {
 			if (type == "any") {
 				if (i === 0 && str === undefined) str = null;
 				return str;
+			} else if (def === "") {
+				return null; // do not cast null
 			} else {
-				str = def === "" ? null : def;
+				str = def; // cast def
 			}
 		}
 		const alts = type.split('|');
