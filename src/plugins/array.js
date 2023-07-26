@@ -32,6 +32,9 @@ export const filters = {
 			return ctx.filter(data, filter, params);
 		});
 	}],
+	has: ['array', 'any', (x, val, str) => {
+		return val.includes(str);
+	}],
 	group: ['array', 'path?', 'filter?', '?*', (ctx, list, path, filter, params) => {
 		const groups = new Map();
 		for (const item of list) {

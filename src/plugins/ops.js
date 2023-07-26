@@ -1,12 +1,4 @@
 export const filters = {
-	eq(x, val, str) {
-		if (val == str) return val;
-		else return null;
-	},
-	neq(x, val, str) {
-		if (val != str) return str;
-		else return null;
-	},
 	switch(x, val, ...list) {
 		const pos = list.findIndex((str, i) => {
 			return i % 2 == 0 && (!str && !val || str == val);
@@ -21,29 +13,30 @@ export const filters = {
 			return val;
 		}
 	},
-	has: ['array', 'any', (x, val, str) => {
-		if (val.includes(str)) return str;
+	if: ['?', 'filter', '?*', (ctx, val, ...filter) => {
+		if (ctx.filter(val, filter)) return val;
 		else return null;
 	}],
+	eq(x, val, str) {
+		return val == str;
+	},
+	neq(x, val, str) {
+		return val != str;
+	},
 	in: ['any', 'any*', (x, val, ...list) => {
-		if (list.includes(val)) return val;
-		else return null;
+		return list.includes(val);
 	}],
 	gt: ['num', 'num', (x, a, b) => {
-		if (a > b) return a;
-		else return null;
+		return a > b;
 	}],
 	gte: ['num', 'num', (x, a, b) => {
-		if (a >= b) return a;
-		else return null;
+		return a >= b;
 	}],
 	lt: ['num', 'num', (x, a, b) => {
-		if (a < b) return a;
-		else return null;
+		return a < b;
 	}],
 	lte: ['num', 'num', (x, a, b) => {
-		if (a <= b) return a;
-		else return null;
+		return a <= b;
 	}],
 	add: ['num', 'num', (x, a, b) => {
 		return a + b;
