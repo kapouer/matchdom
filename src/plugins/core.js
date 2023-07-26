@@ -102,6 +102,7 @@ export const filters = {
 			if (!val) return null;
 			else return val;
 		} else if (val === undefined) {
+			// may happen when called by another filter
 			return val;
 		}
 		if (type == "bool" || type == "boolean") {
