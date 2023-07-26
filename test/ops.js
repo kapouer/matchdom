@@ -70,10 +70,8 @@ describe('switch', () => {
 		assert.equal(copy, 'quoi');
 	});
 	it('should match optional chaining', () => {
-		const html = `[query.test?|switch:ceci:cela::quoi]`;
-		const copy = md.merge(html, {
-			query: {}
-		});
+		const html = `[query?.test|switch:ceci:cela::quoi]`;
+		const copy = md.merge(html, {});
 		assert.equal(copy, 'quoi');
 	});
 });
