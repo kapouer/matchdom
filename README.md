@@ -100,14 +100,15 @@ const filters = {
 
 If a type is empty or 'any', a value of any type (except undefined) is allowed.
 
-If a type is '?' or 'any?' then even an undefined value is allowed and converted to null.
+If a type ends with '?' then a null-ish value is allowed and converted to null.
 
 If a type ends with '*' then an unknown amount of parameters is allowed,
 of that type:
 
 - '*' allows any non-null parameters
 - '?*' allows any parameters, even null
-- 'int?0*' allows integers with a default value of zero
+- 'int?1*' allows integers with a default value of one
+- 'num' allows a numeric value
 
 All plugins types can be used - see `as` filter.
 
@@ -126,10 +127,10 @@ The `as` and `is` filters are useful to explicitely cast or check a value type.
 
 - undefined, none: converts null-ish to undefined, leave other values intact
 - null: converts false-ish to null, leave other values intact
-- integer, int: try to parseInt, return null if NaN
+- integer, int: try to parseInt, return 0 if NaN
 - string, str: toString
 - boolean, bool: "true", "1" and true-ish to true, "false", "0", and false-ish to false
-- float, num, numeric: try to parseFloat, return null if NaN
+- float, num, numeric: try to parseFloat, return 0 if NaN
 - object: not any of the other simple types
 
 ### complex types (from plugins)

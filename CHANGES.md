@@ -174,9 +174,15 @@ Parameters can still be escaped using percent-encoding.
 
 ### Version 12.0.0
 
+Lots of breaking changes in that version.
+Trying to fix how filters and types play together.
+
 - if:filter:params* returns value if filter returns true, else returns null
-- comparison operators now only return boolean values (breaking change)
+- comparison operators now only return boolean values
   Use them with if: filter to recover previous behavior (e.g. if:eq:str)
 - find:val is a shorthand for find::eq:val
 - has: filter now returns the value, not the parameter.
   It is available in ArrayPlugin. Previous behavior can be obtained using `[arr|find:str]`
+- optional arguments, when null, are no longer cast to their type, null is passed
+- num, int types default to 0 when not a number.
+  It exchanges previous behavior with null values: 'as:int' gives 0, 'as:int?' gives null.
