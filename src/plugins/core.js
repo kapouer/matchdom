@@ -114,14 +114,12 @@ export const filters = {
 			if (val == null) return "";
 			else return val.toString();
 		} else if (type == "int" || type == "integer") {
-			if (val == null) return val;
 			val = Number.parseInt(val);
-			if (Number.isNaN(val)) val = null;
+			if (Number.isNaN(val)) val = 0;
 			return val;
 		} else if (type == "float" || type == "num" || type == "numeric") {
-			if (val == null) return val;
 			val = Number.parseFloat(val);
-			if (Number.isNaN(val)) val = null;
+			if (Number.isNaN(val)) val = 0;
 			return val;
 		} else if (type == "obj" || type == "object") {
 			if (val != null && typeof val == "object" && !Array.isArray(val)) return val;
