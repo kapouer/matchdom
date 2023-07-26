@@ -26,11 +26,12 @@ export const filters = {
 			return ctx.filter(data, filter, params);
 		});
 	}],
-	find: ['array', 'path?', 'filter', '?*', (ctx, list, path, filter, params) => {
-		return list.find(item => {
-			const data = ctx.expr.get(item, path);
-			return ctx.filter(data, filter, params);
-		});
+	find: ['array', 'path?', 'filter?', '?*', (ctx, list, path, filter, params) => {
+		if (!filter && path != null && params.length == 0) {
+			return list.includes(path) ? path : null;
+		} else {
+			return list.find(item => ctx.filter(ctx.expr.get(item, path), filter, params));
+		}
 	}],
 	has: ['array', 'any', (x, val, str) => {
 		return val.includes(str);
