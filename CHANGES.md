@@ -177,6 +177,7 @@ Parameters can still be escaped using percent-encoding.
 Lots of breaking changes in that version.
 Trying to fix how filters and types play together.
 
+- repeat, at, to, fail, prune are in their own RepeatPlugin
 - if:filter:params* returns value if filter returns true, else returns null
 - comparison operators now only return boolean values
   Use them with if: filter to recover previous behavior (e.g. if:eq:str)

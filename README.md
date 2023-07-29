@@ -720,6 +720,19 @@ Parses string as html or xml.
 - if the value is boolean `true`, merged in a DOMTokenList, the last key
 of the expression path is used as the value. If it is `false`, it is replaced by null - this behavior is implemented using an `afterEach` hook.
 
+### filter one:selector
+
+If the current value is a dom node or fragment, runs querySelector(selector) on it.
+
+### filter all:selector
+
+If the current value is a dom node or fragment, runs querySelectorAll(selector) on it,
+and return a fragment of the selected nodes.
+
+## RepeatPlugin
+
+Most features of this plugin depend on DomPlugin, though it doesn't require it.
+
 ### filter at:selector:after:before
 
 By default an expression is replaced by its value,
@@ -816,15 +829,6 @@ The place filter may choose to:
 - insert fragment before cursor (the default behavior)
 - insert it somewhere else
 - do nothing in which case the fragment is not inserted
-
-### filter one:selector
-
-If the current value is a dom node or fragment, runs querySelector(selector) on it.
-
-### filter all:selector
-
-If the current value is a dom node or fragment, runs querySelectorAll(selector) on it,
-and return a fragment of the selected nodes.
 
 ## Hooks
 

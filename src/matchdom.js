@@ -10,6 +10,7 @@ export * as ArrayPlugin from './plugins/array.js';
 export * as JsonPlugin from './plugins/json.js';
 export * as NumPlugin from './plugins/number.js';
 export * as DatePlugin from './plugins/date.js';
+export * as RepeatPlugin from './plugins/repeat.js';
 export * as DomPlugin from './plugins/dom.js';
 export * as UrlPlugin from './plugins/url.js';
 
