@@ -97,7 +97,7 @@ describe('filters', () => {
 		});
 	});
 
-	describe('get is a filter', () => {
+	describe('get filter', () => {
 		const md = new Matchdom(DomPlugin);
 
 		it('should get path', () => {
@@ -184,7 +184,7 @@ describe('filters', () => {
 		});
 	});
 
-	describe('assign is a filter', () => {
+	describe('assign filter', () => {
 		const md = new Matchdom();
 
 		it('should assign data to given path', () => {
