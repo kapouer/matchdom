@@ -1,4 +1,4 @@
-class RelativeURL extends URL {
+const RelativeURL = class extends URL {
 	static origin = typeof document !== 'undefined' ? document.location : new URL('null://');
 
 	constructor(str) {
@@ -11,7 +11,7 @@ class RelativeURL extends URL {
 			return super.toString();
 		}
 	}
-}
+};
 
 export const types = {
 	url(ctx, str) {
