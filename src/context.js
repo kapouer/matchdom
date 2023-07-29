@@ -136,7 +136,9 @@ export default class Context {
 		}
 		const [name, def] = this.getFilter(val, filter);
 		if (!def) {
-			console.info(name, "filter is missing");
+			const err = `Missing filter: ${name}`;
+			if (this.md.debug) throw new Error(err);
+			else console.info(err);
 			return val;
 		}
 		if (filter.length > 1) filter[0] = val;
