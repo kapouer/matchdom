@@ -154,7 +154,7 @@ Formats are used directly by the corresponding filter.
 - text: converts string with newlines by a dom fragment with hard breaks
 - html: converts string to a dom fragment
 - xml: converts string to an xml fragment
-- url: merges source and destination
+- url: converts string to an URL instance
 - keys: array of keys
 - values: array of values
 - entries: arrays of {key, value}
@@ -688,11 +688,11 @@ Converts data to json string
 
 ### url type
 
-Converts string to a URL instance.
+Converts string to an URL instance.
 
 By default, such an instance will be serialized as absolute path when it has the same origin as the default location, thus omitting `protocol://hostname:port` part.
 
-The default location is given by document.location, or `null://`.
+The default location is document.location if it exists, or `null://`.
 
 ### url:path
 
