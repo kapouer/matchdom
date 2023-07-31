@@ -1,6 +1,6 @@
 export const types = {
 	path(ctx, str) {
-		if (str == null) str = "";
+		if (str == null) return [];
 		if (!str && ctx.raw !== undefined && ctx.isSimpleValue(ctx.raw)) return [];
 		return str.split(ctx.md.symbols.path).map(str => ctx.decode(str));
 	},
