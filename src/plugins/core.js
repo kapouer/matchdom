@@ -103,11 +103,14 @@ export const filters = {
 		return data;
 	}],
 	pick: ['obj', 'str*', (ctx, obj, ...list) => {
-		const ret = {};
-		for (const name of list) {
-			if (Object.hasOwnProperty.call(obj, name)) ret[name] = obj[name];
+		const del = typeof obj.delete == "function";
+		const keys = typeof obj.keys == "function" ? obj.keys() : Object.keys(obj);
+		for (const key of keys) {
+			if (list.includes(key)) continue;
+			if (del) obj.delete(key);
+			else delete obj[key];
 		}
-		return ret;
+		return obj;
 	}],
 	as(ctx, val, type, ...params) {
 		if (type == "none" || type == "undefined") {
