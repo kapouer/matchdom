@@ -48,11 +48,12 @@ export const filters = {
 			return ctx.expr.get(data, path, ctx.data);
 		}
 	}],
-	assign: ['?', 'path', (ctx, val, path) => {
+	assign: ['?', 'path', 'path', (ctx, val, dst, src) => {
 		let data = ctx.data = Object.assign({}, ctx.data);
-		for (let i = 0; i < path.length - 1; i++) {
-			const str = path[i];
+		for (let i = 0; i < dst.length - 1; i++) {
+			const str = dst[i];
 			if (data[str] == null) {
+				if (i > 0) data = Object.assign({}, data);
 				data = data[str] = {};
 			} else if (typeof data[str] != 'object') {
 				throw new Error(`Cannot set property '${str}' on non-object`);
@@ -60,7 +61,7 @@ export const filters = {
 				data = data[str] = Object.assign({}, data[str]);
 			}
 		}
-		data[path[path.length - 1]] = val;
+		data[dst[dst.length - 1]] = ctx.expr.get(val, src);
 		return val;
 	}],
 	set: ['obj?', '?*', (ctx, data, ...params) => {

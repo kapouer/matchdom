@@ -369,9 +369,9 @@ Pick only the listed keys from current object and return a new object.
 Supports instances with keys() / delete(key) methods.
 To remove keys from an object, use `set:-name`.
 
-### assign:path
+### assign:destination:source?
 
-Reassigns `ctx.data` so that current value becomes accessible by `get:<path>`.
+Assigns value at source path (defaults to `ctx.data`) to value at destination path.
 
 ### const:str
 
