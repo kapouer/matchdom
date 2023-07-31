@@ -108,6 +108,10 @@ export default class Context {
 			val = this.filter(val, filter);
 			for (const fn of afterEach) val = fn(this, val, filter);
 		}
+		if (expr.rebase !== undefined) {
+			val = expr.rebase;
+			delete expr.rebase;
+		}
 		for (const fn of afterAll) val = fn(this, val, expr.filters);
 		if (expr.cancel) {
 			Object.assign(this.src, src);

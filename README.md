@@ -274,6 +274,8 @@ When the path starts with an identifier, it applies to context data.
 When data being accessed is an Array, the matching path item can be negative or above array length - it is applied modulo array length.
 Also, special path item "first" and "last" can be used to specify those array indexes.
 
+#### optional or unresolved path
+
 A path can be partially resolved if an undefined value is encountered before reaching the last component. In this case, `undefined` is returned.
 
 Otherwise, if the path is fully resolved, `ctx.expr.last` is set to true, which will convert an `undefined` value to `null` - after the `afterAll` hook.
@@ -320,6 +322,8 @@ assert.equal(
 assert.equal(md.merge("a[list?|at:|repeat:|.title]b", {}), 'ab');
 ```
 
+#### short syntax
+
 The `get:` filter has a special syntax without colon, instead of
 
 `[get:path.to.data|myFilter:param|get:.prop]`
@@ -327,6 +331,18 @@ The `get:` filter has a special syntax without colon, instead of
 one can write:
 
 `[path.to.data|myFilter:param|.prop]`
+
+#### rebase value
+
+Used without parameters, `get:` stores current value into `expr.rebase`.
+
+The second time it returns `expr.rebase`:
+
+`[obj||.mykey|case:upper||.another|case:lower]`
+
+Rebasing only happens before last filter; thus, if it was used once, the rebased value is returned at the end of the expression.
+
+This is useful to be able to mutate inner data using multiple filters.
 
 ### set:mutation*
 

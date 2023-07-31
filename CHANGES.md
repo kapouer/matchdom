@@ -177,6 +177,7 @@ Parameters can still be escaped using percent-encoding.
 Lots of breaking changes in that version.
 Trying to fix how filters and types play together.
 
+- empty get: rebases to current value
 - repeat, at, to, fail, prune are in their own RepeatPlugin
 - if:filter:params* returns value if filter returns true, else returns null
 - comparison operators now only return boolean values
@@ -187,3 +188,4 @@ Trying to fix how filters and types play together.
 - optional arguments, when null, are no longer cast to their type, null is passed
 - num, int types default to 0 when not a number.
   It exchanges previous behavior with null values: 'as:int' gives 0, 'as:int?' gives null.
+- pick: supports .keys() / .delete() methods

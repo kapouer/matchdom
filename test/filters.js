@@ -184,6 +184,45 @@ describe('filters', () => {
 		});
 	});
 
+	describe('rebase filter', () => {
+		const md = new Matchdom();
+		it('should return value', () => {
+			const txt = `[a||.b|set:c:test||.b.c]`;
+			const data = {
+				a: {
+					b: {
+						d:2
+					}
+				}
+			};
+			const copy = md.merge(txt, data);
+			assert.equal(copy, 'test');
+		});
+
+		it('should not need second call to return value', () => {
+			const txt = `a[a||.b|case:up]`;
+			const data = {
+				a: new (class {
+					b = "test";
+					toString() {
+						return "toto";
+					}
+				})()
+			};
+			const copy = md.merge(txt, data);
+			assert.equal(copy, 'atoto');
+		});
+
+		it('should not perturb empty key', () => {
+			//md.debug = true;
+
+			const copy = md.extend(RepeatPlugin).merge("--[arr|repeat:]--", {
+				arr: ['one', 'two']
+			});
+			assert.equal(copy, "--one----two--");
+		});
+	});
+
 	describe('assign filter', () => {
 		const md = new Matchdom();
 

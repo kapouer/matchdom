@@ -31,7 +31,22 @@ export const filters = {
 		return param || "";
 	},
 	get: ['?', 'path?', (ctx, data, path) => {
-		return ctx.expr.get(data, path, ctx.data);
+		const { expr } = ctx;
+		if (path.length == 0) {
+			if (expr.filter > 1) {
+				if (expr.rebase === undefined) {
+					expr.rebase = data;
+				} else {
+					data = expr.rebase;
+				}
+			}
+			return data;
+		} else {
+			if (expr.filter == expr.filters.length) {
+				delete expr.rebase;
+			}
+			return ctx.expr.get(data, path, ctx.data);
+		}
 	}],
 	assign: ['?', 'path', (ctx, val, path) => {
 		let data = ctx.data = Object.assign({}, ctx.data);
