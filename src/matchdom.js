@@ -169,7 +169,7 @@ export class Matchdom {
 					if (att.value) fn(node, att.name, att.value);
 				}
 				fn(node, true, node.tagName.toLowerCase());
-			} else if (node.nodeValue != null) {
+			} else if (node.nodeValue != null && node.nodeValue.substring) {
 				fn(node, null, node.nodeValue);
 			}
 		}
