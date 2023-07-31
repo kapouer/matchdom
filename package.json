@@ -32,8 +32,8 @@
   "homepage": "https://github.com/kapouer/matchdom#readme",
   "devDependencies": {
     "@kapouer/eslint-config": "^1.9.1",
-    "global-jsdom": "^8.8.0",
-    "jsdom": "^21.1.1",
+    "global-jsdom": "^9.0.1",
+    "jsdom": "^22.1.0",
     "mocha": "^10.2.0"
   },
   "eslintConfig": {
