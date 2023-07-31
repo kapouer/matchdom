@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, DomPlugin } from 'matchdom';
+import { Matchdom, DomPlugin, RepeatPlugin } from 'matchdom';
 
 describe('prune filter', () => {
 	before(function () {
@@ -9,7 +9,7 @@ describe('prune filter', () => {
 	after(function () {
 		this.jsdom();
 	});
-	const md = new Matchdom().extend(DomPlugin);
+	const md = new Matchdom(DomPlugin, RepeatPlugin);
 	it('should remove current node', () => {
 		const html = `<div><span>test [test|prune:*]</span></div>`;
 		const copy = md.merge(html, {

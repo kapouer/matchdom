@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
+import { Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin } from 'matchdom';
 
 describe('hooks filter', () => {
 	before(function () {
@@ -59,7 +59,7 @@ describe('hooks filter', () => {
 	});
 	it('should work in repeated block', () => {
 		const html = `<p><span>[arr|repeat:*|.val]</span></p>`;
-		const md = new Matchdom(DomPlugin, {
+		const md = new Matchdom(DomPlugin, RepeatPlugin, {
 			afterAll(ctx, val, filters) {
 				return "it " + val;
 			}

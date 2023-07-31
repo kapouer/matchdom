@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, OpsPlugin, TextPlugin,
-	ArrayPlugin, DomPlugin, DatePlugin
+	ArrayPlugin, DomPlugin, DatePlugin, RepeatPlugin
 } from 'matchdom';
 
 describe('array', () => {
@@ -153,7 +153,7 @@ describe('array', () => {
 	});
 
 	describe('group filter', () => {
-		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin, OpsPlugin);
+		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin, OpsPlugin, RepeatPlugin);
 
 		it('should group by value', () => {
 			const html = `<p>[arr|group:|at:-|repeat:|join:-] </p>`;
@@ -209,7 +209,7 @@ describe('array', () => {
 	});
 
 	describe('sort filter', () => {
-		const md = new Matchdom(ArrayPlugin, DomPlugin);
+		const md = new Matchdom(ArrayPlugin, DomPlugin, RepeatPlugin);
 
 		it('should sort array with nulls last', () => {
 			const html = `<p>[arr|sort:|join: ]</p>`;

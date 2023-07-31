@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, DomPlugin} from 'matchdom';
+import { Matchdom, DomPlugin, RepeatPlugin } from 'matchdom';
 
 describe('flow filters', () => {
 	before(function () {
@@ -9,7 +9,7 @@ describe('flow filters', () => {
 	after(function () {
 		this.jsdom();
 	});
-	const md = new Matchdom(DomPlugin);
+	const md = new Matchdom(DomPlugin, RepeatPlugin);
 
 	describe('then', () => {
 		it('should run filter when true', () => {

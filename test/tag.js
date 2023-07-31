@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, DomPlugin } from 'matchdom';
+import { Matchdom, DomPlugin, RepeatPlugin } from 'matchdom';
 
 describe('tag', () => {
 	before(function () {
@@ -10,7 +10,7 @@ describe('tag', () => {
 		this.jsdom();
 	});
 
-	const md = new Matchdom(DomPlugin);
+	const md = new Matchdom(DomPlugin, RepeatPlugin);
 
 	it('should merge tag name', () => {
 		const html = `<h[n]>Header</h[n]>`;
@@ -57,7 +57,7 @@ describe('tag', () => {
 		assert.equal(md.merge(html, {}).outerHTML, '<p>test</p>');
 	});
 	it('should merge whole tag name', () => {
-		const md = new Matchdom().extend(DomPlugin);
+		const md = new Matchdom(DomPlugin, RepeatPlugin);
 		const html = `<h[name|at:-] class="[test]">div</hn>`;
 		const copy = md.merge(html, {
 			name: "div",
@@ -66,7 +66,7 @@ describe('tag', () => {
 		assert.equal(copy.outerHTML, '<div class="yes">div</div>');
 	});
 	it('should merge whole tag name when it has a parent', () => {
-		const md = new Matchdom().extend(DomPlugin);
+		const md = new Matchdom(DomPlugin, RepeatPlugin);
 		const html = `<div><h[name|at:-] class="[test]">div</h[name|at:]></div>`;
 		const copy = md.merge(html, {
 			name: "main",
@@ -75,7 +75,7 @@ describe('tag', () => {
 		assert.equal(copy.outerHTML, '<div><main class="yes">div</main></div>');
 	});
 	it('should merge whole tag name when it has a next sibling', () => {
-		const md = new Matchdom().extend(DomPlugin);
+		const md = new Matchdom(DomPlugin, RepeatPlugin);
 		const html = `<div><h[name|at:-] class="[test]">div</h[name|at:-]><div class="toto"></div></div>`;
 		const copy = md.merge(html, {
 			name: "main",

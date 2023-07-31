@@ -34,9 +34,11 @@ describe('attributes', () => {
 
 		it('should do fine when filters are not defined', () => {
 			const html = `<span data-test="[test|notfound:ff|notfound2:kk]">yes</span>`;
+			md.debug = false;
 			const copy = md.merge(html, {
 				test: "yes"
 			});
+			md.debug = true;
 			assert.equal(copy.outerHTML, '<span data-test="yes">yes</span>');
 		});
 

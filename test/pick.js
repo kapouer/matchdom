@@ -39,5 +39,11 @@ describe('pick filter', () => {
 		const copy = md.merge(`[obj|pick:a]`, { obj: ['toto'] });
 		assert.deepEqual(copy, '[obj|pick:a]');
 	});
+
+	it('should work with searchParams', () => {
+		const md = new Matchdom();
+		const copy = md.merge(`?[url|.searchParams|pick:a:c]`, { url: new URL("https://example.com/test?a=1&b=2&c=3") });
+		assert.deepEqual(copy, '?a=1&c=3');
+	});
 });
 

@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
+import { Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin } from 'matchdom';
 
 describe('repeat filter', () => {
 	before(function () {
@@ -10,7 +10,7 @@ describe('repeat filter', () => {
 		this.jsdom();
 	});
 
-	const md = new Matchdom().extend(DomPlugin);
+	const md = new Matchdom(DomPlugin, RepeatPlugin);
 
 	it('should repeat array of strings in string', () => {
 		const html = `<div>a[arr|at:|repeat:]</div>`;
@@ -31,7 +31,7 @@ describe('repeat filter', () => {
 		</div>`).outerHTML);
 	});
 	it('should repeat aliased array of values over node', () => {
-		const md = new Matchdom(ArrayPlugin, DomPlugin);
+		const md = new Matchdom(ArrayPlugin, DomPlugin, RepeatPlugin);
 		// top-level values are optional, so objects are needed for second level
 		const html = `<div>
 			<span class="[item.value]">[arr|as:entries|repeat:item|.key]</span>

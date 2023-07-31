@@ -1,8 +1,8 @@
 import { strict as assert } from 'node:assert';
-import { Matchdom, DomPlugin, ArrayPlugin, DatePlugin } from 'matchdom';
+import { Matchdom, RepeatPlugin, ArrayPlugin, DatePlugin } from 'matchdom';
 
 describe('string', () => {
-	const md = new Matchdom().extend(DomPlugin);
+	const md = new Matchdom().extend(RepeatPlugin);
 
 	it('should be merged and returned', () => {
 		const copy = md.merge('no? [test]!', {

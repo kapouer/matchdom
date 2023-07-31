@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, OpsPlugin, TextPlugin,
-	ArrayPlugin, DomPlugin, DatePlugin
+	ArrayPlugin, DomPlugin, DatePlugin, RepeatPlugin
 } from 'matchdom';
 
 describe('dom', () => {
@@ -87,7 +87,7 @@ describe('dom', () => {
 				[content|prune:content]
 			</content></root>`;
 			const node = (new DOMParser()).parseFromString(xml, "application/xml");
-			const copy = md.merge(node, {
+			const copy = md.extend(RepeatPlugin).merge(node, {
 				content: null
 			});
 			assert.equal((new XMLSerializer()).serializeToString(copy), `<root/>`);
@@ -159,7 +159,7 @@ describe('dom', () => {
 	});
 
 	describe('to filter', () => {
-		const md = new Matchdom(ArrayPlugin, DomPlugin);
+		const md = new Matchdom(ArrayPlugin, DomPlugin, RepeatPlugin);
 
 		it('should be renamed and merged with simple value', () => {
 			const html = `<img data-src="[test|to:src]">`;
@@ -337,7 +337,7 @@ describe('at filter', () => {
 	after(function () {
 		this.jsdom();
 	});
-	const md = new Matchdom(DomPlugin, OpsPlugin);
+	const md = new Matchdom(DomPlugin, OpsPlugin, RepeatPlugin);
 	it('should replace current node', () => {
 		const html = `<div><span>[test|at:*]</span></div>`;
 		const copy = md.merge(html, {

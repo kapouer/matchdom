@@ -94,4 +94,12 @@ describe('url plugin', () => {
 		});
 		assert.equal(copy.outerHTML, '<a href="/pathname?test=1&amp;toto=1&amp;toto=2">anchor</a>');
 	});
+
+	it('use set inner expression to set query', () => {
+		const html = `[href|as:url||.query|set:id:3|pick:id:toto||]`;
+		const copy = md.merge(html, {
+			href: '/mypath?test=1&toto=1'
+		});
+		assert.equal(copy.pathname + copy.search, '/mypath?toto=1&id=3');
+	});
 });

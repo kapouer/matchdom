@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, ArrayPlugin, DomPlugin } from 'matchdom';
+import { Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin } from 'matchdom';
 
 describe('scope', () => {
 	before(function () {
@@ -29,7 +29,7 @@ describe('scope', () => {
 		assert.equal(copy, 'yes');
 	});
 	it('path should be set when repeating an array', () => {
-		const md = new Matchdom(ArrayPlugin, DomPlugin, {
+		const md = new Matchdom(ArrayPlugin, DomPlugin, RepeatPlugin, {
 			scope: function (ctx, entry) {
 				assert.equal(ctx.expr.path[0], 'row');
 				assert.ok([0, 1].includes(entry.key));
