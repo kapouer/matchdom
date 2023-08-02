@@ -354,6 +354,8 @@ A mutation starts with a path, optionally prefixed by `-` or `+`:
 - prefixed by `-` it deletes the selected path from its parent object
 - without prefix it sets the selected path to the value in next parameter
 
+Paths are relatives to current value.
+
 This filter supports Object, Set, Map, Array, URLSearchParams instances.
 
 ```js
@@ -371,7 +373,9 @@ To remove keys from an object, use `set:-name`.
 
 ### assign:destination:source?
 
-Assigns value at source path (defaults to `ctx.data`) to value at destination path.
+Assigns value at source path (defaults to `ctx.data`) to value at destination path (and mutates data).
+
+Supports assigning an object to a URLSearchParams instance.
 
 ### const:str
 
@@ -689,36 +693,18 @@ Converts data to json string
 
 ### url type
 
-Converts string to an URL instance.
+Converts string to an instance of a subclass of an URL.
 
 By default, such an instance will be serialized as absolute path when it has the same origin as the default location, thus omitting `protocol://hostname:port` part.
 
 The default location is document.location if it exists, or `null://`.
 
-### url:path
+It also exposes the `query` property, which is a URLSearchParams canonically converted to an object where entries with same key are grouped into arrays.
+Setting the `query` property to a string actually sets the `search` property, and if given an object (by another filter), it casts it to a query type then sets searchParams.
 
-Filter that first converts to url, then return the url property accessed by the path, like `hostname`, `pathname`, ...
+### query type
 
-If the path is `query` a representing `searchParams` is returned.
-
-If the path starts with `query.`, `searchParams.getAll(remainingPath)` is used to return a value or an array.
-
-### query:params*
-
-Expects a url as input, and mutates searchParams in a way similar to `set:` filter, except that it doesn't parse paths.
-
-With empty parameters, it empties `url.search`.
-
-With a single string parameter, and if that parameter is a path to an object, it merges the object by setting or appending keys (depending on + being in front of the parameter):
-
-```js
-assert.equal(md.merge('[loc|query:+referer.query]', {
-  loc: '/test?a=1&b=1',
-  referer: {
-    query: { b: 2 }
-  }
-}), '/test?a=1&b=1&b=2');
-```
+Canonically converts an object into URLSearchParams, where array values become appended several times.
 
 ## DomPlugin
 
@@ -748,7 +734,9 @@ and return a fragment of the selected nodes.
 
 ## RepeatPlugin
 
-Most features of this plugin depend on DomPlugin, though it doesn't require it.
+Most features of this plugin depend on DomPlugin.
+
+Merging text documents without parsing xml or html is supported and
 
 ### filter at:selector:after:before
 
