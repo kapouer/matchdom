@@ -48,34 +48,32 @@ export const filters = {
 			return ctx.expr.get(data, path, ctx.data);
 		}
 	}],
-	assign: ['?', 'path', 'path', (ctx, val, dst, src) => {
-		let data = ctx.data = Object.assign({}, ctx.data);
-		for (let i = 0; i < dst.length - 1; i++) {
-			const str = dst[i];
-			if (data[str] == null) {
-				if (i > 0) data = Object.assign({}, data);
-				data = data[str] = {};
-			} else if (typeof data[str] != 'object') {
-				throw new Error(`Cannot set property '${str}' on non-object`);
-			} else {
-				data = data[str] = Object.assign({}, data[str]);
-			}
-		}
-		data[dst[dst.length - 1]] = ctx.expr.get(val, src);
-		return val;
+	assign: ['?', 'path', 'path', (ctx, data, dst, src) => {
+		const { expr } = ctx;
+		const dataSrc = expr.get(data, src, ctx.data);
+		filters.set[2](ctx, data, dst, dataSrc);
+		return data;
 	}],
 	set: ['obj?', '?*', (ctx, data, ...params) => {
 		if (!data) return data;
 		while (params.length) {
 			const str = params.shift();
-			let act = 0;
-			if (str.startsWith('+')) act = 1;
-			else if (str.startsWith('-')) act = 2;
-			const path = types.path(ctx, act ? str.slice(1) : str);
+			let act = 0, path;
+			if (Array.isArray(str)) {
+				path = str;
+			} else {
+				if (str.startsWith('+')) act = 1;
+				else if (str.startsWith('-')) act = 2;
+				path = types.path(ctx, act ? str.slice(1) : str);
+				// ctx.expr.set allow abs/rel paths - set filter only allows relative path
+				if (path[0] !== "") path.unshift("");
+			}
 			const key = path.pop();
-			const obj = ctx.expr.get(data, path);
+			const obj = ctx.expr.set(data, path, ctx);
 			const val = act == 2 ? null : params.shift();
-			if (obj == null) continue;
+			if (obj == null) {
+				continue;
+			}
 			if (act == 2) {
 				if (typeof obj.indexOf == "function") {
 					const index = obj.indexOf(key);
@@ -83,13 +81,24 @@ export const filters = {
 				} else if (typeof obj.delete == "function") {
 					obj.delete(key);
 				} else if (typeof obj == "object") {
+					obj[key] = undefined; // triggers a setter
 					delete obj[key];
 				}
 			} else if (!act) {
-				if (typeof obj.set == "function") {
-					obj.set(key, val);
+				const sub = obj[key];
+				if (sub == null || typeof sub != "object" || val == null || typeof val != "object") {
+					if (typeof obj.set == "function") {
+						obj.set(key, val);
+					} else {
+						obj[key] = val;
+					}
+				} else if (typeof sub.set == "function") {
+					for (const [skey, sval] of Object.entries(val)) {
+						if (sval === undefined) sub.delete(skey);
+						else sub.set(skey, sval ?? "");
+					}
 				} else {
-					obj[key] = val;
+					Object.assign(obj[key], val);
 				}
 			} else if (typeof obj.append == "function") {
 				obj.append(key, val);

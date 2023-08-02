@@ -69,6 +69,32 @@ export default class Expression {
 		}
 	}
 
+	set(data, path, ctx) {
+		if (path.length == 0) return data;
+		let skip = false;
+		if (path[0] !== "") {
+			// absolute path
+			data = ctx.data;
+			this.path = [];
+		} else {
+			skip = true;
+		}
+		for (const item of path) {
+			if (skip) {
+				skip = false;
+				continue;
+			}
+			let next = data[item];
+			if (next == null) {
+				next = {};
+			} else if (typeof next != "object") {
+				return null;
+			}
+			data = data[item] = next;
+		}
+		return data;
+	}
+
 	get(data, path, root) {
 		if (path.length == 0) return data;
 		const internal = root !== undefined;
@@ -105,7 +131,14 @@ export default class Expression {
 						item = ((k % len) + len) % len;
 					}
 				}
-				data = data[item];
+				if (data.getAll) {
+					data = data.getAll(item);
+					if (data.length <= 1) data = data[0];
+				} else if (data.get) {
+					data = data.get(item);
+				} else {
+					data = data[item];
+				}
 				if (opt && data === undefined) {
 					data = null;
 				}
