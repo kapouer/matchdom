@@ -189,3 +189,9 @@ Trying to fix how filters and types play together.
 - num, int types default to 0 when not a number.
   It exchanges previous behavior with null values: 'as:int' gives 0, 'as:int?' gives null.
 - pick: supports .keys() / .delete() methods
+- UrlPlugin:
+  - url type converts to url
+  - query type converts plain object to URLSearchParams
+  - url has a shorter `.query` accessor that returns searchParams
+  - no longer tries to merge source and destination
+  - support for assigning an object to a query is added to assign/set filters.
