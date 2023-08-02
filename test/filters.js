@@ -232,9 +232,10 @@ describe('filters', () => {
 				c: 'value'
 			};
 			const clone = structuredClone(data);
+			clone.a = { b: 'value' };
 			const copy = md.merge(txt, data);
-			assert.deepEqual(data, clone);
 			assert.equal(copy, 'Sivalue and value');
+			assert.deepEqual(data, clone);
 		});
 
 		it('should set global data at given path with existing object', () => {
@@ -244,6 +245,7 @@ describe('filters', () => {
 				c: 'value'
 			};
 			const clone = structuredClone(data);
+			clone.a.b = 'value';
 			const copy = md.merge(txt, data);
 			assert.deepEqual(data, clone);
 			assert.equal(copy, 'Sivalue and value 1');
@@ -258,7 +260,7 @@ describe('filters', () => {
 			const clone = structuredClone(data);
 			const copy = md.merge(txt, data);
 			assert.deepEqual(data, clone);
-			assert.equal(copy, 'Si and ');
+			assert.equal(copy, 'Sivalue and ');
 		});
 	});
 

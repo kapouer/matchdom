@@ -55,7 +55,7 @@ describe('set filter', () => {
 		it('should delete a value', () => {
 			const md = new Matchdom();
 			const copy = md.merge(`[set:-obj.a]`, { obj: new Set(["a", "b"]) });
-			assert.deepEqual(copy, { obj: new Set("b") });
+			assert.deepEqual(copy, { obj: new Set(["b"]) });
 		});
 		it('should put a value', () => {
 			const md = new Matchdom();
