@@ -26,6 +26,22 @@ describe('prune filter', () => {
 		assert.equal(copy.outerHTML, '<div><span>test</span></div>');
 	});
 
+	it('should not remove current node with not', () => {
+		const html = `<div><span>test [test|not:prune:*]</span></div>`;
+		const copy = md.merge(html, {
+			test: null
+		});
+		assert.equal(copy.outerHTML, '<div><span>test </span></div>');
+	});
+
+	it('should remove current node with not', () => {
+		const html = `<div><span>test[test|not:prune:*]</span></div>`;
+		const copy = md.merge(html, {
+			test: 'text'
+		});
+		assert.equal(copy.outerHTML, '<div></div>');
+	});
+
 	it('should just drop text', () => {
 		const html = `<div><span>test[test|prune:]</span></div>`;
 		const copy = md.merge(html, {
