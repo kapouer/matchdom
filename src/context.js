@@ -89,7 +89,7 @@ export default class Context {
 			return;
 		}
 		this.expr = expr;
-		const { beforeAll, beforeEach, afterEach, afterAll } = this.md.hooks;
+		const { beforeAll, afterAll } = this.md.hooks;
 		const src = this.src.clone();
 		const dest = this.dest.clone();
 		for (const fn of beforeAll) val = fn(this, val, expr.filters);
@@ -104,9 +104,7 @@ export default class Context {
 			}
 			if (val === undefined && !expr.last || expr.cancel) break;
 			const filter = expr.filters[expr.filter++];
-			for (const fn of beforeEach) val = fn(this, val, filter);
 			val = this.filter(val, filter);
-			for (const fn of afterEach) val = fn(this, val, filter);
 		}
 		if (expr.rebase !== undefined) {
 			val = expr.rebase;
@@ -133,22 +131,23 @@ export default class Context {
 	}
 
 	filter(val, filter, ...params) {
-		if (Array.isArray(filter)) {
-			filter = filter.slice();
-		} else {
+		const { hooks, debug } = this.md;
+		if (!Array.isArray(filter)) {
 			filter = [filter, ...params];
 		}
-		const [name, def] = this.getFilter(val, filter);
+		const args = filter.slice();
+		for (const fn of hooks.beforeEach) val = fn(this, val, filter);
+		const [name, def] = this.getFilter(val, args);
 		if (!def) {
 			const err = `Missing filter: ${name}`;
-			if (this.md.debug) throw new Error(err);
+			if (debug) throw new Error(err);
 			else console.info(err);
 			return val;
 		}
-		if (filter.length > 1) filter[0] = val;
+		if (args.length > 1) args[0] = val;
 		const typed = def.length > 1;
 		const fn = def.pop();
-		let stop;
+		let stop, err;
 		try {
 			let mtype;
 			for (let i = 0; i < def.length; i++) {
@@ -163,38 +162,44 @@ export default class Context {
 					arg = arg.slice(0, -1);
 					mtype = arg;
 				}
-				const fi = this.check(val, filter, i, arg);
+				const fi = this.check(val, args, i, arg);
 				if (i === 0 && fi === undefined) {
 					stop = true;
 					break;
 				}
-				if (!mtype || fi !== undefined) filter[i] = fi;
+				if (!mtype || fi !== undefined) args[i] = fi;
 			}
 			if (stop) {
 				this.expr.cancel = true;
 				return;
 			}
-			if (def.length < filter.length) {
+			if (def.length < args.length) {
 				if (typed) {
-					if (filter.length == 2 && filter[1] === "") {
+					if (args.length == 2 && args[1] === "") {
 						// [myfilter:] has a mandatory empty param
-						filter.length = 1;
+						args.length = 1;
 					} else if (!mtype) {
 						throw new Context.ParamError("Wrong number of parameters");
 					}
 				}
-				for (let i = def.length; i < filter.length; i++) {
-					const fi = this.check(val, filter, i, mtype || '?');
-					if (!mtype || fi !== undefined) filter[i] = fi;
+				for (let i = def.length; i < args.length; i++) {
+					const fi = this.check(val, args, i, mtype || '?');
+					if (!mtype || fi !== undefined) args[i] = fi;
 				}
 			}
 			this.raw = val;
-			return fn(this, ...filter);
+			val = fn(this, ...args);
 		} catch (ex) {
-			if (this.md.debug) throw ex;
-			// eslint-disable-next-line no-console
-			console.warn(name, "filter throws", ex.toString(), "in", this.expr.initial);
-			return null;
+			if (debug) {
+				err = ex;
+			} else {
+				console.warn(name, "filter throws", ex.toString(), "in", this.expr.initial);
+				val = null;
+			}
+		} finally {
+			if (debug && err) throw err;
+			for (const fn of hooks.afterEach) val = fn(this, val, filter);
+			return val;
 		}
 	}
 	check(val, params, i, arg) {
