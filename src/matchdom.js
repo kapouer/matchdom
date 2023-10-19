@@ -25,8 +25,8 @@ export class Matchdom {
 		this.formats.as = {};
 		this.hooks = {
 			beforeAll: [],
-			beforeEach: [],
-			afterEach: [],
+			before: {},
+			after: {},
 			afterAll: []
 		};
 		this.extend(Core).extend(Flow);
@@ -39,7 +39,7 @@ export class Matchdom {
 		let { filters, hooks } = p;
 		const { types, formats } = p;
 		if (!filters && !types && !formats && !hooks) {
-			if (p.beforeAll || p.beforeEach || p.afterAll || p.afterEach) {
+			if (p.beforeAll || p.before || p.after || p.afterAll) {
 				hooks = p;
 			} else {
 				filters = p;
@@ -47,9 +47,17 @@ export class Matchdom {
 		}
 		if (filters) Object.assign(this.filters, filters);
 		if (types) Object.assign(this.types, types);
-		if (hooks) for (const [key, fn] of Object.entries(hooks)) {
-			const list = Array.isArray(fn) ? fn : [fn];
-			this.hooks[key].push(...list);
+		if (hooks) {
+			let ba = hooks.beforeAll;
+			if (ba == null) ba = [];
+			else if (!Array.isArray(ba)) ba = [ba];
+			this.hooks.beforeAll.push(...ba);
+			let aa = hooks.afterAll;
+			if (aa == null) aa = [];
+			else if (!Array.isArray(aa)) aa = [aa];
+			this.hooks.afterAll.push(...aa);
+			Object.assign(this.hooks.before, hooks.before);
+			Object.assign(this.hooks.after, hooks.after);
 		}
 		if (formats) for (const [n, obj] of Object.entries(formats)) {
 			if (!this.formats[n]) this.formats[n] = Object.create(null);

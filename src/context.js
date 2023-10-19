@@ -130,49 +130,40 @@ export default class Context {
 		}
 	}
 
-	filter(val, filter, ...params) {
-		const { hooks, debug } = this.md;
-		if (!Array.isArray(filter)) {
-			filter = [filter, ...params];
-		}
+	#filter(val, filter, name, def) {
+		const { hooks } = this.md;
 		const args = filter.slice();
-		for (const fn of hooks.beforeEach) val = fn(this, val, filter);
-		const [name, def] = this.getFilter(val, args);
-		if (!def) {
-			const err = `Missing filter: ${name}`;
-			if (debug) throw new Error(err);
-			else console.info(err);
-			return val;
-		}
+		const before = hooks.before[name];
+		if (before) val = before(this, val, filter);
 		if (args.length > 1) args[0] = val;
+
 		const typed = def.length > 1;
 		const fn = def.pop();
 		let stop;
-		try {
-			let mtype;
-			for (let i = 0; i < def.length; i++) {
-				let arg = def[i];
-				if (arg == null) {
-					throw new Error("Missing type");
-				}
-				if (arg.endsWith('*')) {
-					if (mtype) {
-						throw new Error("Checking multiple lists is not implemented");
-					}
-					arg = arg.slice(0, -1);
-					mtype = arg;
-				}
-				const fi = this.check(val, args, i, arg);
-				if (i === 0 && fi === undefined) {
-					stop = true;
-					break;
-				}
-				if (!mtype || fi !== undefined) args[i] = fi;
+		let mtype;
+		for (let i = 0; i < def.length; i++) {
+			let arg = def[i];
+			if (arg == null) {
+				throw new Error("Missing type");
 			}
-			if (stop) {
-				this.expr.cancel = true;
-				return;
+			if (arg.endsWith('*')) {
+				if (mtype) {
+					throw new Error("Checking multiple lists is not implemented");
+				}
+				arg = arg.slice(0, -1);
+				mtype = arg;
 			}
+			const fi = this.check(val, args, i, arg);
+			if (i === 0 && fi === undefined) {
+				stop = true;
+				break;
+			}
+			if (!mtype || fi !== undefined) args[i] = fi;
+		}
+		if (stop) {
+			this.expr.cancel = true;
+			val = undefined;
+		} else {
 			if (def.length < args.length) {
 				if (typed) {
 					if (args.length == 2 && args[1] === "") {
@@ -189,12 +180,30 @@ export default class Context {
 			}
 			this.raw = val;
 			val = fn(this, ...args);
+		}
+		const after = hooks.after[name];
+		if (after) val = after(this, val, filter);
+		return val;
+	}
+
+	filter(val, filter, ...params) {
+		const { debug } = this.md;
+		if (!Array.isArray(filter)) {
+			filter = [filter, ...params];
+		}
+		const [name, def] = this.getFilter(val, filter);
+		if (!def) {
+			const err = `Missing filter: ${name}`;
+			if (debug) throw new Error(err);
+			else console.warn(err);
+			return val;
+		}
+		try {
+			val = this.#filter(val, filter, name, def);
 		} catch (ex) {
 			if (debug) throw ex;
-			console.warn(name, "filter throws", ex.toString(), "in", this.expr.initial);
+			console.warn(filter, "filter throws", ex.toString(), "in", this.expr.initial);
 			val = null;
-		} finally {
-			for (const fn of hooks.afterEach) val = fn(this, val, filter);
 		}
 		return val;
 	}
@@ -221,7 +230,7 @@ export default class Context {
 		if (type == "any") {
 			// check nothing
 		} else {
-			str = this.filter(str, 'as', type, ...params.slice(i + 1));
+			str = this.filter(str, ['as', type, ...params.slice(i + 1)]);
 		}
 		if (typeof str == "string" && i > 0) {
 			str = this.decode(str);

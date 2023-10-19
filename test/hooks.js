@@ -12,12 +12,10 @@ describe('hooks filter', () => {
 
 	it('should be called after this filter', () => {
 		const md = new Matchdom({
-			afterEach(ctx, val, filter) {
-				if (filter[0] == "join") {
+			after: {
+				join(ctx, val, filter) {
 					assert.equal(val, 'word1 word2');
 					return ' it ' + val;
-				} else {
-					return val;
 				}
 			}
 		});
@@ -56,6 +54,43 @@ describe('hooks filter', () => {
 			arr: ['word1', 'word2']
 		});
 		assert.equal(copy, 'it now word1 word2');
+	});
+	it('should be called before get filter', () => {
+		const html = `[$val|test:$me]`;
+		const md = new Matchdom({
+			before: {
+				get(ctx, val, filter) {
+					if (filter[1]?.startsWith('$')) {
+						if (ctx.$data == null) {
+							ctx.$data = ctx.data;
+							ctx.data = ctx.scope;
+						}
+					}
+					return val;
+				}
+			},
+			after: {
+				get(ctx, val, filter) {
+					if (ctx.$data != null) {
+						ctx.data = ctx.$data;
+						ctx.$data = null;
+					}
+					return val;
+				}
+			}
+		}, {
+			filters: {
+				test(ctx, val, p) {
+					return val + ctx.filter(val, 'get', p);
+				}
+			}
+		});
+
+		const copy = md.merge(html, {}, { // scope
+			$val: 1,
+			$me: 2
+		});
+		assert.equal(copy, 3);
 	});
 	it('should work in repeated block', () => {
 		const html = `<p><span>[arr|repeat:*|.val]</span></p>`;

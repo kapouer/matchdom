@@ -20,28 +20,28 @@ export const formats = {
 };
 
 export const filters = {
-	filter: ['array', 'path?', 'filter', '?*', (ctx, list, path, filter, params) => {
+	filter: ['array', 'path?', 'filter', '?*', (ctx, list, path, ...filter) => {
 		return list.filter(item => {
 			const data = ctx.expr.get(item, path);
-			return ctx.filter(data, filter, params);
+			return ctx.filter(data, filter);
 		});
 	}],
-	find: ['array', 'path?', 'filter?', '?*', (ctx, list, path, filter, params) => {
-		if (!filter && path.length > 0 && !params) {
+	find: ['array', 'path?', '?*', (ctx, list, path, ...filter) => {
+		if (filter.length == 0 && path.length > 0) {
 			path = path.join(ctx.md.symbols.path);
 			return list.includes(path) ? path : null;
 		} else {
-			return list.find(item => ctx.filter(ctx.expr.get(item, path), filter, params));
+			return list.find(item => ctx.filter(ctx.expr.get(item, path), filter));
 		}
 	}],
 	has: ['array', 'any', (x, val, str) => {
 		return val.includes(str);
 	}],
-	group: ['array', 'path?', 'filter?', '?*', (ctx, list, path, filter, params) => {
+	group: ['array', 'path?', '?*', (ctx, list, path, ...filter) => {
 		const groups = new Map();
 		for (const item of list) {
 			const data = ctx.expr.get(item, path);
-			const val = filter != null ? ctx.filter(data, filter, params) : data;
+			const val = filter.length > 0 ? ctx.filter(data, filter) : data;
 			let group = groups.get(val);
 			if (group == null) {
 				group = [];
@@ -51,9 +51,9 @@ export const filters = {
 		}
 		return groups.values();
 	}],
-	map: ['array', 'filter', '?*', (ctx, list, filter, params) => {
+	map: ['array', 'filter', '?*', (ctx, list, ...filter) => {
 		return list.map(item => {
-			return ctx.filter(item, filter, params);
+			return ctx.filter(item, filter);
 		});
 	}],
 	select: ['array', 'path', (ctx, list, path) => {

@@ -37,10 +37,12 @@ describe('filters', () => {
 			let lastVal;
 			const md = new Matchdom(DomPlugin, {
 				hooks: {
-					afterEach(ctx, val) {
-						hasTried = true;
-						lastVal = val;
-						return val;
+					after: {
+						get(ctx, val) {
+							hasTried = true;
+							lastVal = val;
+							return val;
+						}
 					}
 				}
 			});

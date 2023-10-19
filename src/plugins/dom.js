@@ -56,7 +56,7 @@ export const formats = {
 };
 
 export const hooks = {
-	afterEach({ dest, expr }, val) {
+	afterAll({ dest, expr }, val) {
 		if (dest.attr && dest.node[dest.attr + 'List']) {
 			if (val === true) return expr.path[expr.path.length - 1];
 			else if (val === false) return null;

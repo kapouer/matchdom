@@ -50,7 +50,7 @@ export const filters = {
 		}
 	}],
 	assign: ['?', 'path', 'path', (ctx, data, dst, src) => {
-		const dataSrc = src.length == 0 ? data : ctx.filter(data, 'get', src);
+		const dataSrc = src.length == 0 ? data : ctx.filter(data, ['get', src]);
 		ctx.filter(data, ['set', dst, dataSrc]);
 		return data;
 	}],
@@ -162,7 +162,7 @@ export const filters = {
 		if (type in ctx.md.formats.as) {
 			throw new Error(`Cannot check as format: ${type}`);
 		}
-		return ctx.filter(val, 'as', type, ...params) === val;
+		return ctx.filter(val, ['as', type, ...params]) === val;
 	},
 	lang(ctx, val, lang) {
 		ctx.lang = lang || null;

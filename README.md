@@ -851,8 +851,13 @@ Hooks are called before applying filters, or after.
 ```js
 const md = new Matchdom({
   beforeAll: (ctx, val) => {},
-  beforeEach: (ctx, val, filter) => {},
-  afterEach: (ctx, val, filter) => {},
+  before: {
+    repeat: (ctx, val, params) => {}
+    get: (ctx, val, params) => {}
+  },
+  after: {
+    get: (ctx, val, params) => {}
+  },
   afterAll: (ctx, val) => {}
 });
 md.merge(...);

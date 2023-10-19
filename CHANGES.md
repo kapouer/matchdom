@@ -202,4 +202,5 @@ Fix assign filter.
 
 ### Version 12.2.0
 
-Run beforeEach, afterEach hooks in ctx.filter: inner calls won't skip hooks.
+Filter hooks cannot be skipped by internal calls, but they must be declared by filter name.
+This is a breaking change (but 12.x is really new so it won't affect anyone).
