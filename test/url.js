@@ -70,7 +70,7 @@ describe('url plugin', () => {
 	});
 
 	it('sets query part of the url with another object', () => {
-		const html = `<a href="[href|as:url|assign:.query:myobj]">[title]</a>`;
+		const html = `<a href="[href|as:url|assign:query:myobj]">[title]</a>`;
 		const copy = md.merge(html, {
 			href: '/pathname?test=1&notme=3',
 			title: 'anchor',

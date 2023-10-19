@@ -227,7 +227,7 @@ describe('filters', () => {
 		const md = new Matchdom();
 
 		it('should assign data to given path', () => {
-			const txt = `Si[c|assign:a.b] and [a.b]`;
+			const txt = `Si[assign:a.b:c|.c] and [a.b]`;
 			const data = {
 				c: 'value'
 			};
@@ -238,8 +238,20 @@ describe('filters', () => {
 			assert.deepEqual(data, clone);
 		});
 
+		it('should always use relative path', () => {
+			const txt = `Si[assign:.a.b:.c|.a.b] [assign:a.d:a.b|const:][a.d]`;
+			const data = {
+				c: 'value'
+			};
+			const clone = structuredClone(data);
+			clone.a = { b: 'value', d: 'value' };
+			const copy = md.merge(txt, data);
+			assert.equal(copy, 'Sivalue value');
+			assert.deepEqual(data, clone);
+		});
+
 		it('should set global data at given path with existing object', () => {
-			const txt = `Si[c|assign:a.b] and [a.b] [a.d]`;
+			const txt = `Si[assign:a.b:c|.c] and [a.b] [a.d]`;
 			const data = {
 				a: { d: 1 },
 				c: 'value'
@@ -252,7 +264,7 @@ describe('filters', () => {
 		});
 
 		it('should fail to set global data at path with a value', () => {
-			const txt = `Si[c|assign:a.b] and [a.b]`;
+			const txt = `Si[assign:a.b:c|.c] and [a.b]`;
 			const data = {
 				a: 3,
 				c: 'value'

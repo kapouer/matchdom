@@ -380,7 +380,9 @@ To remove keys from an object, use `set:-name`.
 
 ### assign:destination:source?
 
-Assigns value at source path (defaults to `ctx.data`) to value at destination path (and mutates data).
+Assigns value at source path (defaults to current value) to value at destination path.
+
+Paths are relative to current value.
 
 Supports assigning an object to a URLSearchParams instance.
 
