@@ -50,9 +50,8 @@ export const filters = {
 		}
 	}],
 	assign: ['?', 'path', 'path', (ctx, data, dst, src) => {
-		const { expr } = ctx;
-		const dataSrc = expr.get(data, src, ctx.data);
-		filters.set[2](ctx, data, dst, dataSrc);
+		const dataSrc = src.length == 0 ? data : ctx.filter(data, 'get', src);
+		ctx.filter(data, ['set', dst, dataSrc]);
 		return data;
 	}],
 	set: ['obj?', '?*', (ctx, data, ...params) => {
