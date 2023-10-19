@@ -57,6 +57,13 @@ A plugin is an object with those properties:
 }
 ```
 
+A matchdom instance can be used as a plugin:
+
+```js
+const md = new Matchdom(TextPlugin, OpsPlugin);
+const emd = new Matchdom(md, ArrayPlugin);
+```
+
 If a plugin has no filters, types, formats, hooks keys:
 
 - if it has hooks keys, they are used as hooks
