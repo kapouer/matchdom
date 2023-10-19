@@ -147,7 +147,7 @@ export default class Context {
 		if (args.length > 1) args[0] = val;
 		const typed = def.length > 1;
 		const fn = def.pop();
-		let stop, err;
+		let stop;
 		try {
 			let mtype;
 			for (let i = 0; i < def.length; i++) {
@@ -190,17 +190,13 @@ export default class Context {
 			this.raw = val;
 			val = fn(this, ...args);
 		} catch (ex) {
-			if (debug) {
-				err = ex;
-			} else {
-				console.warn(name, "filter throws", ex.toString(), "in", this.expr.initial);
-				val = null;
-			}
+			if (debug) throw ex;
+			console.warn(name, "filter throws", ex.toString(), "in", this.expr.initial);
+			val = null;
 		} finally {
-			if (debug && err) throw err;
 			for (const fn of hooks.afterEach) val = fn(this, val, filter);
-			return val;
 		}
+		return val;
 	}
 	check(val, params, i, arg) {
 		let str = params[i];
