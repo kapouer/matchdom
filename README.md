@@ -81,7 +81,7 @@ body is automatically coerced in a DOM node or kept as a string.
 matchdom expects a somewhat modern browser or server environment,
 depending on the loaded plugins.
 
-Use runtime or bundled polyfills to meet your particular needs.
+Use polyfills to meet your particular needs.
 
 ## declaring custom filter
 
