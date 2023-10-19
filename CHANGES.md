@@ -195,3 +195,11 @@ Trying to fix how filters and types play together.
   - url has a shorter `.query` accessor that returns searchParams
   - no longer tries to merge source and destination
   - support for assigning an object to a query is added to assign/set filters.
+
+### Version 12.1.0
+
+Fix assign filter.
+
+### Version 12.2.0
+
+Run beforeEach, afterEach hooks in ctx.filter: inner calls won't skip hooks.
