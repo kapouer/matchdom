@@ -44,7 +44,7 @@ assert.equal(mergedDom.outerHTML, `<div id="model" class="yes">
 </div>`);
 ```
 
-- merge(body, data, scope)
+## plugin
 
 A plugin is an object with those properties:
 
