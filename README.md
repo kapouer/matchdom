@@ -846,7 +846,9 @@ The place filter may choose to:
 
 ## Hooks
 
-Hooks are called before applying filters, or after.
+- must return a value
+- beforeAll and afterAll hooks are run before all filters are applied, and after all filters are applied. Multiple hooks can be appended from plugins.
+- before and after hooks are unique, and are assigned to a specific filter by name. They receive the same parameters as the filter does. Parameters can be modified.
 
 ```js
 const md = new Matchdom({
@@ -860,14 +862,7 @@ const md = new Matchdom({
   },
   afterAll: (ctx, val) => {}
 });
-md.merge(...);
 ```
-
-Multiple hooks can be set by multiple plugins.
-
-The `filter` parameter is a list: `[name, param1, param2, ...]`.
-
-It can be modified.
 
 ## Custom symbols
 
