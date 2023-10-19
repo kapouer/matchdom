@@ -41,10 +41,10 @@
     "overrides": [
       {
         "files": [
-          "src/**.js"
+          "src/**"
         ],
-        "env": {
-          "es6": true
+        "parserOptions": {
+          "sourceType": "module"
         }
       },
       {
