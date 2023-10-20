@@ -848,19 +848,30 @@ The place filter may choose to:
 
 - must return a value
 - beforeAll and afterAll hooks are run before all filters are applied, and after all filters are applied. Multiple hooks can be appended from plugins.
-- before and after hooks are unique, and are assigned to a specific filter by name. They receive the same parameters as the filter does. Parameters can be modified.
+- before and after hooks are unique, and are assigned to a specific filter by name. They receive the array of parameters (starts with current value) which can modified.
 
 ```js
 const md = new Matchdom({
-  beforeAll: (ctx, val) => {},
+  beforeAll: (ctx, val) => {
+    return val;
+  },
   before: {
-    repeat: (ctx, val, params) => {}
-    get: (ctx, val, params) => {}
+    repeat: (ctx, args) => {
+      // do stuff
+      return args[0];
+    }
+    get: (ctx, args) => {
+      return args[0];
+    }
   },
   after: {
-    get: (ctx, val, params) => {}
+    get: (ctx, args) => {
+      return args[0];
+    }
   },
-  afterAll: (ctx, val) => {}
+  afterAll: (ctx, val) => {
+    return val;
+  }
 });
 ```
 

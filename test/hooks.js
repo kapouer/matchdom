@@ -25,6 +25,7 @@ describe('hooks filter', () => {
 		});
 		assert.equal(copy, ' it word1 word2');
 	});
+
 	it('should be called before all filters', () => {
 		const html = `[arr2|join: ]`;
 		const arr = ['word1', 'word2'];
@@ -41,6 +42,7 @@ describe('hooks filter', () => {
 		});
 		assert.equal(copy, 'word1 word2');
 	});
+
 	it('should be called after all filters', () => {
 		const html = `[arr|unshift:now|join:%20]`;
 		const md = new Matchdom(ArrayPlugin, {
@@ -55,12 +57,13 @@ describe('hooks filter', () => {
 		});
 		assert.equal(copy, 'it now word1 word2');
 	});
+
 	it('should be called before get filter', () => {
 		const html = `[$val|test:$me]`;
 		const md = new Matchdom({
 			before: {
-				get(ctx, val, filter) {
-					if (filter[1]?.startsWith('$')) {
+				get(ctx, val, [path]) {
+					if (path[0]?.startsWith('$')) {
 						if (ctx.$data == null) {
 							ctx.$data = ctx.data;
 							ctx.data = ctx.scope;
@@ -92,6 +95,7 @@ describe('hooks filter', () => {
 		});
 		assert.equal(copy, 3);
 	});
+
 	it('should work in repeated block', () => {
 		const html = `<p><span>[arr|repeat:*|.val]</span></p>`;
 		const md = new Matchdom(DomPlugin, RepeatPlugin, {
@@ -104,6 +108,7 @@ describe('hooks filter', () => {
 		});
 		assert.equal(copy.outerHTML, '<p><span>it word1</span><span>it word2</span></p>');
 	});
+
 	it('should register multiple hooks', () => {
 		const html = `[arr2|join:-]`;
 		const arr = ['word1', 'word2'];
@@ -126,6 +131,44 @@ describe('hooks filter', () => {
 		assert.equal(copy, 'word1-word2-word3');
 		// also a copy of md should work
 		assert.equal((new Matchdom(md)).merge(html, { arr }), 'word1-word2-word3-word3');
+	});
+
+	it('should be called with typed parameters', () => {
+		const html = `[$val|test:$me]`;
+		const md = new Matchdom({
+			before: {
+				get(ctx, val, [path]) {
+					if (path[0]?.startsWith('$')) {
+						if (ctx.$data == null) {
+							ctx.$data = ctx.data;
+							ctx.data = ctx.scope;
+						}
+					}
+					return val;
+				}
+			},
+			after: {
+				get(ctx, val) {
+					if (ctx.$data != null) {
+						ctx.data = ctx.$data;
+						ctx.$data = null;
+					}
+					return val;
+				}
+			}
+		}, {
+			filters: {
+				test(ctx, val, p) {
+					return val + ctx.filter(val, 'get', p);
+				}
+			}
+		});
+
+		const copy = md.merge(html, {}, { // scope
+			$val: 1,
+			$me: 2
+		});
+		assert.equal(copy, 3);
 	});
 });
 

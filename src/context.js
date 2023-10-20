@@ -130,13 +130,9 @@ export default class Context {
 		}
 	}
 
-	#filter(val, filter, name, def) {
+	#filter(args, name, def) {
+		let val = args[0];
 		const { hooks } = this.md;
-		const args = filter.slice();
-		const before = hooks.before[name];
-		if (before) val = before(this, val, filter);
-		if (args.length > 1) args[0] = val;
-
 		const typed = def.length > 1;
 		const fn = def.pop();
 		let stop;
@@ -179,10 +175,18 @@ export default class Context {
 				}
 			}
 			this.raw = val;
-			val = fn(this, ...args);
+			val = args[0];
+			const params = args.slice(1);
+			const before = hooks.before[name];
+			if (before) {
+				val = before(this, val, params);
+			}
+			val = fn(this, val, ...params);
+			const after = hooks.after[name];
+			if (after) {
+				val = after(this, val, params);
+			}
 		}
-		const after = hooks.after[name];
-		if (after) val = after(this, val, filter);
 		return val;
 	}
 
@@ -198,8 +202,10 @@ export default class Context {
 			else console.warn(err);
 			return val;
 		}
+		const args = filter.slice();
+		args[0] = val;
 		try {
-			val = this.#filter(val, filter, name, def);
+			val = this.#filter(args, name, def);
 		} catch (ex) {
 			if (debug) throw ex;
 			console.warn(filter, "filter throws", ex.toString(), "in", this.expr.initial);
