@@ -200,7 +200,11 @@ Trying to fix how filters and types play together.
 
 Fix assign filter.
 
-### Version 12.2.0
+### Version 13.0.0
 
-Filter hooks cannot be skipped by internal calls, but they must be declared by filter name.
-This is a breaking change (but 12.x is really new so it won't affect anyone).
+Breaking changes: Hooks
+
+- beforeAll, afterAll no longer get a third parameter (ctx.expr.filters is the same)
+- before/after hooks is a map by filterName, hence only one hook by filter can be registered. The signature changed to (ctx, val, [param1, ...]). These hooks are not skipped by internal calls.
+- return values can be undefined, that means the current value is not modified
+- to cancel a merge use ctx.expr.cancel instead.
