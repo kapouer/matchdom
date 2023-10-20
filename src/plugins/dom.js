@@ -61,7 +61,6 @@ export const hooks = {
 			if (val === true) return expr.path[expr.path.length - 1];
 			else if (val === false) return null;
 		}
-		return val;
 	}
 };
 

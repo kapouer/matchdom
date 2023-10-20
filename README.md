@@ -846,32 +846,28 @@ The place filter may choose to:
 
 ## Hooks
 
-- must return a value
+- the return value, if not undefined, replaces current value.
+- since an undefined return value does nothing, use `ctx.expr.cancel = true` to cancel merge.
 - beforeAll and afterAll hooks are run before all filters are applied, and after all filters are applied. Multiple hooks can be appended from plugins.
-- before and after hooks are unique, and are assigned to a specific filter by name. They receive the array of parameters (starts with current value) which can modified.
+- before and after hooks can be defined only once for each filter name. A hook gets current value and a modifiable array of parameters passed to the filter.
 
 ```js
 const md = new Matchdom({
   beforeAll: (ctx, val) => {
-    return val;
+    return val + 1;
   },
   before: {
-    repeat: (ctx, args) => {
-      // do stuff
-      return args[0];
+    repeat: (ctx, val, args) => {
+      return val.slice(2, 4);
     }
-    get: (ctx, args) => {
-      return args[0];
+    get: (ctx, val, [path]) => {
+      path[0] = "myroot";
     }
   },
   after: {
-    get: (ctx, args) => {
-      return args[0];
-    }
+    get: (ctx, val, args) => {} // does nothing
   },
-  afterAll: (ctx, val) => {
-    return val;
-  }
+  afterAll: (ctx, val) => {} // does nothing
 });
 ```
 

@@ -13,7 +13,7 @@ describe('hooks filter', () => {
 	it('should be called after this filter', () => {
 		const md = new Matchdom({
 			after: {
-				join(ctx, val, filter) {
+				join(ctx, val, args) {
 					assert.equal(val, 'word1 word2');
 					return ' it ' + val;
 				}
@@ -30,11 +30,10 @@ describe('hooks filter', () => {
 		const html = `[arr2|join: ]`;
 		const arr = ['word1', 'word2'];
 		const md = new Matchdom({
-			beforeAll(ctx, val, filters) {
+			beforeAll(ctx, val) {
 				assert.deepEqual(val, { arr });
-				assert.equal(filters[0][1], "arr2");
+				assert.equal(ctx.expr.filters[0][1], "arr2");
 				ctx.data.arr2 = arr;
-				return val;
 			}
 		});
 		const copy = md.merge(html, {
@@ -45,9 +44,11 @@ describe('hooks filter', () => {
 
 	it('should be called after all filters', () => {
 		const html = `[arr|unshift:now|join:%20]`;
+		let called = false;
 		const md = new Matchdom(ArrayPlugin, {
-			afterAll(ctx, val, filters) {
+			afterAll(ctx, val) {
 				assert.equal(val, 'now word1 word2');
+				called = true;
 				return 'it ' + val;
 			}
 		});
@@ -55,6 +56,7 @@ describe('hooks filter', () => {
 		const copy = md.merge(html, {
 			arr: ['word1', 'word2']
 		});
+		assert.ok(called);
 		assert.equal(copy, 'it now word1 word2');
 	});
 
@@ -69,16 +71,14 @@ describe('hooks filter', () => {
 							ctx.data = ctx.scope;
 						}
 					}
-					return val;
 				}
 			},
 			after: {
-				get(ctx, val, filter) {
+				get(ctx) {
 					if (ctx.$data != null) {
 						ctx.data = ctx.$data;
 						ctx.$data = null;
 					}
-					return val;
 				}
 			}
 		}, {
@@ -98,32 +98,32 @@ describe('hooks filter', () => {
 
 	it('should work in repeated block', () => {
 		const html = `<p><span>[arr|repeat:*|.val]</span></p>`;
+		const vals = [];
 		const md = new Matchdom(DomPlugin, RepeatPlugin, {
-			afterAll(ctx, val, filters) {
-				return "it " + val;
+			afterAll(ctx, val) {
+				vals.push(val);
 			}
 		});
 		const copy = md.merge(html, {
 			arr: [{ val: 'word1' }, { val: 'word2' }]
 		});
-		assert.equal(copy.outerHTML, '<p><span>it word1</span><span>it word2</span></p>');
+		assert.deepEqual(vals, ["word1", "word2", null]);
+		assert.equal(copy.outerHTML, '<p><span>word1</span><span>word2</span></p>');
 	});
 
 	it('should register multiple hooks', () => {
 		const html = `[arr2|join:-]`;
 		const arr = ['word1', 'word2'];
 		const md = new Matchdom({
-			beforeAll(ctx, val, filters) {
+			beforeAll(ctx, val) {
 				assert.deepEqual(val, { arr });
-				assert.equal(filters[0][1], "arr2");
+				assert.equal(ctx.expr.filters[0][1], "arr2");
 				ctx.data.arr2 = arr;
-				return val;
 			}
 		}, {
 			hooks: {
-				beforeAll(ctx, val) {
+				beforeAll(ctx) {
 					ctx.data.arr2.push('word3');
-					return val;
 				}
 			}
 		});
@@ -144,16 +144,14 @@ describe('hooks filter', () => {
 							ctx.data = ctx.scope;
 						}
 					}
-					return val;
 				}
 			},
 			after: {
-				get(ctx, val) {
+				get(ctx) {
 					if (ctx.$data != null) {
 						ctx.data = ctx.$data;
 						ctx.$data = null;
 					}
-					return val;
 				}
 			}
 		}, {

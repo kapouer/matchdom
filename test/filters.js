@@ -41,7 +41,6 @@ describe('filters', () => {
 						get(ctx, val) {
 							hasTried = true;
 							lastVal = val;
-							return val;
 						}
 					}
 				}

@@ -92,7 +92,10 @@ export default class Context {
 		const { beforeAll, afterAll } = this.md.hooks;
 		const src = this.src.clone();
 		const dest = this.dest.clone();
-		for (const fn of beforeAll) val = fn(this, val, expr.filters);
+		for (const fn of beforeAll) {
+			const ret = fn(this, val);
+			if (ret !== undefined) val = ret;
+		}
 		while (expr.filter < expr.filters.length) {
 			if (expr.last) {
 				for (const [name, param] of expr.filters.slice(expr.filter + 1)) {
@@ -110,7 +113,10 @@ export default class Context {
 			val = expr.rebase;
 			delete expr.rebase;
 		}
-		for (const fn of afterAll) val = fn(this, val, expr.filters);
+		for (const fn of afterAll) {
+			const ret = fn(this, val);
+			if (ret !== undefined) val = ret;
+		}
 		if (expr.cancel) {
 			Object.assign(this.src, src);
 			Object.assign(this.dest, dest);
@@ -131,7 +137,7 @@ export default class Context {
 	}
 
 	#filter(args, name, def) {
-		let val = args[0];
+		const val = args[0];
 		const { hooks } = this.md;
 		const typed = def.length > 1;
 		const fn = def.pop();
@@ -158,36 +164,37 @@ export default class Context {
 		}
 		if (stop) {
 			this.expr.cancel = true;
-			val = undefined;
-		} else {
-			if (def.length < args.length) {
-				if (typed) {
-					if (args.length == 2 && args[1] === "") {
-						// [myfilter:] has a mandatory empty param
-						args.length = 1;
-					} else if (!mtype) {
-						throw new Context.ParamError("Wrong number of parameters");
-					}
-				}
-				for (let i = def.length; i < args.length; i++) {
-					const fi = this.check(val, args, i, mtype || '?');
-					if (!mtype || fi !== undefined) args[i] = fi;
+			return;
+		}
+		if (def.length < args.length) {
+			if (typed) {
+				if (args.length == 2 && args[1] === "") {
+					// [myfilter:] has a mandatory empty param
+					args.length = 1;
+				} else if (!mtype) {
+					throw new Context.ParamError("Wrong number of parameters");
 				}
 			}
-			this.raw = val;
-			val = args[0];
-			const params = args.slice(1);
-			const before = hooks.before[name];
-			if (before) {
-				val = before(this, val, params);
-			}
-			val = fn(this, val, ...params);
-			const after = hooks.after[name];
-			if (after) {
-				val = after(this, val, params);
+			for (let i = def.length; i < args.length; i++) {
+				const fi = this.check(val, args, i, mtype || '?');
+				if (!mtype || fi !== undefined) args[i] = fi;
 			}
 		}
-		return val;
+		let fval = args[0];
+		const vars = args.slice(1);
+		const before = hooks.before[name];
+		if (before) {
+			const ret = before(this, fval, vars);
+			if (ret !== undefined) fval = ret;
+		}
+		this.raw = val;
+		fval = fn(this, fval, ...vars);
+		const after = hooks.after[name];
+		if (after) {
+			const ret = after(this, fval, vars);
+			if (ret !== undefined) fval = ret;
+		}
+		return fval;
 	}
 
 	filter(val, filter, ...params) {
