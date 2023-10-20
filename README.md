@@ -569,8 +569,9 @@ Calls `list.join(tok)`.
 
 switch:key1:val1:key2:val2:...
 
-returns matching value by key, or null if last key is empty, or val
-an empty key match a null value.
+Returns matching value by key, or null if last key is empty, or val.
+
+An empty key match a null value.
 
 ### boolean operators
 
@@ -594,6 +595,7 @@ an empty key match a null value.
 - if:filter:param*
 
 Runs the following filter.
+
 If it evaluates to boolean true, returns current value, else return null.
 
 ### arithmetic filters
@@ -684,6 +686,7 @@ Localized format accepts shorthands:
 ### clock:offset:unit
 
 Offset a unit of date by an integer value.
+
 `[mydate|clock:3:m]` add 3 minutes to `mydate`.
 
 Units are: Y, M, D, h, m, s.
@@ -873,7 +876,8 @@ const md = new Matchdom({
 
 ## Custom symbols
 
-Default symbols are defined in src/symbols.js,
+Default symbols are defined in `src/symbols.js`.
+
 They can be overriden by passing a symbols object to the constructor.
 
 ## Acknowledgement
