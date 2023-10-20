@@ -1,6 +1,6 @@
 {
   "name": "matchdom",
-  "version": "12.1.0",
+  "version": "13.0.0",
   "type": "module",
   "main": "./src/index.js",
   "description": "Extensible declarative template expressions for the DOM",
