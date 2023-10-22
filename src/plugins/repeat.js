@@ -51,8 +51,9 @@ export const filters = {
 		if (cur != null) {
 			const expr = ctx.expr.clone();
 			expr.prepend(["get", name || ""]);
-			const hit = dest.hits[dest.index] = ctx.wrap(expr.toString());
-			src.write([cur.replace(ctx.wrap(expr.initial), hit)], src);
+			const hit = ctx.wrap(expr.toString(), 1);
+			src.write([cur.replace(ctx.wrap(expr.initial, 1), hit)], src);
+			dest.hits[dest.index] = ctx.wrap(hit, 2);
 		}
 		ctx.expr.drop();
 

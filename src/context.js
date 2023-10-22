@@ -293,7 +293,9 @@ export default class Context {
 		return [name, def];
 	}
 
-	wrap(str) {
-		return this.md.symbols.open + str + this.md.symbols.close;
+	wrap(str, to = 3) {
+		if (to & 1) str = this.md.symbols.open + str;
+		if (to & 2) str = str + this.md.symbols.close;
+		return str;
 	}
 }

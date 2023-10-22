@@ -572,5 +572,20 @@ describe('repeat filter', () => {
 		});
 		assert.equal(copy.outerHTML, '<ul><li>a:12</li><li>b:7</li></ul>');
 	});
-});
 
+	it('should not do an infinite loop', () => {
+		const html = `<div>
+			<span>[pages|repeat:page|test:[page]]</span>
+		</div>`;
+		const copy = (new Matchdom(md, {
+			test(ctx, val) {
+				return '>' + val;
+			}
+		})).merge(html, {
+			pages: ['areo', 'port']
+		});
+		assert.equal(copy.outerHTML, md.merge(`<div>
+			<span>&gt;areo</span><span>&gt;port</span>
+		</div>`).outerHTML);
+	});
+});
