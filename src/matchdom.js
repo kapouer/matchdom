@@ -35,6 +35,10 @@ export class Matchdom {
 		}
 	}
 
+	copy() {
+		return new Matchdom(this);
+	}
+
 	extend(p) {
 		let { filters, hooks } = p;
 		const { types, formats } = p;

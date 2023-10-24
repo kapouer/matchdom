@@ -208,3 +208,7 @@ Breaking changes: Hooks
 - before/after hooks is a map by filterName, hence only one hook by filter can be registered. The signature changed to (ctx, val, [param1, ...]). These hooks are not skipped by internal calls.
 - return values can be undefined, that means the current value is not modified
 - to cancel a merge use ctx.expr.cancel instead.
+
+### Version 13.1.0
+
+Add `instance.copy()` method.

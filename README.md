@@ -5,10 +5,7 @@ DSL for merging data.
 A matchdom expression describes a chain of "filter" functions:
 `[func1:param1|func2:param2]`.
 
-A filter function has signature (see below):
-`(ctx, val, param1, param2, ...) -> newVal`
-and returns a value handled by the next filter,
-until the expression can be merged.
+Filter functions transform root value until the expression can be merged.
 
 `md.merge(node, data)` mutates `node`.
 
@@ -43,6 +40,17 @@ assert.equal(mergedDom.outerHTML, `<div id="model" class="yes">
  <span><em>test</em></span>
 </div>`);
 ```
+
+## api
+
+- new Matchdom(...plugins)
+  create new instance
+- instance.merge(node, data, scope?)
+  fuse data into node, optional scope object
+- instance.copy()
+  creates a new instance with the same plugins
+- instance.extend(plugin)
+  add a plugin to the instance
 
 ## plugin
 
