@@ -212,3 +212,7 @@ Breaking changes: Hooks
 ### Version 13.1.0
 
 Add `instance.copy()` method.
+
+### Version 13.2.0
+
+as:array did not convert to array.
