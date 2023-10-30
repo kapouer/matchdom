@@ -51,6 +51,9 @@
         "files": [
           "test/*.js"
         ],
+        "parserOptions": {
+          "sourceType": "module"
+        },
         "env": {
           "mocha": true
         }
