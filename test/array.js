@@ -219,6 +219,14 @@ describe('array', () => {
 			assert.equal(copy.outerHTML, '<p>word1 word2 word3 </p>');
 		});
 
+		it('should sort set with nulls last', () => {
+			const html = `<p>[set|sort:|join: ]</p>`;
+			const copy = md.merge(html, {
+				set: new Set(['word2', 'word1', null, 'word3'])
+			});
+			assert.equal(copy.outerHTML, '<p>word1 word2 word3 </p>');
+		});
+
 		it('should sort array with nulls first', () => {
 			const html = `<p>[arr|sort::true|join: ]</p>`;
 			const copy = md.merge(html, {

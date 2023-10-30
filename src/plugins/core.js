@@ -16,10 +16,10 @@ export const types = {
 		if (val === undefined) return val;
 		else if (val == null) return [];
 		else if (typeof val == "string") return [val];
-		else if (
-			Array.isArray(val) || typeof val.forEach == "function" || typeof val.item == "function" && typeof val.length == "number" || typeof val[Symbol.iterator] == 'function'
+		else if (Array.isArray(val)) return val;
+		else if (typeof val.forEach == "function" || typeof val.item == "function" && typeof val.length == "number" || typeof val[Symbol.iterator] == 'function'
 		) {
-			// ok
+			return Array.from(val);
 		} else {
 			val = [val];
 		}
