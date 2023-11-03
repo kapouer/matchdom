@@ -382,9 +382,9 @@ assert.deepEqual(
 
 ### pick:key*
 
-Pick only the listed keys from current object and return a new object.
+Mutates current value to remove all keys that are not listed.
 Supports instances with keys() / delete(key) methods.
-To remove keys from an object, use `set:-name`.
+To remove specific keys from an object, use `set:-name`.
 
 ### assign:destination:source?
 
