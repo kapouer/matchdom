@@ -440,6 +440,8 @@ Call filter if value evaluates to true, else return value.
 
 Call filter if value evaluates to false, else return value.
 
+When merging an object, one does often `[obj.opt|else:obj.name]`
+
 Like `not:then:`
 
 ### or, and:str
