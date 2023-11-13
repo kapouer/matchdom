@@ -394,6 +394,48 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<p>test</p>');
 		});
 
+		it('should test if null', () => {
+			assert.equal(
+				md.merge(
+					`<p hidden="[val|is:null]">test</p>`, { val: '' }
+				).outerHTML,
+				'<p>test</p>'
+			);
+			assert.equal(
+				md.merge(
+					`<p hidden="[val|is:null]">test</p>`, { val: false }
+				).outerHTML,
+				'<p>test</p>'
+			);
+			assert.equal(
+				md.merge(
+					`<p hidden="[val|is:null]">test</p>`, { val: null }
+				).outerHTML,
+				'<p hidden="">test</p>'
+			);
+		});
+
+		it('should test if undefined', () => {
+			assert.equal(
+				md.merge(
+					`<p hidden="[val|is:none]">test</p>`, { val: '' }
+				).outerHTML,
+				'<p>test</p>'
+			);
+			assert.equal(
+				md.merge(
+					`<p hidden="[val|is:none]">test</p>`, { val: false }
+				).outerHTML,
+				'<p>test</p>'
+			);
+			assert.equal(
+				md.merge(
+					`<p hidden="[obj.val|is:none]">test</p>`, { obj: {} }
+				).outerHTML,
+				'<p hidden="">test</p>'
+			);
+		});
+
 		it('should merge an undefined top-level value', () => {
 			const html = `<p>[val]test</p>`;
 			const copy = md.merge(html, {});

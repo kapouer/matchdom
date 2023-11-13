@@ -162,7 +162,14 @@ export const filters = {
 		if (type in ctx.md.formats.as) {
 			throw new Error(`Cannot check as format: ${type}`);
 		}
-		return ctx.filter(val, ['as', type, ...params]) === val;
+		if (type == "null") {
+			return val == null;
+		} else if (type == "undefined" || type == "none") {
+			// filter value, if optional and undefined, is mapped to null
+			return ctx.raw === undefined;
+		} else {
+			return ctx.filter(val, ['as', type, ...params]) === val;
+		}
 	},
 	lang(ctx, val, lang) {
 		ctx.lang = lang || null;

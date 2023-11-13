@@ -216,3 +216,7 @@ Add `instance.copy()` method.
 ### Version 13.2.0
 
 as:array did not convert to array.
+
+### Version 13.2.1
+
+is:null, is:none did not actually test if value was null or undefined.
