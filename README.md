@@ -843,15 +843,15 @@ These expressions are equivalent:
 - `[items|at:div|repeat:my|.id] has some [my.text]`
 - `[items|as:entries|at:div|repeat:item.value|.id] has some [item.text]`
 
-The placer parameter may be a custom filter name called *after* the iterated range
-has been merged, with (item, cursor, fragment, ...params) signature:
+The placer parameter may be a custom filter name:
 
-- the iterated item
-- cursor node before which the fragment would have been merged
-- fragment result of the merge
-- other custom params passed to the placer
+- it is called *after* the iterated range has been merged, before it is inserted
+- it has (ctx, item, cursor, fragment, ...params) signature
+- cursor: node before which the fragment would have been merged
+- fragment: result of the merge, to be placed or not
+- additional parameters are appended
 
-The place filter may choose to:
+The placer filter may choose to:
 
 - insert fragment before cursor (the default behavior)
 - insert it somewhere else
