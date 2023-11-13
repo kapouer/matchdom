@@ -57,7 +57,7 @@ export const filters = {
 		}
 		ctx.expr.drop();
 
-		const [fragment, cursor] = dest.extract();
+		const [ifrag, cursor] = dest.extract();
 		const parent = cursor.parentNode;
 
 		for (let item of Array.from(list)) {
@@ -71,14 +71,14 @@ export const filters = {
 			} else {
 				Object.assign(obj, item);
 			}
-			const fg = ctx.md.merge(fragment.cloneNode(true), obj, ctx.scope);
-			if (fg == null || fg == "" || fg.childNodes && fg.childNodes.length == 0) {
+			const fragment = ctx.md.merge(ifrag.cloneNode(true), obj, ctx.scope);
+			if (fragment == null || fragment === "" || !fragment.childNodes?.length) {
 				continue;
 			}
 			if (placer) {
-				ctx.filter(item, placer, cursor, fg, ...params);
+				ctx.filter(item, placer, cursor, fragment, ...params);
 			} else {
-				parent.insertBefore(fg, cursor);
+				parent.insertBefore(fragment, cursor);
 			}
 		}
 		// dropped expr so no return value
