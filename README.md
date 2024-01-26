@@ -784,13 +784,13 @@ Using at, fail, prune, then, else, to filters, one can control how a value affec
 
 Examples:
 
-- `at::2:1` selects 2 nodes before and one node after the expression
+- `at::2:1` selects 2 nodes after and one node before the expression
 - `<br>a[val|at::1]b` selects the `<br>`, `a` and `b` strings
 - it is not possible to not select `a` or `b` in previous example
 - `at::b:a` is not defined when destination is an attribute, avoid using it
 - `at:div.card` selects `closest('div.card')`.
 - `at:div.card:1:1` selects also the previous and next siblings of the ancestor.
-- `at:**:1:2|to:class` selects one sibling before and two siblings after parent node, and sets the class on them.
+- `at:**:1:2|to:class` selects one sibling after and two siblings before parent node, and sets the class on them.
 - `at:*::.column` selects parent node and all next siblings until they stop matching `.column`.
 
 ### filter fail:range:before:after
