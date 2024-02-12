@@ -573,7 +573,7 @@ describe('filters', () => {
 			const copy = md.merge(html, {
 				str: '2018-03-09T11:12:56.739Z'
 			});
-			assert.equal(copy.outerHTML, '<p>3/9/2018, 12:12:56 PM</p>');
+			assert.equal(copy.outerHTML, '<p>3/9/2018, 12:12:56 PM</p>');
 		});
 
 		it('full date', () => {
@@ -581,7 +581,7 @@ describe('filters', () => {
 				md.merge(`<p>[str|lang:en|date:full]</p>`, {
 					str: '2018-03-09T11:12:56.739Z'
 				}).outerHTML,
-				'<p>Friday, March 9, 2018 at 12:12 PM</p>'
+				'<p>Friday, March 9, 2018 at 12:12 PM</p>'
 			);
 			assert.equal(
 				md.merge(`<p>[str|lang:fr|date:full]</p>`, {
