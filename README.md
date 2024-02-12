@@ -365,8 +365,8 @@ Mutates current value with one or several mutations.
 
 A mutation starts with a path, optionally prefixed by `-` or `+`:
 
-- prefixed by `+` it appends next parameter to the selected path
-- prefixed by `-` it deletes the selected path from its parent object
+- prefixed by `+` it appends value to the selected path
+- prefixed by `-` it removes value from the selected path
 - without prefix it sets the selected path to the value in next parameter
 
 Paths are relatives to current value.
@@ -375,8 +375,8 @@ This filter supports Object, Set, Map, Array, URLSearchParams instances.
 
 ```js
 assert.deepEqual(
-  md.merge(`[obj|set:name:doe:-year:+id:abc]`, { id: 'f1d3', year: 1700 }),
-  { name: 'doe', id: ['f1d3', 'abc'] }
+  md.merge(`[obj|set:name:doe:-years:1800:+id:abc]`, { id: 'f1d3', years: [1700, 1800] }),
+  { name: 'doe', years: [1700], id: ['f1d3', 'abc'] }
 );
 ```
 
@@ -385,6 +385,11 @@ assert.deepEqual(
 Mutates current value to remove all keys that are not listed.
 Supports instances with keys() / delete(key) methods.
 To remove specific keys from an object, use `set:-name`.
+
+### omit:key*
+
+Mutates current value to remove all keys that are listed.
+Supports instances with keys() / delete(key) methods.
 
 ### assign:destination:source?
 
