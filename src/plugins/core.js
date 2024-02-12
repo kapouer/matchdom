@@ -70,22 +70,12 @@ export const filters = {
 			}
 			const key = path.pop();
 			const obj = ctx.expr.set(data, path, ctx);
-			const val = act == 2 ? null : params.shift();
+			const val = params.shift();
 			if (obj == null) {
 				continue;
 			}
-			if (act == 2) {
-				if (typeof obj.indexOf == "function") {
-					const index = obj.indexOf(key);
-					if (index >= 0) obj.splice(index, 1);
-				} else if (typeof obj.delete == "function") {
-					obj.delete(key);
-				} else if (typeof obj == "object") {
-					obj[key] = undefined; // triggers a setter
-					delete obj[key];
-				}
-			} else if (!act) {
-				const sub = obj[key];
+			const sub = obj[key];
+			if (!act) {
 				if (sub == null || typeof sub != "object" || val == null || typeof val != "object") {
 					if (typeof obj.set == "function") {
 						obj.set(key, val);
@@ -98,27 +88,59 @@ export const filters = {
 						else sub.set(skey, sval ?? "");
 					}
 				} else {
-					Object.assign(obj[key], val);
+					Object.assign(sub, val);
 				}
-			} else if (typeof obj.append == "function") {
-				obj.append(key, val);
-			} else {
-				const sub = obj[key];
-				if (sub == null) obj[key] = val;
-				else if (typeof sub.add == "function") sub.add(val);
-				else if (typeof sub.push == "function") sub.push(val);
-				else obj[key] = [sub, val];
+			} else if (act == 1) {
+				if (typeof obj.append == "function") {
+					obj.append(key, val);
+				} else {
+					if (sub == null) obj[key] = val;
+					else if (typeof sub.add == "function") sub.add(val);
+					else if (typeof sub.push == "function") sub.push(val);
+					else obj[key] = [sub, val];
+				}
+			} else if (act == 2 && sub != null) {
+				if (typeof sub.indexOf == "function") {
+					const index = sub.indexOf(val);
+					if (index >= 0) sub.splice(index, 1);
+				} else if (typeof sub.delete == "function") {
+					sub.delete(val);
+				} else if (typeof sub == "object") {
+					sub[key] = undefined; // triggers a setter
+					delete sub[key];
+				} else if (sub == val) {
+					obj[key] = undefined;
+					delete obj[key];
+				}
 			}
 		}
 		return data;
+	}],
+	omit: ['obj', 'path*', (ctx, obj, ...list) => {
+		for (const path of list) {
+			const key = path.pop();
+			const sub = ctx.expr.get(obj, path);
+			if (sub == null) continue;
+			if (typeof sub.delete == "function") {
+				sub.delete(key);
+			} else if (typeof sub == "object") {
+				sub[key] = undefined;
+				delete sub[key];
+			}
+		}
+		return obj;
 	}],
 	pick: ['obj', 'str*', (ctx, obj, ...list) => {
 		const del = typeof obj.delete == "function";
 		const keys = typeof obj.keys == "function" ? obj.keys() : Object.keys(obj);
 		for (const key of keys) {
 			if (list.includes(key)) continue;
-			if (del) obj.delete(key);
-			else delete obj[key];
+			if (del) {
+				obj.delete(key);
+			} else {
+				obj[key] = undefined;
+				delete obj[key];
+			}
 		}
 		return obj;
 	}],
