@@ -220,3 +220,10 @@ as:array did not convert to array.
 ### Version 13.2.1
 
 is:null, is:none did not actually test if value was null or undefined.
+
+### Version 14.0.0
+
+set:-key has now the same semantics as set:+key,
+it is used to remove a value from a list.
+
+To delete a value at a given path, use the new `omit:path*` filter.
