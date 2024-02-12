@@ -52,7 +52,7 @@ describe('url plugin', () => {
 	});
 
 	it('removes keys from query part of the url', () => {
-		const html = `<a href="[href|as:url|set:-query.toto:-query.tata]">[title]</a>`;
+		const html = `<a href="[href|as:url|set:-query:toto:-query:tata]">[title]</a>`;
 		const copy = md.merge(html, {
 			href: '/pathname?toto=1&it=3&tata=2',
 			title: 'anchor'
@@ -61,7 +61,7 @@ describe('url plugin', () => {
 	});
 
 	it('removes query part from the url', () => {
-		const html = `<a href="[href|as:url|set:-query]">[title]</a>`;
+		const html = `<a href="[href|as:url|omit:query]">[title]</a>`;
 		const copy = md.merge(html, {
 			href: '/pathname?test=1',
 			title: 'anchor'
