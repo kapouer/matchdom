@@ -41,7 +41,8 @@ export class Matchdom {
 
 	extend(p) {
 		let { filters, hooks } = p;
-		const { types, formats } = p;
+		const { debug, types, formats } = p;
+		this.debug = debug;
 		if (!filters && !types && !formats && !hooks) {
 			if (p.beforeAll || p.before || p.after || p.afterAll) {
 				hooks = p;
