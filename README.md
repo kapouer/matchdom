@@ -54,14 +54,15 @@ assert.equal(mergedDom.outerHTML, `<div id="model" class="yes">
 
 ## plugin
 
-A plugin is an object with those properties:
+A plugin is an object with those (default) properties:
 
 ```js
 {
   filters: {},
   types: {},
   formats: {},
-  hooks: {}
+  hooks: {},
+  debug: false
 }
 ```
 
@@ -83,6 +84,8 @@ If a plugin has no filters, types, formats, hooks keys:
 
 Depending on the types that are made available by the loaded plugins,
 body is automatically coerced in a DOM node or kept as a string.
+
+The `debug` flag tells matchdom to rethrow filters exceptions, instead of just logging them.
 
 ## compatibility
 
