@@ -26,6 +26,20 @@ describe('hooks filter', () => {
 		assert.equal(copy, ' it word1 word2');
 	});
 
+	it('should be called after this filter with unmutated params', () => {
+		const md = new Matchdom({
+			debug: true,
+			after: {
+				omit(ctx, val, paths) {
+					assert.deepEqual(paths, [['test']]);
+					return val;
+				}
+			}
+		});
+		const copy = md.merge(`[obj|omit:test]`, { obj: { test: 2, b: 1 } });
+		assert.deepEqual(copy, { b: 1 });
+	});
+
 	it('should be called before all filters', () => {
 		const html = `[arr2|join: ]`;
 		const arr = ['word1', 'word2'];
