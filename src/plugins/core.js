@@ -60,7 +60,7 @@ export const filters = {
 			const str = params.shift();
 			let act = 0, path;
 			if (Array.isArray(str)) {
-				path = str;
+				path = str.slice();
 			} else {
 				if (str.startsWith('+')) act = 1;
 				else if (str.startsWith('-')) act = 2;
@@ -118,8 +118,9 @@ export const filters = {
 	}],
 	omit: ['obj', 'path*', (ctx, obj, ...list) => {
 		for (const path of list) {
-			const key = path.pop();
-			const sub = ctx.expr.get(obj, path);
+			const copy = path.slice();
+			const key = copy.pop();
+			const sub = ctx.expr.get(obj, copy);
 			if (sub == null) continue;
 			if (typeof sub.delete == "function") {
 				sub.delete(key);

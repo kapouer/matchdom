@@ -45,6 +45,7 @@ export const filters = {
 		if (dest.ancestor == null) {
 			ctx.filter(list, 'at', '*');
 		}
+		alias = alias.slice();
 
 		const cur = src.read();
 		const name = alias.shift();
