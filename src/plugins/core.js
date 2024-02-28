@@ -49,9 +49,19 @@ export const filters = {
 			return ctx.expr.get(data, path, ctx.data);
 		}
 	}],
-	assign: ['?', 'path', 'path', (ctx, data, dst, src) => {
-		const dataSrc = src.length == 0 ? data : ctx.filter(data, ['get', src]);
-		ctx.filter(data, ['set', dst, dataSrc]);
+	assign: ['?', 'path*', (ctx, data, ...paths) => {
+		const params = ['set'];
+		while (paths.length) {
+			const dst = paths.shift();
+			const src = paths.shift();
+			if (!src) {
+				// only one parameter
+				params.push(dst, data);
+			} else {
+				params.push(dst, ctx.filter(data, ['get', src]));
+			}
+		}
+		ctx.filter(data, params);
 		return data;
 	}],
 	set: ['obj?', '?*', (ctx, data, ...params) => {

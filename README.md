@@ -394,13 +394,17 @@ To remove specific keys from an object, use `set:-name`.
 Mutates current value to remove all keys that are listed.
 Supports instances with keys() / delete(key) methods.
 
-### assign:destination:source?
+### assign:path*
 
-Assigns value at source path (defaults to current value) to value at destination path.
+Accepts multiple pairs of paths.
+
+Each pair represents a destination path, followed by a source path.
+
+The last pair can omit the source path (defaults to current value).
 
 Paths are relative to current value.
 
-Supports assigning an object to a URLSearchParams instance.
+Supports the same types for destinations as the `set` filter.
 
 ### const:str
 

@@ -239,6 +239,20 @@ describe('filters', () => {
 			assert.deepEqual(data, clone);
 		});
 
+		it('should assign multiple pairs', () => {
+			const txt = `A [assign:b:a:d:c|.b], A [c]`;
+			const data = {
+				a: 'one',
+				c: 'two'
+			};
+			const clone = structuredClone(data);
+			clone.b = clone.a;
+			clone.d = clone.c;
+			const copy = md.merge(txt, data);
+			assert.equal(copy, 'A one, A two');
+			assert.deepEqual(data, clone);
+		});
+
 		it('should always use relative path', () => {
 			const txt = `Si[assign:.a.b:.c|.a.b] [assign:a.d:a.b|const:][a.d]`;
 			const data = {

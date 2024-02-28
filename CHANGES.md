@@ -227,3 +227,9 @@ set:-key has now the same semantics as set:+key,
 it is used to remove a value from a list.
 
 To delete a value at a given path, use the new `omit:path*` filter.
+
+### Version 14.1.0
+
+Filter assign now accepts multiple pairs of [dest, src] paths.
+
+It still considers a single path to get data from current value.
