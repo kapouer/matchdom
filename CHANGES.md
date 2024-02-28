@@ -230,6 +230,10 @@ To delete a value at a given path, use the new `omit:path*` filter.
 
 ### Version 14.1.0
 
+Shallow copy hooks parameters to prevent possibility for hooks to mutate them.
+
+### Version 14.2.0
+
 Filter assign now accepts multiple pairs of [dest, src] paths.
 
 It still considers a single path to get data from current value.
