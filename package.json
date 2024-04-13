@@ -34,7 +34,7 @@
     "@kapouer/eslint-config": "^2.0.0",
     "global-jsdom": "^24.0.0",
     "jsdom": "^24.0.0",
-    "mocha": "^10.3.0"
+    "mocha": "^10.4.0"
   },
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
