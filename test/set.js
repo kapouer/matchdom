@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import {
-	Matchdom
+	Matchdom, ArrayPlugin
 } from 'matchdom';
 
 describe('set filter', () => {
@@ -33,6 +33,23 @@ describe('set filter', () => {
 			const md = new Matchdom();
 			const copy = md.merge(`[obj|set:+a:c]`, { obj: { a: ["b"] } });
 			assert.deepEqual(copy, { a: ["b", "c"] });
+		});
+	});
+
+	describe('set with map', () => {
+		it('should set another key', () => {
+			const md = new Matchdom(ArrayPlugin);
+			const obj = {
+				list: [{
+					a: { b: 7 }
+				}, {
+					a: { b: 4 }
+				}]
+			};
+			const copy = md.merge(`[list|map:assign:.c:.a.b]`, structuredClone(obj));
+			obj.list[0].c = 7;
+			obj.list[1].c = 4;
+			assert.deepEqual(copy, obj.list);
 		});
 	});
 
