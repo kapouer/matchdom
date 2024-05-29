@@ -37,18 +37,18 @@ describe('set filter', () => {
 	});
 
 	describe('set with map', () => {
-		it('should set another key', () => {
+		it('should assign keys', () => {
 			const md = new Matchdom(ArrayPlugin);
 			const obj = {
 				list: [{
-					a: { b: 7 }
+					a: { b: 7, c: 3 }
 				}, {
-					a: { b: 4 }
+					a: { b: 4, c: 9 }
 				}]
 			};
-			const copy = md.merge(`[list|map:assign:.c:.a.b]`, structuredClone(obj));
-			obj.list[0].c = 7;
-			obj.list[1].c = 4;
+			const copy = md.merge(`[list|map:assign:c:.a.b:d:.a.c]`, structuredClone(obj));
+			Object.assign(obj.list[0], { c: 7, d: 3 });
+			Object.assign(obj.list[1], { c: 4, d: 9 });
 			assert.deepEqual(copy, obj.list);
 		});
 	});
