@@ -555,9 +555,11 @@ This groups an array by batch of three items and do a nested repeat:
 
 Map an array by calling named filter on each item, with additional params.
 
-### select:path
+### select:path*
 
-Shorthand for `map:get:${path}`.
+When given a single path, it is a shorthand for `map:get:${path}`.
+
+When given multiple paths, it maps each item to a new object, filled like `assign` filter.
 
 ### page:count:index
 

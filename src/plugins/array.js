@@ -56,8 +56,23 @@ export const filters = {
 			return ctx.filter(item, filter);
 		});
 	}],
-	select: ['array', 'path', (ctx, list, path) => {
-		return ctx.filter(list, 'map', 'get', path);
+	select: ['array', 'path*', (ctx, list, ...paths) => {
+		if (paths.length == 1) {
+			const [uni] = paths;
+			if (uni[0] != "") uni.unshift("");
+			return ctx.filter(list, 'map', 'get', uni);
+		} else return list.map(item => {
+			const obj = {};
+			const params = ['set'];
+			for (let i = 0; i < paths.length; i += 2) {
+				const dst = paths[i];
+				const src = paths[i + 1] ?? dst;
+				if (src[0] != "") src.unshift("");
+				params.push(dst, ctx.filter(item, ['get', src]));
+			}
+			ctx.filter(obj, params);
+			return obj;
+		});
 	}],
 	page: ['array', 'int', 'int', (ctx, list, len, i) => {
 		return list.slice(i * len, (i + 1) * len);

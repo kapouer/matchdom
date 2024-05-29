@@ -237,3 +237,9 @@ Shallow copy hooks parameters to prevent possibility for hooks to mutate them.
 Filter assign now accepts multiple pairs of [dest, src] paths.
 
 It still considers a single path to get data from current value.
+
+### Version 14.3.0
+
+Filter `select` now accepts multiple pairs of [dest, src] paths.
+
+It still considers a single path to get data from current value.

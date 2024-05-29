@@ -181,6 +181,37 @@ describe('array', () => {
 		});
 	});
 
+	describe('select filter', () => {
+		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
+
+		it('should select one path and return array of values', () => {
+			const obj = {
+				arr: [{ a: { b: 'word1' } }, { a: { b: 'word2' } }]
+			};
+			assert.equal(
+				md.merge(`<p>[arr|select:.a.b|join:,]</p>`, obj).outerHTML,
+				'<p>word1,word2</p>'
+			);
+			assert.equal(
+				md.merge(`<p>[arr|select:a.b|join:,]</p>`, obj).outerHTML,
+				'<p>word1,word2</p>'
+			);
+		});
+
+		it('should select multiple paths and return array of objects', () => {
+			const obj = {
+				arr: [{ c: 8, a: { b: 'word1' } }, { c: 9, a: { b: 'word2' } }]
+			};
+			assert.deepEqual(
+				md.merge(`[arr|select:w:.a.b:n:.c]`, obj),
+				[{ w: 'word1', n: 8 }, { w: 'word2', n: 9 }]
+			);
+			assert.deepEqual(
+				md.merge(`[arr|select:w:a.b:n:c]`, obj),
+				[{ w: 'word1', n: 8 }, { w: 'word2', n: 9 }]
+			);
+		});
+	});
 
 	describe('slice filter', () => {
 		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
