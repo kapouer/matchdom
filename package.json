@@ -33,7 +33,7 @@
   "devDependencies": {
     "@kapouer/eslint-config": "^2.0.0",
     "global-jsdom": "^24.0.0",
-    "jsdom": "^24.0.0",
+    "jsdom": "^24.1.0",
     "mocha": "^10.4.0"
   },
   "eslintConfig": {
