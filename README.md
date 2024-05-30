@@ -17,10 +17,10 @@ If `node` cannot be parsed as a string or a DOM node, it is treated as if it was
 ## example
 
 ```js
-import { Matchdom, TextPlugin, NumPlugin, DomPlugin } from 'matchdom';
+import { Matchdom, StringPlugin, NumPlugin, DomPlugin } from 'matchdom';
 
-const md = new Matchdom(TextPlugin, NumPlugin, DomPlugin);
-// or new Matchdom(TextPlugin, NumPlugin).extend(DomPlugin)
+const md = new Matchdom(StringPlugin, NumPlugin, DomPlugin);
+// or new Matchdom(StringPlugin, NumPlugin).extend(DomPlugin)
 
 // html string is converted to a DOM node, thanks to DomPlugin
 const mergedDom = md.merge(`<div id="model" class="[myclass]">
@@ -69,7 +69,7 @@ A plugin is an object with those (default) properties:
 A matchdom instance can be used as a plugin:
 
 ```js
-const md = new Matchdom(TextPlugin, OpsPlugin);
+const md = new Matchdom(StringPlugin, OpsPlugin);
 const emd = new Matchdom(md, ArrayPlugin);
 ```
 
@@ -469,6 +469,15 @@ Second parameter can be omitted
 
 ## TextPlugin
 
+### file type
+
+The text type provides a basic object model for manipulating strings and lines.
+It is not meant to be used directly.
+
+Filters will be added to allow multiline manipulations.
+
+## StringPlugin
+
 ### pre:str, post:str
 
 Prepends or appends string if value is not null or not empty.
@@ -717,13 +726,26 @@ Units are: Y, M, D, h, m, s.
 
 ## JsonPlugin
 
-### json type
+### obj type
 
-Converts string to json object
+Converts an object into a model that allows it to be merged as a tree.
 
-### format or filter ? json
+Example: this would return an array of items with title, num keys:
 
-Converts data to json string
+```json
+{
+  "title": "[list|repeat:item|.title|case:caps]",
+  "num": "[item.id]"
+}
+```
+
+### obj format
+
+When given a string, tries to parse it as JSON.
+
+### json format
+
+Converts data to json string.
 
 ## UrlPlugin
 
@@ -777,7 +799,7 @@ Merging text documents without parsing xml or html is supported and
 ### filter at:selector:after:before
 
 By default an expression is replaced by its value,
-without affecting surrounding text, tag name, attribute, or node.
+without affecting surrounding text, tag name, attribute, node, or json object.
 This filter extends the selected range.
 
 The selector changes the current parent:

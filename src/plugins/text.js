@@ -1,76 +1,125 @@
-export const filters = {
-	case: ['?', 'up|low|caps', (ctx, val, how) => {
-		if (!val) return ctx.raw;
-		val = val.toString();
-		if (how == "up") {
-			return val.toUpperCase();
-		} else if (how == "low") {
-			return val.toLowerCase();
-		} else if (how == "caps") {
-			return val.split(/\.\s+/).map(s => {
-				return s.replace(/^\p{Letter}/u, c => c.toUpperCase());
-			}).join('. ');
+class TextNode {
+	nodeType = 3;
+	nodeValue;
+	constructor(str = "", doc) {
+		this.nodeValue = str;
+		this.ownerDocument = doc;
+	}
+	get nextSibling() {
+		return findSibling(this, +1);
+	}
+	get previousSibling() {
+		return findSibling(this, -1);
+	}
+	toString() {
+		return this.nodeValue;
+	}
+	cloneNode() {
+		return new TextNode(this.nodeValue, this.ownerDocument);
+	}
+}
+
+function findSibling(node, dir) {
+	const parent = node.parentNode;
+	if (!parent) return null;
+	const list = parent.childNodes;
+	const pos = list.indexOf(node);
+	if (pos < 0) return null;
+	else return list[pos + dir];
+}
+
+class TextNodeIterator {
+	root;
+	index = 0;
+	constructor(root) {
+		this.root = root;
+	}
+	nextNode() {
+		if (!this.root.childNodes) {
+			if (this.index++ == 0) return this.root;
+		} else {
+			return this.root.childNodes[this.index++];
 		}
-	}],
-	trim: ['?', 'all|line|start|end|out|', (ctx, val, how) => {
-		if (!val) return ctx.raw;
-		switch (how) {
-			case 'all':
-				return val.replace(/\s/gm, '');
-			case 'line':
-				return val.replace(/(\r?\n)\r?\n/gm, '$1');
-			case 'start':
-				return val.trimStart();
-			case 'end':
-				return val.trimEnd();
-			case 'out':
-			default:
-				return val.trim();
+	}
+}
+
+class Fragment {
+	nodeType = 11;
+	constructor(str, doc) {
+		this.childNodes = [];
+		this.ownerDocument = doc;
+		if (str != null) this.appendChild(this.ownerDocument.createTextNode(str));
+	}
+	replaceChild(node, old) {
+		this.insertBefore(node, old);
+		this.removeChild(old);
+		return node;
+	}
+	appendChild(node) {
+		this.childNodes.push(this.adopt(node));
+		return node;
+	}
+	insertBefore(node, bef) {
+		if (node instanceof Fragment) {
+			for (const child of Array.from(node.childNodes)) {
+				this.insertBefore(child, bef);
+			}
+		} else {
+			const list = this.childNodes;
+			const pos = list.indexOf(bef);
+			list.splice(pos < 0 ? list.length : pos, 0, this.adopt(node));
 		}
-	}],
-	pre: ['?', 'str', (ctx, val, str) => {
-		if (val == null || val === "") return ctx.raw;
-		return str + val;
-	}],
-	post: ['?', 'str', (ctx, val, str) => {
-		if (val == null || val === '') return ctx.raw;
-		return val + str;
-	}],
-	enc: ['?', 'base64|base64url|hex|url', (ctx, str, type) => {
-		if (!str) return ctx.raw;
-		str = str.toString();
-		switch (type) {
-			case "base64": return btoa(str);
-			case "base64url": return btoa(str).replace(/=*$/, '');
-			case "url": return encodeURIComponent(str);
-			case "hex": return Array.from(str).map(c => {
-				return c.charCodeAt(0) < 128 ?
-					c.charCodeAt(0).toString(16) :
-					encodeURIComponent(c).replace(/%/g, '').toLowerCase();
-			}).join('');
+		return node;
+	}
+	removeChild(node) {
+		const pos = this.childNodes.indexOf(node);
+		if (pos >= 0) {
+			this.childNodes.splice(pos, 1);
+			node.parentNode = null;
 		}
-	}],
-	dec: ['str', 'base64|base64url|hex|url', (x, str, type) => {
-		switch (type) {
-			case "base64url":
-			case "base64": return atob(str);
-			case "url": return decodeURIComponent(str);
-			case "hex": return decodeURIComponent('%' + str.match(/.{1,2}/g).join('%'));
+		return node;
+	}
+	get firstChild() {
+		return this.childNodes[0];
+	}
+	cloneNode(deep) {
+		const frag = new Fragment(null, this.ownerDocument);
+		if (deep) for (const node of this.childNodes) {
+			frag.appendChild(node.cloneNode(true));
 		}
-	}],
-	split: ['?', 'str', (x, str, tok) => {
-		if (!str) return [];
-		return str.split(tok);
-	}],
-	slice: ['?', 'int?', 'int?', (ctx, val, a, b) => {
-		if (!val || a == null) return ctx.raw;
-		if (b == null) b = undefined;
-		if (val.slice) return val.slice(a, b);
+		return frag;
+	}
+	adopt(node) {
+		const parent = node.parentNode;
+		if (parent && parent != this) parent.removeChild(node);
+		node.parentNode = this;
+		return node;
+	}
+}
+
+class TextDocument {
+	static from(str) {
+		const doc = new TextDocument();
+		const frag = new Fragment(str, doc);
+		return frag;
+	}
+	createDocumentFragment() {
+		return new Fragment(null, this);
+	}
+	createNodeIterator(root) {
+		return new TextNodeIterator(root);
+	}
+	createTextNode(str) {
+		return new TextNode(str, this);
+	}
+	importNode(node) {
+		return node;
+	}
+}
+
+export const types = {
+	text(ctx, val) {
+		if (val && typeof val == "string") return TextDocument.from(val);
 		else return val;
-	}],
-	parts: ['?', 'str', 'int?', 'int?', (ctx, val, tok, a, b) => {
-		if (typeof val != "string" || a == null) return ctx.raw;
-		if (b == null) b = undefined;
-		return val.split(tok).slice(a, b).join(tok);
-	}]
+	}
 };

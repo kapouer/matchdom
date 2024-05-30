@@ -1,18 +1,18 @@
 import Symbols from './symbols.js';
 import Context from './context.js';
-import TextDocument from './fragment.js';
 
 import * as Core from "./plugins/core.js";
 import * as Flow from "./plugins/flow.js";
-export * as TextPlugin from './plugins/text.js';
+export * as StringPlugin from './plugins/string.js';
 export * as OpsPlugin from './plugins/ops.js';
 export * as ArrayPlugin from './plugins/array.js';
-export * as JsonPlugin from './plugins/json.js';
 export * as NumPlugin from './plugins/number.js';
 export * as DatePlugin from './plugins/date.js';
 export * as RepeatPlugin from './plugins/repeat.js';
 export * as DomPlugin from './plugins/dom.js';
 export * as UrlPlugin from './plugins/url.js';
+export * as TextPlugin from './plugins/text.js';
+export * as JsonPlugin from './plugins/json.js';
 
 export class Matchdom {
 	static Symbols = Symbols;
@@ -71,102 +71,98 @@ export class Matchdom {
 		return this;
 	}
 
-	merge(list, data, scope) {
+	merge(root, data, scope) {
+		let wasJSON = false;
+		let wasDOM = false;
 		let wasText = false;
-		let wasArray = false;
-		if (typeof list == "string") {
-			if (typeof document !== 'undefined' && this.formats.as.html) {
-				if (list.startsWith('<') && list.endsWith('>')) {
-					const fn = this.formats.as[list.startsWith('<?xml') ? 'xml' : 'html'];
-					list = [fn(null, list)];
-				} else {
-					const node = this.formats.as.html(null, "-");
-					node.nodeValue = list;
-					wasText = true;
-					list = [node.parentNode];
-				}
-			} else {
-				list = [TextDocument.from(list)];
-				wasText = true;
-			}
-		} else if (typeof list.forEach == "function") {
-			wasArray = true;
-		} else {
-			list = [list];
-		}
 
 		const trackHits = {
 			count: 0,
 			last: undefined
 		};
-
-		list = Array.prototype.map.call(list, root => {
-			const replacements = [];
-			if (root.documentElement) {
-				root = root.documentElement;
-			}
-			this.matchEachDom(root, (node, name, str) => {
-				const hits = Context.parse(this.symbols, str);
-				if (!hits) return;
-				const ctx = new Context(this, data, scope);
-				ctx.setup(hits, root, node, name);
-				const { dest } = ctx;
-				let allNulls = true;
-				let allTrue = true;
-				let allBools = true;
-				const filteredHits = dest.hits.filter(val => {
-					if (val !== null) allNulls = false;
-					if (val === true); // do nothing
-					else if (val === false) allTrue = false;
-					else allBools = false;
-					return val !== undefined;
-				});
-				// [a][b] returns null if a and b are null
-				// likewise for booleans
-				if (filteredHits.length > 0) {
-					let result;
-					if (allNulls) result = [null];
-					else if (allBools) result = [allTrue];
-					else result = filteredHits;
-					trackHits.count += filteredHits.length;
-					trackHits.last = result[result.length - 1];
-					dest.write(result, ctx.src);
+		const replacements = [];
+		if (root.documentElement) {
+			root = root.documentElement;
+		}
+		if (typeof root == "string") {
+			if (this.formats.as.html) {
+				wasDOM = true;
+				if (root.startsWith('<?xml')) {
+					root = this.formats.as.xml(null, root);
+				} else {
+					root = this.formats.as.html(null, root);
 				}
-				if (dest.root) root = dest.root;
-				if (dest.replacement) replacements.unshift(dest.replacement);
+			} else if (this.types.text) {
+				wasText = true;
+				root = this.types.text(null, root);
+			}
+		} else if (this.types.obj && [undefined, Object].includes(root.constructor)) {
+			wasJSON = true;
+			root = this.types.obj(null, root);
+		}
+		this.matchEachDom(root, (node, name, str) => {
+			const hits = Context.parse(this.symbols, str);
+			if (!hits) return;
+			const ctx = new Context(this, data, scope);
+			ctx.setup(hits, root, node, name);
+			const { dest } = ctx;
+			let allNulls = true;
+			let allTrue = true;
+			let allBools = true;
+			const filteredHits = dest.hits.filter(val => {
+				if (val !== null) allNulls = false;
+				if (val === true); // do nothing
+				else if (val === false) allTrue = false;
+				else allBools = false;
+				return val !== undefined;
 			});
-			for (const pair of replacements) {
-				const [tag, old] = pair;
-				for (const att of Array.from(old.attributes)) {
-					tag.setAttribute(att.name, att.value);
-				}
-				while (old.firstChild) {
-					tag.appendChild(old.firstChild);
-				}
-				if (old.parentNode) {
-					old.replaceWith(tag);
-				}
-				if (old == root) {
-					root = tag;
-				}
+			// [a][b] returns null if a and b are null
+			// likewise for booleans
+			if (filteredHits.length > 0) {
+				let result;
+				if (allNulls) result = [null];
+				else if (allBools) result = [allTrue];
+				else result = filteredHits;
+				trackHits.count += filteredHits.length;
+				trackHits.last = result[result.length - 1];
+				dest.write(result, ctx.src);
 			}
-			return root;
+			if (dest.root) root = dest.root;
+			if (dest.replacement) replacements.unshift(dest.replacement);
 		});
-		if (wasText) {
-			const items = Array.from(list[0].childNodes);
-			if (items.length <= 1 && trackHits.count == 1) {
+		for (const pair of replacements) {
+			const [tag, old] = pair;
+			for (const att of Array.from(old.attributes)) {
+				tag.setAttribute(att.name, att.value);
+			}
+			while (old.firstChild) {
+				tag.appendChild(old.firstChild);
+			}
+			if (old.parentNode) {
+				old.replaceWith(tag);
+			}
+			if (old == root) {
+				root = tag;
+			}
+		}
+
+		if (wasJSON) {
+			return root.toJSON();
+		}
+
+		if (root.nodeType == 11) {
+			if (root.childNodes.length <= 1 && root.childNodes[0]?.nodeType != 1 && trackHits.count == 1) {
 				return trackHits.last;
 			}
-			if (items.every(node => node.nodeType == 3)) {
-				return items.map(node => node.nodeValue).join('');
-			} else {
-				return list[0];
+			if (wasText) {
+				return root.childNodes.map(item => item.nodeValue).join('');
 			}
-		} else if (wasArray) {
-			return list;
-		} else {
-			return list[0];
+		} else if (root.nodeType == 3) {
+			if (trackHits.count == 1) return trackHits.last;
+			else return root.nodeValue;
 		}
+
+		return root;
 	}
 
 	matchEachDom(root, fn) {

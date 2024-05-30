@@ -243,3 +243,17 @@ It still considers a single path to get data from current value.
 Filter `select` now accepts multiple pairs of [dest, src] paths.
 
 It still considers a single path to get data from current value.
+
+### Version 15.0.0
+
+Breaking changes:
+
+- merge() template can no longer be an array.
+- as:json stringifies, as:obj parses
+- the old TextPlugin is renamed the StringPlugin.
+- the DomPlugin is required to merge DOM Nodes (and parse xhtml strings)
+  and it supersedes the TextPlugin.
+- the TextPlugin is required to merge plain text files when the DomPlugin is not loaded
+- the JsonPlugin is required to merge plain objects and parse json from string.
+
+New: JSON handling is done with an object model: in particular, `repeat` is supported.
