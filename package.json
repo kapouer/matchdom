@@ -19,10 +19,9 @@
     "url": "git+https://github.com/kapouer/matchdom.git"
   },
   "keywords": [
-    "DOM",
     "template",
-    "merge",
-    "prosemirror"
+    "templates",
+    "merge"
   ],
   "author": "Jérémy Lal <kapouer@melix.org>",
   "license": "MIT",
