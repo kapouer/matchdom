@@ -1,9 +1,9 @@
 import { strict as assert } from 'node:assert';
 import {
-	Matchdom, OpsPlugin
+	Matchdom, OpsPlugin, TextPlugin
 } from 'matchdom';
 
-const md = new Matchdom(OpsPlugin);
+const md = new Matchdom(OpsPlugin, TextPlugin);
 
 describe('eq', () => {
 	it('should keep equal value', () => {

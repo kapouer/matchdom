@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin } from 'matchdom';
+import { Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin, OpsPlugin } from 'matchdom';
 
 describe('repeat filter', () => {
 	before(function () {
@@ -587,5 +587,31 @@ describe('repeat filter', () => {
 		assert.equal(copy.outerHTML, md.merge(`<div>
 			<span>&gt;areo</span><span>&gt;port</span>
 		</div>`).outerHTML);
+	});
+
+	it('should loop over json', () => {
+		const tjson = {
+			list: {
+				num: '[items|at:**:repeat:item|.id|add:2]',
+				desc: '[item.title]-[item.id]'
+			}
+		};
+		const md = new Matchdom(RepeatPlugin, OpsPlugin);
+		md.debug = true;
+		const copy = md.merge(tjson, {
+			items: [
+				{ id: 1, title: 'title1' },
+				{ id: 2, title: 'title2' }
+			]
+		});
+		assert.deepEqual(copy, {
+			list: [{
+				num: 3,
+				desc: 'title-1'
+			}, {
+				num: 4,
+				desc: 'title-2'
+			}]
+		});
 	});
 });

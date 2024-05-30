@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin } from 'matchdom';
+import { Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin, TextPlugin } from 'matchdom';
 
 describe('scope', () => {
 	before(function () {
@@ -10,7 +10,7 @@ describe('scope', () => {
 		this.jsdom();
 	});
 
-	const md = new Matchdom();
+	const md = new Matchdom(TextPlugin);
 
 	it('path should be set when merging a simple field', () => {
 		const html = `[path.test.to|test:]`;

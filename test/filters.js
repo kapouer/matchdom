@@ -1,9 +1,9 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import {
-	Matchdom, TextPlugin,
+	Matchdom, StringPlugin,
 	DomPlugin, DatePlugin,
-	JsonPlugin, RepeatPlugin
+	JsonPlugin, RepeatPlugin, TextPlugin
 } from 'matchdom';
 
 describe('filters', () => {
@@ -85,7 +85,7 @@ describe('filters', () => {
 	});
 
 	describe('method filters', () => {
-		const md = new Matchdom();
+		const md = new Matchdom(TextPlugin);
 
 		it('should call method on value', () => {
 			const copy = md.merge(`[toUpperCase:]`, "up");
@@ -186,7 +186,7 @@ describe('filters', () => {
 	});
 
 	describe('rebase filter', () => {
-		const md = new Matchdom();
+		const md = new Matchdom(TextPlugin);
 		it('should return value', () => {
 			const txt = `[a||.b|set:c:test||.b.c]`;
 			const data = {
@@ -225,7 +225,7 @@ describe('filters', () => {
 	});
 
 	describe('assign filter', () => {
-		const md = new Matchdom();
+		const md = new Matchdom(TextPlugin);
 
 		it('should assign data to given path', () => {
 			const txt = `Si[assign:a.b:c|.c] and [a.b]`;
@@ -319,7 +319,7 @@ describe('filters', () => {
 	});
 
 	describe('parts filter', () => {
-		const md = new Matchdom(DatePlugin, TextPlugin);
+		const md = new Matchdom(DatePlugin, StringPlugin, TextPlugin);
 
 		it('should get last part of a path', () => {
 			const html = `[path|parts:.:-1]`;
@@ -530,7 +530,7 @@ describe('filters', () => {
 	});
 
 	describe('pre', () => {
-		const md = new Matchdom(TextPlugin, DomPlugin);
+		const md = new Matchdom(StringPlugin, DomPlugin);
 
 		it('should not prepend string if value is empty', () => {
 			const html = `<a class="test [button|pre:ui ]">test</a>`;
@@ -545,7 +545,7 @@ describe('filters', () => {
 	});
 
 	describe('post', () => {
-		const md = new Matchdom(TextPlugin, DomPlugin);
+		const md = new Matchdom(StringPlugin, DomPlugin);
 
 		it('should not append string if value is empty', () => {
 			const html = `<a class="test [size|post: wide]">test</a>`;
@@ -560,7 +560,7 @@ describe('filters', () => {
 	});
 
 	describe('case', () => {
-		const md = new Matchdom(TextPlugin, DomPlugin);
+		const md = new Matchdom(StringPlugin, DomPlugin);
 
 		it('should upper case', () => {
 			const str = 'minusculés';
@@ -675,11 +675,11 @@ describe('filters', () => {
 	});
 
 
-	describe('json type', () => {
+	describe('json plugin', () => {
 		const md = new Matchdom(JsonPlugin, DomPlugin);
 
 		it('should parse string', () => {
-			const html = `<p>[str|as:json|.test]</p>`;
+			const html = `<p>[str|as:obj|.test]</p>`;
 			const copy = md.merge(html, {
 				str: '{"test":10}'
 			});
@@ -688,7 +688,7 @@ describe('filters', () => {
 
 		it('should fail to parse', () => {
 			md.debug = true; // ensure missing json as type will crash
-			const html = `<p>[str|as:json|.test]</p>`;
+			const html = `<p>[str|as:obj|.test]</p>`;
 			const copy = md.merge(html, {
 				str: '{test:10}'
 			});
@@ -697,16 +697,16 @@ describe('filters', () => {
 
 		it('should fail to parse and not merge', () => {
 			md.debug = true; // ensure missing json as type will crash
-			const html = `<p>[str|as:json|other.test]</p>`;
+			const html = `<p>[str|as:obj|other.test]</p>`;
 			const copy = md.merge(html, {
 				str: '{test:10}'
 			});
-			assert.equal(copy.outerHTML, '<p>[str|as:json|other.test]</p>');
+			assert.equal(copy.outerHTML, '<p>[str|as:obj|other.test]</p>');
 		});
 	});
 
 	describe('trim', () => {
-		const md = new Matchdom(TextPlugin, DomPlugin);
+		const md = new Matchdom(StringPlugin, DomPlugin);
 		it('out', () => {
 			const html = `<span>-[test|trim:out]-</span>`;
 			const copy = md.merge(html, { test: ' a ' });

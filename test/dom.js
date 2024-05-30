@@ -1,8 +1,9 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import {
-	Matchdom, OpsPlugin, TextPlugin,
-	ArrayPlugin, DomPlugin, DatePlugin, RepeatPlugin
+	Matchdom, OpsPlugin, StringPlugin,
+	ArrayPlugin, DomPlugin, DatePlugin, RepeatPlugin,
+	TextPlugin
 } from 'matchdom';
 
 describe('dom', () => {
@@ -122,7 +123,7 @@ describe('dom', () => {
 	});
 
 	describe('parts filter', () => {
-		const md = new Matchdom(DatePlugin, TextPlugin);
+		const md = new Matchdom(DatePlugin, StringPlugin, TextPlugin);
 
 		it('should get last part of a path', () => {
 			const html = `[path|parts:.:-1]`;
@@ -236,7 +237,7 @@ describe('dom', () => {
 			const copy = md.merge(html, {
 				field: 'word'
 			});
-			assert.equal(copy.nodeValue, 'word');
+			assert.equal(copy, 'word');
 		});
 
 		it('should replace current node from attribute', () => {

@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import {
-	Matchdom, OpsPlugin, TextPlugin,
+	Matchdom, OpsPlugin, StringPlugin, TextPlugin,
 	ArrayPlugin, DomPlugin, DatePlugin, RepeatPlugin
 } from 'matchdom';
 
@@ -42,7 +42,7 @@ describe('array', () => {
 	});
 
 	describe('split filter', () => {
-		const md = new Matchdom(ArrayPlugin, DomPlugin, TextPlugin);
+		const md = new Matchdom(ArrayPlugin, DomPlugin, StringPlugin);
 		it('with space', () => {
 			const html = `<p>[text|split: |join:X]</p>`;
 			const copy = md.merge(html, {
@@ -79,7 +79,7 @@ describe('array', () => {
 	});
 
 	describe('filter and find', () => {
-		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin, OpsPlugin);
+		const md = new Matchdom(DomPlugin, ArrayPlugin, StringPlugin, OpsPlugin);
 
 		it('should filter by boolean', () => {
 			const html = `<p>[arr|filter::as:bool|join:-]</p>`;
@@ -127,7 +127,7 @@ describe('array', () => {
 
 		it('should not find value with shorthand', () => {
 			const html = `[arr|find:d]`;
-			const copy = md.merge(html, {
+			const copy = md.extend(TextPlugin).merge(html, {
 				arr: ['a', 'b', 'c']
 			});
 			assert.equal(copy, null);
@@ -153,7 +153,7 @@ describe('array', () => {
 	});
 
 	describe('group filter', () => {
-		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin, OpsPlugin, RepeatPlugin);
+		const md = new Matchdom(DomPlugin, ArrayPlugin, StringPlugin, OpsPlugin, RepeatPlugin);
 
 		it('should group by value', () => {
 			const html = `<p>[arr|group:|at:-|repeat:|join:-] </p>`;
@@ -182,7 +182,7 @@ describe('array', () => {
 	});
 
 	describe('select filter', () => {
-		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
+		const md = new Matchdom(DomPlugin, ArrayPlugin, StringPlugin);
 
 		it('should select one path and return array of values', () => {
 			const obj = {
@@ -214,7 +214,7 @@ describe('array', () => {
 	});
 
 	describe('slice filter', () => {
-		const md = new Matchdom(DomPlugin, ArrayPlugin, TextPlugin);
+		const md = new Matchdom(DomPlugin, ArrayPlugin, StringPlugin);
 
 		it('should slice array with begin and end', () => {
 			const html = `<p>[arr|slice:1:3|join: ]</p>`;
