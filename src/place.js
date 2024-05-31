@@ -208,7 +208,6 @@ export default class Place {
 			this.before = 0;
 			this.after = 0;
 		} else { // TEXT, CONT, NODE
-			let mutates = false;
 			const cursor = target == Place.NODE ? node : this.text;
 			const parent = cursor.parentNode;
 
@@ -221,6 +220,7 @@ export default class Place {
 			}
 			this.before = 0;
 			this.after = 0;
+			let mutates = false;
 
 			for (let i = 0; i < hits.length; i++) {
 				let item = hits[i];
@@ -239,8 +239,8 @@ export default class Place {
 					parent.insertBefore(doc.importNode(item, true), cursor);
 				}
 			}
-			if (!mutates && parent) {
-				parent.removeChild(cursor);
+			if (parent) {
+				if (!mutates) parent.removeChild(cursor);
 				if (this.root == cursor) {
 					this.root = parent.childNodes.length == 1 ? parent.firstChild : parent;
 				}

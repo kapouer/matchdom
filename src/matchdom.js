@@ -74,6 +74,7 @@ export class Matchdom {
 	merge(root, data, scope) {
 		let wasJSON = false;
 		let wasDOM = false;
+		let wasFrag = false;
 		let wasText = false;
 
 		const trackHits = {
@@ -86,12 +87,12 @@ export class Matchdom {
 		}
 		if (typeof root == "string") {
 			if (this.formats.as.html) {
-				wasDOM = true;
 				if (root.startsWith('<?xml')) {
 					root = this.formats.as.xml(null, root);
 				} else {
 					root = this.formats.as.html(null, root);
 				}
+				wasDOM = true;
 			} else if (this.types.text) {
 				wasText = true;
 				root = this.types.text(null, root);
@@ -99,6 +100,8 @@ export class Matchdom {
 		} else if (this.types.obj && [undefined, Object].includes(root.constructor)) {
 			wasJSON = true;
 			root = this.types.obj(null, root);
+		} else if (root.nodeType == 11) {
+			wasFrag = true;
 		}
 		this.matchEachDom(root, (node, name, str) => {
 			const hits = Context.parse(this.symbols, str);
@@ -151,13 +154,23 @@ export class Matchdom {
 		}
 
 		if (root.nodeType == 11) {
-			if (root.childNodes.length <= 1 && root.childNodes[0]?.nodeType != 1 && trackHits.count == 1) {
-				return trackHits.last;
+			if (wasFrag) return root;
+			const list = Array.from(root.childNodes);
+			if (list.length == 0) {
+				if (!wasFrag && trackHits.count == 1) return trackHits.last;
+				else return root;
+			} else if (list.length == 1) {
+				root = list[0];
+			} else if (wasText) {
+				return list.map(item => item.nodeValue).join('');
+			} else if (wasDOM) {
+				if (list.every(item => item.nodeType == 3)) {
+					return list.map(item => item.nodeValue).join('');
+				}
+				return root;
 			}
-			if (wasText) {
-				return root.childNodes.map(item => item.nodeValue).join('');
-			}
-		} else if (root.nodeType == 3) {
+		}
+		if (root.nodeType == 3) {
 			if (trackHits.count == 1) return trackHits.last;
 			else return root.nodeValue;
 		}
