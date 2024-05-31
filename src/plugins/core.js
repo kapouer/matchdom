@@ -64,7 +64,7 @@ export const filters = {
 		ctx.filter(data, params);
 		return data;
 	}],
-	set: ['obj?', '?*', (ctx, data, ...params) => {
+	set: ['object?', '?*', (ctx, data, ...params) => {
 		if (!data) return data;
 		while (params.length) {
 			const str = params.shift();
@@ -126,7 +126,7 @@ export const filters = {
 		}
 		return data;
 	}],
-	omit: ['obj', 'path*', (ctx, obj, ...list) => {
+	omit: ['object', 'path*', (ctx, obj, ...list) => {
 		for (const path of list) {
 			const copy = path.slice();
 			const key = copy.pop();
@@ -141,7 +141,7 @@ export const filters = {
 		}
 		return obj;
 	}],
-	pick: ['obj', 'str*', (ctx, obj, ...list) => {
+	pick: ['object', 'str*', (ctx, obj, ...list) => {
 		const del = typeof obj.delete == "function";
 		const keys = typeof obj.keys == "function" ? obj.keys() : Object.keys(obj);
 		for (const key of keys) {
@@ -183,7 +183,7 @@ export const filters = {
 			val = Number.parseFloat(val);
 			if (Number.isNaN(val)) val = 0;
 			return val;
-		} else if (type == "obj" || type == "object") {
+		} else if (type == "object") {
 			if (val != null && typeof val == "object" && !Array.isArray(val)) return val;
 		} else {
 			const fn = ctx.md.formats.as[type] || ctx.md.types[type];

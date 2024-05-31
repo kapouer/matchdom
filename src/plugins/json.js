@@ -183,23 +183,25 @@ class JsonDocument {
 }
 
 export const formats = {
-	json(ctx, val) {
-		try {
-			return JSON.stringify(val);
-		} catch (ex) {
-			return null;
-		}
-	},
-	obj(ctx, obj) {
-		if (!obj) return obj;
-		if (typeof obj == "string") {
+	as: {
+		json(ctx, val) {
 			try {
-				return JSON.parse(obj);
+				return JSON.stringify(val);
 			} catch (ex) {
 				return null;
 			}
-		} else {
-			return obj;
+		},
+		obj(ctx, obj) {
+			if (!obj) return obj;
+			if (typeof obj == "string") {
+				try {
+					return JSON.parse(obj);
+				} catch (ex) {
+					return null;
+				}
+			} else {
+				return obj;
+			}
 		}
 	}
 };
