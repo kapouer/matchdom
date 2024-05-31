@@ -52,7 +52,7 @@ describe('filters', () => {
 		});
 
 		it('should be returned if it is the only hit and deal properly with undef/null/boolean', () => {
-			const md = new Matchdom();
+			const md = new Matchdom(TextPlugin);
 			assert.equal(md.merge(`[val]`, { val: 12 }), 12);
 			assert.equal(md.merge(`[val]`, { val: true }), true);
 			assert.equal(md.merge(`[val]`, { val: false }), false);
@@ -378,10 +378,11 @@ describe('filters', () => {
 
 
 	describe('null/undefined', () => {
-		const md = new Matchdom(DomPlugin, RepeatPlugin);
+		const md = new Matchdom(RepeatPlugin);
 
 		it('work with tests in the README', () => {
 			// non-existent object
+			const md = new Matchdom(RepeatPlugin, TextPlugin);
 			assert.equal(md.merge("a[to.nothing]b", {}), 'a[to.nothing]b');
 			// existent object
 			assert.equal(md.merge("a[to.nothing]b", { to: {} }), 'ab');
@@ -403,12 +404,14 @@ describe('filters', () => {
 		});
 
 		it('should set to null if empty', () => {
+			const md = new Matchdom(DomPlugin);
 			const html = `<p class="[val|as:null]">test</p>`;
 			const copy = md.merge(html, {val: ''});
 			assert.equal(copy.outerHTML, '<p>test</p>');
 		});
 
 		it('should test if null', () => {
+			const md = new Matchdom(DomPlugin);
 			assert.equal(
 				md.merge(
 					`<p hidden="[val|is:null]">test</p>`, { val: '' }
@@ -430,6 +433,7 @@ describe('filters', () => {
 		});
 
 		it('should test if undefined', () => {
+			const md = new Matchdom(DomPlugin);
 			assert.equal(
 				md.merge(
 					`<p hidden="[val|is:none]">test</p>`, { val: '' }
@@ -451,55 +455,63 @@ describe('filters', () => {
 		});
 
 		it('should merge an undefined top-level value', () => {
+			const md = new Matchdom(DomPlugin);
 			const html = `<p>[val]test</p>`;
 			const copy = md.merge(html, {});
 			assert.equal(copy.outerHTML, '<p>test</p>');
 		});
 
 		it('should merge an undefined optional top-level value even if next filter requires a value', () => {
+			const md = new Matchdom(DomPlugin, RepeatPlugin);
 			const html = `<div>a<p>[list?|repeat:]test</p></div>`;
 			const copy = md.merge(html, {});
 			assert.equal(copy.outerHTML, '<div>a</div>');
 		});
 
 		it('should not set to null if not empty', () => {
+			const md = new Matchdom(DomPlugin);
 			const html = `<p>[val|or:toto]</p>`;
 			const copy = md.merge(html, {val: ''});
 			assert.equal(copy.outerHTML, '<p>toto</p>');
 		});
 
 		it('should not process undefined unresolved path', () => {
+			const md = new Matchdom(DomPlugin);
 			const html = `<div><p>[obj|as:null|.test|fail:*]</p></div>`;
 			const copy = md.merge(html, {});
 			assert.equal(copy.outerHTML, '<div><p>[obj|as:null|.test|fail:*]</p></div>');
 		});
 
 		it('should not set to null if not undefined', () => {
+			const md = new Matchdom(DomPlugin);
 			const html = `<div><p>[obj|as:null|.test|fail:*]</p></div>`;
 			const copy = md.merge(html, {obj: {test:1}});
 			assert.equal(copy.outerHTML, '<div><p>1</p></div>');
 		});
 
 		it('should set to null if undefined using optional chaining', () => {
+			const md = new Matchdom(DomPlugin, RepeatPlugin);
 			const html = `<div><p>[obj?.test|fail:*]</p></div>`;
 			const copy = md.merge(html, {});
 			assert.equal(copy.outerHTML, '<div></div>');
 		});
 
 		it('should set to undefined after optional chaining', () => {
+			const md = new Matchdom(DomPlugin);
 			const html = `<div><p>[obj?|as:none|.test]</p></div>`;
 			const copy = md.merge(html, {});
 			assert.equal(copy.outerHTML, '<div><p>[obj?|as:none|.test]</p></div>');
 		});
 
 		it('should not set to null if not undefined using optional chaining', () => {
+			const md = new Matchdom(TextPlugin);
 			const copy = md.merge('[obj.test?]', { obj: { test: 1 } });
 			assert.equal(copy, 1);
 		});
 
 		it('optional chaining should affect afterAll filter', () => {
 			const result = {};
-			const md = new Matchdom({
+			const md = new Matchdom(TextPlugin, {
 				hooks: {
 					afterAll(ctx, val) {
 						result.test = val;

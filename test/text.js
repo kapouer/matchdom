@@ -153,13 +153,13 @@ describe('text nodes', () => {
 		assert.equal(copy.outerHTML, '<span>me and you</span>');
 	});
 
-	it('should merge list of nodes', () => {
+	it('should merge inner child nodes and mutate parent', () => {
 		const md = new Matchdom().extend(DomPlugin);
 		const node = md.merge(`<div>
 			<span>no? [test]!</span>
 			<div><span>no? [test2]!</span></div>
 		</div>`);
-		md.merge(node.querySelectorAll('span'), {
+		for (const span of node.querySelectorAll('span')) md.merge(span, {
 			test: "yes",
 			test2: "no"
 		});

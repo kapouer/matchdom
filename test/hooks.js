@@ -1,6 +1,9 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin } from 'matchdom';
+import {
+	Matchdom, ArrayPlugin,
+	DomPlugin, RepeatPlugin, TextPlugin
+} from 'matchdom';
 
 describe('hooks filter', () => {
 	before(function () {
@@ -11,7 +14,7 @@ describe('hooks filter', () => {
 	});
 
 	it('should be called after this filter', () => {
-		const md = new Matchdom({
+		const md = new Matchdom(TextPlugin, {
 			after: {
 				join(ctx, val, args) {
 					assert.equal(val, 'word1 word2');
@@ -27,7 +30,7 @@ describe('hooks filter', () => {
 	});
 
 	it('should be called after this filter with unmutated params', () => {
-		const md = new Matchdom({
+		const md = new Matchdom(TextPlugin, {
 			debug: true,
 			after: {
 				omit(ctx, val, paths) {
@@ -43,7 +46,7 @@ describe('hooks filter', () => {
 	it('should be called before all filters', () => {
 		const html = `[arr2|join: ]`;
 		const arr = ['word1', 'word2'];
-		const md = new Matchdom({
+		const md = new Matchdom(TextPlugin, {
 			beforeAll(ctx, val) {
 				assert.deepEqual(val, { arr });
 				assert.equal(ctx.expr.filters[0][1], "arr2");
@@ -59,7 +62,7 @@ describe('hooks filter', () => {
 	it('should be called after all filters', () => {
 		const html = `[arr|unshift:now|join:%20]`;
 		let called = false;
-		const md = new Matchdom(ArrayPlugin, {
+		const md = new Matchdom(TextPlugin, ArrayPlugin, {
 			afterAll(ctx, val) {
 				assert.equal(val, 'now word1 word2');
 				called = true;
@@ -76,7 +79,7 @@ describe('hooks filter', () => {
 
 	it('should be called before get filter', () => {
 		const html = `[$val|test:$me]`;
-		const md = new Matchdom({
+		const md = new Matchdom(TextPlugin, {
 			before: {
 				get(ctx, val, [path]) {
 					if (path[0]?.startsWith('$')) {
@@ -128,7 +131,7 @@ describe('hooks filter', () => {
 	it('should register multiple hooks', () => {
 		const html = `[arr2|join:-]`;
 		const arr = ['word1', 'word2'];
-		const md = new Matchdom({
+		const md = new Matchdom(TextPlugin, {
 			beforeAll(ctx, val) {
 				assert.deepEqual(val, { arr });
 				assert.equal(ctx.expr.filters[0][1], "arr2");
@@ -149,7 +152,7 @@ describe('hooks filter', () => {
 
 	it('should be called with typed parameters', () => {
 		const html = `[$val|test:$me]`;
-		const md = new Matchdom({
+		const md = new Matchdom(TextPlugin, {
 			before: {
 				get(ctx, val, [path]) {
 					if (path[0]?.startsWith('$')) {

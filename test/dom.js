@@ -466,7 +466,7 @@ describe('at filter', () => {
 	it('should remove current node from attribute', () => {
 		const html = `<div><span class="some [test|at:div]">test</span></div>`;
 		const copy = md.merge(html, {});
-		assert.equal(copy.childNodes.length, 0);
+		assert.equal(copy, null);
 	});
 
 	it('should remove current node from attribute using wildcard selector', () => {

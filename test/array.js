@@ -267,7 +267,7 @@ describe('array', () => {
 		});
 		it('should sort array by item and nulls first', () => {
 			const html = `<p>[arr|sort:val:true|at:-:0:1|repeat:|key] </p>`;
-			const copy = md.extend(DomPlugin).merge(html, {
+			const copy = md.merge(html, {
 				arr: [
 					{ key: 'a', val: 'word2' },
 					{ key: 'b', val: 'word1' },
