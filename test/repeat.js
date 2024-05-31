@@ -1,6 +1,9 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
-import { Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin, OpsPlugin } from 'matchdom';
+import {
+	Matchdom, ArrayPlugin, DomPlugin,
+	RepeatPlugin, OpsPlugin, JsonPlugin
+} from 'matchdom';
 
 describe('repeat filter', () => {
 	before(function () {
@@ -592,11 +595,11 @@ describe('repeat filter', () => {
 	it('should loop over json', () => {
 		const tjson = {
 			list: {
-				num: '[items|at:**:repeat:item|.id|add:2]',
+				num: '[items|at:*|repeat:item|.id|add:2]',
 				desc: '[item.title]-[item.id]'
 			}
 		};
-		const md = new Matchdom(RepeatPlugin, OpsPlugin);
+		const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
 		md.debug = true;
 		const copy = md.merge(tjson, {
 			items: [
