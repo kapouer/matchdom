@@ -9,42 +9,33 @@ function findSibling(node, dir) {
 
 class NodeIterator {
 	root;
-	#parent;
-	#path = [];
-	#index = 0;
+	#node;
 	constructor(root) {
-		this.#parent = this.root = root;
-		this.#index = 0;
+		this.root = root;
 	}
 	nextNode() {
-		const p = this.#parent;
-		if (!p) return;
-		const len = p.childNodes?.length ?? 0;
-		const i = this.#index;
-		if (i >= len) {
-			// go up one step
-			if (this.#path.length == 0) return; // done
-			const [index, parent] = this.#path.pop();
-			this.#parent = parent;
-			this.#index = index;
-			return this.nextNode();
+		let cur = this.#node;
+		let next;
+		if (!cur) {
+			next = this.root;
 		} else {
-			const n = p.childNodes[i];
-			if (n.nodeType == 1) {
-				this.#path.push([0, n]);
-				this.#index = 0;
-				this.#parent = n;
-			} else {
-				this.#index = i + 1;
+			next = cur.nodeType != 3 && cur.firstChild || cur.nextSibling;
+			if (!next) {
+				while ((cur = cur.parentNode)) {
+					if (cur == this.root) break;
+					next = cur.nextSibling;
+					if (next) break;
+				}
 			}
-			return n;
 		}
+		this.#node = next;
+		return next;
 	}
 }
 
 class Node {
-	constructor(doc) {
-		this.ownerDocument = doc;
+	get ownerDocument() {
+		return JsonDocument.doc;
 	}
 	get nextSibling() {
 		return findSibling(this, +1);
@@ -59,7 +50,7 @@ class Node {
 	}
 	appendChild(node) {
 		if (!(node instanceof Node)) {
-			node = this.ownerDocument.importFragment(node);
+			node = JsonDocument.doc.importObject(node);
 		}
 		if (node.nodeType == 11) for (const child of node.childNodes) {
 			this.appendChild(child);
@@ -70,7 +61,7 @@ class Node {
 	}
 	insertBefore(node, bef) {
 		if (!(node instanceof Node)) {
-			node = this.ownerDocument.importFragment(node);
+			node = JsonDocument.doc.importObject(node);
 		}
 		if (node.nodeType == 11) for (const child of node.childNodes) {
 			this.insertBefore(child, bef);
@@ -92,13 +83,6 @@ class Node {
 	get firstChild() {
 		return this.childNodes[0];
 	}
-	cloneNode(deep) {
-		const frag = new Fragment(this.ownerDocument);
-		if (deep) for (const node of this.childNodes) {
-			frag.appendChild(node.cloneNode(true));
-		}
-		return frag;
-	}
 	adopt(node) {
 		const parent = node.parentNode;
 		if (parent && parent != this) parent.removeChild(node);
@@ -106,31 +90,69 @@ class Node {
 		return node;
 	}
 	toJSON() {
-		if (this.childNodes.length == 1 && this.childNodes[0].nodeType == 3) {
-			return this.childNodes[0].nodeValue;
-		} else return Object.fromEntries(this.childNodes.map(n => {
-			return [n.nodeName, n.toJSON()];
-		}));
+		if (this.tagName == "object") {
+			const obj = {};
+			for (const n of this.childNodes) {
+				if (n.nodeType == 3) {
+					if (n.nodeValue === "") continue; // cursor
+					else throw new Error("Cannot have text node in object children");
+				} else if (n.attributes.length == 1) {
+					obj[n.attributes[0].value] = n.toJSON();
+				} else {
+					throw new Error("Cannot have unnamed node in object children");
+				}
+			}
+			return obj;
+		} else if (this.nodeType == 11 || this.tagName == "array") {
+			const arr = [];
+			for (const n of this.childNodes) arr.push(n.toJSON());
+			return arr;
+		} else if (this.tagName == "key") {
+			if (this.childNodes.length == 0) {
+				return undefined;
+			} else if (this.childNodes.length == 1) {
+				return this.childNodes[0].toJSON();
+			}
+			let str = "";
+			for (const n of this.childNodes) {
+				if (n.nodeType != 3) {
+					throw new Error("Key element cannot have > 1 non-text nodes");
+				}
+				str += n.toJSON();
+			}
+			return str;
+		}
 	}
 }
 
 class Element extends Node {
 	nodeType = 1;
 	childNodes = [];
-	constructor(name, doc) {
-		super(doc);
-		this.nodeName = name;
+	attributes = [];
+	constructor(name) {
+		super();
+		this.tagName = name;
+	}
+	cloneNode(deep) {
+		const node = new Element(this.tagName);
+		for (const { name, value } of this.attributes) {
+			node.attributes.push({ name, value });
+		}
+		if (deep) for (const child of this.childNodes) {
+			node.appendChild(child.cloneNode(true));
+		}
+		return node;
 	}
 }
 
 class TextNode extends Node {
 	nodeType = 3;
-	constructor(value, doc) {
-		super(doc);
+	constructor(value) {
+		super();
 		this.nodeValue = value;
 	}
 	cloneNode() {
-		return new TextNode(this.nodeValue, this.ownerDocument);
+		return new TextNode(this.nodeValue);
 	}
 	toJSON() {
 		return this.nodeValue;
@@ -140,45 +162,56 @@ class TextNode extends Node {
 class Fragment extends Node {
 	nodeType = 11;
 	childNodes = [];
+	cloneNode(deep) {
+		const frag = new Fragment();
+		if (deep) for (const node of this.childNodes) {
+			frag.appendChild(node.cloneNode(true));
+		}
+		return frag;
+	}
 }
 
 class JsonDocument {
+	static doc;
 	static from(obj) {
-		const doc = new JsonDocument();
-		return doc.importFragment(obj);
+		this.doc ??= new JsonDocument();
+		return this.doc.importObject(obj);
 	}
 	createDocumentFragment() {
-		return new Fragment(null, this);
+		return new Fragment();
 	}
 	createNodeIterator(root) {
 		return new NodeIterator(root);
 	}
 	createElement(name) {
-		return new Element(name, this);
+		return new Element(name);
 	}
 	createTextNode(value) {
-		return new TextNode(value, this);
+		return new TextNode(value);
 	}
 	importNode(node) {
-		node.ownerDocument = this;
 		return node;
 	}
-	importFragment(obj) {
-		const f = new Fragment(this);
+	importObject(obj) {
 		if (obj == null) {
-			// pass
+			// equivalent of empty
+			return new TextNode(null);
 		} else if (["number", "boolean", "string"].includes(typeof obj)) {
-			f.childNodes = [new TextNode(obj, this)];
+			return new TextNode(obj);
 		} else if (Array.isArray(obj)) {
-			f.childNodes = obj.map(item => this.importFragment(item));
+			const el = new Element("array");
+			for (const item of obj) el.appendChild(item);
+			return el;
 		} else {
-			f.childNodes = Object.entries(obj).map(([k, v]) => {
-				const n = new Element(k, this);
+			const el = new Element("object");
+			for (const [k, v] of Object.entries(obj)) {
+				const n = new Element("key");
+				n.attributes[0] = { name: 'key', value: k };
 				n.appendChild(v);
-				return n;
-			});
+				el.appendChild(n);
+			}
+			return el;
 		}
-		return f;
 	}
 }
 

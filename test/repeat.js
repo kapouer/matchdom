@@ -594,10 +594,10 @@ describe('repeat filter', () => {
 
 	it('should loop over json', () => {
 		const tjson = {
-			list: {
-				num: '[items|at:*|repeat:item|.id|add:2]',
+			list: [{
+				num: '[items|at:**|repeat:item|.id]',
 				desc: '[item.title]-[item.id]'
-			}
+			}]
 		};
 		const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
 		md.debug = true;
@@ -609,11 +609,11 @@ describe('repeat filter', () => {
 		});
 		assert.deepEqual(copy, {
 			list: [{
-				num: 3,
-				desc: 'title-1'
+				num: 1,
+				desc: 'title1-1'
 			}, {
-				num: 4,
-				desc: 'title-2'
+				num: 2,
+				desc: 'title2-2'
 			}]
 		});
 	});
