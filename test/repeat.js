@@ -643,4 +643,24 @@ describe('repeat filter', () => {
 			}]
 		});
 	});
+
+	it('should loop over json array', () => {
+		const tjson = [{
+			num: '[at:**|repeat:item|.id]',
+			desc: '[item.title]-[item.id]'
+		}];
+		const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
+		md.debug = true;
+		const copy = md.merge(tjson, [
+			{ id: 1, title: 'title1' },
+			{ id: 2, title: 'title2' }
+		]);
+		assert.deepEqual(copy, [{
+			num: 1,
+			desc: 'title1-1'
+		}, {
+			num: 2,
+			desc: 'title2-2'
+		}]);
+	});
 });
