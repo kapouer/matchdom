@@ -1,6 +1,6 @@
-# matchdom -- extensible declarative template expressions for the DOM
+# matchdom -- extensible declarative template expressions for object models
 
-DSL for merging data.
+DSL for merging data into object models for HTML, JSON, or plain Text.
 
 A matchdom expression describes a chain of "filter" functions:
 `[func1:param1|func2:param2]`.

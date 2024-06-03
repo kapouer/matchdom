@@ -3,7 +3,7 @@
   "version": "15.0.0",
   "type": "module",
   "main": "./src/index.js",
-  "description": "Extensible declarative template expressions for the DOM",
+  "description": "Extensible declarative template expressions for object models",
   "exports": {
     ".": "./src/index.js",
     "./package.json": "./package.json"
@@ -21,7 +21,8 @@
   "keywords": [
     "template",
     "templates",
-    "merge"
+    "merge",
+    "model"
   ],
   "author": "Jérémy Lal <kapouer@melix.org>",
   "license": "MIT",
