@@ -240,7 +240,9 @@ export default class Place {
 				}
 			}
 			if (parent) {
-				if (!mutates) parent.removeChild(cursor);
+				if (!mutates) {
+					parent.removeChild(cursor);
+				}
 				if (this.root == cursor) {
 					this.root = parent.childNodes.length == 1 ? parent.firstChild : parent;
 				}
