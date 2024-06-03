@@ -157,7 +157,7 @@ The `as` and `is` filters are useful to explicitely cast or check a value type.
 - path: converts parameter to a path array
 - date: try new Date(val), return null if not a date, accepts 'now'
 - array: wrap non-array-like values into an array
-- json: parse json string
+- obj: parse json as tree
 
 ## formats
 
@@ -733,19 +733,25 @@ Converts an object into a model that allows it to be merged as a tree.
 Example: this would return an array of items with title, num keys:
 
 ```json
-{
-  "title": "[list|repeat:item|.title|case:caps]",
+[{
+  "title": "[list|at:**|repeat:item|.title|case:caps]",
   "num": "[item.id]"
-}
+}]
 ```
+
+It is possible to put expressions into keys.
+
+The repeated fragment is implicitely converted into array, when needed.
+
+In the above example, removing the enclosing array gives the same result only if there is more than one element to merge.
 
 ### obj format
 
-When given a string, tries to parse it as JSON.
+Tries to parse a json string into an object.
 
 ### json format
 
-Converts data to json string.
+Converts object into json string.
 
 ## UrlPlugin
 
