@@ -97,7 +97,7 @@ export class Matchdom {
 				wasText = true;
 				root = this.types.text(null, root);
 			}
-		} else if (this.types.obj && [undefined, Object].includes(root.constructor)) {
+		} else if (this.types.obj && ([undefined, Object].includes(root.constructor) || Array.isArray(root))) {
 			wasJSON = true;
 			root = this.types.obj(null, root);
 		} else if (root.nodeType == 11) {
