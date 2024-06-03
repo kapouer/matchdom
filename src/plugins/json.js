@@ -113,14 +113,14 @@ class Node {
 			} else if (this.childNodes.length == 1) {
 				return this.childNodes[0].toJSON();
 			}
-			let str = "";
+			const arr = [];
+			let allStrings = true;
 			for (const n of this.childNodes) {
-				if (n.nodeType != 3) {
-					throw new Error("Key element cannot have > 1 non-text nodes");
-				}
-				str += n.toJSON();
+				if (n.nodeType != 3) allStrings = false;
+				arr.push(n.toJSON());
 			}
-			return str;
+			if (allStrings) return arr.join('');
+			else return arr;
 		}
 	}
 }
