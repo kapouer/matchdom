@@ -82,6 +82,7 @@ export const filters = {
 				parent.insertBefore(fragment, cursor);
 			}
 		}
+		parent.removeChild(cursor);
 		// dropped expr so no return value
 		return null;
 	}]
