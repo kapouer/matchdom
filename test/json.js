@@ -165,5 +165,45 @@ describe('json plugin', () => {
 			}]);
 			assert.ok(!miss);
 		});
+
+		it('should iterate after on removal of referenceNode', () => {
+			const tjson = {
+				items: [{
+					id: "[items|at:**|repeat:it|.id]",
+					image: "[it.image]"
+				}],
+				count: "[items.length]"
+			};
+			let miss = false;
+			const md = new Matchdom(RepeatPlugin, JsonPlugin, {
+				hooks: {
+					afterAll(ctx, val) {
+						if (val === undefined) miss = true;
+						return val;
+					}
+				}
+			});
+			const copy = md.merge(tjson, {
+				items: [{
+					"id": "1",
+					"image": "a"
+				}, {
+					"id": "2",
+					"image": "b"
+				}]
+			});
+			assert.deepEqual(copy, {
+				items: [{
+					id: "1",
+					image: 'a'
+				}, {
+					id: "2",
+					image: 'b'
+				}],
+				count: 2
+			});
+			assert.ok(!miss);
+		});
 	});
 });
+

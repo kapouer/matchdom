@@ -612,4 +612,25 @@ describe('repeat filter', () => {
 		]);
 		assert.ok(!miss);
 	});
+
+	it('should not continue merging on orphaned inner dom fragments', () => {
+		const html = `<section><span>test</span><div>
+			<p>[at:div|repeat:item|.id]</p>
+			<p>[item.title]</p>
+		</div></section>`;
+		let miss = false;
+		const md = new Matchdom(RepeatPlugin, DomPlugin, {
+			hooks: {
+				afterAll(ctx, val) {
+					if (val === undefined) miss = true;
+					return val;
+				}
+			}
+		});
+		md.merge(html, [
+			{ id: 1, title: 'title1' },
+			{ id: 2, title: 'title2' }
+		]);
+		assert.ok(!miss);
+	});
 });

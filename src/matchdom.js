@@ -201,5 +201,6 @@ export class Matchdom {
 				break;
 			}
 		}
+		it.detach?.(); // our models need that
 	}
 }

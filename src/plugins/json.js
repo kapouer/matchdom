@@ -6,33 +6,77 @@ function findSibling(node, dir) {
 	if (pos < 0) return null;
 	else return list[pos + dir];
 }
-
+const iterators = new Set();
 class NodeIterator {
 	root;
 	#node;
+	#bef = true;
 	constructor(root) {
 		this.root = root;
+		iterators.add(this);
+	}
+	get pointerBeforeReferenceNode() {
+		return this.#bef;
 	}
 	nextNode() {
+		return this.#node = this.#move(true);
+	}
+	previousNode() {
+		return this.#node = this.#move(left);
+	}
+	#move(right) {
 		let cur = this.#node;
-		let next;
-		if (!cur) {
-			next = this.root;
-		} else {
-			next = cur.nodeType != 3 && cur.firstChild || cur.nextSibling;
-			if (!next) {
-				while ((cur = cur.parentNode)) {
-					if (cur == this.root) break;
-					next = cur.nextSibling;
-					if (next) break;
-				}
-			}
+		if (this.#bef === !right) {
+			this.#bef = right;
+			return cur;
 		}
-		this.#node = next;
-		return next;
+		if (cur === null) return;
+		if (cur === undefined) {
+			cur = this.root;
+		} else if (right) {
+			cur = this.#following(cur);
+		} else {
+			cur = this.#preceding(cur);
+		}
+		return cur;
+	}
+	#following(cur, notChild) {
+		let cand = !notChild && cur.nodeType != 3 && cur.firstChild || cur.nextSibling;
+		if (!cand) while ((cur = cur.parentNode)) {
+			if (cur == this.root) break;
+			cand = cur.nextSibling;
+			if (cand) break;
+		}
+		return cand;
+	}
+	#preceding(cur, notChild) {
+		let cand = !notChild && cur.nodeType != 3 && cur.lastChild || cur.previousSibling;
+		if (!cand) while ((cur = cur.parentNode)) {
+			if (cur == this.root) break;
+			cand = cur.previousSibling;
+			if (cand) break;
+		}
+		return cand;
 	}
 	get referenceNode() {
 		return this.#node;
+	}
+	detach() {
+		iterators.delete(this);
+	}
+	nodeRemoved(node) {
+		let cur = this.#node;
+		if (!cur || !node.contains(cur) || node == this.root) return;
+		if (this.#bef) {
+			const cand = this.#following(node, true);
+			if (cand) {
+				this.#node = cand;
+				return;
+			} else {
+				this.#bef = false;
+			}
+		}
+		this.#node = this.#preceding(node, true);
 	}
 }
 
@@ -45,6 +89,12 @@ class Node {
 	}
 	get previousSibling() {
 		return findSibling(this, -1);
+	}
+	contains(node) {
+		do {
+			if (node == this) return true;
+		} while ((node = node.parentNode));
+		return false;
 	}
 	replaceChild(node, old) {
 		this.insertBefore(node, old);
@@ -78,6 +128,7 @@ class Node {
 	removeChild(node) {
 		const pos = this.childNodes.indexOf(node);
 		if (pos >= 0) {
+			for (const it of iterators) it.nodeRemoved(node);
 			this.childNodes.splice(pos, 1);
 			node.parentNode = null;
 		}
@@ -85,6 +136,9 @@ class Node {
 	}
 	get firstChild() {
 		return this.childNodes[0];
+	}
+	get lastChild() {
+		return this.childNodes[this.childNodes.length - 1];
 	}
 	adopt(node) {
 		const parent = node.parentNode;
