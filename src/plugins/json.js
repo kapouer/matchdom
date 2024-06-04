@@ -31,6 +31,9 @@ class NodeIterator {
 		this.#node = next;
 		return next;
 	}
+	get referenceNode() {
+		return this.#node;
+	}
 }
 
 class Node {
