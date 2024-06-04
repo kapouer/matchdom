@@ -178,7 +178,10 @@ class JsonDocument {
 	static doc;
 	static from(obj) {
 		this.doc ??= new JsonDocument();
-		return this.doc.importObject(obj);
+		obj = this.doc.importObject(obj);
+		const f = new Fragment();
+		f.appendChild(obj);
+		return obj;
 	}
 	createDocumentFragment() {
 		return new Fragment();
