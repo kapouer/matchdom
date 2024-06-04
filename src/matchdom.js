@@ -103,11 +103,12 @@ export class Matchdom {
 		} else if (root.nodeType == 11) {
 			wasFrag = true;
 		}
-		this.matchEachDom(root, (node, name, str) => {
+		const ref = { root };
+		this.matchEachDom(ref, (node, name, str) => {
 			const hits = Context.parse(this.symbols, str);
 			if (!hits) return;
 			const ctx = new Context(this, data, scope);
-			ctx.setup(hits, root, node, name);
+			ctx.setup(hits, ref.root, node, name);
 			const { dest } = ctx;
 			let allNulls = true;
 			let allTrue = true;
@@ -130,9 +131,10 @@ export class Matchdom {
 				trackHits.last = result[result.length - 1];
 				dest.write(result, ctx.src);
 			}
-			if (dest.root) root = dest.root;
+			if (dest.root) ref.root = dest.root;
 			if (dest.replacement) replacements.unshift(dest.replacement);
 		});
+		root = ref.root;
 		for (const pair of replacements) {
 			const [tag, old] = pair;
 			for (const att of Array.from(old.attributes)) {
@@ -178,7 +180,8 @@ export class Matchdom {
 		return root;
 	}
 
-	matchEachDom(root, fn) {
+	matchEachDom(ref, fn) {
+		const { root } = ref;
 		if (!root.ownerDocument) return;
 		// NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT
 		const ctx = 5;
@@ -193,6 +196,9 @@ export class Matchdom {
 				fn(node, true, node.tagName.toLowerCase());
 			} else if (node.nodeValue != null && node.nodeValue.substring) {
 				fn(node, null, node.nodeValue);
+			}
+			if (ref.root != root) {
+				break;
 			}
 		}
 	}
