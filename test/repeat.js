@@ -592,100 +592,6 @@ describe('repeat filter', () => {
 		</div>`).outerHTML);
 	});
 
-	it('should loop over correctly declared json', () => {
-		const tjson = {
-			list: [{
-				num: '[items|at:**|repeat:item|.id]',
-				desc: '[item.title]-[item.id]'
-			}]
-		};
-		const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
-		md.debug = true;
-		const copy = md.merge(tjson, {
-			items: [
-				{ id: 1, title: 'title1' },
-				{ id: 2, title: 'title2' }
-			]
-		});
-		assert.deepEqual(copy, {
-			list: [{
-				num: 1,
-				desc: 'title1-1'
-			}, {
-				num: 2,
-				desc: 'title2-2'
-			}]
-		});
-	});
-
-	it('should loop over json object and promote it to array', () => {
-		const tjson = {
-			list: {
-				num: '[items|at:**|repeat:item|.id]',
-				desc: '[item.title]-[item.id]'
-			}
-		};
-		const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
-		md.debug = true;
-		const copy = md.merge(tjson, {
-			items: [
-				{ id: 1, title: 'title1' },
-				{ id: 2, title: 'title2' }
-			]
-		});
-		assert.deepEqual(copy, {
-			list: [{
-				num: 1,
-				desc: 'title1-1'
-			}, {
-				num: 2,
-				desc: 'title2-2'
-			}]
-		});
-	});
-
-	it('should loop over root json object and promote it to array', () => {
-		const tjson = {
-			num: '[items|at:**|repeat:item|.id]',
-			desc: '[item.title]'
-		};
-		const md = new Matchdom(JsonPlugin, RepeatPlugin);
-		md.debug = true;
-		const copy = md.merge(tjson, {
-			items: [
-				{ id: 1, title: 'title1' },
-				{ id: 2, title: 'title2' }
-			]
-		});
-		assert.deepEqual(copy, [{
-			num: 1,
-			desc: 'title1'
-		}, {
-			num: 2,
-			desc: 'title2'
-		}]);
-	});
-
-	it('should loop over json array', () => {
-		const tjson = [{
-			num: '[at:**|repeat:item|.id]',
-			desc: '[item.title]-[item.id]'
-		}];
-		const md = new Matchdom(JsonPlugin, RepeatPlugin);
-		md.debug = true;
-		const copy = md.merge(tjson, [
-			{ id: 1, title: 'title1' },
-			{ id: 2, title: 'title2' }
-		]);
-		assert.deepEqual(copy, [{
-			num: 1,
-			desc: 'title1-1'
-		}, {
-			num: 2,
-			desc: 'title2-2'
-		}]);
-	});
-
 	it('should not continue merging on orphaned dom fragments', () => {
 		const html = `<div>
 			<p>[at:div|repeat:item|.id]</p>
@@ -704,34 +610,6 @@ describe('repeat filter', () => {
 			{ id: 1, title: 'title1' },
 			{ id: 2, title: 'title2' }
 		]);
-		assert.ok(!miss);
-	});
-
-	it('should not continue merging on orphaned json fragments', () => {
-		const tjson = {
-			num: '[at:**|repeat:item|.id]',
-			desc: '[item.title]'
-		};
-		let miss = false;
-		const md = new Matchdom(RepeatPlugin, JsonPlugin, {
-			hooks: {
-				afterAll(ctx, val) {
-					if (val === undefined) miss = true;
-					return val;
-				}
-			}
-		});
-		const copy = md.merge(tjson, [
-			{ id: 1, title: 'title1' },
-			{ id: 2, title: 'title2' }
-		]);
-		assert.deepEqual(copy, [{
-			num: 1,
-			desc: 'title1'
-		}, {
-			num: 2,
-			desc: 'title2'
-		}]);
 		assert.ok(!miss);
 	});
 });

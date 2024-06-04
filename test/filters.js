@@ -686,37 +686,6 @@ describe('filters', () => {
 		});
 	});
 
-
-	describe('json plugin', () => {
-		const md = new Matchdom(JsonPlugin, DomPlugin);
-
-		it('should parse string', () => {
-			const html = `<p>[str|as:obj|.test]</p>`;
-			const copy = md.merge(html, {
-				str: '{"test":10}'
-			});
-			assert.equal(copy.outerHTML, '<p>10</p>');
-		});
-
-		it('should fail to parse', () => {
-			md.debug = true; // ensure missing json as type will crash
-			const html = `<p>[str|as:obj|.test]</p>`;
-			const copy = md.merge(html, {
-				str: '{test:10}'
-			});
-			assert.equal(copy.outerHTML, '<p></p>');
-		});
-
-		it('should fail to parse and not merge', () => {
-			md.debug = true; // ensure missing json as type will crash
-			const html = `<p>[str|as:obj|other.test]</p>`;
-			const copy = md.merge(html, {
-				str: '{test:10}'
-			});
-			assert.equal(copy.outerHTML, '<p>[str|as:obj|other.test]</p>');
-		});
-	});
-
 	describe('trim', () => {
 		const md = new Matchdom(StringPlugin, DomPlugin);
 		it('out', () => {
