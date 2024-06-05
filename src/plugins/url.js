@@ -6,7 +6,7 @@ export const types = {
 	},
 	query(ctx, obj) {
 		if (obj && obj.set && obj.append) return obj;
-		const q = new QURLSearchParams(typeof obj == "string" ? obj : null);
+		const q = new QURLSearchParams(typeof obj == "string" ? obj : undefined);
 		if (obj && typeof obj == "object") for (const [key, val] of Object.entries(obj)) {
 			if (Array.isArray(val)) {
 				for (const item of val) q.append(key, item);
