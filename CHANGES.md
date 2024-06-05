@@ -257,3 +257,10 @@ Breaking changes:
 - the JsonPlugin is required to merge plain objects and parse json from string.
 
 New: JSON handling is done with an object model: in particular, `repeat` is supported.
+
+### Version 15.1.0
+
+Breaks untested query type:
+
+- as:query now stringifies with a ? prefix when not empty.
+  it also parses the string.

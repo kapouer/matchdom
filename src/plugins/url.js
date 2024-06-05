@@ -6,15 +6,15 @@ export const types = {
 	},
 	query(ctx, obj) {
 		if (obj && obj.set && obj.append) return obj;
-		const sp = new QURLSearchParams();
-		for (const [key, val] of Object.entries(obj)) {
+		const q = new QURLSearchParams(typeof obj == "string" ? obj : null);
+		if (obj && typeof obj == "object") for (const [key, val] of Object.entries(obj)) {
 			if (Array.isArray(val)) {
-				for (const item of val) sp.append(key, item);
+				for (const item of val) q.append(key, item);
 			} else {
-				sp.set(key, val == null ? '' : val);
+				q.set(key, val == null ? '' : val);
 			}
 		}
-		return sp;
+		return q;
 	}
 };
 

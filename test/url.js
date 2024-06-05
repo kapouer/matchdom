@@ -100,14 +100,23 @@ describe('url plugin', () => {
 		assert.equal(copy.pathname + copy.search, '/mypath?toto=1&id=3');
 	});
 
-	it('converts object to URLSearchParams', () => {
+	it('converts string to URLSearchParams', () => {
+		const copy = md.merge(`<a href="/test[str|as:query|set:id:3]">lien</a>`, {
+			str: "?test=a&test=b"
+		});
+		assert.equal(copy.outerHTML, '<a href="/test?test=a&amp;test=b&amp;id=3">lien</a>');
+	});
+
+	it('converts object to URLSearchParams and outputs ?search', () => {
 		const copy = md.merge(`<a href="/test[obj|as:query|set:id:3:+id:4]">lien</a>`, {
 			obj: {
 				test: ['a', 'b']
 			}
 		});
 		assert.equal(copy.outerHTML, '<a href="/test?test=a&amp;test=b&amp;id=3&amp;id=4">lien</a>');
+	});
 
+	it('converts object to URLSearchParams and outputs nothing', () => {
 		const copy2 = md.merge(`<a href="/test[obj|as:query|omit:test]">lien</a>`, {
 			obj: {
 				test: ['a', 'b']

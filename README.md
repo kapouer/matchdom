@@ -768,7 +768,7 @@ Setting the `query` property to a string actually sets the `search` property, an
 
 ### query type
 
-Canonically converts an object into QURLSearchParams, where array values become appended several times.
+Canonically converts an object, or string, into QURLSearchParams, where array values become appended several times.
 
 QURLSearchParams is like URLSearchParams, except that it prepends '?' when converted to string, if the query is not empty.
 
