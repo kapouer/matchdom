@@ -350,7 +350,7 @@ one can write:
 
 `[path.to.data|myFilter:param|.prop]`
 
-#### rebase value
+#### rebase
 
 Used without parameters, `get:` stores current value into `expr.rebase`.
 
@@ -768,7 +768,9 @@ Setting the `query` property to a string actually sets the `search` property, an
 
 ### query type
 
-Canonically converts an object into URLSearchParams, where array values become appended several times.
+Canonically converts an object into QURLSearchParams, where array values become appended several times.
+
+QURLSearchParams is like URLSearchParams, except that it prepends '?' when converted to string, if the query is not empty.
 
 ## DomPlugin
 

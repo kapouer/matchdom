@@ -6,7 +6,7 @@ export const types = {
 	},
 	query(ctx, obj) {
 		if (obj && obj.set && obj.append) return obj;
-		const sp = new URLSearchParams();
+		const sp = new QURLSearchParams();
 		for (const [key, val] of Object.entries(obj)) {
 			if (Array.isArray(val)) {
 				for (const item of val) sp.append(key, item);
@@ -38,5 +38,12 @@ class RelativeURL extends URL {
 		if (str == null) str = '';
 		if (typeof str == "string") this.search = str;
 		else this.search = types.query(null, str).toString();
+	}
+}
+
+class QURLSearchParams extends URLSearchParams {
+	toString() {
+		const str = super.toString();
+		return str.length ? `?${str}` : '';
 	}
 }

@@ -99,4 +99,20 @@ describe('url plugin', () => {
 		});
 		assert.equal(copy.pathname + copy.search, '/mypath?toto=1&id=3');
 	});
+
+	it('converts object to URLSearchParams', () => {
+		const copy = md.merge(`<a href="/test[obj|as:query|set:id:3:+id:4]">lien</a>`, {
+			obj: {
+				test: ['a', 'b']
+			}
+		});
+		assert.equal(copy.outerHTML, '<a href="/test?test=a&amp;test=b&amp;id=3&amp;id=4">lien</a>');
+
+		const copy2 = md.merge(`<a href="/test[obj|as:query|omit:test]">lien</a>`, {
+			obj: {
+				test: ['a', 'b']
+			}
+		});
+		assert.equal(copy2.outerHTML, '<a href="/test">lien</a>');
+	});
 });
