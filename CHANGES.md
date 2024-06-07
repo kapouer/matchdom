@@ -269,3 +269,5 @@ Breaks untested query type:
 
 - as:clone
   returns a non-recursive shallow clone of the value.
+
+- omit no longer accepts paths. Use `set` for that.

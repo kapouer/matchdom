@@ -126,30 +126,27 @@ export const filters = {
 		}
 		return data;
 	}],
-	omit: ['object', 'path*', (ctx, obj, ...list) => {
-		for (const path of list) {
-			const copy = path.slice();
-			const key = copy.pop();
-			const sub = ctx.expr.get(obj, copy);
-			if (sub == null) continue;
-			if (typeof sub.delete == "function") {
-				sub.delete(key);
-			} else if (typeof sub == "object") {
-				sub[key] = undefined;
-				delete sub[key];
+	omit: ['object', 'str*', (ctx, obj, ...list) => {
+		const del = typeof obj.delete == "function";
+		for (const key of (typeof obj.keys == "function") ? obj.keys() : Object.keys(obj)) {
+			if (!list.includes(key)) continue;
+			if (del) {
+				obj.delete(key);
+			} else {
+				obj[key] = undefined; // in case there is a setter
+				delete obj[key];
 			}
 		}
 		return obj;
 	}],
 	pick: ['object', 'str*', (ctx, obj, ...list) => {
 		const del = typeof obj.delete == "function";
-		const keys = typeof obj.keys == "function" ? obj.keys() : Object.keys(obj);
-		for (const key of keys) {
+		for (const key of (typeof obj.keys == "function") ? obj.keys() : Object.keys(obj)) {
 			if (list.includes(key)) continue;
 			if (del) {
 				obj.delete(key);
 			} else {
-				obj[key] = undefined;
+				obj[key] = undefined; // in case there is a setter
 				delete obj[key];
 			}
 		}
