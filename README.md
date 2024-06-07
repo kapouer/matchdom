@@ -83,7 +83,8 @@ If a plugin has no filters, types, formats, hooks keys:
   are equivalent.
 
 Depending on the types that are made available by the loaded plugins,
-body is automatically coerced in a DOM node or kept as a string.
+body is automatically parsed into a DOM node or kept as a string,
+likewise, an object can be parsed into a JSON model.
 
 The `debug` flag tells matchdom to rethrow filters exceptions, instead of just logging them.
 
@@ -361,11 +362,9 @@ The second time it returns `expr.rebase`:
 
 Rebasing only happens before last filter; thus, if it was used once, the rebased value is returned at the end of the expression.
 
-This is useful to be able to mutate inner data using multiple filters.
-
 ### set:mutation*
 
-Mutates current value with one or several mutations.
+Apply a set of mutations on current value.
 
 A mutation starts with a path, optionally prefixed by `-` or `+`:
 
@@ -386,16 +385,19 @@ assert.deepEqual(
 
 ### pick:key*
 
-Mutates current value to remove all keys that are not listed.
-Supports instances with keys() / delete(key) methods.
-To remove specific keys from an object, use `set:-name`.
+Keeps these keys and remove others.
+
+Use rebase operator to act on a specific path.
 
 ### omit:key*
 
-Mutates current value to remove all keys that are listed.
-Supports instances with keys() / delete(key) methods.
+Remove these keys.
+
+Use rebase operator to act on a specific path.
 
 ### assign:path*
+
+Assign values from source path to dest path to build a new object.
 
 Accepts multiple pairs of paths.
 
