@@ -131,10 +131,10 @@ export default class Expression {
 						item = ((k % len) + len) % len;
 					}
 				}
-				if (data.getAll) {
+				if (typeof data.getAll == "function") {
 					data = data.getAll(item);
 					if (data.length <= 1) data = data[0];
-				} else if (data.get) {
+				} else if (typeof data.get == "function") {
 					data = data.get(item);
 				} else {
 					data = data[item];
