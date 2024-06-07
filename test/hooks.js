@@ -33,8 +33,8 @@ describe('hooks filter', () => {
 		const md = new Matchdom(TextPlugin, {
 			debug: true,
 			after: {
-				omit(ctx, val, paths) {
-					assert.deepEqual(paths, [['test']]);
+				omit(ctx, val, keys) {
+					assert.deepEqual(keys, ['test']);
 					return val;
 				}
 			}

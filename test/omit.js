@@ -12,7 +12,7 @@ describe('omit filter', () => {
 	});
 
 	it('should remove a path', () => {
-		const copy = md.merge(`[obj|omit:a.b]`, { obj: { a: { b: 1, c: 2 }, d: 1 } });
+		const copy = md.merge(`[obj||.a|omit:b]`, { obj: { a: { b: 1, c: 2 }, d: 1 } });
 		assert.deepEqual(copy, { a: { c: 2 }, d: 1 });
 	});
 
@@ -21,9 +21,9 @@ describe('omit filter', () => {
 		assert.deepEqual(copy, { b:1 });
 	});
 
-	it('should not omit empty string key', () => {
+	it('should omit empty string key', () => {
 		const copy = md.merge(`[obj|omit:]`, { obj: { a: 2, "": 12 } });
-		assert.deepEqual(copy, { a: 2, "": 12 });
+		assert.deepEqual(copy, { a: 2 });
 	});
 
 	it('should not fail on missing key', () => {
