@@ -209,3 +209,15 @@ export const filters = {
 		return val;
 	}
 };
+
+export const formats = {
+	as: {
+		clone(ctx, obj) {
+			if (ctx.isSimpleValue(obj)) return obj;
+			if (Array.isArray(obj)) return obj.slice();
+			const copy = new (Object.getPrototypeOf(obj).constructor)(obj);
+			if (copy === obj) return Object.assign({}, obj);
+			else return copy;
+		}
+	}
+};

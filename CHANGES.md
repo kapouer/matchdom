@@ -264,3 +264,8 @@ Breaks untested query type:
 
 - as:query now stringifies with a ? prefix when not empty.
   it also parses the string.
+
+### Version 15.2.0
+
+- as:clone
+  returns a non-recursive shallow clone of the value.

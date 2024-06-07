@@ -176,6 +176,7 @@ Formats are used directly by the corresponding filter.
 - keys: array of keys
 - values: array of values
 - entries: arrays of {key, value}
+- clone: shallow clone of an object. Keeps its type if possible.
 
 ### date:format
 
