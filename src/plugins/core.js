@@ -128,8 +128,7 @@ export const filters = {
 	}],
 	omit: ['object', 'str*', (ctx, obj, ...list) => {
 		const del = typeof obj.delete == "function";
-		for (const key of (typeof obj.keys == "function") ? obj.keys() : Object.keys(obj)) {
-			if (!list.includes(key)) continue;
+		for (const key of list) {
 			if (del) {
 				obj.delete(key);
 			} else {
