@@ -7,8 +7,16 @@ const md = new Matchdom(TextPlugin);
 
 describe('pick filter', () => {
 	it('should keep a key', () => {
-		const copy = md.merge(`[obj|pick:a]`, { obj: { a: 2, b: 1 } });
+		const obj = { obj: { a: 2, b: 1 } };
+		const copy = md.merge(`[obj|pick:a]`, obj);
 		assert.deepEqual(copy, { a: 2 });
+	});
+
+	it('should mutate object', () => {
+		const obj = { obj: { a: 2, b: 1 } };
+		const copy = md.merge(`[obj|pick:a]`, obj);
+		assert.deepEqual(copy, { a: 2 });
+		assert.deepEqual(copy, obj.obj);
 	});
 
 	it('should keep multiple keys', () => {
