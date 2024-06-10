@@ -70,6 +70,25 @@ describe('json plugin', () => {
 			});
 		});
 
+		it('should fail correct range', () => {
+			const tjson = {
+				list: {
+					num: '[item.id|fail:*]',
+					desc: '[item.title]'
+				}
+			};
+			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
+			md.debug = true;
+			const copy = md.merge(tjson, {
+				item:  { id: null, title: 'title1' }
+			});
+			assert.deepEqual(copy, {
+				list: {
+					desc: 'title1'
+				}
+			});
+		});
+
 		it('should loop over json object and promote it to array', () => {
 			const tjson = {
 				list: {
