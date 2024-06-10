@@ -271,3 +271,7 @@ Breaks untested query type:
   returns a non-recursive shallow clone of the value.
 
 - omit no longer accepts paths. Use `set` for that.
+
+### Version 15.3.0
+
+- json object model: add support for closest, allowing ranges to be defined by key name.
