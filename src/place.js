@@ -79,6 +79,10 @@ export default class Place {
 			} else {
 				parent = parent.closest(ancestor);
 			}
+			if (!parent) {
+				console.warn("ancestor not found:", ancestor);
+				parent = this.node;
+			}
 			if (parent.parentNode) this.target = Place.NODE;
 			else this.target = Place.CONT;
 			this.node = parent;
