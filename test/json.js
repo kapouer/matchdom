@@ -89,6 +89,22 @@ describe('json plugin', () => {
 			});
 		});
 
+		it('should allow range by key', () => {
+			const tjson = {
+				list: {
+					num: '[item.id|fail:list:1]',
+					desc: '[item.title]'
+				},
+				it: { k: 1 }
+			};
+			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
+			md.debug = true;
+			const copy = md.merge(tjson, {
+				item: { id: null, title: 'title1' }
+			});
+			assert.deepEqual(copy, {});
+		});
+
 		it('should loop over json object and promote it to array', () => {
 			const tjson = {
 				list: {
