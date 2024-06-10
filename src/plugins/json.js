@@ -146,6 +146,14 @@ class Node {
 		node.parentNode = this;
 		return node;
 	}
+	closest(key) {
+		let node = this;
+		if (key == null) return node;
+		do {
+			if (node.tagName == "key" && node.attributes[0]?.value == key) break;
+		} while ((node = node.parentNode));
+		return node;
+	}
 	toJSON() {
 		if (this.tagName == "object") {
 			const obj = {};
