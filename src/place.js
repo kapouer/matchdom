@@ -228,7 +228,7 @@ export default class Place {
 
 			for (let i = 0; i < hits.length; i++) {
 				let item = hits[i];
-				if (cursor.nodeType > 0 && item == null) continue;
+				if (cursor.nodeType != 3 && item == null) continue;
 				if (!item || !item.nodeType) {
 					if (i == hits.length - 1 && cursor.nodeType == 3) {
 						// reuse current text node for the last hit

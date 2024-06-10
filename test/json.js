@@ -43,6 +43,27 @@ describe('json plugin', () => {
 	});
 
 	describe('modelize and works with repeat', () => {
+		it('should merge basic object', () => {
+			const tjson = {
+				id: '[item.id]',
+				title: '[item.title]'
+			};
+			const md = new Matchdom(JsonPlugin);
+			md.debug = true;
+			const copy = md.merge(tjson, { item: { id: 1, title: 'title1' } });
+			assert.deepEqual(copy, { id: 1, title: 'title1' });
+		});
+
+		it('should merge basic object with null value', () => {
+			const tjson = {
+				id: '[item.id]',
+				title: '[item.title]'
+			};
+			const md = new Matchdom(JsonPlugin);
+			md.debug = true;
+			const copy = md.merge(tjson, { item: { id: 1, title: null } });
+			assert.deepEqual(copy, { id: 1, title: null });
+		});
 
 		it('should loop over correctly declared json', () => {
 			const tjson = {
