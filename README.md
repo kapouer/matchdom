@@ -227,6 +227,7 @@ Decoding is tried with decodeURIComponent.
 A parsed expression has properties:
 
 - path: actual list of keys used to access data
+- optional: boolean, when current path ends with optional chaining
 - filters: array of filters
 - filter: index of current filter in filters
 - cancel: boolean, stops and cancels merging of that expression
@@ -302,7 +303,7 @@ Otherwise, if the path is fully resolved, `ctx.expr.last` is set to true, which 
 
 Furthermore, a path is not fully resolved if there are unconditional relative paths in the following filters.
 
-When a component of a path ends with a `?` (Symbols.opt), if it is `undefined`, it becomes `null`, changing the previous behavior.
+When a component of a path ends with a `?` (Symbols.opt), if it is `undefined`, it becomes `null`, changing the previous behavior. In that case, `ctx.expr.optional` is set to `true`.
 
 For example, a variable with a top-level path, like `[prop]`, is merged even if it is undefined, because it starts from defined context data.
 

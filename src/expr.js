@@ -121,6 +121,7 @@ export default class Expression {
 				item = item.slice(0, -1);
 				opt = true;
 			}
+			this.optional = opt;
 			if (data != null) {
 				if (Array.isArray(data)) {
 					const len = data.length;

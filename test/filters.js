@@ -514,6 +514,7 @@ describe('filters', () => {
 			const md = new Matchdom(TextPlugin, {
 				hooks: {
 					afterAll(ctx, val) {
+						assert.ok(ctx.expr.optional || val === undefined);
 						result.test = val;
 						return val;
 					}

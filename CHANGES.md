@@ -275,3 +275,7 @@ Breaks untested query type:
 ### Version 15.3.0
 
 - json object model: add support for closest, allowing ranges to be defined by key name.
+
+### Version 15.4.0
+
+- ctx.expr.optional is set by `get` filter whenever it has an optional chaining expression.
