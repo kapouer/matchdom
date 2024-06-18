@@ -881,7 +881,7 @@ Examples:
 - `at:div|to:class` fills the class attribute of the closest `div`
 - `val|then:to:class|then:at:p|fail:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
 
-### filter repeat:path?:placer?:(...)
+### filter repeat:path:placer?:(...)
 
 Expect the value to be iterable (array, collection, etc...).
 
