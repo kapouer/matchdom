@@ -574,6 +574,10 @@ When given a single path, it is a shorthand for `map:get:${path}`.
 
 When given multiple paths, it maps each item to a new object, filled like `assign` filter.
 
+### flat:depth
+
+Calls flat(depth) on an array. No depth means Infinite.
+
 ### page:count:index
 
 Returns `array.slice(index * count, (index + 1) * count)`.

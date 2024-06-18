@@ -181,6 +181,47 @@ describe('array', () => {
 		});
 	});
 
+	describe('flat filter', () => {
+		const md = new Matchdom(DomPlugin, ArrayPlugin, StringPlugin);
+
+		it('should flatten at given depth', () => {
+			const obj = {
+				arr: [0, 1, [2, [3, [4, 5]]]]
+			};
+			assert.deepEqual(
+				md.merge(`[arr|flat:1]`, obj),
+				[0, 1, 2, [3, [4, 5]]]
+			);
+			assert.deepEqual(
+				md.merge(`[arr|flat:2]`, obj),
+				[0, 1, 2, 3, [4, 5]]
+			);
+		});
+
+		it('should flatten at depth Infinity when empty depth', () => {
+			const obj = {
+				arr: [0, 1, [2, [3, [4, 5]]]]
+			};
+			assert.deepEqual(
+				md.merge(`[arr|flat:]`, obj),
+				[0, 1, 2, 3, 4, 5]
+			);
+		});
+
+		it('should select an absolute path and flatten', () => {
+			const obj = {
+				arr: [
+					{ a: { b: [{ id: 'word1' }, { id: 'word2' }] } },
+					{ a: { b: [{ id: 'word3' }, { id: 'word4' }] } }
+				]
+			};
+			assert.deepEqual(
+				md.merge(`[arr|select:a.b|flat:1]`, obj),
+				[{ id: 'word1' }, { id: 'word2' }, { id: 'word3' }, { id: 'word4' }]
+			);
+		});
+	});
+
 	describe('select filter', () => {
 		const md = new Matchdom(DomPlugin, ArrayPlugin, StringPlugin);
 

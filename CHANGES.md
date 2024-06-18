@@ -279,3 +279,7 @@ Breaks untested query type:
 ### Version 15.4.0
 
 - ctx.expr.optional is set by `get` filter whenever it has an optional chaining expression.
+
+### Version 15.5.0
+
+- flat:depth filter added to array plugin

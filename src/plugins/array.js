@@ -74,6 +74,9 @@ export const filters = {
 			return obj;
 		});
 	}],
+	flat: ['array', 'num?Infinity', (ctx, list, depth) => {
+		return list.flat(depth);
+	}],
 	page: ['array', 'int', 'int', (ctx, list, len, i) => {
 		return list.slice(i * len, (i + 1) * len);
 	}],
