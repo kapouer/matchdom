@@ -31,7 +31,7 @@ export const filters = {
 	const(x, val, param) {
 		return param || "";
 	},
-	get: ['?', 'path?', (ctx, data, path) => {
+	get: ['?', 'path', (ctx, data, path) => {
 		const { expr } = ctx;
 		if (path.length == 0) {
 			if (expr.filter > 1) {

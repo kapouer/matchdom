@@ -224,12 +224,14 @@ export default class Context {
 		let str = params[i];
 		if (!arg || arg.startsWith('?')) arg = "any" + arg;
 		const [type, def] = arg.split("?");
-		if (str == null && def != null) {
+		if (def != null && (str == null || str === "")) {
 			if (type == "any") {
-				if (i === 0 && str === undefined) str = null;
+				if (i === 0 && str === undefined) {
+					str = def || null; // any do not skip undefined val
+				}
 				return str;
 			} else if (def === "") {
-				return null; // do not cast null
+				return str ?? null; // do not cast null
 			} else {
 				str = def; // cast def
 			}

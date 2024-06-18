@@ -20,13 +20,13 @@ export const formats = {
 };
 
 export const filters = {
-	filter: ['array', 'path?', 'filter', '?*', (ctx, list, path, ...filter) => {
+	filter: ['array', 'path', 'filter', '?*', (ctx, list, path, ...filter) => {
 		return list.filter(item => {
 			const data = ctx.expr.get(item, path);
 			return ctx.filter(data, filter);
 		});
 	}],
-	find: ['array', 'path?', '?*', (ctx, list, path, ...filter) => {
+	find: ['array', 'path', '?*', (ctx, list, path, ...filter) => {
 		if (filter.length == 0 && path.length > 0) {
 			path = path.join(ctx.md.symbols.path);
 			return list.includes(path) ? path : null;
@@ -37,7 +37,7 @@ export const filters = {
 	has: ['array', 'any', (x, val, str) => {
 		return val.includes(str);
 	}],
-	group: ['array', 'path?', '?*', (ctx, list, path, ...filter) => {
+	group: ['array', 'path', '?*', (ctx, list, path, ...filter) => {
 		const groups = new Map();
 		for (const item of list) {
 			const data = ctx.expr.get(item, path);
@@ -88,7 +88,7 @@ export const filters = {
 		}
 		return nlist;
 	}],
-	sort: ['array', 'path?', 'bool?false', ({expr}, list, path, nullsFirst) => {
+	sort: ['array', 'path', 'bool?false', ({expr}, list, path, nullsFirst) => {
 		return list.sort((ia, ib) => {
 			let a = expr.get(ia, path);
 			let b = expr.get(ib, path);

@@ -46,6 +46,18 @@ describe('types', () => {
 			assert.equal(md.merge(`[str|as:int]`, {}), 0);
 			assert.equal(md.merge(`[str|as:int]`, {str: '3.4'}), 3);
 		});
+		it('should let any have a default value', () => {
+			let got;
+			const md = new Matchdom(TextPlugin, {
+				any: ['any?test', 'any?test', (ctx, str, param) => {
+					got = param;
+					return str;
+				}]
+			});
+			const copy = md.merge(`[str|any:]`, {});
+			assert.equal(copy, 'test');
+			assert.equal(got, '');
+		});
 	});
 	describe('array', () => {
 		const md = new Matchdom(ArrayPlugin, DomPlugin);
