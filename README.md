@@ -1,6 +1,6 @@
-# matchdom -- extensible declarative template expressions for object models
+# matchdom -- object model template engine
 
-DSL for merging data into object models for HTML, JSON, or plain Text.
+DSL for merging data into HTML, JSON, or Text object models.
 
 A matchdom expression describes a chain of "filter" functions:
 `[func1:param1|func2:param2]`.
@@ -9,10 +9,8 @@ Filter functions transform root value until the expression can be merged.
 
 `md.merge(node, data)` mutates `node`.
 
-If `node` is a string that starts with '<' and ends with '>',
-it is converted to a DOM fragment (or single node) if `document` is available.
-
-If `node` cannot be parsed as a string or a DOM node, it is treated as if it was already merged.
+Using the appropriate plugin, `node` can be an HTML fragment parsed into DOM,
+or a JSON object or plain text. If it cannot be modeled, it is returned as-is.
 
 ## example
 
@@ -22,7 +20,7 @@ import { Matchdom, StringPlugin, NumPlugin, DomPlugin } from 'matchdom';
 const md = new Matchdom(StringPlugin, NumPlugin, DomPlugin);
 // or new Matchdom(StringPlugin, NumPlugin).extend(DomPlugin)
 
-// html string is converted to a DOM node, thanks to DomPlugin
+// html string is first converted to a DOM node (DomPlugin), then data is merged into Object Model.
 const mergedDom = md.merge(`<div id="model" class="[myclass]">
  <h[n]>Header</h[n]>
  <span>[data.text|as:html] for [data.percent|percent:1]</span>
