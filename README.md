@@ -386,11 +386,15 @@ assert.deepEqual(
 
 Keeps these keys and remove others.
 
+Mutates the original object. Use `select` to build a new object.
+
 Use rebase operator to act on a specific path.
 
 ### omit:key*
 
 Remove these keys.
+
+Mutates the original object.
 
 Use rebase operator to act on a specific path.
 
