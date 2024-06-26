@@ -382,7 +382,7 @@ assert.deepEqual(
 );
 ```
 
-### pick:key*
+### only:key*
 
 Keeps these keys and remove others.
 
@@ -397,6 +397,10 @@ Remove these keys.
 Mutates the original object.
 
 Use rebase operator to act on a specific path.
+
+### pick:key*
+
+Pick these keys to build a new object from the current one.
 
 ### assign:path*
 

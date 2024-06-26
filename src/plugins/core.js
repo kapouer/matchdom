@@ -138,7 +138,7 @@ export const filters = {
 		}
 		return obj;
 	}],
-	pick: ['object', 'str*', (ctx, obj, ...list) => {
+	only: ['object', 'str*', (ctx, obj, ...list) => {
 		const del = typeof obj.delete == "function";
 		for (const key of (typeof obj.keys == "function") ? obj.keys() : Object.keys(obj)) {
 			if (list.includes(key)) continue;
@@ -150,6 +150,15 @@ export const filters = {
 			}
 		}
 		return obj;
+	}],
+	pick: ['object', 'str*', (ctx, obj, ...list) => {
+		const get = typeof obj.get == "function";
+		const ret = {};
+		for (const key of list) {
+			const val = get ? obj.get(key) : obj[key];
+			if (val !== undefined) ret[key] = val;
+		}
+		return ret;
 	}],
 	as(ctx, val, type, ...params) {
 		if (type == "none" || type == "undefined") {

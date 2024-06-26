@@ -289,3 +289,5 @@ Breaks untested query type:
 ### Version 16.0.0
 
 - json plugin: fix repeat of key:value
+- pick: copy keys to a new object - no mutation (BREAKING)
+- only: old pick behavior with mutation

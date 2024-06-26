@@ -95,7 +95,7 @@ describe('url plugin', () => {
 		});
 
 		it('use set inner expression to set query', () => {
-			const html = `[href|as:url||.query|set:id:3|pick:id:toto]`;
+			const html = `[href|as:url||.query|set:id:3|only:id:toto]`;
 			const copy = md.merge(html, {
 				href: '/mypath?test=1&toto=1'
 			});
