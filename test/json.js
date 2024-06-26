@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import globalJsdom from 'global-jsdom';
 import {
-	Matchdom, RepeatPlugin, OpsPlugin, JsonPlugin, DomPlugin
+	Matchdom, RepeatPlugin, OpsPlugin, JsonPlugin, DomPlugin, ArrayPlugin
 } from 'matchdom';
 
 describe('json plugin', () => {
@@ -192,6 +192,16 @@ describe('json plugin', () => {
 				num: 2,
 				desc: 'title2-2'
 			}]);
+		});
+
+		it('should build object by looping over keys', () => {
+			const tjson = {
+				'[obj|as:entries|at:*|repeat:it|.key]k': '[it.value]v'
+			};
+			const md = new Matchdom(JsonPlugin, ArrayPlugin, RepeatPlugin);
+			md.debug = true;
+			const copy = md.merge(tjson, { obj: { id: 1, title: 'title1' } });
+			assert.deepEqual(copy, { idk: '1v', titlek: 'title1v' });
 		});
 
 		it('should not continue merging on orphaned json fragments', () => {

@@ -285,3 +285,7 @@ Breaks untested query type:
 - flat:depth filter added to array plugin
 - fix how an empty parameter is transformed to null or to a default value (without changing the API). Allows `num?Infinity` to work.
 - remove optional `path?` in all filters: if null, a path is an empty array anyway.
+
+### Version 16.0.0
+
+- json plugin: fix repeat of key:value

@@ -208,6 +208,14 @@ class Element extends Node {
 		}
 		return node;
 	}
+	getAttribute(name) {
+		return this.attributes.find(item => item.name == name)?.value;
+	}
+	setAttribute(name, value) {
+		const attr = this.attributes.find(item => item.name == name);
+		if (attr) attr.value = value;
+		else this.attributes.push({ name, value });
+	}
 }
 
 class TextNode extends Node {
