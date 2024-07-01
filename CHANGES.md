@@ -1,176 +1,105 @@
 # CHANGES
 
-## Version 7
+## Version 16.1.0
 
-No longer compatible with legacy browsers. Use polyfills for that.
+- pick: accepts a list of paths, assigns last key
+- get: removes optional symbols in path argument - after.get hook must rely on ctx.expr.optional anyway.
 
-matchdom 7 completely breaks previous matchdom templates:
+### Version 16.0.0
 
-- filters without parameters *must* end with `:`
-- all filters are applied where they stand in the chain of transformations of values,
-in particular, the __repeat__ filter, which no longer second-guesses the list to iterate upon.
-- paths are using a unique filter syntax which is only another way of writing `get:<path>` filter,
-and that filter can be used anywhere in the expression (not necessarily at the beginning).
-- repeat:target:alias is not at:target|repeat:alias
-- use new prune/else:at filters to conditionally remove selection
+- json plugin: fix repeat of key:value
+- pick: copy keys to a new object - no mutation (BREAKING)
+- only: old pick behavior with mutation
 
-## Version 8
+### Version 15.5.0
 
-Non-essential plugins must be loaded explicitly,
-allowing tree-shaking to drop some unnecessary code.
+- flat:depth filter added to array plugin
+- fix how an empty parameter is transformed to null or to a default value (without changing the API). Allows `num?Infinity` to work.
+- remove optional `path?` in all filters: if null, a path is an empty array anyway.
 
-```js
-import { Matchdom, DomPlugin } from 'matchdom';
-new Matchdom().extend(DomPlugin)
-```
+### Version 15.4.0
 
-All range selection by char by char has been dropped.
+- ctx.expr.optional is set by `get` filter whenever it has an optional chaining expression.
 
-Ranges are now written as three parameters: ancestor, before, after.
-Before and after can be integers as before, and now also css selectors.
+### Version 15.3.0
 
-`to:attr` can affect all nodes of a range.
+- json object model: add support for closest, allowing ranges to be defined by key name.
 
-`query`, `queryAll` are typed - string is converted to DOM.
+### Version 15.2.0
 
-It is still possible to run matchdom without a browser environment, as long as no html needs to be parsed.
+- as:clone
+  returns a non-recursive shallow clone of the value.
 
-## Version 9
+- omit no longer accepts paths. Use `set` for that.
 
-- `at` filter parameters order is changed to `ancestor:after:before`
-- plugins formats are grouped by filter name using those formats
-- date filter uses formats.date
-- date filter pass null value through to the next plugin
+### Version 15.1.0
 
-## Version 9.2
+Breaks untested query type:
 
-- context.scope is no longer a shallow copy
-- context.scope is no longer mutated by matchdom filters - that's up to the owner of the scope to change it entirely
-- context.lang stores current value
+- as:query now stringifies with a ? prefix when not empty.
+  it also parses the string.
 
-## Version 9.3
+### Version 15.0.0
 
-- DomPlugin new hook: when merging a boolean value in a DOMTokenList attribute, its path name is used
+Breaking changes:
 
-## Version 9.4
+- merge() template can no longer be an array.
+- as:json stringifies, as:obj parses
+- the old TextPlugin is renamed the StringPlugin.
+- the DomPlugin is required to merge DOM Nodes (and parse xhtml strings)
+  and it supersedes the TextPlugin.
+- the TextPlugin is required to merge plain text files when the DomPlugin is not loaded
+- the JsonPlugin is required to merge plain objects and parse json from string.
 
-- Ternary '?' operator
+New: JSON handling is done with an object model: in particular, `repeat` is supported.
 
-## Version 9.5
+### Version 14.3.0
 
-- easier array indexes: negative values, first/last keywords
+Filter `select` now accepts multiple pairs of [dest, src] paths.
 
-## Version 9.6
+It still considers a single path to get data from current value.
 
-- nth filter accepts negative values for step, which iterates in reverse order
+### Version 14.2.0
 
-## Version 9.7
+Filter assign now accepts multiple pairs of [dest, src] paths.
 
-- filter type is normalized to `['get', path]` before passed as argument
-- drop old code about scope (use a beforeEach hook to do that)
-- add `fail` filter shorthand
-- add `split`, `join`, `slice` filters
-- replace ternary '?' by 'alt'
-- allow one or two parameters for 'alt'
-- paths can use optional chaining to force undefined to be evaluated as null
-- add trim filter
+It still considers a single path to get data from current value.
 
-## Version 9.8
+### Version 14.1.0
 
-- afterAll receives value before it is 'converted to null if last and undefined'.
-- expr.get does change expr.last only if called by get filter
+Shallow copy hooks parameters to prevent possibility for hooks to mutate them.
 
-### Version 9.9
+### Version 14.0.0
 
-- Fix expr.path to match the actual accessed list of keys
-- Add TextPlugin `parts:tok:start:end` filter.
-- expr.get(data, path, root) is not public api, remove it from README
+set:-key has now the same semantics as set:+key,
+it is used to remove a value from a list.
 
-### Version 9.10.0
+To delete a value at a given path, use the new `omit:path*` filter.
 
-- afterAll hook can `ctx.cancel = true`
+### Version 13.2.1
 
-### Version 10.0.0
+is:null, is:none did not actually test if value was null or undefined.
 
-- breaking change: an expression is not merged if one of its filters requires a value and the value it receives is undefined.
-- move ctx.cancel to ctx.expr.cancel where it belongs (multiples expressions could be present in context hits)
-- canceled expression restores context, in particular, modifications made to src and dest by `to` and `at` filters are discarded.
+### Version 13.2.0
 
-### Version 10.1.0
+as:array did not convert to array.
 
-- consider the whole unconditional path accessor to determine if a path is fully resolved, and thus improve how undefined is converted to null
-- convert path shorthand to/from `get` filter in expressions
-- update tests
+### Version 13.1.0
 
-### Version 10.2.0
+Add `instance.copy()` method.
 
-- allow multiple hooks
+### Version 13.0.0
 
-### Version 10.3.0
+Breaking changes: Hooks
 
-- neq filter fix: returns the parameter and not the value
+- beforeAll, afterAll no longer get a third parameter (ctx.expr.filters is the same)
+- before/after hooks is a map by filterName, hence only one hook by filter can be registered. The signature changed to (ctx, val, [param1, ...]). These hooks are not skipped by internal calls.
+- return values can be undefined, that means the current value is not modified
+- to cancel a merge use ctx.expr.cancel instead.
 
-### Version 10.4.0
+### Version 12.1.0
 
-- restrict allowed characters for filter names, and also for parameters.
-Parameters can still be escaped using percent-encoding.
-
-### Version 10.5.0
-
-- Change order of parameters for filter:op:arg:path (small break...)
-- Casting an invalid Date to Boolean makes it false
-
-### Version 10.6.0
-
-- new array filter: group:path:filter:params* to group items by value
-- revert change in 10.5.0, use filter:path:filter:params* to match same order.
-- fix map:filter:params
-
-### Version 11.0.0
-
-- core: set:mutation* filter
-- xml, html formats are provided by DomPlugin
-- DomPlugin: `queryAll` is renamed to `all`, `query` is renamed to `one`
-- UrlPlugin: url type, url and query filters
-- date: add weekday, days, weeks (non-trivial) formats
-
-### Version 11.1.0
-
-- drop useless alias filter
-- quot:num filter for getting a quotient
-- repeat:path was treating path as a string. It now uses the first component of the path to get an alias, and the remaining path to get the aliased value from the repeated item.
-
-### Version 11.2.0
-
-- fix has: and in: filters, there were somewhat broken - add tests for them
-- new date:full option
-
-### Version 11.3.0
-
-- assign:path filter makes current value available under specified path without changing the original ctx.data.
-
-### Version 11.4.0
-
-- find: filter like filter: but stops to find one item in the array.
-
-### Version 11.5.0
-
-- is: filter wasn't correctly checking input value type
-- support non-mergeable input instead of failing
-
-### Version 11.6.0
-
-- object type is added to core types
-- pick filter is added to core filters
-
-### Version 11.7.0
-
-- boolean attributes: only honor specific behavior when value is boolean
-  this allows one to not lose expressions in those attributes.
-
-### Version 11.8.0
-
-- switch filter: let empty param match null value
+Fix assign filter.
 
 ### Version 12.0.0
 
@@ -196,103 +125,48 @@ Trying to fix how filters and types play together.
   - no longer tries to merge source and destination
   - support for assigning an object to a query is added to assign/set filters.
 
-### Version 12.1.0
+### Version 11.8.0
 
-Fix assign filter.
+- switch filter: let empty param match null value
 
-### Version 13.0.0
+### Version 11.7.0
 
-Breaking changes: Hooks
+- boolean attributes: only honor specific behavior when value is boolean
+  this allows one to not lose expressions in those attributes.
 
-- beforeAll, afterAll no longer get a third parameter (ctx.expr.filters is the same)
-- before/after hooks is a map by filterName, hence only one hook by filter can be registered. The signature changed to (ctx, val, [param1, ...]). These hooks are not skipped by internal calls.
-- return values can be undefined, that means the current value is not modified
-- to cancel a merge use ctx.expr.cancel instead.
+### Version 11.6.0
 
-### Version 13.1.0
+- object type is added to core types
+- pick filter is added to core filters
 
-Add `instance.copy()` method.
+### Version 11.5.0
 
-### Version 13.2.0
+- is: filter wasn't correctly checking input value type
+- support non-mergeable input instead of failing
 
-as:array did not convert to array.
+### Version 11.4.0
 
-### Version 13.2.1
+- find: filter like filter: but stops to find one item in the array.
 
-is:null, is:none did not actually test if value was null or undefined.
+### Version 11.3.0
 
-### Version 14.0.0
+- assign:path filter makes current value available under specified path without changing the original ctx.data.
 
-set:-key has now the same semantics as set:+key,
-it is used to remove a value from a list.
+### Version 11.2.0
 
-To delete a value at a given path, use the new `omit:path*` filter.
+- fix has: and in: filters, there were somewhat broken - add tests for them
+- new date:full option
 
-### Version 14.1.0
+### Version 11.1.0
 
-Shallow copy hooks parameters to prevent possibility for hooks to mutate them.
+- drop useless alias filter
+- quot:num filter for getting a quotient
+- repeat:path was treating path as a string. It now uses the first component of the path to get an alias, and the remaining path to get the aliased value from the repeated item.
 
-### Version 14.2.0
+### Version 11.0.0
 
-Filter assign now accepts multiple pairs of [dest, src] paths.
-
-It still considers a single path to get data from current value.
-
-### Version 14.3.0
-
-Filter `select` now accepts multiple pairs of [dest, src] paths.
-
-It still considers a single path to get data from current value.
-
-### Version 15.0.0
-
-Breaking changes:
-
-- merge() template can no longer be an array.
-- as:json stringifies, as:obj parses
-- the old TextPlugin is renamed the StringPlugin.
-- the DomPlugin is required to merge DOM Nodes (and parse xhtml strings)
-  and it supersedes the TextPlugin.
-- the TextPlugin is required to merge plain text files when the DomPlugin is not loaded
-- the JsonPlugin is required to merge plain objects and parse json from string.
-
-New: JSON handling is done with an object model: in particular, `repeat` is supported.
-
-### Version 15.1.0
-
-Breaks untested query type:
-
-- as:query now stringifies with a ? prefix when not empty.
-  it also parses the string.
-
-### Version 15.2.0
-
-- as:clone
-  returns a non-recursive shallow clone of the value.
-
-- omit no longer accepts paths. Use `set` for that.
-
-### Version 15.3.0
-
-- json object model: add support for closest, allowing ranges to be defined by key name.
-
-### Version 15.4.0
-
-- ctx.expr.optional is set by `get` filter whenever it has an optional chaining expression.
-
-### Version 15.5.0
-
-- flat:depth filter added to array plugin
-- fix how an empty parameter is transformed to null or to a default value (without changing the API). Allows `num?Infinity` to work.
-- remove optional `path?` in all filters: if null, a path is an empty array anyway.
-
-### Version 16.0.0
-
-- json plugin: fix repeat of key:value
-- pick: copy keys to a new object - no mutation (BREAKING)
-- only: old pick behavior with mutation
-
-### Version 16.1.0
-
-- pick: accepts a list of paths, assigns last key
-- get: removes optional symbols in path argument - after.get hook must rely on ctx.expr.optional anyway.
+- core: set:mutation* filter
+- xml, html formats are provided by DomPlugin
+- DomPlugin: `queryAll` is renamed to `all`, `query` is renamed to `one`
+- UrlPlugin: url type, url and query filters
+- date: add weekday, days, weeks (non-trivial) formats
