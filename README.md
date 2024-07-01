@@ -398,9 +398,9 @@ Mutates the original object.
 
 Use rebase operator to act on a specific path.
 
-### pick:key*
+### pick:path*
 
-Pick these keys to build a new object from the current one.
+Pick values as these paths to build a new object using last keys of the paths.
 
 ### assign:path*
 

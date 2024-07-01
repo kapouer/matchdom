@@ -151,12 +151,13 @@ export const filters = {
 		}
 		return obj;
 	}],
-	pick: ['object', 'str*', (ctx, obj, ...list) => {
-		const get = typeof obj.get == "function";
+	pick: ['object', 'path*', (ctx, data, ...paths) => {
 		const ret = {};
-		for (const key of list) {
-			const val = get ? obj.get(key) : obj[key];
-			if (val !== undefined) ret[key] = val;
+		for (const path of paths) {
+			if (path.length == 0) path.push('');
+			path.unshift('');
+			const val = ctx.filter(data, ['get', path]);
+			if (val !== undefined) ret[path.pop()] = val;
 		}
 		return ret;
 	}],

@@ -291,3 +291,8 @@ Breaks untested query type:
 - json plugin: fix repeat of key:value
 - pick: copy keys to a new object - no mutation (BREAKING)
 - only: old pick behavior with mutation
+
+### Version 16.1.0
+
+- pick: accepts a list of paths, assigns last key
+- get: removes optional symbols in path argument - after.get hook must rely on ctx.expr.optional anyway.
