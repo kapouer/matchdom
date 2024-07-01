@@ -79,6 +79,11 @@ describe('pick filter', () => {
 		assert.deepEqual(copy, { b: 1 });
 	});
 
+	it('should allow optional fields', () => {
+		const copy = md.merge(`[obj|pick:a?]`, { obj: { a: 1, b: 2 } });
+		assert.deepEqual(copy, { a: 1 });
+	});
+
 	it('should skip non-object', () => {
 		const copy = md.merge(`[obj|pick:a]`, { obj: 'toto' });
 		assert.deepEqual(copy, '[obj|pick:a]');

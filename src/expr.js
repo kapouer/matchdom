@@ -111,14 +111,15 @@ export default class Expression {
 			}
 			n = this.path.length;
 		}
-		for (let item of path) {
+		for (let i = 0; i < path.length; i++) {
 			if (skip) {
 				skip = false;
 				continue;
 			}
 			let opt = false;
+			let item = path[i];
 			if (item.endsWith(this.symbols.opt)) {
-				item = item.slice(0, -1);
+				item = path[i] = item.slice(0, -1);
 				opt = true;
 			}
 			this.optional = opt;

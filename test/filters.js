@@ -509,6 +509,24 @@ describe('filters', () => {
 			assert.equal(copy, 1);
 		});
 
+		it('optional chaining should affect after filter', () => {
+			let filtered = false;
+			const md = new Matchdom(TextPlugin, {
+				hooks: {
+					after: {
+						get(ctx, val, [path]) {
+							filtered = true;
+							assert.ok(ctx.expr.optional);
+							assert.ok(!path.pop().endsWith('?'));
+						}
+					}
+				}
+			});
+			assert.equal(md.merge('[obj.test?]', { obj: { test: 1 } }), 1);
+			assert.ok(filtered);
+
+		});
+
 		it('optional chaining should affect afterAll filter', () => {
 			const result = {};
 			const md = new Matchdom(TextPlugin, {
