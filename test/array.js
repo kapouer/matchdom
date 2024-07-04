@@ -76,6 +76,12 @@ describe('array', () => {
 			});
 			assert.equal(copy.outerHTML, '<p>word1Xword3</p>');
 		});
+		it('with array first or last', () => {
+			const copy = md.extend(OpsPlugin).merge(`[text|split:-|.first]`, {
+				text: 'fr-an'
+			});
+			assert.equal(copy, 'fr');
+		});
 	});
 
 	describe('filter and find', () => {
