@@ -536,7 +536,9 @@ If there is no parameter for the class, the wildcard is not replaced.
 
 ### match:pattern:classes*
 
-Tests if value matches a simplified pattern and returns the list of matched wildcards.
+Returns the list of matched wildcards against value, or null if there was no match.
+
+Empty matches are just an empty string.
 
 ## ArrayPlugin
 

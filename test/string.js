@@ -127,4 +127,46 @@ describe('parts filter', () => {
 	});
 });
 
+describe('test filter', () => {
+	const md = new Matchdom(StringPlugin, TextPlugin);
 
+	it('should test wildcard *', () => {
+		assert.equal(md.merge('[str|test:a*aa:0-9]', { str: 'a654aa' }), true);
+		assert.equal(md.merge('[str|test:*a*:0-9:a-z]', { str: '5ag' }), true);
+		assert.equal(md.merge('[str|test:*a*:0-9:a-z]', { str: 'ag' }), true);
+	});
+
+	it('should test wildcard +', () => {
+		assert.equal(md.merge('[str|test:a+a:0-9]', { str: 'a6a' }), true);
+		assert.equal(md.merge('[str|test:a+a:0-9]', { str: 'a61a' }), true);
+		assert.equal(md.merge('[str|test:a+a:0-9]', { str: 'aa' }), false);
+	});
+	it('should test wildcard ?', () => {
+		assert.equal(md.merge('[str|test:a?a:0-9]', { str: 'aa' }), true);
+		assert.equal(md.merge('[str|test:a?a:0-9]', { str: 'a3a' }), true);
+		assert.equal(md.merge('[str|test:a?a:0-9]', { str: 'aFa' }), false);
+	});
+	it('should return regexp', () => {
+		assert.equal(md.merge('[str|as:pattern:0-9:a-z]', { str: '*a*' }).source, "^([0-9]*)a([a-z]*)$");
+	});
+});
+
+describe('match filter', () => {
+	const md = new Matchdom(StringPlugin, TextPlugin);
+
+	it('should match wildcard *', () => {
+		assert.deepEqual(md.merge('[str|match:a*aa:0-9]', { str: 'a654aa' }), ['654']);
+		assert.deepEqual(md.merge('[str|match:*a*:0-9:a-z]', { str: '5ag' }), ['5', 'g']);
+		assert.deepEqual(md.merge('[str|match:*a*:0-9:a-z]', { str: 'ag' }), ['', 'g']);
+	});
+	it('should match wildcard +', () => {
+		assert.deepEqual(md.merge('[str|match:a+a:0-9]', { str: 'a6a' }), ['6']);
+		assert.deepEqual(md.merge('[str|match:a+a:0-9]', { str: 'a61a' }), ['61']);
+		assert.deepEqual(md.merge('[str|match:a+a:0-9]', { str: 'aa' }), null);
+	});
+	it('should match wildcard ?', () => {
+		assert.deepEqual(md.merge('[str|match:a?a:0-9]', { str: 'aa' }), ['']);
+		assert.deepEqual(md.merge('[str|match:a?a:0-9]', { str: 'a3a' }), ['3']);
+		assert.deepEqual(md.merge('[str|match:a?a:0-9]', { str: 'aFa' }), null);
+	});
+});
