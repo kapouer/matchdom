@@ -187,6 +187,17 @@ export default class Place {
 				from.text.nodeValue = from.hits.join('');
 			}
 			const val = { another };
+			hits = hits.map(hit => {
+				if (hit?.nodeType) {
+					return Array.from(hit.nodeType == 11 ? hit.childNodes : [hit])
+						.map(node => {
+							if (node.nodeType == 1) return node.outerHTML;
+							else if (node.nodeType == 3) return node.nodeValue;
+						}).join('');
+				} else {
+					return hit;
+				}
+			});
 			if (hits.length == 1) {
 				val.str = hits[0];
 				val.trm = val.str || '';

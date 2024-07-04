@@ -1,5 +1,9 @@
 # CHANGES
 
+## Version 16.2.0
+
+- fix: allow dom fragments to be merged into a DOM attribute (as text content)
+
 ## Version 16.1.0
 
 - pick: accepts a list of paths, assigns last key

@@ -26,6 +26,15 @@ describe('dom', () => {
 			assert.equal(copy.outerHTML, '<div><p>One <strong>two</strong>\n<strong>three</strong> four</p></div>');
 		});
 
+		it('should merge dom fragment', () => {
+			const frag = document.createDocumentFragment();
+			frag.appendChild(document.createTextNode('test'));
+			const copy = md.merge(`<span>[frag]</span>`, {
+				frag
+			});
+			assert.equal(copy.outerHTML, '<span>test</span>');
+		});
+
 		it('should select first node', () => {
 			const html = `<p>[str|one:img+span]</p>`;
 			const copy = md.merge(html, {

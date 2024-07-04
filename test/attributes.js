@@ -23,6 +23,15 @@ describe('attributes', () => {
 			assert.equal(copy.outerHTML, '<span class="yes">no?</span>');
 		});
 
+		it('should merge dom fragment', () => {
+			const frag = document.createDocumentFragment();
+			frag.appendChild(document.createTextNode('test'));
+			const copy = md.merge(`<span class="[frag]">a fragment</span>`, {
+				frag
+			});
+			assert.equal(copy.outerHTML, '<span class="test">a fragment</span>');
+		});
+
 		it('should be merged with multiple values', () => {
 			const html = `<span class="one [two] three [four]">no?</span>`;
 			const copy = md.merge(html, {
