@@ -2,6 +2,7 @@
 
 ## Version 16.2.0
 
+- two new filters for pattern matching: test and match
 - fix: allow dom fragments to be merged into a DOM attribute (as text content)
 
 ## Version 16.1.0

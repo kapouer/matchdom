@@ -524,6 +524,20 @@ Trimming:
 - end: trim at end
 - out: trim both sides (the default)
 
+### test:pattern:classes*
+
+Tests if value matches a simplified pattern.
+
+A pattern is built by replacing wildcards *, +, ? like this:
+
+`test:start*end:a-zA-Z` gives this regexp: `/start[a-zA-Z]*end/`.
+
+If there is no parameter for the class, the wildcard is not replaced.
+
+### match:pattern:classes*
+
+Tests if value matches a simplified pattern and returns the list of matched wildcards.
+
 ## ArrayPlugin
 
 ### array type

@@ -1,3 +1,13 @@
+export const types = {
+	pattern(ctx, pat, wildcards) {
+		if (!pat) return null;
+		return new RegExp('^' + pat.replaceAll(/[*+?]/g, c => {
+			const cla = wildcards.shift();
+			if (!cla) return c;
+			return `([${cla}]${c})`;
+		}) + '$');
+	}
+};
 export const filters = {
 	case: ['?', 'up|low|caps', (ctx, val, how) => {
 		if (!val) return ctx.raw;
@@ -72,5 +82,11 @@ export const filters = {
 		if (typeof val != "string" || a == null) return ctx.raw;
 		if (b == null) b = undefined;
 		return val.split(tok).slice(a, b).join(tok);
+	}],
+	test: ['?', 'pattern*', (ctx, val, re) => {
+		return re.test(val);
+	}],
+	match: ['?', 'pattern*', (ctx, val, re) => {
+		return re.exec(val)?.slice(1);
 	}]
 };
