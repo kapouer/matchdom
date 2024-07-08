@@ -159,8 +159,13 @@ class Node {
 			const obj = {};
 			for (const n of this.childNodes) {
 				if (n.nodeType == 3) {
-					if (n.nodeValue === "") continue; // cursor
-					else throw new Error("Cannot have text node in object children");
+					if (n.nodeValue === "") {
+						continue; // cursor
+					} else if (this.childNodes.length == 1 && n.nodeValue != null && typeof n.nodeValue == "object") {
+						Object.assign(obj, n.nodeValue);
+					} else {
+						throw new Error("Cannot have text node in object children");
+					}
 				} else if (n.attributes.length == 1) {
 					obj[n.attributes[0].value] = n.toJSON();
 				} else {
@@ -215,6 +220,10 @@ class Element extends Node {
 		const attr = this.attributes.find(item => item.name == name);
 		if (attr) attr.value = value;
 		else this.attributes.push({ name, value });
+	}
+	removeAttribute(name) {
+		const index = this.attributes.findIndex(item => item.name == name);
+		if (index >= 0) this.attributes.splice(index, 1);
 	}
 }
 
