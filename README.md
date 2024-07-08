@@ -771,11 +771,13 @@ Example: this would return an array of items with title, num keys:
 
 It is possible to put expressions into keys.
 
+Extending selection using `at:*` has a special meaning when the value is an object, it assigns it to its parent object.
+
+Likewise, `at:**` or `at:<keyname>` replaces target parent with the current object.
+
 The repeated fragment is implicitely converted into array, when needed.
 
 In the above example, removing the enclosing array gives the same result only if there is more than one element to merge.
-
-Named ranges select closest parent having a given key name.
 
 ### obj format
 

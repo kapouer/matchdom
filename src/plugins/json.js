@@ -161,7 +161,7 @@ class Node {
 				if (n.nodeType == 3) {
 					if (n.nodeValue === "") {
 						continue; // cursor
-					} else if (this.childNodes.length == 1 && n.nodeValue != null && typeof n.nodeValue == "object") {
+					} else if (n.nodeValue != null && typeof n.nodeValue == "object") {
 						Object.assign(obj, n.nodeValue);
 					} else {
 						throw new Error("Cannot have text node in object children");

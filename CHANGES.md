@@ -1,5 +1,9 @@
 # CHANGES
 
+## Version 16.3.0
+
+- json: assignment on parent using `at:*` or parent replacement using `at:**` when merging an object (as key or as value, both works).
+
 ## Version 16.2.0
 
 - two new filters for pattern matching: test and match

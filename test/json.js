@@ -44,14 +44,17 @@ describe('json plugin', () => {
 
 	describe('modelize and works with repeat', () => {
 		it('should merge basic object', () => {
-			const tjson = {
-				id: '[item.id]',
-				title: '[item.title]'
-			};
 			const md = new Matchdom(JsonPlugin);
 			md.debug = true;
-			const copy = md.merge(tjson, { item: { id: 1, title: 'title1' } });
-			assert.deepEqual(copy, { id: 1, title: 'title1' });
+			const item = { id: 1, title: 'title1' };
+			assert.deepEqual(md.merge({
+				id: '[item.id]',
+				title: '[item.title]'
+			}, { item }), item);
+
+			assert.deepEqual(md.merge({
+				obj: '[item]'
+			}, { item }), { obj: item });
 		});
 
 		it('should merge basic object with null value', () => {
@@ -91,10 +94,34 @@ describe('json plugin', () => {
 			});
 		});
 
+		it('should assign to parent range', () => {
+			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
+			assert.deepEqual(md.merge({
+				a: true,
+				'[item|at:*]': ''
+			}, {
+				item: { id: '1', title: 'title1' }
+			}), {
+				a: true,
+				id: '1', title: 'title1'
+			});
+
+			assert.deepEqual(md.merge({
+				b: true,
+				'key': '[item|at:*]'
+			}, {
+				item: { id: '1', title: 'title1' }
+			}), {
+				b: true,
+				id: '1', title: 'title1'
+			});
+		});
+
 		it('should replace parent range', () => {
 			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
 			assert.deepEqual(md.merge({
 				list: {
+					a: true,
 					num: '[item|at:**]'
 				}
 			}, {
@@ -104,6 +131,7 @@ describe('json plugin', () => {
 			});
 			assert.deepEqual(md.merge({
 				list: {
+					a: true,
 					'[item|at:**]': ''
 				}
 			}, {
@@ -111,27 +139,13 @@ describe('json plugin', () => {
 			}), {
 				list: { id: '1', title: 'title1' }
 			});
-			assert.deepEqual(md.merge({
-				'[item|at:*]': ''
-			}, {
-				item: { id: '1', title: 'title1' }
-			}), {
-				 id: '1', title: 'title1'
-			});
-
-			assert.deepEqual(md.merge({
-				'key': '[item|at:*]'
-			}, {
-				item: { id: '1', title: 'title1' }
-			}), {
-				id: '1', title: 'title1'
-			});
 		});
 
 		it('should replace parent range by key', () => {
 			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
 			assert.deepEqual(md.merge({
 				list: {
+					a: true,
 					num: '[item|at:list]'
 				}
 			}, {
@@ -141,6 +155,7 @@ describe('json plugin', () => {
 			});
 			assert.deepEqual(md.merge({
 				list: {
+					a: true,
 					'[item|at:list]': ''
 				}
 			}, {
