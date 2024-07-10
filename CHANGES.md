@@ -2,7 +2,8 @@
 
 ## Version 16.4.0
 
-Move `at`, `fail`, `prune`, `to` to in core.
+- Move `at`, `fail`, `prune`, `to` to in core.
+- Refactor attributes merging. Fix some edge cases.
 
 ## Version 16.3.0
 
