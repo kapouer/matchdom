@@ -1,5 +1,9 @@
 # CHANGES
 
+## Version 16.4.0
+
+Move `at`, `fail`, `prune`, `to` to in core.
+
 ## Version 16.3.0
 
 - json: assignment on parent using `at:*` or parent replacement using `at:**` when merging an object (as key or as value, both works).
