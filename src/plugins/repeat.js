@@ -12,7 +12,8 @@ export const filters = {
 			const expr = ctx.expr.clone();
 			expr.prepend(["get", name || ""]);
 			const hit = ctx.wrap(expr.toString(), 1);
-			src.write([cur.replace(ctx.wrap(expr.initial, 1), hit)], src);
+			src.hits = [cur.replace(ctx.wrap(expr.initial, 1), hit)];
+			src.write(src);
 			dest.hits[dest.index] = ctx.wrap(hit, 2);
 		}
 		ctx.expr.drop();

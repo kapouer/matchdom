@@ -110,27 +110,9 @@ export class Matchdom {
 			const ctx = new Context(this, data, scope);
 			ctx.setup(hits, ref.root, node, name);
 			const { dest } = ctx;
-			let allNulls = true;
-			let allTrue = true;
-			let allBools = true;
-			const filteredHits = dest.hits.filter(val => {
-				if (val !== null) allNulls = false;
-				if (val === true); // do nothing
-				else if (val === false) allTrue = false;
-				else allBools = false;
-				return val !== undefined;
-			});
-			// [a][b] returns null if a and b are null
-			// likewise for booleans
-			if (filteredHits.length > 0) {
-				let result;
-				if (allNulls) result = [null];
-				else if (allBools) result = [allTrue];
-				else result = filteredHits;
-				trackHits.count += filteredHits.length;
-				trackHits.last = result[result.length - 1];
-				dest.write(result, ctx.src);
-			}
+			const filteredHits = dest.write(ctx.src);
+			trackHits.count += filteredHits.length;
+			trackHits.last = filteredHits[filteredHits.length - 1];
 			if (dest.root) ref.root = dest.root;
 			if (dest.replacement) replacements.unshift(dest.replacement);
 		});

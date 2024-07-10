@@ -217,12 +217,12 @@ describe('dom', () => {
 			assert.equal(copy.outerHTML, '<span class="some visible">test</span>');
 		});
 
-		it('should erase class attribute if setting an empty class', () => {
+		it('should not erase class attribute when adding an empty class from another place', () => {
 			const html = `<span class="some">[label|to:class]test</span>`;
 			const copy = md.merge(html, {
 				label: ""
 			});
-			assert.equal(copy.outerHTML, '<span>test</span>');
+			assert.equal(copy.outerHTML, '<span class="some">test</span>');
 		});
 
 		it('should fill current node', () => {

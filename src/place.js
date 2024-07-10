@@ -165,7 +165,24 @@ export default class Place {
 		}
 	}
 
-	write(hits, from) {
+	write(from) {
+		let allNulls = true;
+		let allTrue = true;
+		let allBools = true;
+		let hits = this.hits.filter(val => {
+			if (val !== null) allNulls = false;
+			if (val === true); // do nothing
+			else if (val === false) allTrue = false;
+			else allBools = false;
+			return val !== undefined;
+		});
+		// [a][b] returns null if a and b are null
+		// likewise for booleans
+		if (hits.length > 0) {
+			if (allNulls) hits = [null];
+			else if (allBools) hits = [allTrue];
+		}
+
 		const { node, attr, doc, target } = this;
 		if (target == Place.CONT && !this.text) {
 			node.textContent = "";
@@ -174,7 +191,7 @@ export default class Place {
 		}
 
 		const another = attr != from.attr || node != from.node;
-		if (from.attr && another) clearAttr(from.node, from.attr);
+		if (from.attr && another) from.node.removeAttribute(from.attr);
 
 		if (target == Place.TAG) {
 			const is = node.getAttribute('is');
@@ -191,33 +208,37 @@ export default class Place {
 				if (hit?.nodeType) {
 					return Array.from(hit.nodeType == 11 ? hit.childNodes : [hit])
 						.map(node => {
-							if (node.nodeType == 1) return node.outerHTML;
-							else if (node.nodeType == 3) return node.nodeValue;
+							if (node.nodeType == 1) {
+								return node.outerHTML;
+							} else if (node.nodeType == 3) {
+								return node.nodeValue;
+							}
 						}).join('');
 				} else {
 					return hit;
 				}
 			});
-			if (hits.length == 1) {
-				val.str = hits[0];
-				val.trm = val.str || '';
+			if (allNulls) {
+				// pass
+			} else if (allBools) {
+				val.str = allTrue;
 			} else {
 				val.str = hits.join('');
-				val.trm = val.str.trim().replace(/\s+/g, ' ');
+				val.trm = val.str.replace(/\s+/g, ' ').trim();
 			}
-			val.del = !val.trm;
+
 			let cur = node;
 			while ((cur = this.checkSibling(cur, false))) {
 				if (cur.nodeType != 1) continue;
-				if (val.del) clearAttr(cur, attr);
+				if (allNulls) cur.removeAttribute(attr);
 				else writeAttr(cur, attr, val);
 			}
-			if (val.del) clearAttr(node, attr);
+			if (allNulls) node.removeAttribute(attr);
 			else writeAttr(node, attr, val);
 			cur = node;
 			while ((cur = this.checkSibling(cur, true))) {
 				if (cur.nodeType != 1) continue;
-				if (val.del) clearAttr(cur, attr);
+				if (allNulls) cur.removeAttribute(attr);
 				else writeAttr(cur, attr, val);
 			}
 			this.before = 0;
@@ -263,27 +284,27 @@ export default class Place {
 				}
 			}
 		}
+		return hits;
 	}
 }
 
-function writeAttr(node, attr, { another, str, trm, path }) {
+function writeAttr(node, attr, { another, str, trm }) {
 	const attrList = node[attr + 'List'];
 	if (typeof node[attr] == "boolean" && typeof str == "boolean") {
-		node.setAttribute(attr, "");
+		if (str === true) node.setAttribute(attr, "");
+		else node.removeAttribute(attr);
 	} else if (attrList) {
-		if (another) for (const name of trm.split(' ')) {
-			attrList.add(name);
+		if (another) {
+			for (const name of trm.split(' ')) {
+				if (name.length) attrList.add(name);
+			}
+			if (attrList.length == 0) node.removeAttribute(attr);
+		} else if (!trm) {
+			node.removeAttribute(attr);
 		} else {
 			node.setAttribute(attr, trm);
 		}
 	} else {
 		node.setAttribute(attr, str);
-	}
-}
-
-function clearAttr(node, attr) {
-	node.removeAttribute(attr);
-	if (node[attr] || node[attr] === null) {
-		node.setAttribute(attr, "");
 	}
 }

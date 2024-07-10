@@ -23,6 +23,15 @@ describe('attributes', () => {
 			assert.equal(copy.outerHTML, '<span class="yes">no?</span>');
 		});
 
+		it('should be removed when merged with null', () => {
+			assert.equal(md.merge(`<button name="[test]">a</button>`, {
+				test: null
+			}).outerHTML, '<button>a</button>');
+			assert.equal(md.merge(`<button form="[test]">a</button>`, {
+				test: null
+			}).outerHTML, '<button>a</button>');
+		});
+
 		it('should merge dom fragment', () => {
 			const frag = document.createDocumentFragment();
 			frag.appendChild(document.createTextNode('test'));
@@ -61,7 +70,7 @@ describe('attributes', () => {
 
 		it('should set empty attribute value when falsey', () => {
 			const data = { empty: "" };
-			assert.equal(md.merge(`<input value="[empty]">`, data).outerHTML, "<input>");
+			assert.equal(md.merge(`<input value="[empty]">`, data).outerHTML, '<input value="">');
 			assert.equal(md.merge(`<option value="[empty]">-</option>`, data).outerHTML, '<option value="">-</option>');
 		});
 
