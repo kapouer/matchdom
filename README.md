@@ -269,7 +269,7 @@ During merge, it also has:
 - hits: list of strings to write
 - index: current index in hits
 
-And various methods to extend to an ancestor, restrict to a node or attribute, write strings to the place, or read the current strings in place.
+Methods are for internal use.
 
 ## core plugin
 
