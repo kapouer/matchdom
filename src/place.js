@@ -290,20 +290,17 @@ export default class Place {
 
 function writeAttr(node, attr, { another, str, trm }) {
 	const attrList = node[attr + 'List'];
-	if (typeof node[attr] == "boolean" && typeof str == "boolean") {
+	if (typeof node[attr] == "boolean") {
 		if (str === true) node.setAttribute(attr, "");
-		else node.removeAttribute(attr);
+		else if (!str) node.removeAttribute(attr);
+		else node.setAttribute(attr, str);
 	} else if (attrList) {
-		if (another) {
-			for (const name of trm.split(' ')) {
-				if (name.length) attrList.add(name);
-			}
-			if (attrList.length == 0) node.removeAttribute(attr);
-		} else if (!trm) {
-			node.removeAttribute(attr);
+		if (another) for (const name of trm.split(' ')) {
+			if (name.length) attrList.add(name);
 		} else {
 			node.setAttribute(attr, trm);
 		}
+		if (attrList.length == 0) node.removeAttribute(attr);
 	} else {
 		node.setAttribute(attr, str);
 	}

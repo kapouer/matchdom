@@ -30,6 +30,15 @@ describe('attributes', () => {
 			assert.equal(md.merge(`<button form="[test]">a</button>`, {
 				test: null
 			}).outerHTML, '<button>a</button>');
+			assert.equal(md.merge(`<form hidden="[test]">a</form>`, {
+				test: false
+			}).outerHTML, '<form>a</form>');
+			assert.equal(md.merge(`<form hidden="[test]">a</form>`, {
+				test: null
+			}).outerHTML, '<form>a</form>');
+			assert.equal(md.merge(`<div anything="[test]">a</div>`, {
+				test: ''
+			}).outerHTML, '<div anything="">a</div>');
 		});
 
 		it('should merge dom fragment', () => {
