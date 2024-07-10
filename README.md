@@ -448,6 +448,107 @@ Coerces value to type, or converts string to format.
 Sets lang name in current context.
 Used by localized filters.
 
+### filter at:selector:after:before
+
+By default an expression is replaced by its value,
+without affecting surrounding text, tag name, attribute, node, or json object.
+This filter extends the selected range.
+
+The selector changes the current parent:
+
+- ``: the expression itself
+- `-`: the parent node content, or the attribute
+- `*`: the nth selected parent (one wildcard goes up one parent)
+- a css selector: the closest selected parent
+
+The meaning of the selector depends on the Object Model (Text, JSON, Document).
+
+Second, by extending to previous or next siblings of the selected parent, using `before` and `after` parameters:
+
+- integer: counts the number of siblings to select (before or after). Empty text nodes are ignored.
+- selector: select siblings until they stop matching that selector.
+
+Note that `after` comes first, since it's the most commonly used parameter, `at:*:br` is prettier than `at:*::br`.
+
+Using at, fail, prune, then, else, to filters, one can control how a value affects selection.
+
+Examples:
+
+- `at::2:1` selects 2 nodes after and one node before the expression
+- `<br>a[val|at::1]b` selects the `<br>`, `a` and `b` strings
+- it is not possible to not select `a` or `b` in previous example
+- `at::b:a` is not defined when destination is an attribute, avoid using it
+- `at:div.card` selects `closest('div.card')`.
+- `at:div.card:1:1` selects also the previous and next siblings of the ancestor.
+- `at:**:1:2|to:class` selects one sibling after and two siblings before parent node, and sets the class on them.
+- `at:*::.column` selects parent node and all next siblings until they stop matching `.column`.
+
+### filter fail:range:before:after
+
+Synonym of `else:at:...`
+
+A very common use case for merging, or removing a range if value is falsey.
+
+### filter prune:range:before:after
+
+Like "at", without actually writing the value,
+this is a shorthand for `at:${range}|const:`.
+
+Useful to test a value and remove selected range if false-ish.
+
+Note that `val|prune:` is the same as `val` only if `val` is empty, and differs if `val` is equal to boolean false.
+
+To remove selected range but actually merge the value if true-ish,
+use instead `fail:*`.
+
+### filter to:target
+
+While `at` filter widens the range around the expression,
+`to` restricts it to text content or to another attribute.
+
+- ``: replace selected range (default)
+- `-`: selects current node content (especially when used inside an attribute)
+- `*`: selects current node. `to:*` and `at:*` are equivalent.
+- `attr`: replace content of this attribute
+
+Examples:
+
+- `to:src` fills the src attribute of the current node
+- `at:div|to:class` fills the class attribute of the closest `div`
+- `val|then:to:class|then:at:p|fail:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
+
+## RepeatPlugin
+
+### filter repeat:path:placer?:(...)
+
+Expect the value to be iterable (array, collection, etc...).
+
+Repeats selected range for each item in the value.
+
+The selected range must be set using `at` filter; if not, the selected range will default to `at:*`.
+
+The first component of the path is an alias for the repeated item.
+The remaining path is used to access the item before merging it.
+These expressions are equivalent:
+
+- `[items|at:div|repeat:|.id] has some [text]`
+- `[items|at:div|repeat:my|.id] has some [my.text]`
+- `[items|as:entries|at:div|repeat:item.value|.id] has some [item.text]`
+
+The placer parameter may be a custom filter name:
+
+- it is called *after* the iterated range has been merged, before it is inserted
+- it has (ctx, item, cursor, fragment, ...params) signature
+- cursor: node before which the fragment would have been merged
+- fragment: result of the merge, to be placed or not
+- additional parameters are appended
+
+The placer filter may choose to:
+
+- insert fragment before cursor (the default behavior)
+- insert it somewhere else
+- do nothing in which case the fragment is not inserted
+
 ## flow plugin (always loaded)
 
 ### not:filter:param*
@@ -831,109 +932,6 @@ If the current value is a dom node or fragment, runs querySelector(selector) on 
 
 If the current value is a dom node or fragment, runs querySelectorAll(selector) on it,
 and return a fragment of the selected nodes.
-
-## RepeatPlugin
-
-Most features of this plugin depend on DomPlugin.
-
-Merging text documents without parsing xml or html is supported and
-
-### filter at:selector:after:before
-
-By default an expression is replaced by its value,
-without affecting surrounding text, tag name, attribute, node, or json object.
-This filter extends the selected range.
-
-The selector changes the current parent:
-
-- ``: the expression itself
-- `-`: the parent node content, or the attribute
-- `*`: the nth selected parent (one wildcard goes up one parent)
-- a css selector: the closest selected parent
-
-Second, by extending to previous or next siblings of the selected parent, using `before` and `after` parameters:
-
-- integer: counts the number of siblings to select (before or after). Empty text nodes are ignored.
-- selector: select siblings until they stop matching that selector.
-
-Note that `after` comes first, since it's the most commonly used parameter, `at:*:br` is prettier than `at:*::br`.
-
-Using at, fail, prune, then, else, to filters, one can control how a value affects selection.
-
-Examples:
-
-- `at::2:1` selects 2 nodes after and one node before the expression
-- `<br>a[val|at::1]b` selects the `<br>`, `a` and `b` strings
-- it is not possible to not select `a` or `b` in previous example
-- `at::b:a` is not defined when destination is an attribute, avoid using it
-- `at:div.card` selects `closest('div.card')`.
-- `at:div.card:1:1` selects also the previous and next siblings of the ancestor.
-- `at:**:1:2|to:class` selects one sibling after and two siblings before parent node, and sets the class on them.
-- `at:*::.column` selects parent node and all next siblings until they stop matching `.column`.
-
-### filter fail:range:before:after
-
-Synonym of `else:at:...`
-
-A very common use case for merging, or removing a range if value is falsey.
-
-### filter prune:range:before:after
-
-Like "at", without actually writing the value,
-this is a shorthand for `at:${range}|const:`.
-
-Useful to test a value and remove selected range if false-ish.
-
-Note that `val|prune:` is the same as `val` only if `val` is empty, and differs if `val` is equal to boolean false.
-
-To remove selected range but actually merge the value if true-ish,
-use instead `fail:*`.
-
-### filter to:target
-
-While `at` filter widens the range around the expression,
-`to` restricts it to text content or to another attribute.
-
-- ``: replace selected range (default)
-- `-`: selects current node content (especially when used inside an attribute)
-- `*`: selects current node. `to:*` and `at:*` are equivalent.
-- `attr`: replace content of this attribute
-
-Examples:
-
-- `to:src` fills the src attribute of the current node
-- `at:div|to:class` fills the class attribute of the closest `div`
-- `val|then:to:class|then:at:p|fail:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
-
-### filter repeat:path:placer?:(...)
-
-Expect the value to be iterable (array, collection, etc...).
-
-Repeats selected range for each item in the value.
-
-The selected range must be set using `at` filter; if not, the selected range will default to `at:*`.
-
-The first component of the path is an alias for the repeated item.
-The remaining path is used to access the item before merging it.
-These expressions are equivalent:
-
-- `[items|at:div|repeat:|.id] has some [text]`
-- `[items|at:div|repeat:my|.id] has some [my.text]`
-- `[items|as:entries|at:div|repeat:item.value|.id] has some [item.text]`
-
-The placer parameter may be a custom filter name:
-
-- it is called *after* the iterated range has been merged, before it is inserted
-- it has (ctx, item, cursor, fragment, ...params) signature
-- cursor: node before which the fragment would have been merged
-- fragment: result of the merge, to be placed or not
-- additional parameters are appended
-
-The placer filter may choose to:
-
-- insert fragment before cursor (the default behavior)
-- insert it somewhere else
-- do nothing in which case the fragment is not inserted
 
 ## Hooks
 
