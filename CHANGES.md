@@ -1,6 +1,10 @@
 # CHANGES
 
-## Version 16.4.0
+## Version 16.4.2
+
+- Detect known boolean attributes that have a different camelCased property
+
+## Version 16.4.1
 
 - Move `at`, `fail`, `prune`, `to` to in core.
 - Refactor attributes merging. Fix some edge cases.
