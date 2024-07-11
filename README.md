@@ -172,6 +172,7 @@ Formats are used directly by the corresponding filter.
 - html: converts string to a dom fragment
 - xml: converts string to an xml fragment
 - url: converts string to an URL instance
+- batt: convert to html boolean attribute
 - keys: array of keys
 - values: array of values
 - entries: arrays of {key, value}
@@ -916,6 +917,11 @@ Formats string with `<br>` in place of new lines.
 ### html, xml formats
 
 Parses string as html or xml.
+
+### format batt
+
+Converts value to boolean, then merge it as its own name if true,
+or null if false.
 
 ### Special behaviors for merging in attributes
 

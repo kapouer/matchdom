@@ -51,6 +51,9 @@ export const formats = {
 			val = XML(val);
 			if (ctx) return ctx.src.doc.importNode(val, true);
 			else return val;
+		},
+		batt(ctx, val) {
+			return val ? ctx.expr.path[ctx.expr.path.length - 1] : null;
 		}
 	}
 };

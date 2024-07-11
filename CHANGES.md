@@ -1,5 +1,10 @@
 # CHANGES
 
+## Version 16.5.0
+
+- as:batt for merging value as boolean attribute.
+  Needed when the actual attribute is not known to be a boolean attribute.
+
 ## Version 16.4.2
 
 - Detect known boolean attributes that have a different camelCased property
