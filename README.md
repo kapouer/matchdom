@@ -449,7 +449,7 @@ Coerces value to type, or converts string to format.
 Sets lang name in current context.
 Used by localized filters.
 
-### filter at:selector:after:before
+### at:selector:after:before
 
 By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, node, or json object.
@@ -484,13 +484,13 @@ Examples:
 - `at:**:1:2|to:class` selects one sibling after and two siblings before parent node, and sets the class on them.
 - `at:*::.column` selects parent node and all next siblings until they stop matching `.column`.
 
-### filter fail:range:before:after
+### fail:range:before:after
 
 Synonym of `else:at:...`
 
 A very common use case for merging, or removing a range if value is falsey.
 
-### filter prune:range:before:after
+### prune:range:before:after
 
 Like "at", without actually writing the value,
 this is a shorthand for `at:${range}|const:`.
@@ -502,7 +502,7 @@ Note that `val|prune:` is the same as `val` only if `val` is empty, and differs 
 To remove selected range but actually merge the value if true-ish,
 use instead `fail:*`.
 
-### filter to:target
+### to:target
 
 While `at` filter widens the range around the expression,
 `to` restricts it to text content or to another attribute.
@@ -520,7 +520,7 @@ Examples:
 
 ## RepeatPlugin
 
-### filter repeat:path:placer?:(...)
+### repeat:path:placer?:(...)
 
 Expect the value to be iterable (array, collection, etc...).
 
@@ -598,9 +598,13 @@ Prepends or appends string if value is not null or not empty.
 
 Uppercase, lowercase, or unicode-capitalize sentences.
 
-### dec, enc:base64|base64url|url|hex
+### enc:base64|base64url|url|hex
 
-Decodes/encodes to specified encoding.
+Encodes to specified encoding.
+
+### dec:base64|base64url|url|hex
+
+Decodes from specified encoding.
 
 ### split:tok
 
@@ -730,7 +734,7 @@ Calls `list.join(tok)`.
 
 ## OpsPlugin
 
-### switch
+### switch:args*
 
 switch:key1:val1:key2:val2:...
 
@@ -755,9 +759,7 @@ An empty key match a null value.
 - lte:num
   lesser or equal
 
-### if filter
-
-- if:filter:param*
+### if:filter:param*
 
 Runs the following filter.
 
@@ -794,7 +796,7 @@ Formats a currency.
 
 ## DatePlugin
 
-### date type
+### type date
 
 Converts string or timestamp to date.
 
@@ -858,7 +860,7 @@ Units are: Y, M, D, h, m, s.
 
 ## JsonPlugin
 
-### obj type
+### type obj
 
 Converts an object into a model that allows it to be merged as a tree.
 
@@ -881,17 +883,17 @@ The repeated fragment is implicitely converted into array, when needed.
 
 In the above example, removing the enclosing array gives the same result only if there is more than one element to merge.
 
-### obj format
+### format obj
 
 Tries to parse a json string into an object.
 
-### json format
+### format json
 
 Converts object into json string.
 
 ## UrlPlugin
 
-### url type
+### type url
 
 Converts string to an instance of a subclass of an URL.
 
@@ -902,7 +904,7 @@ The default location is document.location if it exists, or `null://`.
 It also exposes the `query` property, which is a URLSearchParams canonically converted to an object where entries with same key are grouped into arrays.
 Setting the `query` property to a string actually sets the `search` property, and if given an object (by another filter), it casts it to a query type then sets searchParams.
 
-### query type
+### type query
 
 Canonically converts an object, or string, into QURLSearchParams, where array values become appended several times.
 
@@ -910,11 +912,11 @@ QURLSearchParams is like URLSearchParams, except that it prepends '?' when conve
 
 ## DomPlugin
 
-### text format
+### format text
 
 Formats string with `<br>` in place of new lines.
 
-### html, xml formats
+### format html xml
 
 Parses string as html or xml.
 
@@ -930,11 +932,11 @@ or null if false.
 - if the value is boolean `true`, merged in a DOMTokenList, the last key
 of the expression path is used as the value. If it is `false`, it is replaced by null - this behavior is implemented using an `afterEach` hook.
 
-### filter one:selector
+### one:selector
 
 If the current value is a dom node or fragment, runs querySelector(selector) on it.
 
-### filter all:selector
+### all:selector
 
 If the current value is a dom node or fragment, runs querySelectorAll(selector) on it,
 and return a fragment of the selected nodes.
