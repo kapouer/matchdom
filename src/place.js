@@ -290,7 +290,12 @@ export default class Place {
 
 function writeAttr(node, attr, { another, str, trm }) {
 	const attrList = node[attr + 'List'];
-	if (typeof node[attr] == "boolean") {
+	const prop = {
+		readonly: 'readOnly',
+		selected: 'defaultSelected',
+		checked: 'defaultChecked'
+	}[attr] ?? attr;
+	if (typeof node[prop] == "boolean") {
 		if (str === true) node.setAttribute(attr, "");
 		else if (!str) node.removeAttribute(attr);
 		else node.setAttribute(attr, str);

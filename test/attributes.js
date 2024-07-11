@@ -39,6 +39,9 @@ describe('attributes', () => {
 			assert.equal(md.merge(`<div anything="[test]">a</div>`, {
 				test: ''
 			}).outerHTML, '<div anything="">a</div>');
+			assert.equal(md.merge(`<input readonly="[test]">`, {
+				test: true
+			}).outerHTML, '<input readonly="">');
 		});
 
 		it('should merge dom fragment', () => {
