@@ -96,10 +96,16 @@ export class Matchdom {
 			} else if (this.types.text) {
 				wasText = true;
 				root = this.types.text(null, root);
+			} else {
+				console.warn("Missing matchdom plugin for string");
 			}
-		} else if (this.types.obj && ([undefined, Object].includes(root.constructor) || Array.isArray(root))) {
-			wasJSON = true;
-			root = this.types.obj(null, root);
+		} else if ([undefined, Object].includes(root.constructor) || Array.isArray(root)) {
+			if (this.types.obj) {
+				wasJSON = true;
+				root = this.types.obj(null, root);
+			} else {
+				console.warn("Missing matchdom plugin for object or array");
+			}
 		} else if (root.nodeType == 11) {
 			wasFrag = true;
 		}
