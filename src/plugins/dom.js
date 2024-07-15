@@ -51,18 +51,15 @@ export const formats = {
 			val = XML(val);
 			if (ctx) return ctx.src.doc.importNode(val, true);
 			else return val;
-		},
-		batt(ctx, val) {
-			return val ? ctx.expr.path[ctx.expr.path.length - 1] : null;
 		}
 	}
 };
 
 export const hooks = {
-	afterAll({ dest, expr }, val) {
-		if (dest.attr && dest.node[dest.attr + 'List']) {
-			if (val === true) return expr.path[expr.path.length - 1];
-			else if (val === false) return null;
+	afterAll(ctx, val) {
+		const { dest, md } = ctx;
+		if (dest.attr && dest.node[dest.attr + 'List'] && typeof val == "boolean") {
+			return md.formats.as.list(ctx, val);
 		}
 	}
 };

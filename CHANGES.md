@@ -1,5 +1,12 @@
 # CHANGES
 
+## Version 17.0.0
+
+- document behavior for DOMTokensList and boolean attributes, and booleans
+- drop the DomPlugin format `batt` because `alt:` does the same.
+- add the core format `list` to cover the attributes list case.
+- path:path allows one to merge ctx.expr.path array
+
 ## Version 16.5.0
 
 - as:batt for merging value as boolean attribute.

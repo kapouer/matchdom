@@ -509,27 +509,3 @@ describe('at filter', () => {
 
 });
 
-describe('batt format', () => {
-	before(function () {
-		this.jsdom = globalJsdom();
-	});
-	after(function () {
-		this.jsdom();
-	});
-	const md = new Matchdom(DomPlugin, OpsPlugin, RepeatPlugin);
-	it('should merge to true to boolean attribute', () => {
-		const html = `<element-test checked="[checked|as:batt]">test</element-test>`;
-		const copy = md.merge(html, {
-			checked: true
-		});
-		assert.equal(copy.outerHTML, '<element-test checked="checked">test</element-test>');
-	});
-
-	it('should merge to false to boolean attribute', () => {
-		const html = `<element-test checked="[checked|as:batt]">test</element-test>`;
-		const copy = md.merge(html, {
-			checked: false
-		});
-		assert.equal(copy.outerHTML, '<element-test>test</element-test>');
-	});
-});

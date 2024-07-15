@@ -268,6 +268,18 @@ export const formats = {
 			const copy = new (Object.getPrototypeOf(obj).constructor)(obj);
 			if (copy === obj) return Object.assign({}, obj);
 			else return copy;
+		},
+		list({ expr }, val, opts) {
+			if (!val) return null;
+			if (typeof val == "object") {
+				const list = [];
+				for (const [k, v] of Object.entries(val)) {
+					if (v) list.push(k);
+				}
+				return list.length ? list.join(opts?.[0] ?? ' ') : null;
+			} else {
+				return expr.path[expr.path.length - 1];
+			}
 		}
 	}
 };

@@ -172,7 +172,7 @@ Formats are used directly by the corresponding filter.
 - html: converts string to a dom fragment
 - xml: converts string to an xml fragment
 - url: converts string to an URL instance
-- batt: convert to html boolean attribute
+- list: convert boolean to last name, or object to list of keys having true-ish values
 - keys: array of keys
 - values: array of values
 - entries: arrays of {key, value}
@@ -365,6 +365,16 @@ Rebasing only happens before last filter; thus, if it was used once, the rebased
 ### path:key
 
 Applies `get:key` to `ctx.expr.path` array.
+
+### as:list:join?
+
+Converts a boolean to its last path name.
+
+If value is an object, each value of its entries is evaluated the same way.
+
+The resulting list is space-separated unless `join` is specified.
+
+Useful for attributesList-type when an attribute has not that type.
 
 ### set:mutation*
 
@@ -581,7 +591,14 @@ Like `not:then:`
 
 Ternary operator, shorthand for "and:yes|or:no"
 
-Second parameter can be omitted
+Second parameter can be omitted, in which case it is null.
+
+Example of usage for non-detected boolean attributes:
+
+```js
+md.merge(`<x-el active="[val|alt:]">`, { val: true })
+// <x-el active=""> or <x-el> if val is false
+```
 
 ## TextPlugin
 
@@ -924,17 +941,27 @@ Formats string with `<br>` in place of new lines.
 
 Parses string as html or xml.
 
-### format batt
+### format attr
 
-Converts value to boolean, then merge it as its own name if true,
-or null if false.
+Same as `|then:path:last|as:null`.
 
-### Special behaviors for merging in attributes
+Useful for merging a boolean value with the name of its path.
 
-- if it has a DOMTokenList interface like `class`, and if source expression is different from destination, tokens are added. Otherwise the whole attribute is set.
-- if the attribute is "boolean", it is set to empty when value is true, and removed when value is false.
-- if the value is boolean `true`, merged in a DOMTokenList, the last key
-of the expression path is used as the value. If it is `false`, it is replaced by null - this behavior is implemented using an `afterEach` hook.
+### automatic behaviors related to booleans and attributes
+
+When merging in a boolean attribute (i.e. with a node having a boolean property with same name), the final value is merged as if `|alt:` filter was applied.
+
+```js
+md.merge(`<p hidden="[test]">`, { test: true }) == '<p hidden>')
+```
+
+When merging a boolean into a DOMTokenList attribute, the DomPlugin appends `as:list`:
+
+```js
+md.merge(`<p class="one [test]">`, { test: true }) == '<p class="one test">')
+```
+
+If the source expression comes from another place (using a combination of `at` and `to`), it is added to the tokens.
 
 ### one:selector
 

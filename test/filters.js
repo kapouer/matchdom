@@ -185,6 +185,45 @@ describe('filters', () => {
 		});
 	});
 
+	describe('list format', () => {
+		before(function () {
+			this.jsdom = globalJsdom();
+		});
+		after(function () {
+			this.jsdom();
+		});
+		const md = new Matchdom(DomPlugin);
+		it('should merge to true to boolean attribute', () => {
+			const html = `<x-test list="[obj.one|as:list] [obj.two|as:list]">test</x-test>`;
+			const copy = md.merge(html, {
+				obj: {
+					one: true,
+					two: true
+				}
+			});
+			assert.equal(copy.outerHTML, '<x-test list="one two">test</x-test>');
+		});
+
+		it('should merge whole object to false to boolean attribute', () => {
+			const html = `<x-test list="[obj|as:list]">test</x-test>`;
+			const copy = md.merge(html, {
+				obj: {
+					one: true,
+					two: true
+				}
+			});
+			assert.equal(copy.outerHTML, '<x-test list="one two">test</x-test>');
+		});
+
+		it('should merge whole object to false to boolean attribute', () => {
+			const html = `<x-test list="[obj|as:list]">test</x-test>`;
+			const copy = md.merge(html, {
+				obj: {}
+			});
+			assert.equal(copy.outerHTML, '<x-test>test</x-test>');
+		});
+	});
+
 	describe('rebase filter', () => {
 		const md = new Matchdom(TextPlugin);
 		it('should return value', () => {
