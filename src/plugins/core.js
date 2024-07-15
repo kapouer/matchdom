@@ -49,6 +49,9 @@ export const filters = {
 			return ctx.expr.get(data, path, ctx.data);
 		}
 	}],
+	path: ['?', 'path', (ctx, d, path) => {
+		return ctx.expr.get(ctx.expr.path, path);
+	}],
 	assign: ['?', 'path*', (ctx, data, ...paths) => {
 		const params = ['set'];
 		while (paths.length) {

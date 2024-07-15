@@ -362,6 +362,10 @@ The second time it returns `expr.rebase`:
 
 Rebasing only happens before last filter; thus, if it was used once, the rebased value is returned at the end of the expression.
 
+### path:key
+
+Applies `get:key` to `ctx.expr.path` array.
+
 ### set:mutation*
 
 Apply a set of mutations on current value.

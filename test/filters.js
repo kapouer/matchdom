@@ -506,6 +506,20 @@ describe('filters', () => {
 		});
 	});
 
+	describe('path filter', () => {
+		const md = new Matchdom(TextPlugin);
+
+		it('should get path', () => {
+			const copy = md.merge(`[obj.test|path:]`, { obj: { test: 'toto' }});
+			assert.deepEqual(copy, ['obj', 'test']);
+		});
+
+		it('should get path name', () => {
+			const copy = md.merge(`[obj.test|path:last]`, { obj: { test: 'toto' } });
+			assert.deepEqual(copy, 'test');
+		});
+	});
+
 	describe('const filter', () => {
 		const md = new Matchdom(DomPlugin);
 
