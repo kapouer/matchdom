@@ -29,13 +29,14 @@ const mergedDom = md.merge(`<div id="model" class="[myclass]">
  n: 4,
  myclass: "yes",
  data: {
-  text: "<em>test</em>"
+  text: "<em>test</em>",
+  percent: 0.54287
  }
 });
 
 assert.equal(mergedDom.outerHTML, `<div id="model" class="yes">
  <h4>Header</h4>
- <span><em>test</em></span>
+ <span><em>test</em> for 54.2%</span>
 </div>`);
 ```
 
