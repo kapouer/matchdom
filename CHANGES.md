@@ -1,5 +1,10 @@
 # CHANGES
 
+## Version 17.1.0
+
+- as:null, as:none now call the value toString() method, if any, before comparison.
+  In particular, `as:query|as:null` returns null for query.
+
 ## Version 17.0.0
 
 - document behavior for DOMTokensList and boolean attributes, and booleans

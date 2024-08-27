@@ -143,10 +143,12 @@ The `as` and `is` filters are useful to explicitely cast or check a value type.
 
 ### simple types (hard-coded)
 
-- undefined, none: converts null-ish to undefined, leave other values intact
-- null: converts false-ish to null, leave other values intact
+The string value is obtained using `val.toString()` if it exists, else it is val.
+
+- undefined, none: converts null-ish string value to undefined, or return value
+- null: converts false-ish string value to null, or return value
 - integer, int: try to parseInt, return 0 if NaN
-- string, str: toString
+- string, str: return string value
 - boolean, bool: "true", "1" and true-ish to true, "false", "0", and false-ish to false
 - float, num, numeric: try to parseFloat, return 0 if NaN
 - object: not any of the other simple types

@@ -152,5 +152,20 @@ describe('url plugin', () => {
 			});
 			assert.equal(copy2.outerHTML, '<a href="/test">lien</a>');
 		});
+
+		it('should return instance', () => {
+			const copy = md.merge(`[obj|as:query]`, { obj: {} });
+			assert.ok(copy instanceof URLSearchParams);
+		});
+
+		it('should return empty string', () => {
+			const copy = md.merge(`a[obj|as:query]`, { obj: {} });
+			assert.equal(copy, "a");
+		});
+
+		it('should return null when url query is empty with as:null', () => {
+			const copy = md.merge(`[obj|as:query|as:null]`, { obj: {} });
+			assert.equal(copy, null);
+		});
 	});
 });

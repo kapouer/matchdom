@@ -165,25 +165,26 @@ export const filters = {
 		return ret;
 	}],
 	as(ctx, val, type, ...params) {
+		const str = val?.toString?.() ?? val;
 		if (type == "none" || type == "undefined") {
-			if (!val) return undefined;
+			if (!str) return undefined;
 			else return val;
 		} else if (type == "null") {
-			if (!val) return null;
+			if (!str) return null;
 			else return val;
 		} else if (val === undefined) {
 			// may happen when called by another filter
 			return val;
 		}
 		if (type == "bool" || type == "boolean") {
-			if (val == "true" || val == "1") val = true;
-			else if (val == "false" || val == "0") val = false;
+			if (str == "true" || str == "1") val = true;
+			else if (str == "false" || str == "0") val = false;
 			else if (val instanceof Date) val = Boolean(val.getTime());
 			else val = Boolean(val);
 			return val;
 		} else if (type == "str" || type == "string") {
 			if (val == null) return "";
-			else return val.toString();
+			else return str;
 		} else if (type == "int" || type == "integer") {
 			val = Number.parseInt(val);
 			if (Number.isNaN(val)) val = 0;
