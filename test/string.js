@@ -51,6 +51,64 @@ describe('case', () => {
 	});
 });
 
+describe('enc', () => {
+	const md = new Matchdom(StringPlugin, TextPlugin);
+
+	it('should encode to base64', () => {
+		const str = 'test';
+		assert.equal(md.merge("[str|enc:base64]", { str }), btoa(str));
+	});
+
+	it('should encode to base64url', () => {
+		const str = 'test';
+		assert.equal(md.merge("[str|enc:base64url]", { str }), btoa(str).replace(/=*/g, ''));
+	});
+
+	it('should encode to url', () => {
+		const str = 'test+.';
+		assert.equal(md.merge("[str|enc:url]", { str }), encodeURIComponent(str));
+	});
+
+	it('should encode to hex', () => {
+		const str = 'test+';
+		assert.equal(md.merge("[str|enc:hex]", { str }), '746573742b');
+	});
+
+	it('should encode to path', () => {
+		const str = 'test.key';
+		assert.equal(md.merge("[str|enc:path]", { str }), str.replace('.', '%2E'));
+	});
+});
+
+describe('dec', () => {
+	const md = new Matchdom(StringPlugin, TextPlugin);
+
+	it('should decode from base64', () => {
+		const str = btoa('test');
+		assert.equal(md.merge("[str|dec:base64]", { str }), atob(str));
+	});
+
+	it('should decode from base64url', () => {
+		const str = btoa('test');
+		assert.equal(md.merge("[str|dec:base64url]", { str }), atob(str));
+	});
+
+	it('should decode from url', () => {
+		const str = 'test%2E';
+		assert.equal(md.merge("[str|dec:url]", { str }), decodeURIComponent(str));
+	});
+
+	it('should decode from hex', () => {
+		const str = '746573742b';
+		assert.equal(md.merge("[str|dec:hex]", { str }), 'test+');
+	});
+
+	it('should encode from path', () => {
+		const str = 'test%2Ekey';
+		assert.equal(md.merge("[str|dec:path]", { str }), decodeURIComponent(str));
+	});
+});
+
 describe('trim', () => {
 	const md = new Matchdom(StringPlugin, DomPlugin);
 	it('out', () => {

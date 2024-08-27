@@ -46,7 +46,7 @@ export const filters = {
 		if (val == null || val === '') return ctx.raw;
 		return val + str;
 	}],
-	enc: ['?', 'base64|base64url|hex|url', (ctx, str, type) => {
+	enc: ['?', 'base64|base64url|hex|url|path', (ctx, str, type) => {
 		if (!str) return ctx.raw;
 		str = str.toString();
 		switch (type) {
@@ -58,14 +58,16 @@ export const filters = {
 					c.charCodeAt(0).toString(16) :
 					encodeURIComponent(c).replace(/%/g, '').toLowerCase();
 			}).join('');
+			case "path": return str.replace(/\./g, '%2E');
 		}
 	}],
-	dec: ['str', 'base64|base64url|hex|url', (x, str, type) => {
+	dec: ['str', 'base64|base64url|hex|url|path', (x, str, type) => {
 		switch (type) {
 			case "base64url":
 			case "base64": return atob(str);
 			case "url": return decodeURIComponent(str);
 			case "hex": return decodeURIComponent('%' + str.match(/.{1,2}/g).join('%'));
+			case "path": return str.replace(/%2E/g, '.');
 		}
 	}],
 	split: ['?', 'str', (x, str, tok) => {

@@ -622,11 +622,11 @@ Prepends or appends string if value is not null or not empty.
 
 Uppercase, lowercase, or unicode-capitalize sentences.
 
-### enc:base64|base64url|url|hex
+### enc:base64|base64url|url|hex|path
 
 Encodes to specified encoding.
 
-### dec:base64|base64url|url|hex
+### dec:base64|base64url|url|hex|path
 
 Decodes from specified encoding.
 
