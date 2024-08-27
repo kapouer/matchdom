@@ -1,5 +1,9 @@
 # CHANGES
 
+## Version 17.2.0
+
+- enc/dev filters: add path format. Improve hex format.
+
 ## Version 17.1.0
 
 - as:null, as:none now call the value toString() method, if any, before comparison.
