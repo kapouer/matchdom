@@ -53,11 +53,10 @@ export const filters = {
 			case "base64": return btoa(str);
 			case "base64url": return btoa(str).replace(/=*$/, '');
 			case "url": return encodeURIComponent(str);
-			case "hex": return Array.from(str).map(c => {
-				return c.charCodeAt(0) < 128 ?
-					c.charCodeAt(0).toString(16) :
-					encodeURIComponent(c).replace(/%/g, '').toLowerCase();
-			}).join('');
+			case "hex": return Array.from(
+				new TextEncoder().encode(str),
+				i => i.toString(16).padStart(2, "0")
+			).join('');
 			case "path": return str.replace(/\./g, '%2E');
 		}
 	}],
@@ -66,7 +65,9 @@ export const filters = {
 			case "base64url":
 			case "base64": return atob(str);
 			case "url": return decodeURIComponent(str);
-			case "hex": return decodeURIComponent('%' + str.match(/.{1,2}/g).join('%'));
+			case "hex": return new TextDecoder().decode(
+				new Uint8Array(Array.from(str.match(/.{1,2}/g), i => parseInt(i, 16)))
+			);
 			case "path": return str.replace(/%2E/g, '.');
 		}
 	}],
