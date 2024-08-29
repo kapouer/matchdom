@@ -1,5 +1,12 @@
 # CHANGES
 
+## Version 17.3.0
+
+- range selector to select topmost parent element
+- range can select all after/before siblings
+
+Fix documention of range for prune, fail.
+
 ## Version 17.2.0
 
 - enc/dev filters: add path format. Improve hex format.

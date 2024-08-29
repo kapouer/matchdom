@@ -477,6 +477,7 @@ The selector changes the current parent:
 - ``: the expression itself
 - `-`: the parent node content, or the attribute
 - `*`: the nth selected parent (one wildcard goes up one parent)
+- `/`: the topmost parent element
 - a css selector: the closest selected parent
 
 The meaning of the selector depends on the Object Model (Text, JSON, Document).
@@ -485,6 +486,7 @@ Second, by extending to previous or next siblings of the selected parent, using 
 
 - integer: counts the number of siblings to select (before or after). Empty text nodes are ignored.
 - selector: select siblings until they stop matching that selector.
+- `*`: select all siblings in that direction
 
 Note that `after` comes first, since it's the most commonly used parameter, `at:*:br` is prettier than `at:*::br`.
 
