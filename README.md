@@ -501,16 +501,16 @@ Examples:
 - `at:**:1:2|to:class` selects one sibling after and two siblings before parent node, and sets the class on them.
 - `at:*::.column` selects parent node and all next siblings until they stop matching `.column`.
 
-### fail:range:before:after
+### fail:selector:after:before
 
 Synonym of `else:at:...`
 
 A very common use case for merging, or removing a range if value is falsey.
 
-### prune:range:before:after
+### prune:selector:after:before
 
 Like "at", without actually writing the value,
-this is a shorthand for `at:${range}|const:`.
+this is a shorthand for `at:...|const:`.
 
 Useful to test a value and remove selected range if false-ish.
 
