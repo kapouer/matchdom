@@ -221,18 +221,18 @@ export const filters = {
 	at: ['?', 'str?', 'str?', 'str?', (ctx, val, ancestor, after, before) => {
 		const { dest } = ctx;
 		dest.ancestor = ancestor;
-		if (!before) {
-			dest.before = 0;
-		} else {
-			const bef = parseInt(before);
-			dest.before = bef == before ? bef : before;
-		}
-		if (!after) {
-			dest.after = 0;
-		} else {
-			const aft = parseInt(after);
-			dest.after = aft == after ? aft : after;
-		}
+		const parseRange = v => {
+			if (!v) {
+				return 0;
+			} else if (v == "*") {
+				return Infinity;
+			} else {
+				const i = parseInt(v);
+				return i == v ? i : v;
+			}
+		};
+		dest.before = parseRange(before);
+		dest.after = parseRange(after);
 		if (ancestor) dest.reduceHit();
 		dest.extend(ctx.src.target);
 		return ctx.raw;

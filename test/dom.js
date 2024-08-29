@@ -436,6 +436,50 @@ describe('at filter', () => {
 		assert.equal(copy.outerHTML, '<div><span class="toto">test</span></div>');
 	});
 
+	it('should set attribute on top node', () => {
+		const html = `<table><tbody>
+			<th><td>Hello[test|at:/|to:class]</td></tr>
+		</tbody></table>`;
+		const copy = md.merge(html, {
+			test: true // nothing is fine too
+		});
+		assert.equal(copy.outerHTML, md.merge(`<table class="test"><tbody>
+			<th><td>Hello</td></tr>
+		</tbody></table>`).outerHTML);
+	});
+
+	it('should set attribute on top node and siblings', () => {
+		const html = `<div class="one"></div>
+			<div class="two"></div>
+			<div class="three">[test|at:/:2:2|to:class]</div>
+			<div class="four"></div>
+			<div class="five"></div>`;
+		const copy = md.merge(html, {
+			test: true // nothing is fine too
+		});
+		assert.equal(copy.outerHTML, md.merge(`<div class="one test"></div>
+			<div class="two test"></div>
+			<div class="three test"></div>
+			<div class="four test"></div>
+			<div class="five test"></div>`).outerHTML);
+	});
+
+	it('should set attribute on top node and all siblings', () => {
+		const html = `<div class="one"></div>
+			<div class="two"></div>
+			<div class="three">[test|at:/:*:*|to:class]</div>
+			<div class="four"></div>
+			<div class="five"></div>`;
+		const copy = md.merge(html, {
+			test: true // nothing is fine too
+		});
+		assert.equal(copy.outerHTML, md.merge(`<div class="one test"></div>
+			<div class="two test"></div>
+			<div class="three test"></div>
+			<div class="four test"></div>
+			<div class="five test"></div>`).outerHTML);
+	});
+
 	it('should move attribute from one node to its parent', () => {
 		const html = `<section><div><span class="[test|at:div|to:class]">test</span></div></section>`;
 		const copy = md.merge(html, {

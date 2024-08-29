@@ -61,32 +61,38 @@ export default class Place {
 	}
 
 	extend(from) {
-		const { ancestor } = this;
+		const { ancestor, node } = this;
 		if (!ancestor) return;
-		let parent = this.node;
+		let parent = node;
+		let target;
 		if (ancestor == "-") {
 			if (from == Place.ATTR || from == Place.TAG) {
-				this.target = from;
+				target = from;
 			} else {
-				this.target = Place.CONT;
+				target = Place.CONT;
 			}
-		} else if (ancestor) {
-			if (/^\*+$/.test(ancestor)) {
-				let ups = ancestor.length - 1;
-				while (ups-- > 0) {
-					parent = parent.parentNode;
-				}
-			} else {
-				parent = parent.closest(ancestor);
+		} else if (ancestor == "/") {
+			while (parent.parentNode?.attributes) {
+				parent = parent.parentNode;
 			}
-			if (!parent) {
-				console.warn("ancestor not found:", ancestor);
-				parent = this.node;
+		} else if (/^\*+$/.test(ancestor)) {
+			let ups = ancestor.length - 1;
+			while (ups-- > 0) {
+				parent = parent.parentNode;
 			}
-			if (parent.parentNode) this.target = Place.NODE;
-			else this.target = Place.CONT;
-			this.node = parent;
+		} else {
+			parent = parent.closest(ancestor);
 		}
+		if (!parent) {
+			console.warn("ancestor not found:", ancestor);
+			parent = node;
+		}
+		if (!target) {
+			if (parent.parentNode) target = Place.NODE;
+			else target = Place.CONT;
+		}
+		this.target = target;
+		this.node = parent;
 	}
 
 	checkSibling(cursor, asc) {
