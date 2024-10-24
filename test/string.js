@@ -204,6 +204,11 @@ describe('test filter', () => {
 		assert.equal(md.merge('[str|test:a?a:0-9]', { str: 'a3a' }), true);
 		assert.equal(md.merge('[str|test:a?a:0-9]', { str: 'aFa' }), false);
 	});
+	it('should test with unspecified wildcards', () => {
+		assert.equal(md.merge('[str|test:a.*aa]', { str: 'a654aa' }), true);
+		assert.equal(md.merge('[str|test:+a.*:^]', { str: '5ag' }), true);
+		assert.equal(md.merge('[str|test:.+a.*]', { str: 'ag' }), false);
+	});
 	it('should return regexp', () => {
 		assert.equal(md.merge('[str|as:pattern:0-9:a-z]', { str: '*a*' }).source, "^([0-9]*)a([a-z]*)$");
 	});

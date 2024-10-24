@@ -662,9 +662,11 @@ Tests if value matches a simplified pattern.
 
 A pattern is built by replacing wildcards *, +, ? like this:
 
-`test:start*end:a-zA-Z` gives this regexp: `/start[a-zA-Z]*end/`.
+`test:start*end:a-zA-Z` gives this regexp: `/^start[a-zA-Z]*end$/`.
 
 If there is no parameter for the class, the wildcard is not replaced.
+
+To match anything, just use `^` class.
 
 ### match:pattern:classes*
 
