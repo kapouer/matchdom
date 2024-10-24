@@ -1,4 +1,5 @@
 import { strict as assert } from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import globalJsdom from 'global-jsdom';
 import { Matchdom, DomPlugin, UrlPlugin, RepeatPlugin } from 'matchdom';
 

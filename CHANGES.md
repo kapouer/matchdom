@@ -1,5 +1,9 @@
 # CHANGES
 
+## Version 18.0.0
+
+- Move to node:test module.
+
 ## Version 17.3.0
 
 - range selector to select topmost parent element

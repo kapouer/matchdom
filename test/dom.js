@@ -1,4 +1,5 @@
 import { strict as assert } from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, OpsPlugin, StringPlugin,
@@ -549,6 +550,13 @@ describe('at filter', () => {
 			<span>oui</span>
 			<section>1</section>
 		</div>`.replaceAll(/\s/g, ''));
+	});
+
+	it('should fail on missing object', () => {
+		const copy = md.merge(`<div>
+			<span>[item?|fail:*|.value]</span>
+		</div>`, {});
+		assert.equal(copy.outerHTML.replaceAll(/\s/g, ''), `<div></div>`);
 	});
 
 });

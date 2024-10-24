@@ -1,4 +1,5 @@
 import { strict as assert } from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, StringPlugin,
@@ -204,7 +205,7 @@ describe('filters', () => {
 			assert.equal(copy.outerHTML, '<x-test list="one two">test</x-test>');
 		});
 
-		it('should merge whole object to false to boolean attribute', () => {
+		it('should merge whole object to boolean attribute', () => {
 			const html = `<x-test list="[obj|as:list]">test</x-test>`;
 			const copy = md.merge(html, {
 				obj: {
@@ -407,6 +408,13 @@ describe('filters', () => {
 			const md = new Matchdom(DomPlugin);
 			const html = `<p class="[val|as:null]">test</p>`;
 			const copy = md.merge(html, {val: ''});
+			assert.equal(copy.outerHTML, '<p>test</p>');
+		});
+
+		it('should set to null if false', () => {
+			const md = new Matchdom(DomPlugin);
+			const html = `<p class="[val|as:null]">test</p>`;
+			const copy = md.merge(html, { val: false });
 			assert.equal(copy.outerHTML, '<p>test</p>');
 		});
 

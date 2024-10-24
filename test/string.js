@@ -1,5 +1,14 @@
 import { strict as assert } from 'node:assert';
+import { describe, it, beforeEach, afterEach } from 'node:test';
 import { Matchdom, StringPlugin, DomPlugin, DatePlugin, TextPlugin } from 'matchdom';
+import globalJsdom from 'global-jsdom';
+
+beforeEach(function () {
+	this.jsdom = globalJsdom();
+});
+afterEach(function () {
+	this.jsdom();
+});
 
 describe('pre', () => {
 	const md = new Matchdom(StringPlugin, DomPlugin);

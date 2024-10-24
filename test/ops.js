@@ -1,4 +1,5 @@
 import { strict as assert } from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import {
 	Matchdom, OpsPlugin, TextPlugin
 } from 'matchdom';
@@ -40,6 +41,11 @@ describe('gt', () => {
 	it('should fail to parse float and return value', () => {
 		const html = `[val|gt:0.5]`;
 		const copy = md.merge(html, { val: 'xx' });
+		assert.equal(copy, false);
+	});
+	it('should return null', () => {
+		const html = `[list?.length|gt:0|as:null]`;
+		const copy = md.merge(html, {  list: [] });
 		assert.equal(copy, false);
 	});
 });

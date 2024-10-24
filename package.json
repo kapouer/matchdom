@@ -12,7 +12,7 @@
     "src/"
   ],
   "scripts": {
-    "test": "mocha"
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -32,9 +32,8 @@
   "homepage": "https://github.com/kapouer/matchdom#readme",
   "devDependencies": {
     "@kapouer/eslint-config": "^2.0.0",
-    "global-jsdom": "^24.0.0",
-    "jsdom": "^24.1.0",
-    "mocha": "^10.4.0"
+    "global-jsdom": "^25.0.0",
+    "jsdom": "^25.0.1"
   },
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
@@ -53,9 +52,6 @@
         ],
         "parserOptions": {
           "sourceType": "module"
-        },
-        "env": {
-          "mocha": true
         }
       }
     ]

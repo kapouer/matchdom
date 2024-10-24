@@ -1,4 +1,5 @@
 import { strict as assert } from 'node:assert';
+import { describe, it, before, after } from 'node:test';
 import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, RepeatPlugin, OpsPlugin, JsonPlugin, DomPlugin, ArrayPlugin
@@ -166,21 +167,29 @@ describe('json plugin', () => {
 		});
 
 		it('should fail correct range', () => {
-			const tjson = {
+			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
+			md.debug = true;
+			assert.deepEqual(md.merge({
 				list: {
 					num: '[item.id|fail:*]',
 					desc: '[item.title]'
 				}
-			};
-			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
-			md.debug = true;
-			const copy = md.merge(tjson, {
-				item:  { id: null, title: 'title1' }
-			});
-			assert.deepEqual(copy, {
+			}, {
+				item: { id: null, title: 'title1' }
+			}), {
 				list: {
 					desc: 'title1'
 				}
+			});
+			assert.deepEqual(md.merge({
+				list: {
+					num: '[item|fail:*|.id]',
+					desc: '[item|fail:*|.title]'
+				}
+			}, {
+
+			}), {
+				list: {}
 			});
 		});
 
