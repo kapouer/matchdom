@@ -8,6 +8,19 @@ export const types = {
 		}) + '$');
 	}
 };
+export const formats = {
+	as: {
+		flag(ctx, code) {
+			if (!code) return code;
+			code = code.toUpperCase();
+			const reg = new Intl.DisplayNames(undefined, { type: 'region' });
+			if (!reg.of(code)) return null;
+			return String.fromCodePoint(
+				...code.split('').map(char => 127397 + char.charCodeAt())
+			);
+		}
+	}
+};
 export const filters = {
 	case: ['?', 'up|low|caps', (ctx, val, how) => {
 		if (!val) return ctx.raw;

@@ -3,6 +3,7 @@
 ## Version 18.0.0
 
 - Move to node:test module.
+- as:flag returns emoji from country code
 
 ## Version 17.3.0
 

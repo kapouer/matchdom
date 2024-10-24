@@ -616,6 +616,12 @@ Filters will be added to allow multiline manipulations.
 
 ## StringPlugin
 
+### format flag
+
+Maps alphabetic letters to regional letters.
+
+Use it to convert ISO 3166-1 country codes to emoji country flags.
+
 ### pre:str, post:str
 
 Prepends or appends string if value is not null or not empty.
