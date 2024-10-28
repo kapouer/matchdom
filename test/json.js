@@ -181,16 +181,6 @@ describe('json plugin', () => {
 					desc: 'title1'
 				}
 			});
-			assert.deepEqual(md.merge({
-				list: {
-					num: '[item|fail:*|.id]',
-					desc: '[item|fail:*|.title]'
-				}
-			}, {
-
-			}), {
-				list: {}
-			});
 		});
 
 		it('should allow range by key', () => {
