@@ -105,7 +105,9 @@ export default class Context {
 					}
 				}
 			}
-			if (val === undefined && !expr.last || expr.cancel) break;
+			if (val === undefined && !expr.last || expr.cancel) {
+				break;
+			}
 			const filter = expr.filters[expr.filter++];
 			val = this.filter(val, filter);
 		}
