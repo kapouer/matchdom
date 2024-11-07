@@ -5,12 +5,16 @@ DSL for merging data into HTML, JSON, or Text object models.
 A matchdom expression describes a chain of "filter" functions:
 `[func1:param1|func2:param2]`.
 
-Filter functions transform root value until the expression can be merged.
+Filter functions transform passed value until the expression can be merged.
 
 `md.merge(node, data)` mutates `node`.
 
 Using the appropriate plugin, `node` can be an HTML fragment parsed into DOM,
 or a JSON object or plain text. If it cannot be modeled, it is returned as-is.
+
+Since `merge` mutates nodes in their current document model, it is also possible
+to merge multiple nodes, one by one, to avoid a costly search over all the nodes
+of the document tree.
 
 ## example
 
