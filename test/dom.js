@@ -36,6 +36,16 @@ describe('dom', () => {
 			assert.equal(copy.outerHTML, '<span>test</span>');
 		});
 
+		it('should allow child node to modify ancestors', () => {
+			const div = document.createElement('div');
+			div.innerHTML = '<p><span>[test|at:div|to:class]text</span></p><p><span>[test2|at:div|to:class]text2</span></p>';
+			for (const node of div.querySelectorAll('span')) md.merge(node, {
+				test: 'test',
+				test2: 'test2'
+			});
+			assert.equal(div.outerHTML, '<div class="test test2"><p><span>text</span></p><p><span>text2</span></p></div>');
+		});
+
 		it('should select first node', () => {
 			const html = `<p>[str|one:img+span]</p>`;
 			const copy = md.merge(html, {
