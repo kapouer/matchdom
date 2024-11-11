@@ -958,12 +958,6 @@ Formats string with `<br>` in place of new lines.
 
 Parses string as html or xml.
 
-### format attr
-
-Same as `|then:path:last|as:null`.
-
-Useful for merging a boolean value with the name of its path.
-
 ### automatic behaviors related to booleans and attributes
 
 When merging in a boolean attribute (i.e. with a node having a boolean property with same name), the final value is merged as if `|alt:` filter was applied.
