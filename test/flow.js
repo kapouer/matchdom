@@ -12,6 +12,29 @@ describe('flow filters', () => {
 	});
 	const md = new Matchdom(DomPlugin, RepeatPlugin);
 
+	describe('not', () => {
+		it('should negate value', () => {
+			const html = `<p>[test|not:]</p>`;
+			const copy = md.merge(html, { test: true });
+			assert.equal(copy.outerHTML, '<p>false</p>');
+		});
+		it('should negate empty string', () => {
+			const html = `<p>[test|not:]</p>`;
+			const copy = md.merge(html, { test: "" });
+			assert.equal(copy.outerHTML, '<p>true</p>');
+		});
+		it('should negate string', () => {
+			const html = `<p>[test|not:]</p>`;
+			const copy = md.merge(html, { test: "test" });
+			assert.equal(copy.outerHTML, '<p>false</p>');
+		});
+		it('should pass negated value to next filter', () => {
+			const html = `<p>[test|not:alt:yes:no]</p>`;
+			const copy = md.merge(html, { test: true });
+			assert.equal(copy.outerHTML, '<p>no</p>');
+		});
+	});
+
 	describe('then', () => {
 		it('should run filter when true', () => {
 			const html = `<p>[val|then:const:yes]</p>`;
