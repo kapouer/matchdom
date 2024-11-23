@@ -579,6 +579,10 @@ The placer filter may choose to:
 
 Call filter with negated value.
 
+To convert to boolean, use `[str|as:bool]`
+
+To convert val to !val, use `[val|not:]`, which is the same as `[val|not:as:bool]`.
+
 ### then:filter:param*
 
 Call filter if value evaluates to true, else return value.
