@@ -316,8 +316,7 @@ function writeAttr(node, attr, { another, str, trm }) {
 
 function checkSibling(cursor, range) {
 	if (!range.pos) return;
-	const dir = range.pos > 0;
-	const node = dir ? cursor.nextSibling : cursor.previousSibling;
+	const node = range.dir ? cursor.nextSibling : cursor.previousSibling;
 	if (!node) return;
 	if (range.sel) {
 		if (node.nodeType != 1) return checkSibling(node, range);
@@ -325,7 +324,7 @@ function checkSibling(cursor, range) {
 	} else if (node.nodeType == 3 && /^\s*$/.test(node.nodeValue)) {
 		return node;
 	}
-	range.pos += (dir ? -1 : 1);
+	range.pos--;
 	return node;
 }
 
@@ -333,17 +332,26 @@ function parseRange(v) {
 	if (!v) {
 		return { pos: 0 };
 	} else if (v == "*") {
-		return { pos: Infinity };
+		return { dir: true, pos: Infinity };
 	} else {
-		let i = parseInt(v);
-		const m = v.match(/^[+-]?\d*(.*)$/)[1];
-		if (Number.isNaN(i)) {
-			if (m) i = 1;
-			else i = 0;
+		const m = v.match(/^([+-]?)(\d*)(.*)$/);
+		const dir = m[1] == "-" ? false : true;
+		let i;
+		if (m[2] == "") {
+			if (m[3].startsWith('*')) {
+				i = Infinity;
+				m[3] = m[3].substring(1);
+			} else {
+				i = 1;
+			}
+		} else {
+			i = parseInt(m[2]);
+			if (Number.isNaN(i)) i = 0;
 		}
 		return {
+			dir,
 			pos: i,
-			sel: m
+			sel: m[3]
 		};
 	}
 }
