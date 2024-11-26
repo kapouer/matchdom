@@ -486,29 +486,26 @@ The selector changes the current parent:
 
 The meaning of the selector depends on the Object Model (Text, JSON, Document).
 
-Second, by extending to previous or next siblings of the selected parent, using `before` and `after` parameters:
+Second, by extending to previous or next siblings of the selected parent, using `before` and `after` range parameters with format `Integer?Selector?`.
 
-- integer: counts the number of siblings to select (before or after). Empty text nodes are ignored, but text nodes count as one.
-- selector: select siblings until they stop matching that selector.
-- `**`: select all element siblings in that direction
-- `${n}${selector}` selects up to n times nodes matching that selector.
-- `*${selector}` selects all nodes matching that selector
-- `${n}*` selects n times any element.
+"Integer" counts the number of siblings to select. Empty text nodes are ignored, but text nodes count as one. `*` means 'Infinity'.
 
-Note that `after` comes first, since it's the most commonly used parameter, `at:*:br` is prettier than `at:*::br`.
+"Selector" selects siblings until they stop matching that selector.
 
-Using at, fail, prune, then, else, to filters, one can control how a value affects selection.
-
-Examples:
+When the range is a string without leading integer, the Integer value defaults to 1.
 
 - `at::2:1` selects 2 nodes after and one node before the expression
-- `<br>a[val|at::1]b` selects the `<br>`, `a` and `b` strings
-- it is not possible to not select `a` or `b` in previous example
-- `at::b:a` is not defined when destination is an attribute, avoid using it
+- `<br>a[val|at::1]b` selects the `<br>` node and the whole text node containing the expression
+- `at::after:before` is not defined when the expression is inside an attribute
 - `at:div.card` selects `closest('div.card')`.
 - `at:div.card:1:1` selects also the previous and next siblings of the ancestor.
 - `at:**:1:2|to:class` selects one sibling after and two siblings before parent node, and sets the class on them.
 - `at:*::.column` selects parent node and all next siblings until they stop matching `.column`.
+- `at:*:**`: all sibling elements after current node
+- `at:*:2*`: next two sibling elements
+- `at:tr:*tr` selects all following tr nodes
+
+Using at, fail, prune, then, else, to filters, one can control how a value affects selection.
 
 ### fail:selector:after:before
 
@@ -540,14 +537,13 @@ Target can be:
 - `*`: selects current node. `to:*` and `at:*` are equivalent.
 - `attr`: replace content of this attribute
 
-Range selects a sibling after or before the target:
+Range selects a sibling after or before the target using the same range notation as with `at` filter, extended to allow + (following siblings) or - (previous siblings):
 
-- `to::+2` jumps two nodes after target ('+' can be omitted)
+- `to::2` jumps two nodes after target ('+' can be omitted)
 - `to::-1` gets node before target
 - `to::2p` finds the second p after target
-
-Examples:
-
+- `to:**:-3*` targets third previous element sibling before grand-parent node
+- `at:**|to:href:-3a` target href of third previous anchor of grand-parent node
 - `to:src` fills the src attribute of the current node
 - `at:div|to:class` fills the class attribute of the closest `div`
 - `at:*|to:value:input` sets the value of the input after the current node
