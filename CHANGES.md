@@ -1,5 +1,9 @@
 # CHANGES
 
+## Version 18.0.0
+- `to:target` is extended with parameter `:range`.
+- `place` no longer exports undocumented `checkSibling`.
+
 ## Version 17.4.0
 
 - Move to node:test module.

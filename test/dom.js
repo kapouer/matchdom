@@ -348,6 +348,20 @@ describe('dom', () => {
 			});
 			assert.equal(copy.outerHTML, '<div><p>totowordaa</p></div>');
 		});
+
+		it('should target a node sibling', () => {
+			const html = `<div>
+				<div><p>test[val|at:div|to:value:input]</p></div>
+				<input>
+			</div>`;
+			const copy = md.merge(html, {
+				val: 'word'
+			});
+			assert.equal(copy.outerHTML, `<div>
+				<div><p>test</p></div>
+				<input value="word">
+			</div>`);
+		});
 	});
 });
 

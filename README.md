@@ -488,9 +488,12 @@ The meaning of the selector depends on the Object Model (Text, JSON, Document).
 
 Second, by extending to previous or next siblings of the selected parent, using `before` and `after` parameters:
 
-- integer: counts the number of siblings to select (before or after). Empty text nodes are ignored.
+- integer: counts the number of siblings to select (before or after). Empty text nodes are ignored, but text nodes count as one.
 - selector: select siblings until they stop matching that selector.
-- `*`: select all siblings in that direction
+- `**`: select all element siblings in that direction
+- `${n}${selector}` selects up to n times nodes matching that selector.
+- `*${selector}` selects all nodes matching that selector
+- `${n}*` selects n times any element.
 
 Note that `after` comes first, since it's the most commonly used parameter, `at:*:br` is prettier than `at:*::br`.
 
@@ -525,20 +528,29 @@ Note that `val|prune:` is the same as `val` only if `val` is empty, and differs 
 To remove selected range but actually merge the value if true-ish,
 use instead `fail:*`.
 
-### to:target
+### to:target:range
 
 While `at` filter widens the range around the expression,
-`to` restricts it to text content or to another attribute.
+`to` can restrict it to another sibling, the inner text content, or an attribute.
+
+Target can be:
 
 - ``: replace selected range (default)
 - `-`: selects current node content (especially when used inside an attribute)
 - `*`: selects current node. `to:*` and `at:*` are equivalent.
 - `attr`: replace content of this attribute
 
+Range selects a sibling after or before the target:
+
+- `to::+2` jumps two nodes after target ('+' can be omitted)
+- `to::-1` gets node before target
+- `to::2p` finds the second p after target
+
 Examples:
 
 - `to:src` fills the src attribute of the current node
 - `at:div|to:class` fills the class attribute of the closest `div`
+- `at:*|to:value:input` sets the value of the input after the current node
 - `val|then:to:class|then:at:p|fail:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
 
 ## RepeatPlugin

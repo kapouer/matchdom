@@ -221,18 +221,9 @@ export const filters = {
 	at: ['?', 'str?', 'str?', 'str?', (ctx, val, ancestor, after, before) => {
 		const { dest } = ctx;
 		dest.ancestor = ancestor;
-		const parseRange = v => {
-			if (!v) {
-				return 0;
-			} else if (v == "*") {
-				return Infinity;
-			} else {
-				const i = parseInt(v);
-				return i == v ? i : v;
-			}
-		};
-		dest.before = parseRange(before);
-		dest.after = parseRange(after);
+		if (before != null) before = '-' + before;
+		dest.before = before;
+		dest.after = after;
 		if (ancestor) dest.reduceHit();
 		dest.extend(ctx.src.target);
 		return ctx.raw;
@@ -248,15 +239,15 @@ export const filters = {
 		if (!test) return ctx.filter(null, 'at', ...args);
 		else return ctx.raw;
 	}],
-	to: ['?', 'str?', ({ src, dest, raw }, val, to) => {
+	to: ['?', 'str?', 'str?', ({ src, dest, raw }, val, to, range) => {
 		if (to) {
 			// prevents merging of current expression
 			src.hits[src.index] = null;
 			if (!src.attr) {
 				dest.reduceHit();
 			}
-			dest.restrict(to);
 		}
+		dest.restrict(to, range);
 		return raw;
 	}]
 };

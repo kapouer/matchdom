@@ -43,7 +43,16 @@ export default class Place {
 		this.index = 0;
 	}
 
-	restrict(to) {
+	restrict(to, sel) {
+		if (sel) {
+			const range = parseRange(sel);
+			let node = this.node;
+			let cur;
+			while ((cur = checkSibling(node, range))) {
+				node = cur;
+			}
+			this.node = node;
+		}
 		if (!to) {
 			this.target = null;
 		} else if (to == "*") {
@@ -95,30 +104,13 @@ export default class Place {
 		this.node = parent;
 	}
 
-	checkSibling(cursor, asc) {
-		const node = asc ? cursor.nextSibling : cursor.previousSibling;
-		if (!node) return false;
-		const sel = asc ? this.after : this.before;
-		if (typeof sel == "string") {
-			if (node.nodeType == 1 && !node.matches(sel)) {
-				return false;
-			} else {
-				return node;
-			}
-		} else if (!sel) {
-			return false;
-		}
-		if (node.nodeType == 3 && /^\s*$/.test(node.nodeValue)) return node;
-		if (asc) this.after--;
-		else this.before--;
-		return node;
-	}
-
 	extract() {
 		const { doc, target } = this;
 		let { node } = this;
 		const frag = doc.createDocumentFragment();
 		const cursor = doc.createTextNode("");
+		const bef = parseRange(this.before);
+		const aft = parseRange(this.after);
 		if (target == Place.TEXT) {
 			const hit = this.hits[this.index];
 			const prev = this.hits.splice(0, this.index).join("");
@@ -137,19 +129,19 @@ export default class Place {
 			return [frag, cursor];
 		} else if (target == Place.CONT) {
 			node = this.text;
-			this.before = Infinity;
-			this.after = Infinity;
+			bef.pos = -Infinity;
+			aft.pos = Infinity;
 		}
 		node.parentNode.replaceChild(cursor, node);
 		if (this.root == node) {
 			this.root = cursor.parentNode;
 		}
 		let cur;
-		while ((cur = this.checkSibling(cursor, false))) {
+		while ((cur = checkSibling(cursor, bef))) {
 			frag.insertBefore(cur, null);
 		}
 		frag.appendChild(node);
-		while ((cur = this.checkSibling(cursor, true))) {
+		while ((cur = checkSibling(cursor, aft))) {
 			frag.appendChild(cur);
 		}
 
@@ -199,6 +191,9 @@ export default class Place {
 		const another = attr != from.attr || node != from.node;
 		if (from.attr && another) from.node.removeAttribute(from.attr);
 
+		const bef = parseRange(this.before);
+		const aft = parseRange(this.after);
+
 		if (target == Place.TAG) {
 			const is = node.getAttribute('is');
 			this.replacement = [
@@ -236,14 +231,14 @@ export default class Place {
 			}
 
 			let cur = node;
-			while ((cur = this.checkSibling(cur, false))) {
-				if (cur.nodeType != 1) continue;
+			bef.sel ||= '*';
+			aft.sel ||= '*';
+			while ((cur = checkSibling(cur, bef))) {
 				writeAttr(cur, attr, val);
 			}
 			writeAttr(node, attr, val);
 			cur = node;
-			while ((cur = this.checkSibling(cur, true))) {
-				if (cur.nodeType != 1) continue;
+			while ((cur = checkSibling(cur, aft))) {
 				writeAttr(cur, attr, val);
 			}
 			this.before = 0;
@@ -253,10 +248,10 @@ export default class Place {
 			const parent = cursor.parentNode;
 
 			let cur;
-			while ((cur = this.checkSibling(cursor, false))) {
+			while ((cur = checkSibling(cursor, bef))) {
 				parent.removeChild(cur);
 			}
-			while ((cur = this.checkSibling(cursor, true))) {
+			while ((cur = checkSibling(cursor, aft))) {
 				parent.removeChild(cur);
 			}
 			this.before = 0;
@@ -316,5 +311,39 @@ function writeAttr(node, attr, { another, str, trm }) {
 		node.setAttribute(attr, str);
 	} else {
 		node.removeAttribute(attr);
+	}
+}
+
+function checkSibling(cursor, range) {
+	if (!range.pos) return;
+	const dir = range.pos > 0;
+	const node = dir ? cursor.nextSibling : cursor.previousSibling;
+	if (!node) return;
+	if (range.sel) {
+		if (node.nodeType != 1) return checkSibling(node, range);
+		if (!node.matches(range.sel)) return;
+	} else if (node.nodeType == 3 && /^\s*$/.test(node.nodeValue)) {
+		return node;
+	}
+	range.pos += (dir ? -1 : 1);
+	return node;
+}
+
+function parseRange(v) {
+	if (!v) {
+		return { pos: 0 };
+	} else if (v == "*") {
+		return { pos: Infinity };
+	} else {
+		let i = parseInt(v);
+		const m = v.match(/^[+-]?\d*(.*)$/)[1];
+		if (Number.isNaN(i)) {
+			if (m) i = 1;
+			else i = 0;
+		}
+		return {
+			pos: i,
+			sel: m
+		};
 	}
 }
