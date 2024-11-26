@@ -583,5 +583,12 @@ describe('at filter', () => {
 		assert.equal(copy.outerHTML.replaceAll(/\s/g, ''), `<div></div>`);
 	});
 
+	it('should not process further filters if it gets null', () => {
+		const copy = md.merge(`<div>
+			<span>[items|at:*|or:yes]</span>
+		</div>`, {items: null});
+		assert.equal(copy.outerHTML.replaceAll(/\s/g, ''), `<div></div>`);
+	});
+
 });
 

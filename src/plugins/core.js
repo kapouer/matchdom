@@ -226,6 +226,7 @@ export const filters = {
 		dest.after = after;
 		if (ancestor) dest.reduceHit();
 		dest.extend(ctx.src.target);
+		if (val === null) ctx.expr.drop();
 		return ctx.raw;
 	}],
 	prune: ['?', 'str?', 'str?', 'str?', (ctx, val, ...params) => {
