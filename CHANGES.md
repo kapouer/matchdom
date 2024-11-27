@@ -6,6 +6,7 @@
 - `to:target` is extended with parameter `:range`.
 - Ranges in `at` filter support extended syntax.
 - `place` no longer exports undocumented `checkSibling`.
+- deprecate canonical filters and print a warning
 
 ## Version 17.4.0
 

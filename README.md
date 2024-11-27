@@ -442,12 +442,11 @@ Supports the same types for destinations as the `set` filter.
 
 Always return str.
 
-### canonical name:param(...)
+### deprecated: canonical name:param(...)
 
 Call the current value method under that name.
 
-This could be handy but lacks type checking and might give unexpected results:
-instead, define an adhoc filter.
+This could be abused, so is deprecated.
 
 ### is:type
 

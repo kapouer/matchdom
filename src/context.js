@@ -286,6 +286,7 @@ export default class Context {
 		let def = this.md.filters[name];
 		if (!def && val != null && typeof val[name] == "function") {
 			const meth = val[name];
+			console.warn("deprecated use of canonical method", name);
 			def = (ctx, val, ...args) => {
 				return meth.apply(val, args);
 			};
