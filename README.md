@@ -436,6 +436,8 @@ The last pair can omit the source path (defaults to current value).
 
 Paths are relative to current value.
 
+If any source path is undefined, assign returns undefined.
+
 Supports the same types for destinations as the `set` filter.
 
 ### const:str

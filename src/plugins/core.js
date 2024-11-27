@@ -61,7 +61,9 @@ export const filters = {
 				// only one parameter
 				params.push(dst, data);
 			} else {
-				params.push(dst, ctx.filter(data, ['get', src]));
+				const val = ctx.filter(data, ['get', src]);
+				if (val === undefined) return;
+				params.push(dst, val);
 			}
 		}
 		ctx.filter(data, params);

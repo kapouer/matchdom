@@ -318,6 +318,24 @@ describe('filters', () => {
 			assert.equal(copy, 'Sivalue and value 1');
 		});
 
+		it('should cancel merge if a path is undefined', () => {
+			const txt = `[assign:.b.d:.a.b.c]`;
+			const data = {
+				a: 3
+			};
+			const copy = md.merge(txt, data);
+			assert.equal(copy, txt);
+		});
+
+		it('should cancel merge if a last path is undefined', () => {
+			const txt = `[assign:.b.d:.d]`;
+			const data = {
+				a: 3
+			};
+			const copy = md.merge(txt, data);
+			assert.equal(copy, txt);
+		});
+
 		it('should fail to set global data at path with a value', () => {
 			const txt = `Si[assign:a.b:c|.c] and [a.b]`;
 			const data = {
