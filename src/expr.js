@@ -125,7 +125,7 @@ export default class Expression {
 			this.optional = opt;
 			if (data != null) {
 				if (Array.isArray(data)) {
-					const len = data.length;
+					const len = data.length || 1;
 					const map = { first: 0, last: -1 };
 					const k = item in map ? map[item] : parseInt(item);
 					if (!Number.isNaN(k)) {
