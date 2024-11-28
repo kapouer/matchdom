@@ -62,7 +62,10 @@ export const filters = {
 				params.push(dst, data);
 			} else {
 				const val = ctx.filter(data, ['get', src]);
-				if (val === undefined) return;
+				if (val === undefined) {
+					ctx.expr.cancel = true;
+					return;
+				}
 				params.push(dst, val);
 			}
 		}
