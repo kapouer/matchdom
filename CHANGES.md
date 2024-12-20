@@ -1,10 +1,7 @@
 # CHANGES
 
-## Version 17.5.0
-
-- 'at' filter ignores following filters if it gets a nullish value
+## Version 18.0.0
 - `to:target` is extended with parameter `:range`.
-- Ranges in `at` filter support extended syntax.
 - `place` no longer exports undocumented `checkSibling`.
 - `assign` now returns undefined if some path returns undefined
 - deprecate canonical filters and print a warning
