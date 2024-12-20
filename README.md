@@ -27,7 +27,7 @@ const md = new Matchdom(StringPlugin, NumPlugin, DomPlugin);
 // html string is first converted to a DOM node (DomPlugin), then data is merged into Object Model.
 const mergedDom = md.merge(`<div id="model" class="[myclass]">
  <h[n]>Header</h[n]>
- <span>[data.text|as:html] for [data.percent|percent:1]</span>
+ <span>[data.text|as:html] for [data.percent|lang:en|percent:1]</span>
  <img src="[data.icon|fail:*]">
 </div>`, {
  n: 4,
