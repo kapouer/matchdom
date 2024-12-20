@@ -1,5 +1,11 @@
 # CHANGES
 
+## Version 17.6.0
+
+- Revert 'at' filter ignores following filters if it gets a nullish value
+  because it breaks at|to, whereas to|at is not possible.
+- Document the fact that to must be used at least after at
+
 ## Version 17.5.0
 
 - 'at' filter ignores following filters if it gets a nullish value

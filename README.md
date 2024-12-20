@@ -528,8 +528,9 @@ use instead `fail:*`.
 
 ### to:target:range
 
-While `at` filter widens the range around the expression,
-`to` can restrict it to another sibling, the inner text content, or an attribute.
+`to` can restrict range to another sibling, the inner text content, or an attribute.
+
+This filter must be placed after `at:` filter, when present.
 
 Target can be:
 
