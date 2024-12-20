@@ -39,13 +39,11 @@ export const filters = {
 					expr.rebase = data;
 				} else {
 					data = expr.rebase;
+					delete expr.rebase;
 				}
 			}
 			return data;
 		} else {
-			if (expr.filter == expr.filters.length) {
-				delete expr.rebase;
-			}
 			return ctx.expr.get(data, path, ctx.data);
 		}
 	}],
