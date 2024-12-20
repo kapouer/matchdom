@@ -154,6 +154,14 @@ describe('url plugin', () => {
 			assert.equal(copy2.outerHTML, '<a href="/test">lien</a>');
 		});
 
+		it('should return a href', () => {
+			const obj = {
+				href: '/pathname?toto=1&it=3&tata=2'
+			};
+			const copy = md.merge(`[href|as:url|as:str]`, obj);
+			assert.equal(copy, obj.href);
+		});
+
 		it('should return instance', () => {
 			const copy = md.merge(`[obj|as:query]`, { obj: {} });
 			assert.ok(copy instanceof URLSearchParams);
