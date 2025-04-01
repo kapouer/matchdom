@@ -25,7 +25,7 @@ export const filters = {
 	case: ['?', 'up|low|caps|kebab', (ctx, val, how) => {
 		if (!val) return ctx.raw;
 		val = val.toString();
-		switch (val) {
+		switch (how) {
 			case "up":
 				return val.toUpperCase();
 			case "low":

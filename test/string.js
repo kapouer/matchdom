@@ -58,6 +58,11 @@ describe('case', () => {
 		const copy = md.merge("[str|case:caps]", { str });
 		assert.equal(copy, 'À 0.5° il ne gèle pas. Mais à .0 il gèle.');
 	});
+	it('should kebab case', () => {
+		const str = 'testHarrIssa';
+		const copy = md.merge("[str|case:kebab]", { str });
+		assert.equal(copy, 'test-harr-issa');
+	});
 });
 
 describe('enc', () => {
