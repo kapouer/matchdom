@@ -22,17 +22,20 @@ export const formats = {
 	}
 };
 export const filters = {
-	case: ['?', 'up|low|caps', (ctx, val, how) => {
+	case: ['?', 'up|low|caps|kebab', (ctx, val, how) => {
 		if (!val) return ctx.raw;
 		val = val.toString();
-		if (how == "up") {
-			return val.toUpperCase();
-		} else if (how == "low") {
-			return val.toLowerCase();
-		} else if (how == "caps") {
-			return val.split(/\.\s+/).map(s => {
-				return s.replace(/^\p{Letter}/u, c => c.toUpperCase());
-			}).join('. ');
+		switch (val) {
+			case "up":
+				return val.toUpperCase();
+			case "low":
+				return val.toLowerCase();
+			case "caps":
+				return val.split(/\.\s+/).map(s => {
+					return s.replace(/^\p{Letter}/u, c => c.toUpperCase());
+				}).join('. ');
+			case "kebab":
+				return val.replace(/(\p{Lowercase_Letter})(\p{Uppercase_Letter})/ug, "$1-$2").toLowerCase();
 		}
 	}],
 	trim: ['?', 'all|line|start|end|out|', (ctx, val, how) => {

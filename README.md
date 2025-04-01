@@ -644,9 +644,9 @@ Use it to convert ISO 3166-1 country codes to emoji country flags.
 
 Prepends or appends string if value is not null or not empty.
 
-### case:low|up|caps
+### case:low|up|caps|kebab
 
-Uppercase, lowercase, or unicode-capitalize sentences.
+Uppercase, lowercase, unicode capitalize sentences, or unicode kebab-case.
 
 ### enc:base64|base64url|url|hex|path
 
