@@ -247,3 +247,14 @@ describe('match filter', () => {
 		assert.deepEqual(md.merge('[str|match:a?a:0-9]', { str: 'aFa' }), null);
 	});
 });
+
+describe('flag', () => {
+	const md = new Matchdom(StringPlugin, TextPlugin);
+
+	it('should return unicode flag sequence', () => {
+		assert.equal(md.merge(`[const:fr|as:flag]`, {}), '🇫🇷');
+	});
+	it('should return undefined flag', () => {
+		assert.equal(md.merge(`[const:zz|as:flag]`, {}), '🇿🇿');
+	});
+});
