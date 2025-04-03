@@ -258,3 +258,18 @@ describe('flag', () => {
 		assert.equal(md.merge(`[const:zz|as:flag]`, {}), '🇿🇿');
 	});
 });
+
+describe('language', () => {
+	const md = new Matchdom(StringPlugin, TextPlugin);
+
+	it('should return language name in english', () => {
+		assert.equal(md.merge(`[const:fr|lang:en|as:language]`, {}), 'French');
+	});
+	it('should return language code', () => {
+		assert.equal(md.merge(`[const:zz|lang:en|as:language]`, {}), 'zz');
+	});
+	it('should return null', () => {
+		assert.equal(md.merge(`[const:fr|as:language]`, {}), null);
+		assert.equal(md.merge(`[const:zz|as:language]`, {}), null);
+	});
+});

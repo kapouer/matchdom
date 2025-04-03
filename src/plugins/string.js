@@ -18,6 +18,13 @@ export const formats = {
 			return String.fromCodePoint(
 				...code.split('').map(char => 127397 + char.charCodeAt())
 			);
+		},
+		language(ctx, code) {
+			if (!code) return code;
+			const names = new Intl.DisplayNames([ctx.getLang()], {
+				type: 'language'
+			});
+			return names.of(code);
 		}
 	}
 };
