@@ -1,5 +1,13 @@
 # CHANGES
 
+## Version 17.8.0
+
+- `as:language` returns the display name (in current context lang) of a language specified by language-script-region sequence.
+
+## Version 17.7.0
+
+- Add caps:kebab to convert to kebab-case
+
 ## Version 17.6.0
 
 - Revert 'at' filter ignores following filters if it gets a nullish value
