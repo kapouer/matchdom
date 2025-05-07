@@ -4,7 +4,7 @@ import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, StringPlugin,
 	DomPlugin, DatePlugin,
-	JsonPlugin, RepeatPlugin, TextPlugin
+	RepeatPlugin, TextPlugin
 } from 'matchdom';
 
 describe('filters', () => {
@@ -397,8 +397,6 @@ describe('filters', () => {
 	});
 
 	describe('null/undefined', () => {
-		const md = new Matchdom(RepeatPlugin);
-
 		it('work with tests in the README', () => {
 			// non-existent object
 			const md = new Matchdom(RepeatPlugin, TextPlugin);

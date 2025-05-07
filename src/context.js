@@ -85,7 +85,7 @@ export default class Context {
 		const expr = new Expression(this.md.symbols);
 		try {
 			expr.parse(hit);
-		} catch (err) {
+		} catch {
 			return;
 		}
 		this.expr = expr;
@@ -268,7 +268,7 @@ export default class Context {
 	decode(str) {
 		try {
 			return decodeURIComponent(str);
-		} catch (ex) {
+		} catch {
 			return str;
 		}
 	}

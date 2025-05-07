@@ -3,7 +3,7 @@ import { describe, it, before, after } from 'node:test';
 import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, ArrayPlugin, DomPlugin,
-	RepeatPlugin, OpsPlugin, JsonPlugin
+	RepeatPlugin
 } from 'matchdom';
 
 describe('repeat filter', () => {
@@ -461,7 +461,7 @@ describe('repeat filter', () => {
 			test: function (ctx, val) {
 				// var curPath = ctx.expr.path.slice();
 				// if (what.scope.alias) {
-				// 	assert.equal(what.scope.alias, curPath.shift());
+				// assert.equal(what.scope.alias, curPath.shift());
 				// }
 				//assert.equal(val, ctx.expr.get(ctx.data, ctx.expr.path));
 				return val;

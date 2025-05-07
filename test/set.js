@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import { describe, it, before, after } from 'node:test';
+import { describe, it } from 'node:test';
 import {
 	Matchdom, ArrayPlugin, TextPlugin
 } from 'matchdom';

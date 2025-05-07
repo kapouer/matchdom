@@ -22,7 +22,7 @@ class NodeIterator {
 		return this.#node = this.#move(true);
 	}
 	previousNode() {
-		return this.#node = this.#move(left);
+		return this.#node = this.#move(false);
 	}
 	#move(right) {
 		let cur = this.#node;
@@ -65,7 +65,7 @@ class NodeIterator {
 		iterators.delete(this);
 	}
 	nodeRemoved(node) {
-		let cur = this.#node;
+		const cur = this.#node;
 		if (!cur || !node.contains(cur) || node == this.root) return;
 		if (this.#bef) {
 			const cand = this.#following(node, true);
@@ -305,7 +305,7 @@ export const formats = {
 		json(ctx, val) {
 			try {
 				return JSON.stringify(val);
-			} catch (ex) {
+			} catch {
 				return null;
 			}
 		},
@@ -314,7 +314,7 @@ export const formats = {
 			if (typeof obj == "string") {
 				try {
 					return JSON.parse(obj);
-				} catch (ex) {
+				} catch {
 					return null;
 				}
 			} else {

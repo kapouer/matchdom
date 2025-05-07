@@ -1,3 +1,10 @@
+class QURLSearchParams extends URLSearchParams {
+	toString() {
+		const str = super.toString();
+		return str.length ? `?${str}` : '';
+	}
+}
+
 export const types = {
 	url(ctx, str) {
 		if (str == null) return str;
@@ -38,12 +45,5 @@ class RelativeURL extends URL {
 		if (str == null) str = '';
 		if (typeof str == "string") this.search = str;
 		else this.search = types.query(null, str).toString();
-	}
-}
-
-class QURLSearchParams extends URLSearchParams {
-	toString() {
-		const str = super.toString();
-		return str.length ? `?${str}` : '';
 	}
 }

@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import { describe, it, before, after } from 'node:test';
+import { describe, it } from 'node:test';
 import {
 	Matchdom, OpsPlugin, TextPlugin
 } from 'matchdom';
@@ -45,7 +45,7 @@ describe('gt', () => {
 	});
 	it('should return null', () => {
 		const html = `[list?.length|gt:0|as:null]`;
-		const copy = md.merge(html, {  list: [] });
+		const copy = md.merge(html, { list: [] });
 		assert.equal(copy, false);
 	});
 });

@@ -62,12 +62,13 @@ export const filters = {
 				const val = ctx.filter(data, ['get', src]);
 				if (val === undefined) {
 					ctx.expr.cancel = true;
-					return;
+					break;
 				}
 				params.push(dst, val);
 			}
 		}
-		ctx.filter(data, params);
+		if (ctx.expr.cancel) return;
+		if (params.length > 1) ctx.filter(data, params);
 		return data;
 	}],
 	set: ['object?', '?*', (ctx, data, ...params) => {
@@ -107,14 +108,11 @@ export const filters = {
 					Object.assign(sub, val);
 				}
 			} else if (act == 1) {
-				if (typeof obj.append == "function") {
-					obj.append(key, val);
-				} else {
-					if (sub == null) obj[key] = val;
-					else if (typeof sub.add == "function") sub.add(val);
-					else if (typeof sub.push == "function") sub.push(val);
-					else obj[key] = [sub, val];
-				}
+				if (typeof obj.append == "function") obj.append(key, val);
+				else if (sub == null) obj[key] = val;
+				else if (typeof sub.add == "function") sub.add(val);
+				else if (typeof sub.push == "function") sub.push(val);
+				else obj[key] = [sub, val];
 			} else if (act == 2 && sub != null) {
 				if (typeof sub.indexOf == "function") {
 					const index = sub.indexOf(val);

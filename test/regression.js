@@ -2,9 +2,9 @@ import { strict as assert } from 'node:assert';
 import { describe, it, before, after } from 'node:test';
 import globalJsdom from 'global-jsdom';
 import {
-	Matchdom, OpsPlugin, StringPlugin,
-	ArrayPlugin, DomPlugin, DatePlugin, RepeatPlugin,
-	TextPlugin, JsonPlugin, UrlPlugin
+	Matchdom, OpsPlugin,
+	DomPlugin, RepeatPlugin,
+	JsonPlugin, UrlPlugin
 } from 'matchdom';
 
 describe('regressions', () => {
