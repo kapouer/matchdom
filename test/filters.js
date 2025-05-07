@@ -695,5 +695,41 @@ describe('filters', () => {
 		});
 	});
 
+	describe('parts filter', () => {
+		const md = new Matchdom(DatePlugin, StringPlugin, TextPlugin);
+
+		it('should get last part of a path', () => {
+			const html = `[path|parts:.:-1]`;
+			const copy = md.merge(html, {
+				path: 'test.to.last'
+			});
+			assert.equal(copy, 'last');
+		});
+		it('should get first parts of isodate', () => {
+			const html = `[date|date:isodate|parts:-:0:2]`;
+			const copy = md.merge(html, {
+				date: new Date("2022-05-30")
+			});
+			assert.equal(copy, '2022-05');
+		});
+
+		it('should parse partial date', () => {
+			const html = `[$query.date|or:now|clock:1:M|date:isodate|parts:-:0:2]`;
+			const copy = md.merge(html, {
+				$query: {
+					date: "2022-05"
+				}
+			});
+			assert.equal(copy, '2022-06');
+		});
+
+		it('should do nothing', () => {
+			const html = `[str|parts:x]`;
+			const copy = md.merge(html, {
+				str: 'xyzzx'
+			});
+			assert.equal(copy, 'xyzzx');
+		});
+	});
 
 });
