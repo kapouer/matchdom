@@ -528,7 +528,11 @@ use instead `fail:*`.
 
 ### to:target:range
 
-`to` can restrict range to another sibling, the inner text content, or an attribute.
+`to` changes the destination place where the expression will be merged.
+
+It doesn't change current value. See `from` below for reading the target value.
+
+It can restrict range to another sibling, the inner text content, or an attribute.
 
 This filter must be placed after `at:` filter, when present.
 
@@ -550,6 +554,10 @@ Range selects a sibling after or before the target using the same range notation
 - `at:div|to:class` fills the class attribute of the closest `div`
 - `at:*|to:value:input` sets the value of the input after the current node
 - `val|then:to:class|then:at:p|fail:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
+
+### from:target:range
+
+Like `to:target:range` with the return value being the extracted content from the selected place.
 
 ## RepeatPlugin
 

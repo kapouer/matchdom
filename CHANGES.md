@@ -1,5 +1,9 @@
 # CHANGES
 
+## Version 17.9.0
+
+- `from:target:range` filter like `to` and returns the selected place.
+
 ## Version 17.8.0
 
 - `as:language` returns the display name (in current context lang) of a language specified by language-script-region sequence.

@@ -242,6 +242,10 @@ export const filters = {
 		if (!test) return ctx.filter(null, 'at', ...args);
 		else return ctx.raw;
 	}],
+	from: ['?', 'str?', 'str?', (ctx, val, to, range) => {
+		ctx.filter(val, ['to', to, range]);
+		return ctx.dest.read();
+	}],
 	to: ['?', 'str?', 'str?', ({ src, dest, raw }, val, to, range) => {
 		if (to) {
 			// prevents merging of current expression

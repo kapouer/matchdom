@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import { describe, it, before, after } from 'node:test';
 import globalJsdom from 'global-jsdom';
 import {
-	Matchdom,	ArrayPlugin, DomPlugin, RepeatPlugin
+	Matchdom, ArrayPlugin, DomPlugin, RepeatPlugin, UrlPlugin
 } from 'matchdom';
 
 describe('to filter', () => {
@@ -12,7 +12,7 @@ describe('to filter', () => {
 	after(function () {
 		this.jsdom();
 	});
-	const md = new Matchdom(ArrayPlugin, DomPlugin, RepeatPlugin);
+	const md = new Matchdom(ArrayPlugin, DomPlugin, RepeatPlugin, UrlPlugin);
 
 	it('should be renamed and merged with simple value', () => {
 		const html = `<img data-src="[test|to:src]">`;
@@ -193,6 +193,22 @@ describe('to filter', () => {
 			<div><p>test</p></div>
 			<input value="word">
 		</div>`);
+	});
+
+	it('should read value from target', () => {
+		const html = `<a href="/mypath">test[at:a|from:href|as:url|set:query.id:[id]]</a>`;
+		const copy = md.merge(html, {
+			id: "2"
+		});
+		assert.equal(copy.outerHTML, '<a href="/mypath?id=2">test</a>');
+	});
+
+	it('should read value from target and assign id', () => {
+		const html = `<a href="/mypath">test[at:a|from:href|as:url|assign:.query.id:id]</a>`;
+		const copy = md.merge(html, {
+			id: "2"
+		});
+		assert.equal(copy.outerHTML, '<a href="/mypath?id=2">test</a>');
 	});
 });
 
