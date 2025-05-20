@@ -25,12 +25,13 @@ export default class Place {
 		}
 	}
 
-	clone() {
-		return Object.assign(
+	clone(hits) {
+		const place = Object.assign(
 			new Place(),
-			this,
-			{ hits: this.hits.slice() }
+			this
 		);
+		place.hits = (hits ?? this.hits).slice();
+		return place;
 	}
 
 	get doc() {

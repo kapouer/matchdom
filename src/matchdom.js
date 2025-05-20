@@ -114,9 +114,8 @@ export class Matchdom {
 			const hits = Context.parse(this.symbols, str);
 			if (!hits) return;
 			const ctx = new Context(this, data, scope);
-			ctx.setup(hits, ref.root, node, name);
+			const filteredHits = ctx.setup(hits, ref.root, node, name);
 			const { dest } = ctx;
-			const filteredHits = dest.write(ctx.src);
 			trackHits.count += filteredHits.length;
 			trackHits.last = filteredHits[filteredHits.length - 1];
 			if (dest.root) ref.root = dest.root;
