@@ -1,5 +1,9 @@
 # CHANGES
 
+## Version 17.8.1
+
+Improve support for recursive repeat, typically `[obj.[list|repeat:item]...]`.
+
 ## Version 17.8.0
 
 - `as:language` returns the display name (in current context lang) of a language specified by language-script-region sequence.
