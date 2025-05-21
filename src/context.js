@@ -48,6 +48,7 @@ export default class Context {
 	}
 
 	raw;
+	#locales;
 
 	constructor(md, data, scope) {
 		this.data = data;
@@ -279,11 +280,20 @@ export default class Context {
 		}
 	}
 
-	getLang() {
-		if (!this.lang && typeof window != "undefined") {
-			this.lang = document.documentElement?.lang ?? window.navigator.language;
+	get locales() {
+		if (!this.#locales) {
+			if (typeof window != "undefined") {
+				this.#locales = window.navigator.languages;
+				const { lang } = document.documentElement ?? {};
+				if (lang) this.#locales.unshift(lang);
+			} else {
+				this.#locales = ['en'];
+			}
 		}
-		return this.lang;
+		return this.#locales;
+	}
+	set locales(list) {
+		this.#locales = list;
 	}
 
 	getFilter(val, filter) {

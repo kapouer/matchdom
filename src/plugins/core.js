@@ -215,8 +215,13 @@ export const filters = {
 			return ctx.filter(val, ['as', type, ...params]) === val;
 		}
 	},
-	lang(ctx, val, lang) {
-		ctx.lang = lang || null;
+	lang(ctx, val, locale) {
+		console.warn(`Deprecated: use locales:${locale} filter instead`);
+		ctx.locales = [locale];
+		return val;
+	},
+	locales(ctx, val, ...locales) {
+		ctx.locales = locales;
 		return val;
 	},
 	at: ['?', 'str?', 'str?', 'str?', (ctx, val, ancestor, after, before) => {

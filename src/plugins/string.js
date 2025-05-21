@@ -21,7 +21,7 @@ export const formats = {
 		},
 		language(ctx, code) {
 			if (!code) return code;
-			const names = new Intl.DisplayNames([ctx.getLang()], {
+			const names = new Intl.DisplayNames(ctx.locales, {
 				type: 'language'
 			});
 			return names.of(code);

@@ -27,7 +27,7 @@ const md = new Matchdom(StringPlugin, NumPlugin, DomPlugin);
 // html string is first converted to a DOM node (DomPlugin), then data is merged into Object Model.
 const mergedDom = md.merge(`<div id="model" class="[myclass]">
  <h[n]>Header</h[n]>
- <span>[data.text|as:html] for [data.percent|lang:en|percent:1]</span>
+ <span>[data.text|as:html] for [data.percent|locales:en|percent:1]</span>
  <img src="[data.icon|fail:*]">
 </div>`, {
  n: 4,
@@ -871,6 +871,11 @@ Accepts keyword 'now' to build a date with current timestamp.
 
 ### date:format, date:...list
 
+Formats a date, or a date range.
+
+A date range must be an array of two dates, or an object with
+start|begin, stop|end keys.
+
 format can be:
 
 - isotime: time from iso output
@@ -886,11 +891,14 @@ Milliseconds are removed from all these formats.
 
 Custom date formats can be added through a plugin exporting `{format: date: {}}`.
 
-For localization, lang is searched in this order:
+For localization, locales are either set explicitely with:
 
-- ctx.lang (which can be set using the `lang:<name>` filter)
-- documentElement.lang
-- window.navigator.language
+- locales:en-US:fr-BE
+
+or are a concatenation of:
+
+- documentElement.lang (if it is not empty)
+- window.navigator.languages
 
 Localized format accepts shorthands:
 
