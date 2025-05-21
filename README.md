@@ -559,6 +559,13 @@ Range selects a sibling after or before the target using the same range notation
 
 Like `to:target:range` with the return value being the extracted content from the selected place.
 
+Typical usage:
+
+```html
+<a href="/mypath">test[at:a|from:href|as:url|assign:.query.id:id]</a>
+<a href="/mypath?id=xx">test</a>
+```
+
 ## RepeatPlugin
 
 ### repeat:path:placer?:(...)
