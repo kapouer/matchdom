@@ -74,7 +74,7 @@ describe('date', () => {
 		});
 
 		it('accepts "now" as keyword', () => {
-			const html = `<p>[str|as:date|toLocaleTimeString:fr-FR]</p>`;
+			const html = `<p>[str|locales:fr-FR|date:time]</p>`;
 			const now = new Date();
 			const copy = md.merge(html, {
 				str: 'now'
@@ -107,7 +107,7 @@ describe('date', () => {
 		});
 
 		it('getYear', () => {
-			const html = `<p>[str|as:date|getFullYear:]</p>`;
+			const html = `<p>[str|date:Y]</p>`;
 			const copy = md.merge(html, {
 				str: '2018-03-09T11:12:56.739Z'
 			});

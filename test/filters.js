@@ -4,7 +4,8 @@ import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, StringPlugin,
 	DomPlugin,
-	RepeatPlugin, TextPlugin
+	RepeatPlugin, TextPlugin,
+	ArrayPlugin
 } from 'matchdom';
 
 describe('filters', () => {
@@ -82,20 +83,6 @@ describe('filters', () => {
 		it('should only allow word chars for get accessors', () => {
 			const copy = md.merge(`[{test}]`, {'{test}':'no'});
 			assert.equal(copy, '[{test}]');
-		});
-	});
-
-	describe('method filters', () => {
-		const md = new Matchdom(TextPlugin);
-
-		it('should call method on value', () => {
-			const copy = md.merge(`[toUpperCase:]`, "up");
-			assert.equal(copy, 'UP');
-		});
-
-		it('should return value when method fails on value', () => {
-			const copy = md.merge(`[toISOString:]`, new Date("invalid"));
-			assert.equal(copy, null);
 		});
 	});
 
@@ -350,7 +337,7 @@ describe('filters', () => {
 	});
 
 	describe('join filter', () => {
-		const md = new Matchdom().extend(DomPlugin);
+		const md = new Matchdom(DomPlugin, ArrayPlugin);
 		it('with space', () => {
 			const html = `<p>[arr|join: ]</p>`;
 			const copy = md.merge(html, {
@@ -377,10 +364,10 @@ describe('filters', () => {
 	});
 
 	describe('pad', () => {
-		const md = new Matchdom(DomPlugin);
+		const md = new Matchdom(StringPlugin, DomPlugin);
 
 		it('start', () => {
-			const html = `<p>[str|padStart:3:x]</p>`;
+			const html = `<p>[str|pad:3:x]</p>`;
 			const copy = md.merge(html, {
 				str: 'a'
 			});
@@ -388,7 +375,7 @@ describe('filters', () => {
 		});
 
 		it('end', () => {
-			const html = `<p>[str|padEnd:3:x]</p>`;
+			const html = `<p>[str|pad:-3:x]</p>`;
 			const copy = md.merge(html, {
 				str: 'a'
 			});

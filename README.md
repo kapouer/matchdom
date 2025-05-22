@@ -444,12 +444,6 @@ Supports the same types for destinations as the `set` filter.
 
 Always return str.
 
-### deprecated: canonical name:param(...)
-
-Call the current value method under that name.
-
-This could be abused, so is deprecated.
-
 ### is:type
 
 Checks value is of that type, and returns a boolean.
@@ -675,12 +669,6 @@ Decodes from specified encoding.
 
 Calls `str.split(tok)`. Return empty array if value is false-ish.
 
-### slice:start:end
-
-Calls `str.slice(start, end)`.
-
-Also works with array.
-
 ### parts:tok:start:end
 
 Shorthand for "str|split:tok|slice:start:end|join:tok".
@@ -712,6 +700,11 @@ To match anything, just use `^` class.
 Returns the list of matched wildcards against value, or null if there was no match.
 
 Empty matches are just an empty string.
+
+### pad:n:str
+
+Calls padStart for positive n, padEnd for negative n,
+or pass through if n is zero.
 
 ## ArrayPlugin
 

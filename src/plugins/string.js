@@ -98,12 +98,6 @@ export const filters = {
 		if (!str) return [];
 		return str.split(tok);
 	}],
-	slice: ['?', 'int?', 'int?', (ctx, val, a, b) => {
-		if (!val || a == null) return ctx.raw;
-		if (b == null) b = undefined;
-		if (val.slice) return val.slice(a, b);
-		else return val;
-	}],
 	parts: ['?', 'str', 'int?', 'int?', (ctx, val, tok, a, b) => {
 		if (typeof val != "string" || a == null) return ctx.raw;
 		if (b == null) b = undefined;
@@ -114,5 +108,10 @@ export const filters = {
 	}],
 	match: ['?', 'pattern*', (ctx, val, re) => {
 		return re.exec(val)?.slice(1);
+	}],
+	pad: ['str', 'int', 'str', (ctx, val, n, str) => {
+		if (n > 0) return val.padStart(n, str);
+		else if (n < 0) return val.padEnd(-n, str);
+		else return val;
 	}]
 };

@@ -15,7 +15,7 @@ describe('hooks filter', () => {
 	});
 
 	it('should be called after this filter', () => {
-		const md = new Matchdom(TextPlugin, {
+		const md = new Matchdom(TextPlugin, ArrayPlugin, {
 			after: {
 				join(ctx, val, args) {
 					assert.equal(val, 'word1 word2');
@@ -47,7 +47,7 @@ describe('hooks filter', () => {
 	it('should be called before all filters', () => {
 		const html = `[arr2|join: ]`;
 		const arr = ['word1', 'word2'];
-		const md = new Matchdom(TextPlugin, {
+		const md = new Matchdom(TextPlugin, ArrayPlugin, {
 			beforeAll(ctx, val) {
 				assert.deepEqual(val, { arr });
 				assert.equal(ctx.expr.filters[0][1], "arr2");
@@ -132,7 +132,7 @@ describe('hooks filter', () => {
 	it('should register multiple hooks', () => {
 		const html = `[arr2|join:-]`;
 		const arr = ['word1', 'word2'];
-		const md = new Matchdom(TextPlugin, {
+		const md = new Matchdom(TextPlugin, ArrayPlugin, {
 			beforeAll(ctx, val) {
 				assert.deepEqual(val, { arr });
 				assert.equal(ctx.expr.filters[0][1], "arr2");

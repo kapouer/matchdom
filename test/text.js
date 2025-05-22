@@ -209,12 +209,6 @@ describe('text without dom', () => {
 		assert.equal(copy, null);
 	});
 
-
-	it('should return value when method fails on value', () => {
-		const copy = md.merge(`[toISOString:]`, new Date("invalid"));
-		assert.equal(copy, null);
-	});
-
 	it('should not change when nested variable has no parent set', () => {
 		const copy = md.merge('notfound: [test.a]', {});
 		assert.equal(copy, 'notfound: [test.a]');

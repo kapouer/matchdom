@@ -136,25 +136,13 @@ describe('repeat filter', () => {
 
 	it('should repeat array in reverse order', () => {
 		const html = `<div>
-			<span>[arr|reverse:|repeat:|value]</span>
+			<span>[arr|nth:-1|repeat:|value]</span>
 		</div>`;
-		const copy = md.merge(html, {
+		const copy = md.extend(ArrayPlugin).merge(html, {
 			arr: [{ value: 'one' }, { value: 'two' }]
 		});
 		assert.equal(copy.outerHTML, md.merge(`<div>
 			<span>two</span><span>one</span>
-		</div>`).outerHTML);
-	});
-
-	it('should repeat array in reverse order using nth:-1', () => {
-		const html = `<div>
-			<span>[arr|nth:-1|repeat:]</span>
-		</div>`;
-		const copy = md.extend(ArrayPlugin).merge(html, {
-			arr: [0, 1, 2]
-		});
-		assert.equal(copy.outerHTML, md.merge(`<div>
-			<span>2</span><span>1</span><span>0</span>
 		</div>`).outerHTML);
 	});
 
@@ -192,7 +180,7 @@ describe('repeat filter', () => {
 
 	it('should repeat array the second and third even items in reverse order', () => {
 		const html = `<div>
-			<span>[arr|reverse:|nth:2:1|slice:0:2|repeat:]</span>
+			<span>[arr|nth:-2:1|slice:0:2|repeat:]</span>
 		</div>`;
 		const copy = md.extend(ArrayPlugin).merge(html, {
 			arr: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

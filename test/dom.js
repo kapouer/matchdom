@@ -2,7 +2,8 @@ import { strict as assert } from 'node:assert';
 import { describe, it, before, after } from 'node:test';
 import globalJsdom from 'global-jsdom';
 import {
-	Matchdom, DomPlugin, RepeatPlugin
+	Matchdom, DomPlugin, RepeatPlugin,
+	ArrayPlugin
 } from 'matchdom';
 
 describe('dom', () => {
@@ -114,7 +115,7 @@ describe('dom', () => {
 	});
 
 	describe('join filter', () => {
-		const md = new Matchdom().extend(DomPlugin);
+		const md = new Matchdom(DomPlugin, ArrayPlugin);
 		it('with space', () => {
 			const html = `<p>[arr|join: ]</p>`;
 			const copy = md.merge(html, {

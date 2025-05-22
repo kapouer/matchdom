@@ -259,6 +259,12 @@ export const filters = {
 		}
 		dest.restrict(to, range);
 		return raw;
+	}],
+	slice: ['?', 'int?', 'int?', (ctx, val, a, b) => {
+		if (!val || a == null) return ctx.raw;
+		if (b == null) b = undefined;
+		if (val.slice) return val.slice(a, b);
+		else return val;
 	}]
 };
 
