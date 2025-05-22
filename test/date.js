@@ -131,7 +131,7 @@ describe('date', () => {
 		});
 
 		it('formats range with wrong dates', () => {
-			const html = `<p>[range|locales:fr|date:date]</p>`;
+			const html = `<p>[range|lang:fr|date:date]</p>`;
 			const copy = md.merge(html, {
 				range: ['2018-03-11', '2018-03-09',]
 			});
