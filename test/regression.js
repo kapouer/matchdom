@@ -189,4 +189,80 @@ describe('regressions', () => {
 			<div></div>
 		</fieldset>`.replaceAll(/\t|\n/g, ""));
 	});
+
+	it('should not throw with missing ancestor when merging nested repeat', () => {
+		const html = `<main>
+		<fieldset>
+			<legend>My fieldset</legend>
+			<div class="field">
+				<div class="ui checkbox">
+					<input type="checkbox" name="data.support">
+					<label>
+						<span data-attr="[it.const|at:label|to:value:-input]">
+							[obj|as:entries|at:fieldset|repeat:case|.value.list|at:.field|repeat:it|.title]
+						</span>
+						[case.key|at:fieldset|to:data-value]
+					</label>
+				</div>
+			</div>
+		</fieldset>
+		</main>`;
+
+		const copy = md.copy().extend({ debug: true }).merge(html, {
+			obj: {
+				a: {
+					list: [{ const: "x", title: 'X' }, { const: "y", title: 'Y' }]
+				},
+				b: {
+					list: [{ const: "w", title: 'W' }, { const: "z", title: 'Z' }]
+				}
+			}
+		});
+		assert.equal(copy.innerHTML.replaceAll(/\t|\n/g, ""), `<fieldset data-value="a">
+			<legend>My fieldset</legend>
+			<div class="field">
+				<div class="ui checkbox">
+					<input type="checkbox" name="data.support" value="x">
+					<label>
+						<span>
+							X
+						</span>
+					</label>
+				</div>
+			</div>
+			<div class="field">
+				<div class="ui checkbox">
+					<input type="checkbox" name="data.support" value="y">
+					<label>
+						<span>
+							Y
+						</span>
+					</label>
+				</div>
+			</div>
+		</fieldset>
+		<fieldset data-value="b">
+			<legend>My fieldset</legend>
+			<div class="field">
+				<div class="ui checkbox">
+					<input type="checkbox" name="data.support" value="w">
+					<label>
+						<span>
+							W
+						</span>
+					</label>
+				</div>
+			</div>
+			<div class="field">
+				<div class="ui checkbox">
+					<input type="checkbox" name="data.support" value="z">
+					<label>
+						<span>
+							Z
+						</span>
+					</label>
+				</div>
+			</div>
+		</fieldset>`.replaceAll(/\t|\n/g, ""));
+	});
 });
