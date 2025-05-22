@@ -216,7 +216,7 @@ export const filters = {
 		}
 	},
 	lang(ctx, val, locale) {
-		console.warn(`Deprecated: use locales:${locale} filter instead`);
+		console.warn(`deprecated: 'lang' is renamed 'locales'`);
 		ctx.locales = [locale];
 		return val;
 	},
