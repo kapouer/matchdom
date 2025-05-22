@@ -283,7 +283,7 @@ export default class Context {
 	get locales() {
 		if (!this.#locales) {
 			if (typeof window != "undefined") {
-				this.#locales = window.navigator.languages;
+				this.#locales = Array.from(window.navigator.languages);
 				const { lang } = document.documentElement ?? {};
 				if (lang) this.#locales.unshift(lang);
 			} else {
