@@ -103,12 +103,16 @@ describe('text nodes', () => {
 		</div>`);
 	});
 
-	it('should do nothing if filter is missing', () => {
-		const html = `<span>[test|notfound:]</span>`;
-		const copy = md.merge(html, {
-			test: "yes"
+	it('should throw if filter is missing', () => {
+		assert.throws(() => {
+			const html = `<span>[test|notfound:]</span>`;
+			md.copy().extend({ debug: true }).merge(html, {
+				test: "yes"
+			});
+		}, {
+			name: 'Error',
+			message: 'Missing filter: notfound'
 		});
-		assert.equal(copy.outerHTML, '<span>yes</span>');
 	});
 
 	it('should do nothing if multiple filters are missing', () => {
