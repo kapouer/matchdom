@@ -223,5 +223,21 @@ describe('at filter', () => {
 		assert.equal(copy.outerHTML.replaceAll(/\s/g, ''), `<div></div>`);
 	});
 
+	it('not merge undefined value', () => {
+		const html = `<p>a[obj.test|at:p]b</p>`;
+		const copy = md.merge(html, {});
+		assert.equal(copy.outerHTML, html);
+	});
+
+	it('throws when ancestor not found', () => {
+		const html = `<p>a[obj.test|at:div]b</p>`;
+		assert.throws(() => {
+			md.copy().extend({ debug: true }).merge(html, { obj: { test: 1 } });
+		}, {
+			name: 'Error',
+			message: 'Ancestor not found: div'
+		});
+	});
+
 });
 
