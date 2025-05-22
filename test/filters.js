@@ -213,7 +213,7 @@ describe('filters', () => {
 	});
 
 	describe('rebase filter', () => {
-		const md = new Matchdom(TextPlugin);
+		const md = new Matchdom(TextPlugin, StringPlugin);
 		it('should return value', () => {
 			const txt = `[a||.b|set:c:test||.b.c]`;
 			const data = {
