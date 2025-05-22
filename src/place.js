@@ -94,8 +94,7 @@ export default class Place {
 			parent = parent.closest(ancestor);
 		}
 		if (!parent) {
-			console.warn("ancestor not found:", ancestor);
-			parent = node;
+			throw new Error("Ancestor not found: " + ancestor);
 		}
 		if (!target) {
 			if (parent.parentNode) target = Place.NODE;
