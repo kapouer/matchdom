@@ -225,6 +225,7 @@ export const filters = {
 		return val;
 	},
 	at: ['?', 'str?', 'str?', 'str?', (ctx, val, ancestor, after, before) => {
+		if (val === undefined) return val;
 		const { dest } = ctx;
 		dest.ancestor = ancestor;
 		if (before != null) before = '-' + before;
