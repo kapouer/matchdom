@@ -471,6 +471,11 @@ By default an expression is replaced by its value,
 without affecting surrounding text, tag name, attribute, node, or json object.
 This filter extends the selected range.
 
+Note that `at` must be placed:
+
+- *before* `repeat` when used to define the repeated range;
+- *after* `get` when changing the destination of a value.
+
 The selector changes the current parent:
 
 - ``: the expression itself
@@ -566,9 +571,9 @@ Typical usage:
 
 Expect the value to be iterable (array, collection, etc...).
 
-Repeats selected range for each item in the value.
+Repeats selected range (by using `at` before) for each item in the value.
 
-The selected range must be set using `at` filter; if not, the selected range will default to `at:*`.
+The selected range defaults to `at:*`.
 
 The first component of the path is an alias for the repeated item.
 The remaining path is used to access the item before merging it.
