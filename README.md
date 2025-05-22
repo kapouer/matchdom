@@ -182,7 +182,7 @@ Formats are used directly by the corresponding filter.
 - list: convert boolean to last name, or object to list of keys having true-ish values
 - keys: array of keys
 - values: array of values
-- entries: arrays of {key, value}
+- entries: array of {key, value}
 - clone: shallow clone of an object. Keeps its type if possible.
 
 ### date:format
