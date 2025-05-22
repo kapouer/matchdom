@@ -2,6 +2,8 @@
 
 ## Version 18.0.0
 
+- repeat inserts fragment into context before doing the merge,
+allowing changing the outside using expressions placed after repeat.
 - locales filter accepts multiple locales, and is meant to replace "lang",
 which issues a deprecation warning.
 - date filter accepts a range and formats it.

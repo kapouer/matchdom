@@ -32,15 +32,17 @@ export const filters = {
 			} else {
 				Object.assign(obj, item);
 			}
-			const fragment = ctx.md.merge(ifrag.cloneNode(true), obj, ctx.scope);
+			const fragment = ifrag.cloneNode(true);
 			if (fragment == null || fragment === "" || !fragment.childNodes?.length) {
 				continue;
 			}
+			const nodes = Array.from(fragment.childNodes);
 			if (placer) {
 				ctx.filter(item, placer, cursor, fragment, ...params);
 			} else {
 				parent.insertBefore(fragment, cursor);
 			}
+			for (const node of nodes) if (node.parentNode) ctx.md.merge(node, obj, ctx.scope);
 		}
 		parent.removeChild(cursor);
 		// dropped expr so no return value

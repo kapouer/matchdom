@@ -585,10 +585,10 @@ These expressions are equivalent:
 
 The placer parameter may be a custom filter name:
 
-- it is called *after* the iterated range has been merged, before it is inserted
+- it is called *before* the iterated range has been merged and before it is inserted
 - it has (ctx, item, cursor, fragment, ...params) signature
 - cursor: node before which the fragment would have been merged
-- fragment: result of the merge, to be placed or not
+- fragment: the fragment to be merged, to be placed or not
 - additional parameters are appended
 
 The placer filter may choose to:
