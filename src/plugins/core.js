@@ -236,9 +236,9 @@ export const filters = {
 		return ctx.raw;
 	}],
 	prune: ['?', 'str?', 'str?', 'str?', (ctx, val, ...params) => {
-		if (!val) {
+		if (!val && val !== undefined) {
 			params.unshift('at');
-			ctx.filter(val, params);
+			ctx.filter(null, params);
 		}
 		return null;
 	}],
