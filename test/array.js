@@ -15,6 +15,70 @@ describe('array', () => {
 		this.jsdom();
 	});
 
+	describe('formats', () => {
+		const md = new Matchdom(TextPlugin, ArrayPlugin);
+		it('array as keys', () => {
+			const entries = md.merge(`[arr|as:keys]`, {
+				arr: ['a', 'b']
+			});
+			assert.deepEqual(entries, [0, 1]);
+		});
+
+		it('array as values', () => {
+			const entries = md.merge(`[arr|as:values]`, {
+				arr: ['a', 'b']
+			});
+			assert.deepEqual(entries, ['a', 'b']);
+		});
+
+		it('array as entries', () => {
+			const entries = md.merge(`[arr|as:entries]`, {
+				arr: ['a', 'b']
+			});
+			assert.deepEqual(entries, [{ key: 0, value: 'a' }, { key: 1, value: 'b' }]);
+		});
+
+		it('set as keys', () => {
+			const entries = md.merge(`[arr|as:keys]`, {
+				arr: new Set(['a', 'b'])
+			});
+			assert.deepEqual(entries, ['a', 'b']);
+		});
+
+		it('set as values', () => {
+			const entries = md.merge(`[arr|as:values]`, {
+				arr: new Set(['a', 'b'])
+			});
+			assert.deepEqual(entries, ['a', 'b']);
+		});
+
+		it('set as entries', () => {
+			const entries = md.merge(`[arr|as:entries]`, {
+				arr: new Set(['a', 'b'])
+			});
+			assert.deepEqual(entries, [{ key: 'a', value: 'a' }, { key: 'b', value: 'b' }]);
+		});
+
+		it('object as keys', () => {
+			assert.deepEqual(md.merge(`[arr|as:keys]`, {
+				arr: { a: '0', b: '1' }
+			}), ['a', 'b']);
+		});
+
+		it('object as values', () => {
+			assert.deepEqual(md.merge(`[arr|as:values]`, {
+				arr: { a: '0', b: '1' }
+			}), ['0', '1']);
+		});
+
+		it('object as entries', () => {
+			const entries = md.merge(`[arr|as:entries]`, {
+				arr: { a: '0', b: '1' }
+			});
+			assert.deepEqual(entries, [{ key: 'a', value: '0' }, { key: 'b', value: '1' }]);
+		});
+	});
+
 	describe('join filter', () => {
 		const md = new Matchdom(ArrayPlugin, DomPlugin);
 		it('with space', () => {

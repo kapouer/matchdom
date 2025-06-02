@@ -2,17 +2,26 @@ export const formats = {
 	as: {
 		keys(ctx, val) {
 			if (typeof val != "object") return [];
-			return Object.keys(val);
+			if (typeof val.keys == "function") {
+				return Array.from(val.keys());
+			} else {
+				return Object.keys(val);
+			}
 		},
 		values(ctx, val) {
 			if (typeof val != "object") return [];
-			return Object.values(val);
+			if (typeof val.values == "function") {
+				return Array.from(val.values());
+			} else {
+				return Object.values(val);
+			}
 		},
 		entries(ctx, val) {
 			if (typeof val != "object") return [];
-			const cast = Array.isArray(val);
-			return Object.entries(val).map(([key, value]) => {
-				if (cast) key = parseInt(key);
+			const entries = typeof val.values == "function"
+				? Array.from(val.entries())
+				: Object.entries(val);
+			return entries.map(([key, value]) => {
 				return { key, value };
 			});
 		}

@@ -1,5 +1,10 @@
 # CHANGES
 
+## Version 19.1.0
+
+as:entries, values, keys now supports the corresponding methods.
+This fixes the case for Set instances, in particular.
+
 ## Version 19.0.0
 
 Breaking changes:
