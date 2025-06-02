@@ -1,9 +1,17 @@
 # CHANGES
 
-## Version 18.0.0
+## Version 19.0.0
+
+Breaking changes:
 
 - repeat inserts fragment into context before doing the merge,
 allowing changing the outside using expressions placed after repeat.
+- at and prune do nothing and return undefined they receive undefined.
+(proper usage of "?" is needed to let them handle null values).
+- throw when an ancestor node is not found
+
+## Version 18.0.0
+
 - locales filter accepts multiple locales, and is meant to replace "lang",
 which issues a deprecation warning.
 - date filter accepts a range and formats it.
