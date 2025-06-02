@@ -236,7 +236,8 @@ export const filters = {
 		return ctx.raw;
 	}],
 	prune: ['?', 'str?', 'str?', 'str?', (ctx, val, ...params) => {
-		if (!val && val !== undefined) {
+		if (val === undefined) return val;
+		if (!val) {
 			params.unshift('at');
 			ctx.filter(null, params);
 		}

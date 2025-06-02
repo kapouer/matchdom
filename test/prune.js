@@ -62,6 +62,12 @@ describe('prune filter', () => {
 		assert.equal(md.merge("test[test|prune:-]", {}), null);
 	});
 
+	it('should not be merged', () => {
+		const html = `<div><span>test[obj.test|prune:-]</span></div>`;
+		const copy = md.merge(html, {});
+		assert.equal(copy.outerHTML, html);
+	});
+
 	it('should remove current attribute', () => {
 		const html = `<div><span class="some[test|prune:-]">test</span></div>`;
 		const copy = md.merge(html, {
