@@ -622,4 +622,36 @@ describe('repeat filter', () => {
 		]);
 		assert.ok(!miss);
 	});
+
+	it('should not merge expression in parameter after repeat', () => {
+		const html = `<section>
+			<p>[groups|at:p|as:entries|repeat:page|schema:[page.value]]</p>
+		</section>`;
+		const md = new Matchdom(RepeatPlugin, DomPlugin, ArrayPlugin, {
+			debug: true,
+			filters: {
+				schema(ctx, entry, param) {
+					assert.equal(entry.value, param);
+					return entry.val;
+				}
+			}
+		});
+		md.merge(html, { groups: ["page", "mail", "pdf"] });
+	});
+
+	it('should unfortunately merge expression in parameter after repeat', () => {
+		const html = `<section>
+			<p>[groups|at:p|repeat:page|schema:[page]]</p>
+		</section>`;
+		const md = new Matchdom(RepeatPlugin, DomPlugin, ArrayPlugin, {
+			debug: true,
+			filters: {
+				schema(ctx, entry, param) {
+					assert.equal(param, "");
+					return entry;
+				}
+			}
+		});
+		md.merge(html, { groups: ["page", "mail", "pdf"] });
+	});
 });
