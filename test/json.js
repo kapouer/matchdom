@@ -166,7 +166,7 @@ describe('json plugin', () => {
 			});
 		});
 
-		it('should fail correct range', () => {
+		it('should fail current range', () => {
 			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
 			md.debug = true;
 			assert.deepEqual(md.merge({
@@ -181,6 +181,29 @@ describe('json plugin', () => {
 					desc: 'title1'
 				}
 			});
+		});
+
+		it('should fail root range', () => {
+			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin, {
+				afterAll(ctx, val) {
+					if (ctx.expr.optional && val == null) {
+						ctx.filter(val, 'fail', '*');
+					} else if (val === undefined) {
+						ctx.filter(val, 'fail', '/');
+						val = null;
+					}
+					return val;
+				}
+			});
+			md.debug = true;
+			assert.deepEqual(md.merge({
+				list: {
+					num: '[item.data.id]',
+					desc: '[item.title]'
+				}
+			}, {
+				item: { title: 'title1' }
+			}), null);
 		});
 
 		it('should allow range by key', () => {

@@ -1,5 +1,10 @@
 # CHANGES
 
+## Version 19.2.0
+
+Consolidate return value if model was JSON, in particular,
+return null when the result of the merge is empty.
+
 ## Version 19.1.0
 
 as:entries, values, keys now supports the corresponding methods.

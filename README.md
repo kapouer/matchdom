@@ -12,6 +12,9 @@ Filter functions transform passed value until the expression can be merged.
 Using the appropriate plugin, `node` can be an HTML fragment parsed into DOM,
 or a JSON object or plain text. If it cannot be modeled, it is returned as-is.
 
+If the node is a fragment, a fragment is returned (even if empty).
+Otherwise, if the result is a node or a value, it is returned (and can be null).
+
 Since `merge` mutates nodes in their current document model, it is also possible
 to merge multiple nodes, one by one, to avoid a costly search over all the nodes
 of the document tree.

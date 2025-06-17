@@ -138,16 +138,12 @@ export class Matchdom {
 			}
 		}
 
-		if (wasJSON) {
-			return root.toJSON();
-		}
-
 		if (root.nodeType == 11) {
-			if (wasFrag) return root;
 			const list = Array.from(root.childNodes);
-			if (list.length == 0) {
-				if (!wasFrag && trackHits.count == 1) return trackHits.last;
-				else return root;
+			if (wasFrag) {
+				// pass
+			} else if (list.length == 0) {
+				if (trackHits.count == 1) return trackHits.last;
 			} else if (list.length == 1) {
 				root = list[0];
 			} else if (wasText) {
@@ -156,15 +152,17 @@ export class Matchdom {
 				if (list.every(item => item.nodeType == 3)) {
 					return list.map(item => item.nodeValue).join('');
 				}
-				return root;
 			}
 		}
 		if (root.nodeType == 3) {
 			if (trackHits.count == 1) return trackHits.last;
 			else return root.nodeValue;
 		}
-
-		return root;
+		if (wasJSON && root?.toJSON) {
+			return root.toJSON();
+		} else {
+			return root;
+		}
 	}
 
 	matchEachDom(ref, fn) {

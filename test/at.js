@@ -223,6 +223,13 @@ describe('at filter', () => {
 		assert.equal(copy.outerHTML.replaceAll(/\s/g, ''), `<div></div>`);
 	});
 
+	it('should set root on fail', () => {
+		const copy = md.merge(`<div>
+			<span>[item|fail:/]</span>
+		</div>`, {});
+		assert.equal(copy, null);
+	});
+
 	it('not merge undefined value', () => {
 		const html = `<p>a[obj.test|at:p]b</p>`;
 		const copy = md.merge(html, {});
