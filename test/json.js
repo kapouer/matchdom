@@ -152,7 +152,7 @@ describe('json plugin', () => {
 			}, {
 				item: { id: '1', title: 'title1' }
 			}), {
-				 id: '1', title: 'title1'
+				id: '1', title: 'title1'
 			});
 			assert.deepEqual(md.merge({
 				list: {
