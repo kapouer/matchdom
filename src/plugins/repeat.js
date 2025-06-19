@@ -17,7 +17,6 @@ export const filters = {
 			dest.hits[dest.index] = ctx.wrap(hit, 2);
 		}
 		ctx.expr.drop();
-
 		const [ifrag, cursor] = dest.extract();
 		const parent = cursor.parentNode;
 
@@ -43,6 +42,9 @@ export const filters = {
 				parent.insertBefore(fragment, cursor);
 			}
 			for (const node of nodes) if (node.parentNode) ctx.md.merge(node, obj, ctx.scope);
+		}
+		if (dest.root == parent) {
+			dest.frag = true;
 		}
 		parent.removeChild(cursor);
 		// dropped expr so no return value

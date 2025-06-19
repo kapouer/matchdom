@@ -270,6 +270,51 @@ describe('json plugin', () => {
 			}]);
 		});
 
+		it('returns an array when the repeated fragment replaces the root', () => {
+			const tjson = {
+				num: '[items|at:**|repeat:item|.id]',
+				desc: '[item.title]-[item.id]'
+			};
+			const md = new Matchdom(JsonPlugin, RepeatPlugin, OpsPlugin);
+			md.debug = true;
+			const copy = md.merge(tjson, {
+				items: [
+					{ id: 1, title: 'title1' }
+				]
+			});
+			assert.deepEqual(copy, [{
+				num: 1,
+				desc: 'title1-1'
+			}]);
+		});
+
+		it('should return an array when an array was passed', () => {
+			const tjson = [{
+				num: '[at:**|repeat:item|.id]',
+				desc: '[item.title]-[item.id]'
+			}];
+			const md = new Matchdom(JsonPlugin, RepeatPlugin);
+			md.debug = true;
+			const copy = md.merge(tjson, [
+				{ id: 1, title: 'title1' }
+			]);
+			assert.deepEqual(copy, [{
+				num: 1,
+				desc: 'title1-1'
+			}]);
+		});
+
+		it('should return an array when even an empty array was passed', () => {
+			const tjson = [{
+				num: '[at:**|repeat:item|.id]',
+				desc: '[item.title]-[item.id]'
+			}];
+			const md = new Matchdom(JsonPlugin, RepeatPlugin);
+			md.debug = true;
+			const copy = md.merge(tjson, []);
+			assert.deepEqual(copy, []);
+		});
+
 		it('should loop over json array', () => {
 			const tjson = [{
 				num: '[at:**|repeat:item|.id]',

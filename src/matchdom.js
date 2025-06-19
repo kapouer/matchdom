@@ -73,9 +73,7 @@ export class Matchdom {
 
 	merge(root, data, scope) {
 		let wasJSON = false;
-		let wasDOM = false;
 		let wasFrag = false;
-		let wasText = false;
 
 		const trackHits = {
 			count: 0,
@@ -92,9 +90,7 @@ export class Matchdom {
 				} else {
 					root = this.formats.as.html(null, root);
 				}
-				wasDOM = true;
 			} else if (this.types.text) {
-				wasText = true;
 				root = this.types.text(null, root);
 			} else {
 				console.warn("Missing matchdom plugin for string");
@@ -103,6 +99,9 @@ export class Matchdom {
 			if (this.types.obj) {
 				wasJSON = true;
 				root = this.types.obj(null, root);
+				if (root.nodeType == 11) {
+					wasFrag = true;
+				}
 			} else {
 				console.warn("Missing matchdom plugin for object or array");
 			}
@@ -118,6 +117,7 @@ export class Matchdom {
 			const { dest } = ctx;
 			trackHits.count += filteredHits.length;
 			trackHits.last = filteredHits[filteredHits.length - 1];
+			if (dest.frag) wasFrag = dest.frag;
 			if (dest.root) ref.root = dest.root;
 			if (dest.replacement) replacements.unshift(dest.replacement);
 		});
@@ -137,28 +137,33 @@ export class Matchdom {
 				root = tag;
 			}
 		}
-
 		if (root.nodeType == 11) {
 			const list = Array.from(root.childNodes);
+			const values = [];
+			if (list.every(item => {
+				if (item.nodeType != 3) return false;
+				values.push(item.nodeValue);
+				return true;
+			})) {
+				if (list.length > 1) {
+					return values.join('');
+				} else if (list.length == 1) {
+					return values[0];
+				}
+			}
 			if (wasFrag) {
 				// pass
 			} else if (list.length == 0) {
 				if (trackHits.count == 1) return trackHits.last;
 			} else if (list.length == 1) {
 				root = list[0];
-			} else if (wasText) {
-				return list.map(item => item.nodeValue).join('');
-			} else if (wasDOM) {
-				if (list.every(item => item.nodeType == 3)) {
-					return list.map(item => item.nodeValue).join('');
-				}
 			}
 		}
 		if (root.nodeType == 3) {
 			if (trackHits.count == 1) return trackHits.last;
 			else return root.nodeValue;
 		}
-		if (wasJSON && root?.toJSON) {
+		if (wasJSON && root.toJSON) {
 			return root.toJSON();
 		} else {
 			return root;

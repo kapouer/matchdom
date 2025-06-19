@@ -1,5 +1,12 @@
 # CHANGES
 
+## Version 19.2.1
+
+Fix: return a fragment when the input was a fragment, even with JSON.
+
+Fix: ensure that when a repeated fragment replaces the root,
+the returned value is a fragment.
+
 ## Version 19.2.0
 
 Consolidate return value if model was JSON, in particular,
