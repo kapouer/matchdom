@@ -884,6 +884,7 @@ format can be:
 - iso: full iso output
 - time: localized time
 - date: localized date
+- full: localized date time
 - weekday: day of the week between 1 (monday) and 7 (sunday)
 - days: number of days since Jan 1
 - weeks: iso week number
@@ -924,7 +925,6 @@ Localized format accepts shorthands:
 - tz: short timezone
 - timezone: long timezone
 - `country`/`city`: sets a timezone
-- full: localized full date, alias for day:D:month:Y:H:m
 
 ### clock:offset:unit
 
