@@ -1,6 +1,10 @@
 export const types = {
 	date(ctx, val) {
 		if (val == null) return;
+		if (Number.isInteger(val) && Math.abs(val) < 1e6) {
+			// this too close to 1970-01-01, it's probably a year
+			val = val.toString();
+		}
 		if (/^\d{1,2}:\d\d(:\d\d)?$/.test(val)) {
 			val = '1970-01-01T' + val + 'Z';
 		}

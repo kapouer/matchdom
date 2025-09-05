@@ -871,6 +871,8 @@ Formats a currency.
 
 Converts string or timestamp to date.
 
+Integers in the range [-1000000, 1000000] are seen as years.
+
 Accepts keyword 'now' to build a date with current timestamp.
 
 ### date:format, date:...list

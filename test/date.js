@@ -132,15 +132,27 @@ describe('date', () => {
 		});
 
 		it('formats range with a pair of dates', () => {
-			const html = `<p>[range|lang:fr|date:Y]</p>`;
-			const copy = md.merge(html, {
+			const html = `<p>[range|locales:fr|date:Y]</p>`;
+			assert.equal(md.merge(html, {
 				range: ['2018', '2019']
-			});
-			assert.equal(copy.outerHTML, '<p>2018–2019</p>');
+			}).outerHTML, '<p>2018–2019</p>');
+			assert.equal(md.merge(html, {
+				range: ['2018', '2018']
+			}).outerHTML, '<p>2018</p>');
+		});
+
+		it('formats range with a pair of integer dates', () => {
+			const html = `<p>[range|locales:fr|date:Y]</p>`;
+			assert.equal(md.merge(html, {
+				range: [2018, 2019]
+			}).outerHTML, '<p>2018–2019</p>');
+			assert.equal(md.merge(html, {
+				range: [2018, 2018]
+			}).outerHTML, '<p>2018</p>');
 		});
 
 		it('formats range with a pair of dynamic dates', () => {
-			const html = `<p>[from|as:array|push:[to]|lang:fr|date:Y]</p>`;
+			const html = `<p>[from|as:array|push:[to]|locales:fr|date:Y]</p>`;
 			const copy = md.merge(html, {
 				from: '2018',
 				to: '2019'
@@ -149,7 +161,7 @@ describe('date', () => {
 		});
 
 		it('formats range with wrong dates', () => {
-			const html = `<p>[range|lang:fr|date:date]</p>`;
+			const html = `<p>[range|locales:fr|date:date]</p>`;
 			const copy = md.merge(html, {
 				range: ['2018-03-11', '2018-03-09',]
 			});
