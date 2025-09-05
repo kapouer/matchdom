@@ -4,7 +4,8 @@ import globalJsdom from 'global-jsdom';
 import {
 	Matchdom, StringPlugin,
 	DomPlugin, DatePlugin,
-	TextPlugin
+	TextPlugin,
+	ArrayPlugin
 } from 'matchdom';
 
 describe('date', () => {
@@ -16,7 +17,7 @@ describe('date', () => {
 		this.jsdom();
 	});
 	describe('with dom', () => {
-		const md = new Matchdom(DatePlugin, DomPlugin);
+		const md = new Matchdom(DatePlugin, DomPlugin, ArrayPlugin);
 
 		it('toLocaleString', () => {
 			const html = `<p>[str|locales:fr|date:]</p>`;
@@ -128,6 +129,23 @@ describe('date', () => {
 				range: '2018-03-09T11:12:56.739Z'
 			});
 			assert.equal(copy.outerHTML, '<p>3/9/2018</p>');
+		});
+
+		it('formats range with a pair of dates', () => {
+			const html = `<p>[range|lang:fr|date:Y]</p>`;
+			const copy = md.merge(html, {
+				range: ['2018', '2019']
+			});
+			assert.equal(copy.outerHTML, '<p>2018–2019</p>');
+		});
+
+		it('formats range with a pair of dynamic dates', () => {
+			const html = `<p>[from|as:array|push:[to]|lang:fr|date:Y]</p>`;
+			const copy = md.merge(html, {
+				from: '2018',
+				to: '2019'
+			});
+			assert.equal(copy.outerHTML, '<p>2018–2019</p>');
 		});
 
 		it('formats range with wrong dates', () => {
