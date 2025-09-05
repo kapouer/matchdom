@@ -554,7 +554,7 @@ Range selects a sibling after or before the target using the same range notation
 - `at:**|to:href:-3a` target href of third previous anchor of grand-parent node
 - `to:src` fills the src attribute of the current node
 - `at:div|to:class` fills the class attribute of the closest `div`
-- `at:*|to:value:input` sets the value of the input after the current node
+- `at:*|to:value:-input` sets the value of the input before the current node
 - `val|then:to:class|then:at:p|fail:p` fills the class attribute of closest `p` if val is not false-ish, else remove `p` entirely. Another way of writing it is: `val|at:p|then:to:class|else:const:`.
 
 ### from:target:range
