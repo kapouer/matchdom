@@ -463,9 +463,9 @@ Coerces value to type, or converts string to format.
 - as:html
   return value as a DOM node or null if it fails
 
-### lang:name
+### locales:name+
 
-Sets lang name in current context.
+Sets locales in current context, by order of preference.
 Used by localized filters.
 
 ### at:selector:after:before
