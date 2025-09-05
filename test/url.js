@@ -54,6 +54,16 @@ describe('url plugin', () => {
 			assert.equal(copy.outerHTML, '<a href="/pathname?test=1&amp;toto=2">anchor</a>');
 		});
 
+		it('sets url query part with an array', () => {
+			const html = `<a href="[href|as:url|assign:.query.toto:arr]">[title]</a>`;
+			const copy = md.merge(html, {
+				href: '/pathname?test=1',
+				title: 'anchor',
+				arr: ["a", "b"]
+			});
+			assert.equal(copy.outerHTML, '<a href="/pathname?test=1&amp;toto=a&amp;toto=b">anchor</a>');
+		});
+
 		it('removes keys from query part of the url', () => {
 			const html = `<a href="[href|as:url|set:-query:toto:-query:tata]">[title]</a>`;
 			const copy = md.merge(html, {
@@ -61,6 +71,15 @@ describe('url plugin', () => {
 				title: 'anchor'
 			});
 			assert.equal(copy.outerHTML, '<a href="/pathname?it=3">anchor</a>');
+		});
+
+		it('removes all keys from query part of the url', () => {
+			const html = `<a href="[href|as:url|set:-query:id]">[title]</a>`;
+			const copy = md.merge(html, {
+				href: '/pathname?id=1&id=3&id=2&test=2',
+				title: 'anchor'
+			});
+			assert.equal(copy.outerHTML, '<a href="/pathname?test=2">anchor</a>');
 		});
 
 		it('removes query part from the url', () => {

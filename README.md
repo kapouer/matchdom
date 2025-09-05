@@ -400,6 +400,9 @@ Paths are relatives to current value.
 
 This filter supports Object, Set, Map, Array, URLSearchParams instances.
 
+If the value is an array and the instance has "append" method (like searchParams),
+the mutation is applied for each value of the array.
+
 ```js
 assert.deepEqual(
   md.merge(`[obj|set:name:doe:-years:1800:+id:abc]`, { id: 'f1d3', years: [1700, 1800] }),

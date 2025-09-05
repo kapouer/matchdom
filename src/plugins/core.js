@@ -95,7 +95,12 @@ export const filters = {
 			if (!act) {
 				if (sub == null || typeof sub != "object" || val == null || typeof val != "object") {
 					if (typeof obj.set == "function") {
-						obj.set(key, val);
+						if (Array.isArray(val) && typeof obj.append == "function") {
+							obj.delete(key);
+							for (const it of val) obj.append(key, it);
+						} else {
+							obj.set(key, val);
+						}
 					} else {
 						obj[key] = val;
 					}
@@ -108,7 +113,13 @@ export const filters = {
 					Object.assign(sub, val);
 				}
 			} else if (act == 1) {
-				if (typeof obj.append == "function") obj.append(key, val);
+				if (typeof obj.append == "function") {
+					if (Array.isArray(val)) {
+						for (const it of val) obj.append(key, it);
+					} else {
+						obj.append(key, val);
+					}
+				}
 				else if (sub == null) obj[key] = val;
 				else if (typeof sub.add == "function") sub.add(val);
 				else if (typeof sub.push == "function") sub.push(val);
@@ -118,7 +129,11 @@ export const filters = {
 					const index = sub.indexOf(val);
 					if (index >= 0) sub.splice(index, 1);
 				} else if (typeof sub.delete == "function") {
-					sub.delete(val);
+					if (Array.isArray(val) && typeof sub.append == "function") {
+						for (const it of val) sub.delete(it);
+					} else {
+						sub.delete(val);
+					}
 				} else if (typeof sub == "object") {
 					sub[key] = undefined; // triggers a setter
 					delete sub[key];
